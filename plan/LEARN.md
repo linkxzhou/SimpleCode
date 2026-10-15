@@ -1,0 +1,535 @@
+# SimpleCode「{Language} 101」教学系统设计（LEARN）
+
+> 状态：设计稿，仅规划，不含实现。日期 2026-10-15，基于 main@ed4082b（已含 Lua 5.4.9、Go/Yaegi）。
+> 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
+
+---
+
+## 1. 目标与非目标
+
+### 1.1 目标
+1. 工具栏 Run 按钮旁新增 **「{Language} 101」** 按钮（如 “Python 101”），打开右侧抽屉（Sheet），展示当前语言的教程。
+2. 每种语言一本“小书”：**概览 + ≥10 章**，难度递进：入门（beginner）→ 进阶（intermediate）→ 高级（advanced）。
+3. 文档为 Markdown，存放在 `docs/<language>/`（一语言一目录），随应用打包、离线可读（无网络依赖，符合 COEP）。
+4. 文档 UI 完全遵循应用的黑白单色主题（shadcn-vue + Tailwind tokens）。
+5. 文档中**每个代码块都有 Run 按钮**：点击 → 把代码写入主编辑器（必要时切换语言、触发运行时下载）→ 自动运行；另有 Copy 按钮。
+6. 覆盖语言：python、ruby、js/ts（QuickJS；TS 先转译）、sqlite、c（clang）、c++（clangpp）、php（php-cgi）、lua、go（Yaegi）。
+7. 每个可运行代码块都被自动化测试实际运行验证（smoke），确保教程示例在我们的运行时里可运行。
+
+### 1.2 非目标
+- 不做在线课程平台功能（账号、进度云同步、评分、证书）。进度仅存 localStorage。
+- 不在浏览器内做类型检查（TS 只转译）；不做自动判题（v1 练习只给参考答案，可选 “期望输出” 对比，见 §7.4）。
+- 不复制任何版权受限资料原文；第三方资料仅作参考与外链（见 §10）。
+
+---
+
+## 2. UI 草图（ASCII）
+
+### 2.1 抽屉关闭（工具栏新增按钮）
+```
+┌──────────────────┬──────────────────────────────────────────────────────────────┐
+│ Languages        │ main.py                   [📖 Python 101] [▶ Run] [⟲]        │
+│ [Py] Python    ✓ │──────────────────────────────────────────────────────────────│
+│ [Rb] Ruby      ↓ │  1  print("hello")                                           │
+│ ...              │                                                              │
+│                  │══════════════════════════════════════════════════════════════│
+│                  │ Terminal ● 就绪                                   [⌫] [v]    │
+└──────────────────┴──────────────────────────────────────────────────────────────┘
+  “Python 101” = ghost xs 按钮（BookOpen 图标 + 文字），切换语言时文字随之变化；快捷键 ⌘/Ctrl+J
+```
+
+### 2.2 抽屉打开 —— 目录（章节列表）
+```
+┌──────────────┬──────────────────────────────┬──────────────────────────────────┐
+│ Languages    │ main.py   [📖][▶ Run]        │ Python 101                  [×]  │
+│ [Py] Python  │──────────────────────────────│──────────────────────────────────│
+│ ...          │  1 print("hello")            │ [🔍 搜索本书…]                    │
+│              │                              │ 概览                              │
+│              │   （编辑器仍可见/可编辑）      │ ───────── 入门 ─────────          │
+│              │                              │ ✓ 01 你好，Python                │
+│              │                              │ ✓ 02 变量与类型                   │
+│              │══════════════════════════════│ ● 03 字符串与输入输出    ← 当前    │
+│              │ Terminal                     │ ○ 04 列表与元组                   │
+│              │ hello                        │ ───────── 进阶 ─────────          │
+│              │                              │ ○ 07 函数与作用域 …               │
+│              │                              │ ───────── 高级 ─────────          │
+│              │                              │ ○ 10 生成器与迭代器 …             │
+└──────────────┴──────────────────────────────┴──────────────────────────────────┘
+  抽屉宽 min(560px, 45vw)，可拖拽 400–760px；非模态（不遮罩），编辑器/终端仍可操作
+  ✓ 已读  ● 当前  ○ 未读（单色符号，不用颜色）
+```
+
+### 2.3 抽屉打开 —— 章节阅读
+```
+┌──────────────────────────────────┐
+│ ← 目录   03 字符串与输入输出  [×] │
+│ 入门 · 约 10 分钟                 │
+│──────────────────────────────────│
+│ ## 本章目标                       │
+│ - 掌握 f-string 格式化            │
+│ - 用 input() 读取用户输入          │
+│                                  │
+│ ┌──────────────────────────────┐ │
+│ │ python          [⧉][▶ Run]  │ │ ← 代码块头：语言标签 + Copy + Run
+│ │ name = input("名字？")        │ │
+│ │ print(f"你好，{name}！")       │ │
+│ │──────────────────────────────│ │
+│ │ stdin 示例：Ada               │ │ ← 可选：frontmatter/块属性给出的输入样例
+│ └──────────────────────────────┘ │
+│ > 💡 提示（单色引用块）            │
+│                                  │
+│ ## 练习                           │
+│ 1. …  [展开参考答案]               │
+│──────────────────────────────────│
+│ [‹ 上一章 02]          [下一章 04 ›]│
+└──────────────────────────────────┘
+```
+
+### 2.4 代码块 Run 状态
+```
+│ python               [⧉ 已复制][◌ Running…] │   运行中：Run 变为 loading，主工具栏同步
+│ python   需要下载 Ruby 23 MB  [▶ 下载并运行] │   跨语言且未缓存：按钮文字提示下载
+│ go       ⚠ 示例仅供阅读（不可运行）          │   runnable=false 的块：无 Run，仅 Copy
+```
+
+### 2.5 移动端（< 768px）
+```
+┌──────────────────────────┐
+│ ≡  main.py  [📖][▶ Run]  │   侧栏默认折叠为图标栏/隐藏
+│──────────────────────────│
+│ （编辑器）                 │
+│══════════════════════════│
+│ Terminal                 │
+└──────────────────────────┘
+        点击 📖 ↓
+┌──────────────────────────┐
+│ Python 101          [×]  │   抽屉变为底部全屏 Sheet（side="bottom", 高 92vh）
+│ ← 目录 / 章节内容 …       │   点击代码块 Run → 自动关闭 Sheet，聚焦终端显示输出
+└──────────────────────────┘
+```
+
+---
+
+## 3. 架构
+
+### 3.1 组件树
+```mermaid
+graph TD
+  Toolbar[EditorToolbar.vue] --> LearnBtn["LearnButton.vue<br/>{Language} 101"]
+  App[AppShell.vue] --> Drawer["DocsDrawer.vue<br/>shadcn-vue Sheet (non-modal)"]
+  Drawer --> Header[DocsHeader.vue<br/>标题/返回/关闭/搜索]
+  Drawer --> List[ChapterList.vue<br/>按 level 分组]
+  Drawer --> View[ChapterView.vue]
+  View --> MD[MarkdownView.vue<br/>渲染 HTML + 挂载代码块]
+  MD --> CB[CodeBlock.vue × N<br/>Copy / Run / stdin 样例]
+  View --> Pager[ChapterPager.vue]
+  subgraph Stores
+    DS[useDocsStore<br/>open/当前语言/当前章节/已读进度]
+    LS[useLanguageStore 已有]
+    ES[useEditorStore 已有]
+    RS[useRunStore 已有]
+  end
+  subgraph Core
+    IDX[docs/index.ts<br/>import.meta.glob 索引]
+    REN[markdown.ts<br/>markdown-it + 插件]
+    HL[highlight.ts<br/>Shiki 单色主题 / 构建期]
+    TS[transpile.ts<br/>Sucrase: TS→JS]
+  end
+  LearnBtn -.-> DS
+  List -.-> DS --> IDX
+  MD --> REN --> HL
+  CB -.-> RS
+  CB -.-> LS
+  CB -.-> ES
+  RS --> TS
+```
+
+### 3.2 文档加载
+```mermaid
+flowchart LR
+  A["docs/&lt;lang&gt;/*.md"] -->|"import.meta.glob('/docs/*/*.md', { query: '?raw', import: 'default' })"| B[懒加载函数表]
+  A -->|"import.meta.glob(..., { eager: true }) 仅 frontmatter<br/>（Vite 插件预解析为 JSON）"| C[章节索引 index.json]
+  C --> D[ChapterList：标题/level/顺序/时长]
+  B -->|打开章节时 import()| E[markdown-it 渲染]
+  E --> F[HTML + 代码块占位 data-block-id]
+  F --> G[MarkdownView 用 Vue 渲染 CodeBlock 组件替换占位]
+```
+- **按语言拆分 chunk**：每章一个懒加载模块（`?raw` 字符串），首次打开抽屉只加载索引（标题/元数据，几 KB）。
+- **frontmatter 预解析**：自定义 Vite 插件 `vite-plugin-docs`（约 60 行）：对 `docs/**/*.md` 生成虚拟模块 `virtual:docs-index`（全部 frontmatter + 标题 + 代码块计数），并在构建时校验 schema（缺字段直接构建失败）。
+- **高亮**：两方案：
+  - A（推荐）**构建期 Shiki**：插件在构建时把 Markdown 预渲染为 HTML（markdown-it + `@shikijs/markdown-it`），运行时零高亮开销、不增加主包体积；自定义**单色主题**（关键字加粗、注释斜体灰、字符串中灰，无彩色）。
+  - B 运行时复用 **Monaco `monaco.editor.colorize`**（已在包内，零新增依赖），但会带入 Monaco 彩色主题 → 与“文档单色”要求冲突，需自定义 Monaco 单色主题仅用于 colorize。
+  - 结论：A。代码块原始源码另存在 `data` 中供 Run/Copy 使用（不从 HTML 反解）。
+- **搜索（可选，M4）**：构建期为每语言生成轻量倒排索引（标题 + 小节标题 + 正文前 N 字），用 MiniSearch（MIT，~7KB gzip ⚠️）在抽屉内搜索。
+
+### 3.3 从文档运行的时序
+```mermaid
+sequenceDiagram
+  actor U as 用户
+  participant CB as CodeBlock
+  participant DS as docsStore
+  participant LS as languageStore
+  participant ES as editorStore
+  participant RS as runStore
+  participant T as Terminal
+  U->>CB: 点击 ▶ Run
+  CB->>CB: 若 lang=ts → Sucrase 转译为 JS（失败则在块下显示错误）
+  alt 代码块语言 ≠ 当前语言
+    CB->>LS: select(targetLang)（触发下载/进度，侧栏同步）
+  end
+  CB->>LS: ensure(targetLang)
+  LS-->>CB: ready / error（error 时块内提示）
+  CB->>ES: 若编辑器内容“脏”且非来自本块 → 先存为草稿备份（localStorage: simplecode:backup:<lang>）
+  CB->>ES: set(targetLang, code)
+  CB->>RS: run({ stdinPreset? })
+  RS->>T: 清屏、输出（终端若折叠则自动展开）
+  opt 块定义了 stdin 样例 且 用户选择“使用样例输入”
+    RS->>RS: 启动后 pushStdin(sample) + pushEOF
+  end
+  RS-->>CB: 状态（running/done/failed）→ 块按钮同步
+  Note over CB,T: 移动端：运行前关闭 Sheet；桌面端抽屉保持打开
+```
+- **覆盖保护**：编辑器内容被替换前，若与上次保存/示例不同，toast 提示「已备份你的代码，[恢复]」（单色 Sonner），避免误覆盖。
+- `runStore.run()` 需扩展一个可选参数 `{ stdin?: string }`（实现阶段改动，现阶段仅规划）。
+
+---
+
+## 4. 组件设计
+
+| 组件 | 职责 | 关键 props/状态 | shadcn-vue |
+|---|---|---|---|
+| `LearnButton` | 工具栏按钮，文字 `${label} 101`，有文档才显示 | 当前语言是否有 docs | Button(ghost, xs) + Tooltip |
+| `DocsDrawer` | 非模态 Sheet，右侧（桌面）/底部（移动）；宽度可拖拽并记忆 | `open`、`view: toc\|chapter`、`width` | Sheet / SheetContent / SheetHeader |
+| `DocsHeader` | 标题（Python 101）、返回目录、关闭、搜索框 | — | Button(icon)、Input |
+| `ChapterList` | 概览 + 章节按 level 分组，显示已读状态、时长 | 索引、进度 | ScrollArea、Separator |
+| `ChapterView` | 渲染章节、记录滚动位置、标记已读（滚动到底或停留 >30s） | chapterId | ScrollArea |
+| `MarkdownView` | 输入预渲染 HTML + blocks 元数据，挂载 CodeBlock | html、blocks[] | — |
+| `CodeBlock` | 语言标签、Copy、Run、stdin 样例、期望输出（折叠） | `lang`、`code`、`runnable`、`stdin?`、`expect?` | Button(xs)、Collapsible |
+| `ChapterPager` | 上一章/下一章 | — | Button(outline, xs) |
+
+状态：
+- **CodeBlock.Run**：idle → (跨语言未缓存) “下载并运行” → downloading(百分比) → running(Loader2) → done(✓ exit 0，2s 后复位) / failed(空心圆 + exit N)。全部单色。
+- **Copy**：⧉ → “已复制”（1.5s）。
+- **ChapterList 项**：○ 未读 / ● 当前 / ✓ 已读；hover `bg-accent`；focus-visible ring。
+- 键盘：`⌘/Ctrl+J` 开关抽屉；抽屉内 `[`/`]` 上/下一章；代码块内 `⌘/Ctrl+Enter` 运行该块（焦点在块上时）。
+- 可访问性：Sheet `aria-label="Python 101 教程"`；代码块 Run `aria-label="运行此示例（Python）"`。
+
+---
+
+## 5. 样式规范（单色）
+- 完全使用现有 tokens（`--background/--foreground/--muted/--border/--accent/--primary`），**无任何彩色**；深/浅色同 DESIGN §11。
+- 抽屉：`bg-background border-l border-border`，宽 `min(560px,45vw)`，标题栏 h-10，内容 `px-5 py-4`。
+- 排版（`prose` 自定义，不用 @tailwindcss/typography 默认色）：正文 14px/1.7；h1 20px semibold；h2 16px semibold + 上间距 24px；h3 14px semibold；列表 `pl-5`；链接 `underline underline-offset-2`；引用块 `border-l-2 border-foreground/30 pl-3 text-muted-foreground`；表格 1px 边框、表头 `bg-muted`；行内代码 `bg-muted px-1 rounded font-mono text-[13px]`。
+- 代码块：`rounded-md border border-border bg-muted`（浅色）/ `bg-[#0a0a0a]`（深色）；头部 h-8 `border-b`，左侧语言标签 `text-xs font-mono uppercase text-muted-foreground`，右侧 Copy（icon xs）+ Run（default xs, h-7）；代码 13px JetBrains Mono，行高 1.6，`overflow-x-auto`；行号可选关闭。
+- Shiki 单色主题 `simplecode-mono-light/dark`：关键字 **粗体 foreground**，字符串 `foreground/75`，数字 `foreground/75`，注释 *斜体* `muted-foreground`，标点 `foreground/60`。
+- 提示框（Markdown 容器 `::: tip / warning / note`）：单色边框 + 图标（lucide Info/AlertTriangle/Lightbulb），不使用颜色区分。
+- 动画：Sheet 滑入 200ms；遵守 `prefers-reduced-motion`。
+
+---
+
+## 6. 文档目录与 frontmatter 约定
+
+### 6.1 目录
+```
+docs/
+├── _shared/                 # 通用片段（如“如何使用 Run 按钮”）
+├── python/
+│   ├── index.md             # 概览（chapter: 0）
+│   ├── 01-hello.md
+│   ├── …
+│   └── 12-mini-project.md
+├── ruby/  js/  sqlite/  c/  cpp/  php/  lua/  go/
+└── README.md                # 写作规范（§9 摘要）
+```
+- 目录名 = 文档语言 id；与运行时 id 映射：`js→quickjs`（`ts` 代码块也在 js 书中）、`c→clang`、`cpp→clangpp`、`php→php-cgi`，其余同名。映射写在 `docs/index.ts`（或 manifest 增加 `docs: "python"` 字段）。
+
+### 6.2 frontmatter schema
+```yaml
+---
+language: python          # 必填，目录语言 id
+chapter: 3                # 必填，0 = 概览
+title: 字符串与输入输出     # 必填
+level: beginner           # beginner | intermediate | advanced
+minutes: 10               # 预计阅读时长
+goals:                    # 本章目标（渲染为列表）
+  - 掌握 f-string
+  - 用 input() 读取输入
+runtime: python           # 可选，默认按目录映射；用于覆盖
+sources:                  # 参考资料 id（见 docs/sources.yaml），仅链接
+  - python-tutorial
+  - lxiy-python
+updated: 2026-10-15
+---
+```
+
+### 6.3 代码块属性（fenced info string）
+````markdown
+```python run stdin="Ada" expect="你好，Ada！"
+name = input("名字？")
+print(f"你好，{name}！")
+```
+
+```go norun
+// 仅供阅读：Yaegi 不支持的写法示例
+```
+
+```ts run
+const add = (a: number, b: number): number => a + b;
+console.log(add(1, 2));
+```
+````
+- `run`（默认对可运行语言为 true）、`norun`（只读）、`stdin="..."`（样例输入，`\n` 分隔多行）、`expect="..."`（期望输出子串，用于测试与可选的“检查输出”）、`lang` 可与书语言不同（例如 SQL 书中也可出现 python 块，Run 时自动切换语言）。
+- 解析：markdown-it 的 `fence` 规则读取 info 字符串（`markdown-it-attrs` 风格或自写 parser，≈30 行）。
+
+### 6.4 来源登记 `docs/sources.yaml`
+```yaml
+gobyexample: { title: Go by Example, url: https://gobyexample.com/, license: CC-BY-3.0, adapt: true }
+little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/the-little-go-book, license: CC-BY-NC-SA-4.0, adapt: false }
+```
+`adapt:false` 的资料只能在章节末“延伸阅读”中链接；CI 校验：章节正文中出现大段与 adapt:false 来源相同的文本时报警（可选，见 §11）。
+
+---
+
+## 7. 各语言课程（每语言 1 概览 + ≥10 章）
+
+> 约束总述（所有示例必须遵守）：无网络、无文件持久化（每次运行全新虚拟 FS，只有 `/program`）、无多线程并行、无第三方包、单文件程序；交互输入通过终端 stdin。
+
+### 7.1 Python 101（CPython 3.11）
+| # | 标题 | 级别 | 要点 | 示例程序 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览：Python 是什么 | — | 解释执行、REPL 思维、在 SimpleCode 中运行与输入 | `print("你好")` | 改写问候语 |
+| 1 | 你好，Python | 入门 | print、注释、缩进 | 打印名片 | 打印三角形 |
+| 2 | 变量与类型 | 入门 | int/float/str/bool、type()、类型转换 | 温度换算 | 计算 BMI（stdin） |
+| 3 | 字符串与输入输出 | 入门 | f-string、切片、input() | 问候（stdin） | 回文判断 |
+| 4 | 条件与循环 | 入门 | if/elif、for/range、while、break | 猜数字（固定种子 random） | FizzBuzz |
+| 5 | 列表与元组 | 入门 | 增删改查、切片、推导式 | 成绩统计 | 去重保序 |
+| 6 | 字典与集合 | 入门 | dict 方法、集合运算、Counter | 词频统计 | 字母异位词分组 |
+| 7 | 函数 | 进阶 | 参数/默认值/*args/**kwargs、作用域、lambda | 计算器函数 | 递归阶乘/斐波那契 |
+| 8 | 异常处理 | 进阶 | try/except/finally、raise、自定义异常 | 安全除法 | 解析数字输入 |
+| 9 | 模块与标准库 | 进阶 | math、random、datetime、itertools、collections | 日期差计算 | 排列组合 |
+| 10 | 面向对象 | 进阶 | class、__init__、继承、dataclass、__repr__ | 银行账户 | 形状面积多态 |
+| 11 | 迭代器与生成器 | 高级 | yield、生成器表达式、itertools 管道 | 无限素数生成器 | 滑动窗口 |
+| 12 | 装饰器与上下文管理器 | 高级 | 闭包、functools.wraps、with/contextlib | 计时装饰器 | 缓存装饰器 |
+| 13 | 类型标注与小项目 | 高级 | typing、dataclass、命令行小游戏 | 井字棋（stdin） | 扩展 AI |
+限制说明：不讲 pip/requests/threading/文件写入持久化；`random` 示例固定 seed 以保证测试可复现。来源：Python Tutorial、Learn X in Y（改编）、Think Python / Automate（仅链接）。
+
+### 7.2 Ruby 101（Ruby 3.2）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | 一切皆对象、irb 思维 | `puts "你好"` | — |
+| 1 | 输出与变量 | 入门 | puts/print/p、字符串插值 | 名片 | 单位换算 |
+| 2 | 数字、字符串与符号 | 入门 | Integer/Float、String 方法、Symbol | 字符串变换 | 首字母大写 |
+| 3 | 条件与循环 | 入门 | if/unless、case/when、times/each/while | 成绩等级 | FizzBuzz |
+| 4 | 数组 | 入门 | each/map/select/reduce | 统计 | 二维数组转置 |
+| 5 | 哈希 | 入门 | Hash 字面量、遍历、默认值 | 词频（gets） | 分组 |
+| 6 | 方法与块 | 进阶 | def、默认参数、yield、block_given? | 自定义 each | 计时块 |
+| 7 | Proc 与 Lambda | 进阶 | 闭包、&block、method(:x) | 函数组合 | 柯里化 |
+| 8 | 类与模块 | 进阶 | class、attr_accessor、include、Comparable | 向量类 | 排序自定义对象 |
+| 9 | 异常 | 进阶 | begin/rescue/ensure/retry | 输入校验 | 重试逻辑 |
+| 10 | Enumerable 进阶 | 高级 | lazy、each_slice、zip、group_by | 惰性素数 | 滑动平均 |
+| 11 | 元编程入门 | 高级 | send、define_method、method_missing | 动态属性 | DSL |
+| 12 | 小项目：文字冒险 | 高级 | 状态机、stdin 交互 | 冒险游戏 | 增加房间 |
+来源：Ruby in Twenty Minutes（链接）、Ruby Koans（仅借鉴“公案”练习形式，不复制）、Poignant Guide（CC BY-SA，可少量改编）。
+
+### 7.3 JavaScript / TypeScript 101（QuickJS）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | JS 引擎 vs 浏览器、QuickJS 环境（无 DOM） | `console.log` | — |
+| 1 | 值与变量 | 入门 | let/const、类型、typeof | 类型表 | 交换变量 |
+| 2 | 运算与字符串 | 入门 | 模板字符串、== vs === | 格式化 | 反转单词 |
+| 3 | 控制流 | 入门 | if/switch/for/for…of | FizzBuzz | 九九乘法表 |
+| 4 | 函数 | 入门 | 声明/箭头函数、默认参数、闭包 | 计数器 | 记忆化 |
+| 5 | 数组 | 进阶 | map/filter/reduce/sort | 成绩处理 | 扁平化 |
+| 6 | 对象与解构 | 进阶 | 展开、可选链、JSON | 配置合并 | 深拷贝 |
+| 7 | 类与原型 | 进阶 | class、extends、getter、原型链 | 形状 | 栈/队列 |
+| 8 | 错误处理 | 进阶 | try/catch、Error 子类 | 解析 JSON | 自定义错误 |
+| 9 | 迭代器与生成器 | 高级 | Symbol.iterator、function* | 范围生成器 | 斐波那契 |
+| 10 | Promise 与 async | 高级 | Promise 链、async/await（仅微任务，避免依赖 setTimeout ⚠️） | 异步流水线 | Promise.all |
+| 11 | TypeScript 入门 | 高级 | 类型标注、interface、联合类型（`ts` 块，Sucrase 去类型后运行，无类型检查） | 类型化 TODO | 泛型函数 |
+| 12 | TS 进阶与小项目 | 高级 | 泛型、类型收窄、枚举（Sucrase 支持 enum ⚠️） | 状态机 | 扩展 |
+限制：无 DOM/fetch/模块导入（单文件）；stdin 读取在 QuickJS 版本中能力有限 ⚠️ → JS 书示例**不依赖 stdin**（实现阶段验证 `std`/`os` 模块后再决定）。来源：MDN（CC BY-SA，可改编）、TS Handbook（CC BY 4.0 ⚠️）、javascript.info / Eloquent JS（仅链接）。
+
+### 7.4 SQL 101（SQLite 3.26）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | 关系模型、每次运行=全新内存库、`.mode box` | 建表+查询 | — |
+| 1 | SELECT 基础 | 入门 | SELECT/FROM、列别名 | 电影表 | 选列 |
+| 2 | 过滤与排序 | 入门 | WHERE、AND/OR、LIKE、ORDER BY、LIMIT | 筛选电影 | Top 3 |
+| 3 | 建表与写入 | 入门 | CREATE TABLE、INSERT、类型亲和性 | 学生表 | 批量插入 |
+| 4 | 更新与删除 | 入门 | UPDATE/DELETE、事务 BEGIN/COMMIT | 调薪 | 回滚演示 |
+| 5 | 聚合与分组 | 进阶 | COUNT/SUM/AVG、GROUP BY、HAVING | 销售统计 | 每类最高 |
+| 6 | 多表连接 | 进阶 | INNER/LEFT JOIN、外键 | 订单-客户 | 未下单客户 |
+| 7 | 子查询与 CTE | 进阶 | IN/EXISTS、WITH | 高于平均 | 递归 CTE 生成序列 |
+| 8 | 约束与索引 | 进阶 | PRIMARY KEY/UNIQUE/CHECK、CREATE INDEX、EXPLAIN QUERY PLAN | 约束违反示例 | 观察查询计划 |
+| 9 | 窗口函数 | 高级 | ROW_NUMBER/RANK/LAG、OVER(PARTITION BY)（3.25+ 可用） | 排名 | 移动平均 |
+| 10 | 视图与触发器 | 高级 | CREATE VIEW、TRIGGER | 审计日志 | 自动更新时间 |
+| 11 | 小项目：图书馆 | 高级 | 建模 + 报表查询 | 借阅报表 | 逾期统计 |
+限制：不用 `RETURNING`、`STRICT`、`->>`、`UPSERT … DO UPDATE`（3.24 起支持，可用 ⚠️需测）、`generate_series`（扩展未编入）；不依赖文件库。来源：SQLite 官方文档（公有领域，可改编）、SQLBolt / Select Star SQL（仅链接，借鉴循序渐进结构）。
+
+### 7.5 C 101（clang 8 + wasi-libc）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | 编译→链接→运行（终端显示阶段）、`-Werror` 含义 | hello | — |
+| 1 | 第一个程序 | 入门 | main、printf、返回值 | 名片 | 格式化表格 |
+| 2 | 类型与运算 | 入门 | int/char/double、sizeof、整数溢出 | 类型大小 | 温度换算 |
+| 3 | 输入与控制流 | 入门 | scanf、if/switch/for/while | 求和（stdin） | 质数判断 |
+| 4 | 函数 | 入门 | 原型、递归、static | 阶乘 | 汉诺塔 |
+| 5 | 数组与字符串 | 进阶 | 数组、char[]、string.h | 反转字符串 | 冒泡排序 |
+| 6 | 指针 | 进阶 | &、*、指针运算、数组退化 | swap | 指针遍历 |
+| 7 | 结构体与枚举 | 进阶 | struct、typedef、enum、union | 学生记录 | 链表节点 |
+| 8 | 动态内存 | 进阶 | malloc/free、realloc | 动态数组 | 链表 |
+| 9 | 预处理与多文件思维 | 高级 | #define、宏陷阱、#if（单文件内模拟头文件） | 断言宏 | 泛型 max 宏 |
+| 10 | 位运算与未定义行为 | 高级 | 位操作、UB 示例与避免 | 位集合 | 计数 1 的个数 |
+| 11 | 小项目：栈式计算器 | 高级 | 逆波兰表达式（stdin） | RPN 计算器 | 支持变量 |
+限制：`-Werror` → 示例必须零警告（例如 `int main(void)`、检查 scanf 返回值）；无线程/信号/fork/文件持久化；`printf` 后提示前需 `fflush(stdout)`。来源：Beej / Modern C / learn-c.org（仅链接）。
+
+### 7.6 C++ 101（clang 8 + libc++）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | C++ 与 C、本环境 C++17 部分支持 | hello | — |
+| 1 | iostream 与变量 | 入门 | cout/cin、auto、引用 | 名片 | 交换 |
+| 2 | string 与控制流 | 入门 | std::string、范围 for | 单词计数 | 回文 |
+| 3 | vector 与算法 | 入门 | vector、sort、find、<algorithm> | 成绩排序 | 去重 |
+| 4 | 函数与重载 | 入门 | 重载、默认参数、const 引用 | 重载 area | 模板前奏 |
+| 5 | 类与对象 | 进阶 | 构造/析构、成员函数、访问控制 | 计数器 | 分数类 |
+| 6 | 运算符重载 | 进阶 | operator+、<<、比较 | 向量 | 复数 |
+| 7 | 继承与多态 | 进阶 | virtual、override、抽象类 | 形状 | 动物 |
+| 8 | 模板 | 进阶 | 函数/类模板 | 泛型栈 | 泛型 max |
+| 9 | STL 容器 | 高级 | map/set/unordered_map/deque | 词频 | LRU（list+map） |
+| 10 | RAII 与智能指针 | 高级 | unique_ptr/shared_ptr、移动语义 | 资源守卫 | 链表 |
+| 11 | Lambda 与现代 C++ | 高级 | lambda、std::function、结构化绑定（C++17） | 自定义排序 | 函数组合 |
+| 12 | 小项目：库存管理 | 高级 | 综合 | 命令行库存 | 扩展 |
+限制：避免 C++20（concepts/ranges/format）、`std::filesystem`、`std::thread`；异常（throw/try）是否可用 **需实测** ⚠️，若不可用则相关内容标 `norun` 并说明。来源：LearnCpp、cppreference（仅链接）、C++ Core Guidelines（可引用条目编号）。
+
+### 7.7 PHP 101（php-cgi 8.2）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | `<?php`、CLI 式运行（-q 无头） | echo | — |
+| 1 | 变量与输出 | 入门 | $var、echo/print、字符串插值 | 名片 | heredoc |
+| 2 | 类型与运算 | 入门 | 弱类型、严格比较、`declare(strict_types=1)` | 比较表 | 类型转换 |
+| 3 | 控制流 | 入门 | if/match/for/foreach | FizzBuzz | 等级 match |
+| 4 | 数组 | 入门 | 索引/关联数组、array_* 函数 | 成绩 | 分组 |
+| 5 | 函数 | 进阶 | 类型声明、默认值、箭头函数、闭包 | 计算器 | 柯里化 |
+| 6 | 字符串处理 | 进阶 | sprintf、str_*、preg_* | 模板替换 | 校验邮箱 |
+| 7 | 面向对象 | 进阶 | class、构造器提升、readonly、接口 | 账户 | 形状 |
+| 8 | 异常与错误 | 进阶 | try/catch、自定义异常 | 安全除法 | 校验 |
+| 9 | 枚举与 match（8.1+） | 高级 | enum、backed enum | 订单状态 | 状态机 |
+| 10 | 生成器与迭代器 | 高级 | yield、IteratorAggregate | 惰性范围 | 分页 |
+| 11 | 小项目：JSON 报表 | 高级 | json_encode/decode、array 处理 | 报表 | 排序输出 |
+限制：无网络/数据库/会话/HTTP 请求处理；stdin 读取方式需实测（`fgets(STDIN)` vs `php://stdin`）⚠️，确认前 PHP 书示例不依赖 stdin。来源：PHP 手册（CC BY 3.0 ⚠️，可改编署名）、PHP The Right Way（仅链接）。
+
+### 7.8 Lua 101（Lua 5.4.9）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | 轻量嵌入式语言、5.4 特性 | print | — |
+| 1 | 值与变量 | 入门 | nil/boolean/number/string、local | 类型表 | 交换 |
+| 2 | 字符串 | 入门 | `..`、string 库、模式匹配基础 | 格式化 | 单词计数 |
+| 3 | 控制流 | 入门 | if、while、repeat、数值/泛型 for | FizzBuzz | 质数 |
+| 4 | 表（数组） | 入门 | 序列、`#`、table.insert/concat/sort | 成绩 | 反转 |
+| 5 | 表（字典） | 入门 | pairs/ipairs、嵌套表 | 词频（io.read） | 分组 |
+| 6 | 函数与闭包 | 进阶 | 多返回值、可变参数、闭包、高阶函数 | 计数器 | map/filter |
+| 7 | 错误处理 | 进阶 | error/pcall/xpcall/assert（本构建可用） | 安全解析 | 带回溯的 xpcall |
+| 8 | 元表与 OOP | 进阶 | setmetatable、__index、__add、__tostring | 向量类 | 继承 |
+| 9 | 模块思维 | 进阶 | 返回表的模块模式（单文件内） | 工具模块 | 命名空间 |
+| 10 | 协程 | 高级 | coroutine.create/resume/yield、生产者-消费者 | 生成器 | 管道 |
+| 11 | 字符串模式进阶 | 高级 | gsub/gmatch/捕获 | 模板引擎 | CSV 解析 |
+| 12 | 小项目：文字冒险 | 高级 | 状态机 + io.read | 冒险游戏 | 存档（内存） |
+限制：无 `io.popen`/`os.execute`/`io.tmpfile`/`os.tmpname`、无 `require` C 模块。来源：Lua 5.4 手册（引用条目）、Learn Lua in Y（CC BY-SA，可改编）、Programming in Lua（仅链接）。
+
+### 7.9 Go 101（Yaegi 0.16.1 解释器）
+| # | 标题 | 级别 | 要点 | 示例 | 练习 |
+|---|---|---|---|---|---|
+| 0 | 概览 | — | Go 特点；本环境为解释执行（Yaegi），仅标准库 | hello | — |
+| 1 | 包、变量与常量 | 入门 | package main、:=、const、iota | 名片 | 单位换算 |
+| 2 | 基本类型与格式化 | 入门 | int/float64/string/rune、fmt.Printf | 类型表 | 字符计数（rune） |
+| 3 | 控制流 | 入门 | if/for/switch、defer | FizzBuzz | 质数 |
+| 4 | 数组、切片与 map | 入门 | append、copy、range、map | 词频（bufio.Scanner 读 stdin） | 去重 |
+| 5 | 函数与闭包 | 进阶 | 多返回值、可变参数、闭包 | 计数器 | 记忆化 |
+| 6 | 结构体与方法 | 进阶 | struct、值/指针接收者、嵌入 | 账户 | 矩形 |
+| 7 | 接口 | 进阶 | 隐式实现、类型断言、Stringer | 形状 | error 接口 |
+| 8 | 错误处理 | 进阶 | error、errors.Is/As、fmt.Errorf %w、panic/recover | 解析数字 | 自定义错误 |
+| 9 | goroutine 与 channel | 高级 | go、chan、select、sync.WaitGroup（单线程调度，演示并发而非并行） | 流水线 | 扇入扇出 |
+| 10 | 泛型 | 高级 | 类型参数、约束（Yaegi 泛型支持有限 ⚠️ → 仅简单示例，复杂者标 norun） | Map/Filter | 泛型栈 |
+| 11 | 标准库精选 | 高级 | strings、sort、strconv、time（避免依赖真实 Sleep 时长）、encoding/json | JSON 编解码 | 排序结构体 |
+| 12 | 小项目：命令行待办 | 高级 | 综合 + stdin | TODO | 持久化（内存） |
+限制：无 `go get`/第三方模块/cgo/网络；Yaegi 与官方编译器存在语义差异（个别反射/泛型/unsafe）⚠️；每个示例必须是完整 `package main`。来源：Go by Example（**CC BY 3.0，可改编，须署名**）、A Tour of Go（⚠️ 许可证待确认，先仅链接）、The Little Go Book（CC BY-NC-SA，仅链接）、Learn Go with Tests（MIT，测试驱动思路）。
+
+---
+
+## 8. 实现要点（供后续实现参考）
+- 依赖（预计）：`markdown-it`（MIT）、`@shikijs/markdown-it` + `shiki`（MIT，构建期）、`gray-matter` 或 `front-matter`（MIT，构建期）、`sucrase`（MIT，运行时，懒加载）、可选 `minisearch`（MIT）。运行时新增 JS 约：markdown 运行时 0（预渲染）+ sucrase ~200KB（仅 TS 块首次运行时加载）⚠️。
+- shadcn-vue 组件：Sheet、ScrollArea、Separator、Input、Collapsible、Sonner（按需 `npx shadcn-vue add`）。
+- Store：`useDocsStore`（open、lang、chapterId、progress: Record<lang, Set<chapter>>、scroll 位置，持久化 localStorage）。
+- `runStore.run({ stdin })` 扩展；`CodeEditor` 无需修改（已监听 editorStore 外部变更）。
+- 与语言切换联动：抽屉打开时切换左侧语言 → 抽屉跟随切到该语言的书（保持各书最近阅读位置）。
+
+---
+
+## 9. 内容写作规范
+1. **中文原创**：所有正文由我们撰写；参考资料只取知识点与章节顺序，不翻译、不复制原文；CC BY / CC BY-SA / MIT / 公有领域资料的**代码示例**可改编，须在章节末“参考与致谢”注明来源与许可证（SA 资料改编的片段同协议）。
+2. 每章结构：`本章目标 → 讲解（小节 2–5 个）→ 可运行示例（≥3 个）→ 常见错误 → 练习（2–3 题，带折叠参考答案）→ 延伸阅读（链接）`。
+3. **示例必须可运行**：单文件、无网络/文件依赖、输出确定（固定随机种子、不打印时间戳/地址）；需要输入的示例必须提供 `stdin=` 样例；预期输出写进 `expect=`。
+4. 运行时差异要说明：例如 “本环境 C++ 为 LLVM 8，不支持 C++20”，“Go 由 Yaegi 解释执行”。
+5. 代码风格：Python PEP 8、Go gofmt、C/C++ 4 空格、Lua 2 空格；示例 ≤ 40 行；注释中文。
+6. 术语表：每本书 `index.md` 末尾维护中英术语对照。
+7. **测试**：`tests/docs-smoke.mjs`：遍历 `docs/**/*.md` 的所有 `run` 代码块，按语言分组，用现有 Playwright smoke 流程（或抽出 headless runner）逐块运行：断言 exit 0（或 frontmatter 声明的期望非 0）、`expect` 子串命中、超时 30s；`norun` 块跳过但统计数量；CI 失败即阻止合并。`./build.sh test` 增加 `--docs`。
+8. 审校清单：可运行性、正确性、术语一致、无版权文本、许可证标注。
+
+---
+
+## 10. 参考资料与许可证（详见 learn-research.md）
+| 资料 | 链接 | 许可证 | 使用方式 |
+|---|---|---|---|
+| Learn X in Y minutes | https://learnxinyminutes.com/ | CC BY-SA 3.0 ✔ | 可改编（署名+SA） |
+| Python Tutorial | https://docs.python.org/3/tutorial/ | PSF ⚠️ | 参考/链接 |
+| Think Python 3e | https://greenteapress.com/wp/think-python-3rd-edition/ | CC BY-NC-SA 4.0 ⚠️ | 仅链接 |
+| A Byte of Python | https://python.swaroopch.com/ | CC BY-SA 4.0 ⚠️ | 可改编 |
+| Ruby in Twenty Minutes | https://www.ruby-lang.org/en/documentation/quickstart/ | ⚠️ | 链接 |
+| Ruby Koans | https://github.com/edgecase/ruby_koans | CC BY-NC-SA 3.0 ✔ | 仅链接 |
+| Why's (Poignant) Guide | https://poignant.guide/ | CC BY-SA 2.5 ⚠️ | 可少量改编 |
+| javascript.info | https://javascript.info/ | CC BY-NC-SA 4.0 ⚠️ | 仅链接 |
+| Eloquent JavaScript | https://eloquentjavascript.net/ | CC BY-NC 3.0 ⚠️ | 仅链接 |
+| MDN JS Guide | https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide | CC BY-SA 2.5 / 代码 CC0 ⚠️ | 可改编 |
+| TypeScript Handbook | https://www.typescriptlang.org/docs/handbook/intro.html | CC BY 4.0 ⚠️ | 可改编 |
+| SQLite 文档 | https://www.sqlite.org/lang.html | Public Domain ✔ | 可改编 |
+| SQLBolt | https://sqlbolt.com/ | 版权保留 | 仅链接 |
+| Select Star SQL | https://selectstarsql.com/ | ⚠️ | 仅链接 |
+| Beej's Guide to C | https://beej.us/guide/bgc/ | CC BY-NC-ND 3.0 ⚠️ | 仅链接 |
+| Modern C | https://gustedt.gitlabpages.inria.fr/modern-c/ | ⚠️ NC-ND | 仅链接 |
+| learn-c.org | https://www.learn-c.org/ | ⚠️ | 仅链接 |
+| LearnCpp | https://www.learncpp.com/ | 版权保留 | 仅链接 |
+| C++ Core Guidelines | https://github.com/isocpp/CppCoreGuidelines | MIT 风格 ⚠️ | 引用条目 |
+| PHP Manual | https://www.php.net/manual/en/ | CC BY 3.0 ⚠️ | 可改编 |
+| PHP The Right Way | https://github.com/codeguy/php-the-right-way | CC BY-NC-SA 3.0 ✔ | 仅链接 |
+| Programming in Lua (1st ed.) | https://www.lua.org/pil/ | 版权保留 | 仅链接 |
+| Lua 5.4 Manual | https://www.lua.org/manual/5.4/ | Lua.org ⚠️ | 引用 |
+| Go by Example | https://gobyexample.com/ | CC BY 3.0 ✔ | 可改编（署名） |
+| A Tour of Go | https://go.dev/tour/ | ⚠️ | 链接 |
+| The Little Go Book | https://github.com/karlseguin/the-little-go-book | CC BY-NC-SA 4.0 ✔ | 仅链接 |
+| Effective Go | https://go.dev/doc/effective_go | ⚠️ | 链接 |
+| Learn Go with Tests | https://github.com/quii/learn-go-with-tests | MIT ✔ | 可改编 |
+| Teach Yourself Programming in Ten Years | https://norvig.com/21-days.html | 版权保留 | 设计理念参考 |
+✔ = 本次从仓库 README/LICENSE 实际抓取确认；⚠️ = 基于已知信息，落地前需逐一核实。
+
+---
+
+## 11. 里程碑
+| M | 内容 | 验收 |
+|---|---|---|
+| L0 | docs 目录骨架、frontmatter schema、`vite-plugin-docs`（索引 + 校验 + 预渲染）、单色 Shiki 主题 | `yarn build` 生成索引，schema 错误会失败 |
+| L1 | UI：LearnButton、DocsDrawer（桌面+移动）、ChapterList、ChapterView、CodeBlock（Copy/Run） | 打开/关闭/切章/跨语言运行可用 |
+| L2 | `runStore.run({stdin})`、覆盖备份 toast、TS 转译（Sucrase 懒加载） | ts 块可运行；stdin 样例可用 |
+| L3 | 内容第一批：Python、Go、Lua、SQL（各 1 概览 + ≥10 章） | docs-smoke 全绿 |
+| L4 | 内容第二批：C、C++、Ruby、PHP、JS/TS；运行时能力实测（PHP stdin、QuickJS stdin/timers、C++ 异常） | docs-smoke 全绿 |
+| L5 | 搜索（MiniSearch）、阅读进度、快捷键、无障碍、截图回归 | Lighthouse a11y ≥ 90 |
+
+---
+
+## 12. 风险
+1. **内容工作量**：9 本 × ≥11 篇 ≈ 100+ 篇中文原创、300+ 可运行示例；需分批交付并以 docs-smoke 保证质量。
+2. **运行时差异**：clang 8 / SQLite 3.26 / Yaegi / QuickJS-wasmedge 与主流版本不同，读者照搬到本地可能行为不同 → 每本书概览注明版本与限制。
+3. **未验证能力** ⚠️：QuickJS 的 stdin 与定时器、PHP CGI 的 STDIN、C++ 异常、Yaegi 泛型、`time.Sleep`——在 L4 前实测，不通过的主题改写或标 `norun`。
+4. **许可证**：大量优质资料为 NC/ND，只能链接；改编 CC BY-SA 内容会使对应文件需以 CC BY-SA 发布 → 建议 docs 整体采用 **CC BY-SA 4.0**，代码示例 **MIT**，在 `docs/LICENSE` 声明。
+5. **体积**：预渲染 HTML + 索引随语言数线性增长（估计每本 200–400 KB，按章懒加载可接受）。
+6. **覆盖用户代码**：Run 文档示例会替换编辑器内容 → 必须有备份与恢复。
+7. **与并行开发冲突**：实现阶段需改 EditorToolbar/AppShell/runStore（其他 PR 也在改）→ 实现前 rebase，并以新增组件为主、最小化对既有文件的修改。
