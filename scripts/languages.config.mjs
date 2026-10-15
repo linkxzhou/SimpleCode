@@ -37,7 +37,7 @@ export const languages = [
     run: { asset: "ruby-wasm", binaryName: "ruby", args: ["-r", "/ruby-3.2.0/.rubyopts.rb", "{entry}"], baseFS: "ruby-fs" },
   },
   {
-    id: "quickjs", label: "QuickJS", short: "JS", version: "wasmedge", syntax: "javascript", fileName: "main.js",
+    id: "quickjs", label: "JS/TS", short: "JS", version: "QuickJS", syntax: "javascript", fileName: "main.js",
     run: { asset: "quickjs-wasm", binaryName: "quickjs", args: ["{entry}"] },
   },
   {

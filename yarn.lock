@@ -1947,6 +1947,7 @@ __metadata:
     playwright: "npm:^1.48.0"
     postcss: "npm:^8.4.49"
     reka-ui: "npm:^2.0.0"
+    sucrase: "npm:^3.35.1"
     tailwind-merge: "npm:^2.6.0"
     tailwindcss: "npm:^3.4.17"
     tailwindcss-animate: "npm:^1.0.7"
@@ -1964,7 +1965,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sucrase@npm:^3.35.0":
+"sucrase@npm:^3.35.0, sucrase@npm:^3.35.1":
   version: 3.35.1
   resolution: "sucrase@npm:3.35.1"
   dependencies:

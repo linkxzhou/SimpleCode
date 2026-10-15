@@ -6,6 +6,7 @@ SimpleCode vendors language runtimes into `wasm/` (not committed; see `./build.s
 
 - [Runno](https://github.com/taybenlor/runno) `@runno/wasi` — MIT. Provides the in-browser WASI preview1 host.
 - UI dependencies (Vue, Monaco, xterm, Tailwind, shadcn-vue / reka-ui) — see each package's license in `node_modules`.
+- [Sucrase](https://github.com/alangpierce/sucrase) — MIT. Loaded in the browser only when TypeScript is run, to strip types before QuickJS. It does not type-check.
 
 ## Runtimes copied from Runno `langs/`
 
