@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Headless smoke test: starts `vite preview`, checks COOP/COEP, runs hello-world per language.
 import { spawn } from "node:child_process";
+import { mkdirSync, statSync } from "node:fs";
 import { chromium } from "playwright";
 
 const PORT = Number(process.env.PORT ?? 4317);
@@ -15,6 +16,20 @@ const cases = [
   { id: "ruby", code: 'puts "Hello from Ruby #{6 * 7}"', expect: "Hello from Ruby 42" },
   { id: "sqlite", code: "CREATE TABLE t(x);\nINSERT INTO t VALUES (42);\nSELECT 'Hello from SQLite ' || x FROM t;", expect: "Hello from SQLite 42" },
   { id: "php-cgi", code: '<?php echo "Hello from PHP " . (6 * 7) . "\\n";', expect: "Hello from PHP 42" },
+  {
+    id: "lua",
+    code: 'local name = io.read("*l")\nlocal ok = pcall(function() error("boom") end)\nprint(string.format("Hello, %s from Lua %s", name, ok and "fail" or "pcall"))',
+    stdin: "Ada",
+    expect: "Hello, Ada from Lua pcall",
+    screenshot: "lua-run.png",
+  },
+  {
+    id: "go",
+    code: 'package main\nimport ("bufio"; "fmt"; "os"; "strings")\nfunc main() {\n  in := bufio.NewReader(os.Stdin)\n  name, _ := in.ReadString(\'\\n\')\n  fmt.Printf("Hello, %s from Go %d\\n", strings.TrimSpace(name), 6*7)\n}\n',
+    stdin: "Ada",
+    expect: "Hello, Ada from Go 42",
+    screenshot: "go-run.png",
+  },
 ].filter((c) => !only.length || only.includes(c.id));
 
 const server = spawn("yarn", ["vite", "preview", "--port", String(PORT), "--strictPort"], { stdio: ["ignore", "pipe", "pipe"] });
@@ -46,7 +61,11 @@ try {
   } catch {
     browser = await chromium.launch({ channel: "chrome" });
   }
-  const page = await browser.newPage();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  const shotDir = "tests/screenshots";
+  const artifactDir = "/opt/cursor/artifacts";
+  mkdirSync(shotDir, { recursive: true });
+  mkdirSync(artifactDir, { recursive: true });
   page.on("console", (m) => m.type() !== "log" && console.log(`  [console.${m.type()}]`, m.text()));
   page.on("pageerror", (e) => console.log("  [pageerror]", e.message));
   await page.goto(BASE);
@@ -80,6 +99,17 @@ try {
       const ok = status === "done" && out.includes(c.expect);
       if (!ok) failed++;
       console.log(`${ok ? "✓" : "✗"} ${c.id.padEnd(8)} load ${((tl - t0) / 1000).toFixed(1)}s run ${((Date.now() - tl) / 1000).toFixed(1)}s status=${status} out=${JSON.stringify(out.replace(/\x1b\[[0-9;]*m/g, "").trim().slice(-160))}`);
+      if (c.screenshot) {
+        const paths = [`${shotDir}/${c.screenshot}`, `${artifactDir}/${c.screenshot}`];
+        for (const path of paths) {
+          await page.screenshot({ path });
+          if (statSync(path).size < 10_000) {
+            failed++;
+            console.log(`  ✗ screenshot too small: ${path}`);
+          }
+        }
+        console.log(`  screenshot ${paths.join(" ")}`);
+      }
     } catch (e) {
       failed++;
       const out = await page.evaluate(() => globalThis.__simplecodeTerminal?.transcript).catch(() => "");

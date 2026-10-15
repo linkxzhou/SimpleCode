@@ -20,7 +20,7 @@
 | 8 | R | webR | Emscripten | ⚠️ 约 20–40 MB 起 | GPL-2.0+（R）⚠️ | 🟡 可行（需适配） |
 | 9 | SQL | SQLite 3.26（已集成） | WASI | 3.4 MB | Public Domain | ✅ 已支持 |
 | 10 | Rust | rubrc（rustc+LLVM → WASI threads）/ weblings（rustc+cranelift）/ rubri（Miri） | WASI + wasi-threads | ⚠️ 100 MB–数百 MB | MIT/Apache-2.0 | 🟠 可行但代价高（实验性） |
-| 11 | Go | Yaegi 解释器以 `GOOS=wasip1` 编译 | **WASI** | ⚠️ 约 15–40 MB | Apache-2.0 | 🟡 可行（契合度高，推荐优先） |
+| 11 | Go | Yaegi 0.16.1，`GOOS=wasip1`（已集成） | **WASI** | **35.0 MB**（36,736,740 B） | Apache-2.0 + Go BSD-3 | ✅ 已支持（见 §8） |
 | 12 | PHP | php-cgi 8.2（已集成） | WASI | 12.5 MB | PHP License 3.01 | ✅ 已支持 |
 | 13 | Fortran | LFortran（Emscripten / 直接 Wasm 后端） | Emscripten | ⚠️ 约 30–60 MB | BSD-3-Clause | 🟡 可行（需适配） |
 | 14 | Swift | 无浏览器内 swiftc（SwiftWasm 只做交叉编译） | — | — | — | ❌ 不可行 |
@@ -30,12 +30,12 @@
 | 18 | Julia | 仅实验（WebAssemblyCompiler.jl / julia-wasm） | — | — | MIT | ❌ 暂不可行 |
 | 19 | Delphi/Object Pascal | Pas2JS 编译器（Wasm）→ JS 执行 | JS/Wasm | ⚠️ 约 5–15 MB | LGPL + 链接例外 ⚠️ | 🟡 可行（需适配） |
 | 20 | MATLAB | MATLAB 闭源不可行；替代：GNU Octave（xeus-octave / emscripten-forge） | Emscripten | ⚠️ 约 50–150 MB | GPL-3.0 | 🟠 以 Octave 替代，代价高 |
-| 35 | **Lua** | lua-wasi（5.4.6，已实测）→ 建议自编译开启 setjmp | **WASI** | **0.3 MB**（实测 329,167 B） | MIT | ✅ 低成本可支持（见 §3） |
+| 35 | **Lua** | 自编译 Lua 5.4.9 + wasi-sdk 33（setjmp/EH） | **WASI** | **0.7 MB**（720,144 B） | MIT | ✅ 已支持，`pcall` 可用（见 §8） |
 
 图例：✅ 已支持/可直接支持；🟡 可行（需新运行时适配器或中等工作量）；🟠 可行但代价高/实验性；❌ 不可行。
 
 **要点**
-- 现架构（WASI 命令模块 + `WASIWorkerHost`）可**零改动**接入的只有“真正的 WASI preview1 命令程序”：Lua、Go(Yaegi wasip1)、（Perl 需 reactor 适配）。
+- 现架构（WASI 命令模块 + `WASIWorkerHost`）可**零改动**接入的只有“真正的 WASI preview1 命令程序”。**Lua 5.4.9 与 Go（Yaegi wasip1）已按此接入**（§8）。Perl 仍需 reactor 适配。
 - 其余（Java/C#/VB/R/Fortran/Pascal/Octave）都是 Emscripten / .NET / JS 产物，需要引入 **Runtime 适配层**（§2）。
 - Rust 能做到“浏览器内编译”，但依赖 wasi-threads、体积巨大、仍属实验，建议作为后期“实验语言”。
 
@@ -69,7 +69,7 @@
 
 ### 1.5 Rust（#10）— 🟠 详见 §4
 
-### 1.6 Go（#11）— 🟡（推荐优先）
+### 1.6 Go（#11）— ✅ 已集成（原评估 🟡）
 - **Yaegi**（Go 解释器，Traefik）：https://github.com/traefik/yaegi ，Apache-2.0，纯 Go 实现，支持几乎完整的 Go 规范与标准库（反射实现）。
 - 关键：Go 1.21+ 原生支持 `GOOS=wasip1 GOARCH=wasm`，编译出的就是 **WASI preview1 命令模块** → 可直接用 `WASIWorkerHost` 运行：`yaegi /program`（或自写 20 行 main：读取 `/program` 并 `interp.Eval`）。stdin/stdout 走 WASI，xterm 交互天然可用。
 - 已有先例（JS/wasm 版）：LiveCodes Go(Wasm)（https://livecodes.io/docs/languages/go-wasm ）。
@@ -224,7 +224,7 @@ export interface RuntimeAdapter {
 | 阶段 | 内容 | 优先级 | 预估 |
 |---|---|---|---|
 | Phase 0 | Runtime 适配器抽象（`WasiCommandAdapter` 迁移现有 7 语言，行为不变）、manifest v2（runtime/features/license/experimental）、vendor 多来源 + sources.lock | P0 | 2–3 天 |
-| Phase 1 | **Lua**（自编译 + sjlj）、**Go**（Yaegi wasip1）——均为纯 WASI，零适配器新增 | P0 | 2–4 天 |
+| Phase 1 | **Lua**（自编译 + sjlj）、**Go**（Yaegi wasip1）——均为纯 WASI，零适配器新增 | P0 | **已完成**（§8） |
 | Phase 1.5 | Python/PHP/Ruby 升级到 VMware WLR 新版本（3.12 / 8.2.6 / 3.2.2） | P2 | 1 天 |
 | Phase 2 | `EmscriptenAdapter` + 统一 StdinChannel → **R（webR）**、**Fortran（LFortran）**；`WasiReactorAdapter` → **Perl（zeroperl）** | P1 | 1–2 周 |
 | Phase 2.5 | `TeaVMAdapter` → **Java**；`JsCodegenAdapter` → **Pascal（Pas2JS）** | P1 | 1–2 周 |
@@ -261,3 +261,29 @@ export interface RuntimeAdapter {
 - COBOL：https://github.com/cloudflare/cobweb ・ https://github.com/moxon6/cobol-js-emscripten
 - Julia：https://github.com/tshort/WebAssemblyCompiler.jl ・ https://github.com/Keno/julia-wasm
 - Swift：https://swiftwasm.org/
+
+---
+
+## 8. Phase 1 实现记录（2026-10-15）
+
+Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建，产物 sha256 不匹配则失败。构建机需要 **Linux x86_64**（锁定的 wasi-sdk 与 Go 工具链是 linux-amd64）。
+
+### 8.1 Lua 5.4.9
+- 脚本：`scripts/builders/lua/build.sh`。wasi-sdk **33.0**（`0ba8b5bf…`）+ Lua **5.4.9**（`2335b6c5…`）。产物 `lua-5.4.9.wasm`，720,144 字节，sha256 `06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb`。
+- 关键参数：`--target=wasm32-wasip1 -mllvm -wasm-enable-sjlj -mllvm -wasm-use-legacy-eh=false`，链接 `-lsetjmp`。**不定义 `LUA_USE_POSIX`**，否则 `ldo.c` 使用 `_setjmp`/`_longjmp`，LLVM 的 sjlj pass 不会改写它们，`pcall` 仍然无效。
+- 实测（`@runno/wasi`，需 Wasm `exnref`）：`pcall(error)` 捕获错误并继续执行；嵌套 `pcall` 正常；语法错误输出 `lua: /program:2: unexpected symbol near <eof>` 并以退出码 1 结束；`io.read("*l")` 走 WASI stdin。
+- 浏览器需要**标准** Wasm 异常处理（`try_table`，不是旧版 legacy EH）。Playwright 附带的 Chromium 156 可通过。缺少该特性的浏览器会在实例化阶段失败。
+- 沙箱里没有的接口：`os.execute`（无 shell）、`io.popen`（Lua 报错）、`io.tmpfile` / `os.tmpname`（失败）、动态库加载。`os.clock` 使用 wasi-sdk 的进程时钟模拟。
+- 未采用 `@antonz/lua-wasi` 5.4.6：那份预编译包在本运行器里能跑 stdin，但 `pcall` 会以非零退出结束。
+
+### 8.2 Go（Yaegi 0.16.1，Go 1.22.12）
+- 脚本：`scripts/builders/go/build.sh`。官方 Go **1.22.12** linux-amd64（`4fa4f869…`），不使用系统上的 `go`。`GOOS=wasip1 GOARCH=wasm`，`-mod=readonly -buildvcs=false -trimpath -ldflags="-s -w -buildid="`。Yaegi 模块校验和在 `scripts/builders/go/go.sum`。
+- 包装程序 `scripts/builders/go/main.go`：`interp.Use(stdlib.Symbols)` 后 `EvalPath` 解释 `/program`（必须是 `package main` 且含 `func main`）。manifest 参数为 `yaegi {entry}`。
+- 产物 `yaegi-0.16.1.wasm`，36,736,740 字节（35.0 MB），sha256 `570999c368119300b76785385555683355fb1a474819f30c603675070ee9db7d`。同一源码在仓库内和仓库外各构建一次，摘要一致。
+- 已在 `@runno/wasi` 上验证：`fmt`、`strings`、`bufio`/`os.Stdin`、`time.Now()`、向带缓冲 channel 发送的 goroutine。
+- 限制：
+  - 解释执行，只有标准库。没有模块下载，`import` 第三方包会失败。
+  - **`time.Sleep` 不会返回。** `@runno/wasi` 的 `poll_oneoff` 对时钟订阅是忙等，和 Go wasip1 运行时的调度方式对不上；10ms 的 `Sleep` 在节点上超过 8 秒仍未结束。`time.Now()` 正常。
+  - 无网络（`sock_*` 为 ENOSYS）。
+  - 单文件 35 MB，超过部分静态托管的 25 MiB 上限（与 clang.wasm 同类问题）。
+- 不采用 `GOOS=js`：那份产物依赖 `wasm_exec.js`，不能作为 `WASIWorkerHost` 的命令模块。Yaegi v0.16.1 的标准库符号与 Go 1.22 可以一起编译；更新 Go 大版本前需要重测符号是否仍能编译。

@@ -69,9 +69,10 @@ ${c_bold}SimpleCode build helper${c_off}
 Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
-  vendor [--link]    Copy wasm runtimes from thirdparty/runno/langs into wasm/ and
-                     generate wasm/manifest.json (--link: symlink instead of copy,
-                     --source <dir>: alternative source directory)
+  vendor [--link]    Copy wasm runtimes from thirdparty/runno/langs into wasm/,
+                     build Lua and Go (scripts/builders, Linux x86_64), and
+                     write wasm/manifest.json (--link: symlink Runno files,
+                     --source <dir>: alternative Runno directory)
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)
   preview | run      Serve dist/ with COOP/COEP headers (http://localhost:4173)

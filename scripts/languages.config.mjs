@@ -1,16 +1,19 @@
-// Language definitions ported from thirdparty/runno/packages/runtime/lib/commands.ts
-// `{entry}` is replaced with the program path (/program) at run time.
+// Language definitions. `{entry}` is replaced with the program path (/program) at run time.
+// Runno assets are copied from thirdparty/runno/langs. `build` assets are produced by
+// scripts/builders/<name>/build.sh (versions and sha256 in scripts/sources.lock.json).
 export const assets = {
-  "python-wasm": "python-3.11.3.wasm",
-  "python-fs": "python-3.11.3.tar.gz",
-  "ruby-wasm": "ruby-3.2.0.wasm",
-  "ruby-fs": "ruby-3.2.0.tar.gz",
-  "quickjs-wasm": "wasmedge_quickjs.wasm",
-  "sqlite-wasm": "sqlite.wasm",
-  "php-wasm": "php-cgi-8.2.0.wasm",
-  "clang-wasm": "clang.wasm",
-  "wasm-ld": "wasm-ld.wasm",
-  "clang-fs": "clang-fs.tar.gz",
+  "python-wasm": { file: "python-3.11.3.wasm" },
+  "python-fs": { file: "python-3.11.3.tar.gz" },
+  "ruby-wasm": { file: "ruby-3.2.0.wasm" },
+  "ruby-fs": { file: "ruby-3.2.0.tar.gz" },
+  "quickjs-wasm": { file: "wasmedge_quickjs.wasm" },
+  "sqlite-wasm": { file: "sqlite.wasm" },
+  "php-wasm": { file: "php-cgi-8.2.0.wasm" },
+  "clang-wasm": { file: "clang.wasm" },
+  "wasm-ld": { file: "wasm-ld.wasm" },
+  "clang-fs": { file: "clang-fs.tar.gz" },
+  "lua-wasm": { file: "lua-5.4.9.wasm", build: "lua" },
+  "go-wasm": { file: "yaegi-0.16.1.wasm", build: "go" },
 };
 
 const clangLink = (extra) => ({
@@ -77,5 +80,15 @@ export const languages = [
   {
     id: "php-cgi", label: "PHP", short: "PHP", version: "8.2.0", syntax: "php", fileName: "main.php",
     run: { asset: "php-wasm", binaryName: "php", args: ["-q", "{entry}"] },
+  },
+  {
+    id: "lua", label: "Lua", short: "Lua", version: "5.4.9", syntax: "lua", fileName: "main.lua",
+    license: "MIT", homepage: "https://www.lua.org/",
+    run: { asset: "lua-wasm", binaryName: "lua", args: ["{entry}"] },
+  },
+  {
+    id: "go", label: "Go", short: "Go", version: "Yaegi 0.16.1", syntax: "go", fileName: "main.go",
+    license: "Apache-2.0", homepage: "https://github.com/traefik/yaegi",
+    run: { asset: "go-wasm", binaryName: "yaegi", args: ["{entry}"] },
   },
 ];
