@@ -182,9 +182,14 @@ try {
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-ruby"]');
   await openLearn(page);
+  const rubyTitle = await page.textContent('[data-testid="docs-title"]');
+  check(rubyTitle?.includes("Ruby 101") && !(await page.$('[data-testid="docs-soon"]')), `ruby book opens ${rubyTitle}`);
+  await page.click('[data-testid="docs-close"]');
+  await page.click('[data-testid="lang-sqlite"]');
+  await openLearn(page);
   await page.waitForSelector('[data-testid="docs-soon"]');
   const soon = await page.textContent('[data-testid="docs-title"]');
-  check(soon?.includes("Ruby 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "ruby coming soon");
+  check(soon?.includes("SQL 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "sql coming soon");
   await page.click('[data-testid="docs-close"]');
 
   await page.click('[data-testid="lang-python"]');
