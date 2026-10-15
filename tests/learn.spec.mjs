@@ -193,13 +193,18 @@ try {
   await page.click('[data-testid="lang-clang"]');
   await openLearn(page);
   const cTitle = await page.textContent('[data-testid="docs-title"]');
-  check(cTitle?.includes("C 101") && !(await page.$('[data-testid="docs-soon"]')), `c book opens ${cTitle}`);
+  check(cTitle?.includes("C 101") && !cTitle?.includes("C++") && !(await page.$('[data-testid="docs-soon"]')), `c book opens ${cTitle}`);
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-clangpp"]');
   await openLearn(page);
+  const cppTitle = await page.textContent('[data-testid="docs-title"]');
+  check(cppTitle?.includes("C++ 101") && !(await page.$('[data-testid="docs-soon"]')), `cpp book opens ${cppTitle}`);
+  await page.click('[data-testid="docs-close"]');
+  await page.click('[data-testid="lang-php-cgi"]');
+  await openLearn(page);
   await page.waitForSelector('[data-testid="docs-soon"]');
   const soon = await page.textContent('[data-testid="docs-title"]');
-  check(soon?.includes("C++ 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "cpp coming soon");
+  check(soon?.includes("PHP 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "php coming soon");
   await page.click('[data-testid="docs-close"]');
 
   await page.click('[data-testid="lang-python"]');
