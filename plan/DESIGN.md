@@ -119,7 +119,7 @@ thirdparty/runno/
 ### 3.1 侧栏展开（默认）
 ```
 ┌──────────────────┬───────────────────────────────────────────────────────────┐
-│ Languages        │ main.py                        [▶ Run] [■ Stop] [⟲ Reset] │
+│ SimpleCode       │ main.py                        [▶ Run] [■ Stop] [⟲ Reset] │
 │──────────────────│───────────────────────────────────────────────────────────│
 │▌● Python  ✓ 3.11 │  1  name = input("Name? ")                                │
 │   Ruby     ↓     │  2  print(f"Hello, {name}!")                              │
@@ -149,16 +149,17 @@ thirdparty/runno/
 │ C++│══════════════════════════════════════════════════════════════════════│
 │ PHP│ Terminal ● exit 0                                     0.12s  [⌫] [v] │
 │    │ hello                                                                │
+│ 🗑 │                                                                      │
 │ ☾  │                                                                      │
 │ [»]│                                                                      │
 └────┴──────────────────────────────────────────────────────────────────────┘
-  折叠后为左侧 56px 仅图标栏（28px 语言图标方块，无文字；Tooltip 在右侧弹出显示全名）；底部 [»] 向右展开
+  折叠后为左侧 56px 仅图标栏（28px 语言图标方块，无文字；Tooltip 在右侧弹出显示全名）；底部为清除缓存 / 主题 / [»] 展开，三枚居中图标按钮
 ```
 
 ### 3.2b 终端折叠
 ```
 ┌──────────────────┬───────────────────────────────────────────────────────────┐
-│ Languages        │ main.py                                [▶ Run] [⟲]        │
+│ SimpleCode       │ main.py                                [▶ Run] [⟲]        │
 │ [Py] Python    ✓ │───────────────────────────────────────────────────────────│
 │ ...              │  1  print("hello")                                        │
 │                  │                     （编辑器占满剩余高度）                  │
@@ -170,7 +171,7 @@ thirdparty/runno/
 ### 3.3 加载状态（首次点击 C++）
 ```
 ┌──────────────────┬───────────────────────────────────────────────────────────┐
-│ Languages        │ main.cpp                    [▶ Run(禁用)] [✕ 取消下载]     │
+│ SimpleCode       │ main.cpp                    [▶ Run(禁用)] [✕ 取消下载]     │
 │   Python   ✓     │───────────────────────────────────────────────────────────│
 │▌● C++   ◌ 38%    │  1  #include <iostream>     (编辑器可编辑，Run 禁用)        │
 │   ▓▓▓▓▓░░░░░░░   │  2  int main(){ std::cout << "hi\n"; }                    │
@@ -455,7 +456,7 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 |---|---|---|---|
 | `--background` | `0 0% 100%` | `0 0% 4%` | 页面/编辑器底 |
 | `--foreground` | `0 0% 4%` | `0 0% 98%` | 正文 |
-| `--muted` | `0 0% 97%` | `0 0% 7%` | 侧栏底 |
+| `--muted` | `0 0% 97%` | `0 0% 7%` | 弱化底（侧栏不用此色，见 11.4） |
 | `--muted-foreground` | `0 0% 45%` | `0 0% 64%` | 次要文字 |
 | `--border` / `--input` | `0 0% 89%` | `0 0% 15%` | 分割线 |
 | `--primary` | `0 0% 9%` | `0 0% 98%` | Run 按钮、选中图标底（反色） |
@@ -468,11 +469,11 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 ### 11.3 字体与排版
 - UI：`Inter` → `system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif`（当前未打包 Inter，使用系统字体）。
 - 代码/终端：`JetBrains Mono` → `ui-monospace, SFMono-Regular, Menlo, monospace`。
-- 字号：UI 正文 14px；侧栏标题 `text-xs uppercase tracking-wider text-muted-foreground`；编辑器 14px / 行高 22px；终端 13px / 行高 1.4。
+- 字号：UI 正文 14px；侧栏品牌标题「SimpleCode」为 `text-sm font-semibold tracking-tight text-foreground`（不再使用全大写小标 “Languages”）；编辑器 14px / 行高 22px；终端 13px / 行高 1.4。
 
 ### 11.4 间距与尺寸
 - 工具栏高 `h-10`(40px)，`px-3`。**Run 按钮为紧凑尺寸 `size="xs"`（h-7 / 28px，px-2.5，text-xs，图标 14px）**；Stop、取消下载同为 xs；重置为 28px 图标按钮。
-- **左侧侧栏**：展开 240px（可拖 200–320），折叠为 56px 仅图标栏（reka-ui `SplitterPanel sizeUnit="px"`）。条目高 40px；图标 28px。
+- **左侧侧栏**：背景为 `--background`（浅色纯白 `0 0% 100%`，深色近黑 `0 0% 4%`），与主区同色，仅 `border-r` 分隔；禁止彩色强调。展开 240px（可拖 200–320），折叠为 56px 仅图标栏（reka-ui `SplitterPanel sizeUnit="px"`）。头部高 40px，底部分割线与右侧工具栏对齐。条目高 40px、`rounded-md`、左右内边距 8px（导航再垫 8px）；图标 28px。
 - **终端面板**：默认高度约视口 28%（`max(140px, 0.28 × innerHeight)`，px 单位），最小 96px；**可折叠**，折叠后仅保留 32px 标题栏；折叠状态存 `localStorage("simplecode:terminal-collapsed")`；开始运行时若已折叠会自动展开以显示输出。
 - 分割条可视 1px，可点击热区 7px，hover `bg-primary/20`。
 
@@ -489,8 +490,9 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 | error | 虚线前景色边框 + 右上角实心小点 |
 | selected | 反色：`bg-primary text-primary-foreground` |
 
-**LanguageItem**：展开时 = 图标 + 名称 + 行尾状态（`Download`+大小 / `Loader2`+百分比+细进度条 / `Check` / `AlertCircle 重试`），选中行 `bg-accent font-medium`。**折叠时只显示图标**（无文字、徽标、进度文字），详细信息通过右侧 Tooltip 显示。
-**侧栏底部**：展开时 = 缓存占用 + 清除；一行“主题按钮 + 折叠按钮”。折叠时纵向排列 主题图标 / 展开图标。**折叠/展开按钮固定在侧栏底部**（展开态 `ChevronsLeft`，折叠态 `ChevronsRight`），快捷键 `⌘/Ctrl+B`，状态持久化 localStorage。侧栏 `border-r` 分隔主区。
+**侧栏头部**：展开时为品牌标记（与 favicon 相同的代码括号）+ 标题「SimpleCode」。折叠时标记居中，标题保留给读屏（`sr-only`），Tooltip 为 “SimpleCode”。
+**LanguageItem**：展开时 = 圆角行（固定 `h-10`）+ 图标 + 名称 + 行尾状态（`Download`+大小 / `Loader2`+百分比 / `Check` / `AlertCircle 重试`），下载进度是行底 2px 细条，不撑高行。选中行 `bg-accent font-medium`，图标反色。**折叠时只显示图标**（40px 圆角点击区，居中；无文字、徽标、进度文字），详细信息通过右侧 Tooltip 显示。
+**侧栏底部**：展开时两行、左缘与语言图标对齐、右缘对齐——第一行缓存（`HardDrive` + “缓存” + 体积）与「清除」；第二行主题（图标 + “跟随系统 / 浅色 / 深色”）与折叠按钮。折叠为图标轨时，底部只有三枚 **32×32、居中、纵向堆叠** 的图标按钮（清除缓存、主题、展开），无文字、不溢出、不截断；说明由右侧 Tooltip 给出。窄宽度下 CSS 容器查询会强制隐藏 `.sidebar-expanded-only` 文案，避免折叠动画或宽度不同步时把 “跟随系统 / 清除” 挤成截断文字。**折叠/展开按钮固定在侧栏底部**（展开态 `ChevronsLeft`，折叠态 `ChevronsRight`），快捷键 `⌘/Ctrl+B`，状态持久化 localStorage。侧栏 `border-r` 分隔主区。
 **Run 按钮**：default（primary 反色，xs 尺寸）；disabled（语言下载中）；loading（`Loader2` + “Running…/Compiling…”）。**Stop**：ghost xs，仅运行中显示。
 **TerminalHeader**（32px）：“Terminal” + 状态点 + 文本 + 耗时 + 清空 + **折叠/展开按钮**（展开态 `ChevronDown`，折叠态 `ChevronUp`；双击标题栏同样切换）。状态点（灰阶）：idle 深灰、preparing/compile/link 中灰脉冲、run 白色脉冲、done 白色实心、failed/crash 空心环、terminated 中灰。
 
@@ -619,3 +621,4 @@ npm test                # vitest；npm run test:e2e → playwright
 - 冒烟测试 `tests/smoke.mjs`（Playwright）：7 种语言 hello world 全部通过，Python / C 含 stdin 交互。
 - v0.2（2026-10-15）：全应用黑白单色（Monaco 除外）；折叠侧栏仅显示语言图标；折叠/展开按钮移至侧栏底部；Run 按钮改为 xs（h-7）；终端默认 ~28% 高度并可折叠为标题栏。
 - v0.3（2026-10-15）：字体本地打包（`@fontsource/inter`、`@fontsource/jetbrains-mono`，latin 子集）；新增 `@font-face "SimpleCode CJK"`（`local()` 系统 CJK 字体 + `size-adjust: 120%`），使 CJK 字形正好占 xterm 两个单元格（`|abcdefghij|` 与 `|一二三四五|` 等宽）；xterm 在字体加载后重新测量。stderr 改为非粗体暗灰（`38;5;247`），且只对完整行着色——未以换行结束的 stderr 片段（如 CPython 在 TTY 下写到 stderr 的 `input()` 提示）40ms 内无后续则按普通文本输出。
+- v0.4（2026-10-15）：侧栏底改为 `--background`（浅色纯白、深色近黑，无强调色）。标题由 “Languages” 改为品牌名 “SimpleCode”。展开态为圆角等高语言行 + 对齐的缓存/主题/折叠页脚；折叠态底部为居中的纯图标按钮（清除缓存、主题、展开）与右侧 Tooltip。

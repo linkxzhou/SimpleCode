@@ -36,6 +36,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey, true));
     <!-- Left: language sidebar (order 1) -->
     <ResizablePanel
       ref="sidebar"
+      v-slot="{ isCollapsed }"
       :order="1"
       size-unit="px"
       :default-size="240"
@@ -43,11 +44,11 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey, true));
       :max-size="320"
       collapsible
       :collapsed-size="56"
-      class="border-r border-border bg-muted"
+      class="overflow-hidden border-r border-border bg-background"
       @collapse="setCollapsed(true)"
       @expand="setCollapsed(false)"
     >
-      <LanguageSidebar :collapsed="collapsed" @toggle="toggle" />
+      <LanguageSidebar :collapsed="isCollapsed" @toggle="toggle" />
     </ResizablePanel>
     <ResizableHandle />
     <!-- Right: editor + terminal (order 2) -->
