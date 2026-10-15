@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { RunSession, type Phase } from "@/core/runner";
 import { terminal } from "@/core/terminal";
+import { TranspileError, transpileTypeScript } from "@/core/transpile";
 import { useLanguageStore } from "./language";
 import { useEditorStore } from "./editor";
 
@@ -34,15 +35,30 @@ export const useRunStore = defineStore("run", () => {
     const lang = langs.selected;
     if (!lang || running.value) return;
     status.value = "preparing";
+    message.value = undefined;
+    exitCode.value = undefined;
+    let code = editor.get(editor.activeBuffer(lang.id));
+    if (lang.id === "quickjs" && editor.dialect === "ts") {
+      try {
+        code = await transpileTypeScript(code);
+      } catch (e) {
+        stop();
+        terminal.clear();
+        elapsed.value = 0;
+        status.value = "failed";
+        message.value = "转译失败";
+        const detail = e instanceof TranspileError ? e.detail : e instanceof Error ? e.message : String(e);
+        terminal.system("TypeScript 转译失败", "31");
+        terminal.write(detail.endsWith("\n") ? detail : `${detail}\n`);
+        return;
+      }
+    }
     if (!(await langs.ensure(lang.id))) {
       status.value = "idle";
       return;
     }
     stop();
     terminal.clear();
-    const code = editor.get(lang.id);
-    exitCode.value = undefined;
-    message.value = undefined;
     status.value = "preparing";
     const s = new RunSession(lang, {
       stdout: (t) => terminal.write(t),

@@ -15,7 +15,7 @@
 | 3 | C++ | 同上 | WASI | 同上 | 同上 | ✅ 已支持 |
 | 4 | Java | TeaVM-javac（javac 21 + TeaVM，浏览器内编译为 Wasm） | JS/Wasm（非 WASI） | ⚠️ 约 10–30 MB | Apache-2.0（TeaVM）+ GPLv2+CPE（javac） | 🟡 可行（需适配） |
 | 5 | C# | Roslyn + .NET WebAssembly（Mono）运行时（Blazor 式） | .NET wasm（非 WASI） | ⚠️ 约 20–40 MB | MIT | 🟡 可行（工作量大） |
-| 6 | JavaScript | QuickJS（wasmedge，已集成） | WASI | 3.8 MB | MIT / Apache-2.0 | ✅ 已支持 |
+| 6 | JavaScript / TypeScript | QuickJS（wasmedge）+ 浏览器内 Sucrase 去类型 | WASI + JS | 3.8 MB（运行时） | MIT / Apache-2.0；Sucrase MIT | ✅ 已支持 |
 | 7 | Visual Basic | Roslyn VB 编译器 + .NET wasm（与 C# 共用） | .NET wasm | 与 C# 共享 +⚠️数 MB | MIT | 🟡 可行（随 C#） |
 | 8 | R | webR | Emscripten | ⚠️ 约 20–40 MB 起 | GPL-2.0+（R）⚠️ | 🟡 可行（需适配） |
 | 9 | SQL | SQLite 3.26（已集成） | WASI | 3.4 MB | Public Domain | ✅ 已支持 |
@@ -287,3 +287,8 @@ Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。�
   - 无网络（`sock_*` 为 ENOSYS）。
   - 单文件 35 MB，超过部分静态托管的 25 MiB 上限（与 clang.wasm 同类问题）。
 - 不采用 `GOOS=js`：那份产物依赖 `wasm_exec.js`，不能作为 `WASIWorkerHost` 的命令模块。Yaegi v0.16.1 的标准库符号与 Go 1.22 可以一起编译；更新 Go 大版本前需要重测符号是否仍能编译。
+
+### 8.3 JS/TS（QuickJS + Sucrase）
+- 运行时 id 仍是 `quickjs`，二进制仍是 `wasmedge_quickjs.wasm`。侧栏标签为 **JS/TS**，图标缩写 `JS`，Tooltip 带版本名 QuickJS。
+- 工具栏在 JS / TS 间切换（`simplecode:quickjs:dialect`）。两份草稿：`simplecode:code:quickjs:js` 与 `simplecode:code:quickjs:ts`。Monaco 语言分别为 `javascript` 与 `typescript`（仅 Monarch）。
+- 运行 TS 时懒加载 Sucrase（`transforms: ["typescript"]`，`disableESTransforms: true`），只去掉类型再交给 QuickJS。语法错误显示在终端，状态为失败，不启动 wasm。不做完整类型检查。

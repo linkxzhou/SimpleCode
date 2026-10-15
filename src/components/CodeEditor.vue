@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { monaco } from "@/core/monaco";
 import { useLanguageStore } from "@/stores/language";
-import { useEditorStore } from "@/stores/editor";
+import { syntaxFor, useEditorStore } from "@/stores/editor";
 import { useRunStore } from "@/stores/run";
 import { useTheme } from "@/composables/useTheme";
 
@@ -47,19 +47,23 @@ onMounted(() => {
 });
 
 watch(
-  () => langs.selected,
-  (l) => {
+  () => [langs.selected?.id, editorStore.dialect] as const,
+  () => {
+    const l = langs.selected;
     if (!l || !editor) return;
-    editor.setModel(modelFor(l.id, l.syntax));
+    editor.setModel(modelFor(editorStore.activeBuffer(l.id), syntaxFor(l.id, l.syntax, editorStore.dialect)));
   },
   { immediate: true, flush: "post" },
 );
 // external resets (editor store) -> model
 watch(
-  () => (langs.selected ? editorStore.codes[langs.selected.id] : undefined),
+  () => {
+    const l = langs.selected;
+    return l ? editorStore.codes[editorStore.activeBuffer(l.id)] : undefined;
+  },
   (code) => {
     const l = langs.selected;
-    const m = l && models.get(l.id);
+    const m = l && models.get(editorStore.activeBuffer(l.id));
     if (m && code !== undefined && m.getValue() !== code) m.setValue(code);
   },
 );

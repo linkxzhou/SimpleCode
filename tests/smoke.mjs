@@ -10,7 +10,23 @@ const only = process.argv.slice(2);
 
 const cases = [
   { id: "python", code: 'name = input()\nprint(f"Hello, {name} from Python")', stdin: "Ada", expect: "Hello, Ada from Python" },
-  { id: "quickjs", code: 'console.log("Hello from QuickJS", 6 * 7)', expect: "Hello from QuickJS 42" },
+  { id: "quickjs", name: "js", dialect: "js", code: 'console.log("Hello from JS", 6 * 7)', expect: "Hello from JS 42" },
+  {
+    id: "quickjs",
+    name: "ts",
+    dialect: "ts",
+    code: 'interface Result { label: string; value: number }\nconst row: Result = { label: "TS", value: 6 * 7 };\nconsole.log("Hello from", row.label, row.value);\n',
+    expect: "Hello from TS 42",
+    screenshot: "ts-run.png",
+  },
+  {
+    id: "quickjs",
+    name: "ts-error",
+    dialect: "ts",
+    code: "const n: number = ;\n",
+    expect: ["转译失败", "Unexpected token"],
+    statuses: ["failed"],
+  },
   { id: "clang", code: '#include <stdio.h>\nint main(void){ int n; scanf("%d", &n); printf("Hello from C %d\\n", n * 2); return 0; }', stdin: "21", expect: "Hello from C 42" },
   { id: "clangpp", code: '#include <iostream>\nint main(){ std::cout << "Hello from C++ " << 6 * 7 << std::endl; }', expect: "Hello from C++ 42" },
   { id: "ruby", code: 'puts "Hello from Ruby #{6 * 7}"', expect: "Hello from Ruby 42" },
@@ -79,8 +95,34 @@ try {
       await page.click(`[data-testid="lang-${c.id}"]`);
       await page.waitForSelector(`[data-testid="lang-${c.id}"]:is([data-status="ready"],[data-status="error"])`, { timeout: 180_000 });
       if ((await page.getAttribute(`[data-testid="lang-${c.id}"]`, "data-status")) !== "ready") throw new Error("download failed");
+      if (c.dialect) {
+        await page.click(`[data-testid="dialect-${c.dialect}"]`);
+        const file = c.dialect === "ts" ? "main.ts" : "main.js";
+        await page.waitForFunction((name) => document.querySelector('[data-testid="filename"]')?.textContent === name, file);
+      }
       const tl = Date.now();
       await page.evaluate((code) => globalThis.__simplecodeEditor.setValue(code), c.code);
+      if (c.dialect) {
+        const mode = await page.evaluate(() => globalThis.__simplecodeEditor.getModel().getLanguageId());
+        const want = c.dialect === "ts" ? "typescript" : "javascript";
+        if (mode !== want) throw new Error(`monaco mode ${mode}, want ${want}`);
+      }
+      if (c.name === "ts") {
+        await page.click('[data-testid="dialect-js"]');
+        await page.waitForFunction(() => document.querySelector('[data-testid="filename"]')?.textContent === "main.js");
+        const jsState = await page.evaluate(() => ({
+          value: globalThis.__simplecodeEditor.getValue(),
+          mode: globalThis.__simplecodeEditor.getModel().getLanguageId(),
+        }));
+        if (jsState.mode !== "javascript" || jsState.value.includes("interface Result")) throw new Error("JS buffer was overwritten by TS");
+        await page.click('[data-testid="dialect-ts"]');
+        await page.waitForFunction(() => document.querySelector('[data-testid="filename"]')?.textContent === "main.ts");
+        const tsState = await page.evaluate(() => ({
+          value: globalThis.__simplecodeEditor.getValue(),
+          mode: globalThis.__simplecodeEditor.getModel().getLanguageId(),
+        }));
+        if (tsState.mode !== "typescript" || !tsState.value.includes("interface Result")) throw new Error("TS buffer did not keep its draft");
+      }
       await page.click('[data-testid="run"]');
       if (c.stdin) {
         await page.waitForSelector('[data-testid="run-status"][data-status="run"]', { timeout: 60_000 });
@@ -96,9 +138,12 @@ try {
       );
       const status = await page.getAttribute('[data-testid="run-status"]', "data-status");
       const out = await page.evaluate(() => globalThis.__simplecodeTerminal.transcript);
-      const ok = status === "done" && out.includes(c.expect);
+      const expects = Array.isArray(c.expect) ? c.expect : [c.expect];
+      const statuses = c.statuses ?? ["done"];
+      const ok = statuses.includes(status) && expects.every((part) => out.includes(part));
       if (!ok) failed++;
-      console.log(`${ok ? "✓" : "✗"} ${c.id.padEnd(8)} load ${((tl - t0) / 1000).toFixed(1)}s run ${((Date.now() - tl) / 1000).toFixed(1)}s status=${status} out=${JSON.stringify(out.replace(/\x1b\[[0-9;]*m/g, "").trim().slice(-160))}`);
+      const label = (c.name ? `${c.id}/${c.name}` : c.id).padEnd(16);
+      console.log(`${ok ? "✓" : "✗"} ${label} load ${((tl - t0) / 1000).toFixed(1)}s run ${((Date.now() - tl) / 1000).toFixed(1)}s status=${status} out=${JSON.stringify(out.replace(/\x1b\[[0-9;]*m/g, "").trim().slice(-160))}`);
       if (c.screenshot) {
         const paths = [`${shotDir}/${c.screenshot}`, `${artifactDir}/${c.screenshot}`];
         for (const path of paths) {
@@ -113,7 +158,8 @@ try {
     } catch (e) {
       failed++;
       const out = await page.evaluate(() => globalThis.__simplecodeTerminal?.transcript).catch(() => "");
-      console.log(`✗ ${c.id.padEnd(8)} ${e.message.split("\n")[0]} out=${JSON.stringify(out?.slice(-200))}`);
+      const label = (c.name ? `${c.id}/${c.name}` : c.id).padEnd(16);
+      console.log(`✗ ${label} ${e.message.split("\n")[0]} out=${JSON.stringify(out?.slice(-200))}`);
     }
   }
   // reload: languages should come from Cache API
@@ -121,6 +167,15 @@ try {
   console.log("cached:", keys.join(" "));
   await page.reload();
   await page.waitForSelector('[data-testid="lang-python"]');
+  if (cases.some((c) => c.dialect === "ts")) {
+    await page.click('[data-testid="lang-quickjs"]');
+    await page.waitForFunction(() => document.querySelector('[data-testid="filename"]')?.textContent === "main.ts");
+    const pressed = await page.getAttribute('[data-testid="dialect-ts"]', "aria-pressed");
+    if (pressed !== "true") {
+      failed++;
+      console.log("✗ dialect was not remembered after reload");
+    } else console.log("dialect remembered: ts");
+  }
   await page.waitForTimeout(1500);
   const statuses = await page.$$eval("[data-testid^=lang-]", (els) => els.map((e) => `${e.dataset.testid.slice(5)}=${e.dataset.status}`));
   console.log("after reload:", statuses.join(" "));
