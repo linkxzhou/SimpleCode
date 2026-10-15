@@ -4,17 +4,17 @@
 
 ## 快速开始
 
-语言运行时（`.wasm` / `.tar.gz`，约 158 MB）**不随仓库提交**。`./build.sh vendor` 从 Runno 复制已有运行时，并按 `scripts/sources.lock.json` 为当前系统下载工具链、编译 Lua、Go 与 Shell（Linux 与 macOS 的 x86_64 / arm64，macOS 自带 bash 3.2 即可）：
+语言运行时（`.wasm` / `.tar.gz`，约 158 MB）和 `wasm/manifest.json` **都不随仓库提交**。`manifest.json` 在 `vendor`、`dev` 和 `build` 时按当前目录里的文件重算 `size` / `sha256`。Apple Silicon 上编出的 Lua 与 Linux 参考体积可能差几百字节；运行时只对照这份刚生成的清单，所以 `git pull` 不会再把另一台机器的摘要盖回来。`./build.sh vendor` 从 Runno 复制已有运行时，并按 `scripts/sources.lock.json` 为当前系统下载工具链、编译 Lua、Go 与 Shell（Linux 与 macOS 的 x86_64 / arm64，macOS 自带 bash 3.2 即可）：
 
 ```bash
 git clone https://github.com/linkxzhou/SimpleCode && cd SimpleCode
 git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提供 langs/*.wasm
 ./build.sh install   # yarn install
-./build.sh vendor    # Runno langs + 构建 Lua/Go/Shell → wasm/ + manifest.json
+./build.sh vendor    # Runno langs + 构建 Lua/Go/Shell → wasm/，并按磁盘上的文件写 manifest.json
 ./build.sh dev       # http://localhost:5173
 ./build.sh build     # dist/
 ./build.sh preview   # http://localhost:4173（带 COOP/COEP）
-./build.sh test      # 无头冒烟测试（9 种运行时；JS 与 TS 各一例）
+./build.sh test      # 无头冒烟测试（10 种运行时；JS 与 TS 各一例）
 ```
 
 部署时服务器必须返回 `Cross-Origin-Opener-Policy: same-origin` 与 `Cross-Origin-Embedder-Policy: require-corp`，并以 `application/wasm` 提供 `.wasm`。设计文档见 [plan/DESIGN.md](plan/DESIGN.md)，语言方案见 [plan/LANGUAGES.md](plan/LANGUAGES.md)。

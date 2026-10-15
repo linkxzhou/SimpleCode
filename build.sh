@@ -11,7 +11,24 @@ info() { echo "${c_bold}▸ $*${c_off}"; }
 die() { echo "${c_red}✗ $*${c_off}" >&2; exit 1; }
 
 need_deps() { [ -d node_modules ] || cmd_install; }
-need_wasm() { [ -f wasm/manifest.json ] || cmd_vendor; }
+# Fingerprint whatever binaries are on disk. Missing files (exit 2) trigger a
+# full vendor; a bad file fails instead of being rebuilt over a warning.
+need_wasm() {
+  if node scripts/write-manifest.mjs; then
+    return 0
+  fi
+  local status=$?
+  if [ "$status" -eq 2 ]; then
+    cmd_vendor
+    return 0
+  fi
+  exit "$status"
+}
+sync_dist_wasm() {
+  [ -d dist ] || return 0
+  rm -rf dist/wasm
+  cp -RL wasm dist/wasm
+}
 
 cmd_install() {
   command -v yarn >/dev/null || die "yarn not found (try: corepack enable)"
@@ -42,6 +59,9 @@ cmd_build() {
 cmd_preview() {
   need_deps
   [ -f dist/index.html ] || cmd_build
+  need_wasm
+  info "Syncing wasm/ into dist/wasm"
+  sync_dist_wasm
   info "Serving dist/ with COOP/COEP headers"
   exec yarn vite preview --host "$HOST" --port "${PORT:-4173}" --strictPort "$@"
 }
@@ -58,7 +78,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/manifest-refresh.test.mjs
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -96,8 +116,9 @@ Usage: ./build.sh <command> [args]
   install            Install dependencies with yarn
   vendor [--link]    Copy wasm runtimes from thirdparty/runno/langs into wasm/,
                      build Lua and Go (scripts/builders; Linux or macOS, x86_64 or arm64), and
-                     write wasm/manifest.json (--link: symlink Runno files,
-                     --source <dir>: alternative Runno directory)
+                     write wasm/manifest.json from those files (--link: symlink Runno files,
+                     --source <dir>: alternative Runno directory).
+                     manifest.json is generated and not committed.
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)
   preview | run      Serve dist/ with COOP/COEP headers (http://localhost:4173)

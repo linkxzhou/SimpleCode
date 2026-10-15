@@ -309,7 +309,7 @@ Lua、Go 与 Shell 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适�
 本地编译失败，或系统不在上表中时，下载 `prebuiltUrl` 的 wasm，sha256 必须等于 `outputSha256`。默认地址是 GitHub Release `wasi-runtimes-1` 的 `lua-5.4.9.wasm` 与 `yaegi-0.16.1.wasm`（需要发布后备用下载才会成功）：
 
 ```bash
-gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wasm/yaegi-0.16.1.wasm
+gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wasm/yaegi-0.16.1.wasm wasm/wasi-sh.wasm
 ```
 
 临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`、`SIMPLECODE_SHELL_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
@@ -330,6 +330,16 @@ gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wa
 
 - `fork`、`exec`、后台 `&`、真正的 OS 管道、`cd`（没有 `chdir`）、命令替换 `$(…)`、算术 `$((…))`、子 shell、通配、here-doc、函数、`source`。
 - 管道右边如果是外部程序，同样是 127；左边的输出不会交给宿主去启动另一个 wasm。
+
+### 8.5 清单跟磁盘上的文件走
+
+`wasm/manifest.json` 不入库。`.gitignore` 忽略整个 `wasm/`。`scripts/write-manifest.mjs` 读取已经放在 `wasm/` 里的每个文件，写入它的真实 `size` 和 `sha256`。资产名和语言列表来自 `scripts/languages.config.mjs`，所以 Shell 的 `wasi-sh.wasm` 和 Lua、Go 一样写进这份清单。下面三处都会调用它：
+
+- `./build.sh vendor` 在复制或编译结束之后。
+- `./build.sh dev` 与 `./build.sh build` 在启动 Vite 之前。缺文件时才去 vendor，文件在但清单过期时只重写清单。
+- Vite 插件在 dev server 启动和 `buildStart` 时再写一次，然后把 `wasm/` 拷进 `dist/wasm`。`./build.sh preview` 会再同步一次，避免预览一份旧的 `dist/wasm`。
+
+下载时的大小检查仍对照清单里的 `size`（`src/core/wasmLoader.ts`）。清单和被提供的文件来自同一目录，所以 Apple Silicon 上 Lua 从 720144 字节变成 720592 字节不会再报「大小不匹配」。不要把清单提交回来，也不要用 `git checkout -- wasm/manifest.json` 恢复某一台机器的摘要。`tests/manifest-refresh.test.mjs` 用一份故意写错的清单确认重写后的 `size` 等于文件字节数，并确认 `wasm/manifest.json` 不在 git 索引里。
 
 ---
 

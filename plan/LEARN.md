@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 101」教学系统设计（LEARN）
 
-> 状态：§16 已完成。抽屉从工具栏下沿开始，代码块行数与源码一致，文档与工具栏共用同一个 Run 按钮。Python、JavaScript/TypeScript、Go 每一章已按 §16.6 加厚。Ruby、SQL、C、C++、PHP、Lua 仍 **待完成**。详见 §15。
+> 状态：§16 与 §17 已完成。Python、JavaScript/TypeScript、Go、Ruby、SQL、C、C++、PHP、Lua 已交付。详见 §15。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -10,6 +10,7 @@
 - **§14 [代码块运行按钮设计](#14-代码块运行按钮设计)** —— 需求（5）：每个代码块的「复制 / 运行」按钮，复制到主编辑器并运行（状态、行为、边界、时序图、API、语法、无障碍、测试）
 - **§15 [完成情况](#15-完成情况)** —— 各里程碑与语言的交付状态
 - **§16 [优化：工具栏、行距、Run 按钮与加厚正文](#16-优化工具栏行距run-按钮与加厚正文)** —— 本轮问题、根因、布局与章节模板、验收
+- **§17 [其余六本书](#17-其余六本书)** —— Ruby、SQL、C、C++、PHP、Lua 的运行时限制、章节目录、篇幅与验收
 
 ---
 
@@ -939,8 +940,8 @@ print(f"你好，{name}！")
 | L0 文档流水线 | ✅ | `scripts/docs/render.ts` + `scripts/vite-plugin-docs.ts` 校验 frontmatter 并预渲染。单色 Shiki 主题。schema 错误会使 `./build.sh build` 失败。 |
 | L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。抽屉 `top` 为 `--editor-toolbar-h`（2.5rem），不盖住工具栏。 |
 | L2 从文档运行 | ✅ | 切换语言、按需下载 wasm、备份与撤销、stdin。TypeScript 块复用 `src/core/transpile.ts` 的 Sucrase，编辑器写入带 `// 由 TypeScript 转译（原始代码见文档）` 的 JavaScript，方言切到 JS。 |
-| L3 内容第一批 | ⚠️ | Python、Go 已交付。Lua、SQL **待完成**。 |
-| L4 内容第二批 | ⚠️ | JavaScript/TypeScript 已交付。C、C++、Ruby、PHP **待完成**。 |
+| L3 内容第一批 | ✅ | Python、Go、Lua、SQL 已交付。 |
+| L4 内容第二批 | ✅ | JavaScript/TypeScript、C、C++、Ruby、PHP 已交付。 |
 | L5 搜索、进度、无障碍、截图 | ⚠️ | MiniSearch、阅读进度和抽屉快捷键已接上。抽屉浅色/深色截图像素检查 100% 灰阶。未跑 Lighthouse。 |
 
 ### 语言
@@ -950,20 +951,20 @@ print(f"你好，{name}！")
 | Python | ✅ | 概览 + 13 章 |
 | JavaScript / TypeScript | ✅ | 概览 + 12 章；第 11–12 章是 `ts` 块 |
 | Go | ✅ | 概览 + 12 章 |
-| Ruby | 待完成 | 无 Markdown。抽屉显示「即将推出」 |
-| SQL | 待完成 | 同上 |
-| C | 待完成 | 同上 |
-| C++ | 待完成 | 同上 |
-| PHP | 待完成 | 同上 |
-| Lua | 待完成 | 同上 |
+| Ruby | ✅ | 概览 + 11 章 |
+| SQL | ✅ | 概览 + 11 章 |
+| C | ✅ | 概览 + 11 章 |
+| C++ | ✅ | 概览 + 11 章。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
+| PHP | ✅ | 概览 + 11 章。读不到标准输入，行处理用字符串 |
+| Lua | ✅ | 概览 + 11 章 |
 
-九种语言的按钮和运行时映射都还在。未交付的书没有 `docs/<book>/`，所以不会打开空白页。补上概览和至少 10 章后，构建会把该书纳入索引；`SHIPPED_BOOKS` 只决定目录缺失时构建是否失败。
+九种语言都有概览和至少 10 章，`SHIPPED_BOOKS` 含全部九本。缺目录时构建才会失败。
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 40 chapters, 275 runnable blocks`。
-- `./build.sh test`：`tests/docs-unit.test.ts` 与 `tests/docs-length.test.ts` 共 46 项、`check-mono`、各语言 hello-world、`docs-smoke` 274 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
-- 截图：`learn-drawer-light.png`、`learn-drawer-dark.png`（整页，工具栏可见）、`learn-chapter.png`、`learn-after-run.png`、`learn-code-lines.png`、`learn-run-buttons.png`。抽屉元素浅色/深色灰阶 100%。Go 的 channel 示例渲染 9 行、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。
+- `./build.sh build`：vue-tsc 通过，`docs: 112 chapters, 629 runnable blocks`。
+- `./build.sh test`：`tests/docs-length.test.ts` 112 项、`tests/docs-unit.test.ts` 6 项、`tests/manifest-refresh.test.mjs` 5 项，合计 123 项全部通过；`check-mono`、各语言 hello-world（含 Lua）、`docs-smoke` 628 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
+- 截图：`learn-drawer-light.png`、`learn-drawer-dark.png`（整页，工具栏可见）、`learn-chapter.png`、`learn-after-run.png`、`learn-code-lines.png`、`learn-run-buttons.png`、`learn-ruby-chapter.png`、`learn-sql-chapter.png`、`learn-lua-chapter.png`、`learn-lua-run.png`。抽屉元素浅色/深色灰阶 100%。Go 的 channel 示例渲染 9 行、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Lua 第一章运行输出包含期望的 `Ada`。
 
 ### 与计划的偏差
 
@@ -983,7 +984,7 @@ print(f"你好，{name}！")
 
 ## 16. 优化：工具栏、行距、Run 按钮与加厚正文
 
-本节先作为计划单独提交，随后按 16.7 实现。验收已在 16.8 勾选。Ruby、SQL、C、C++、PHP、Lua 仍然 **待完成**，本轮不加它们的正文。
+本节先作为计划单独提交，随后按 16.7 实现。验收已在 16.8 勾选。Ruby、SQL、C、C++、PHP、Lua 的正文在 §17，现已交付。
 
 ### 16.1 问题
 
@@ -1136,3 +1137,80 @@ print(f"你好，{name}！")
 - `learn-run-buttons.png`：文档 Run 和工具栏 Run 同时在画面里。
 - 保留 `learn-chapter.png`、`learn-after-run.png`。
 - 灰阶检查仍只对抽屉元素做，编辑器里的彩色语法不计入。
+
+---
+
+## 17. 其余六本书
+
+本节先定计划，再按 17.4 写成正文。抽屉、Run 按钮、行距和已交付的三本书保持 §16 的做法，不另起一套 UI。六本书现已交付。
+
+### 17.1 要补上的书
+
+这六种语言原来打开抽屉会看到「即将推出」。每一种现在都有概览加 11 章，原创中文，可运行块通过 docs-smoke。`SHIPPED_BOOKS` 含 `ruby`、`sqlite`、`c`、`cpp`、`php`、`lua`。
+
+| 书 id | 运行时 | 文件名 | 概览 + 章 |
+|---|---|---|---|
+| ruby | ruby 3.2 | main.rb | 概览 + 11 章 |
+| sqlite | sqlite3 `-batch` | main.sql | 概览 + 11 章 |
+| c | clang 8 → wasm32 | main.c | 概览 + 11 章 |
+| cpp | clang 8 + libc++ | main.cpp | 概览 + 11 章 |
+| php | php 8.2 `-q` | main.php | 概览 + 11 章 |
+| lua | Lua 5.4.9 | main.lua | 概览 + 11 章 |
+
+目录沿用 §16.6 的骨架：本章目标、讲解、至少若干可运行示例、常见错误、最佳实践、小结、至少两道带 `::: answer` 的练习、延伸阅读、参考与致谢。`minutes` 概览不少于 12，内容章不少于 18。
+
+新书没有「加厚前」的字符基线，所以不用 3 倍表。验收用和已加厚短章同一量级的绝对下限：
+
+- 正文（frontmatter 之后）概览不少于 2800 字符，内容章不少于 3200 字符。
+- 围栏以外的讲解：概览不少于 900，内容章不少于 1500。
+- 可运行围栏（info 含 `run` 且不含 `norun`；`smoke=skip` 仍算可运行）：概览不少于 3，内容章不少于 5。
+- 标题包含 `## 常见错误`、`## 最佳实践`、`## 小结`、`## 练习`，且至少两个 `::: answer`。
+
+`tests/docs-length.test.ts` 对这六本书用上述绝对下限，不套用 Python/JS/Go 的 3 倍表。生成脚本写完 `docs/` 之后测试才算通过。
+
+### 17.2 各运行时不能写进可运行块的事
+
+示例必须在现有 WASI 运行时里一次跑完。做不到的写法标 `norun`，并在旁边说明原因。不要为了教程去改编译参数。
+
+**Ruby。** 没有 `gem install`，没有网络。不 `require` 镜像里没有的文件。可运行示例只用语言核心：`puts`、`gets`、数组、哈希、方法、块、类。`gets` 要 `chomp`。整数相除得到整数。
+
+**SQL。** 每次运行都是空的内存库，`-batch` 读整个文件后结束。用 `SELECT` 把结果打出来，期望写成结果单元格里的子串。不要依赖 `.headers on` 的表头文本，不要 `ATTACH` 一个下次还在的文件。不用 JSON 扩展。
+
+**C。** `clang -Werror`，单文件，`#include <stdio.h>` 这一级的标准头。`printf` / `scanf` 可用。没有线程，没有网络。警告会让编译失败，所以不写未使用变量。`main` 返回 `int`。
+
+**C++。** 同样 `-Werror`，标准库是 libc++。`iostream`、`string`、`vector`、`algorithm` 可以用。不写 `<thread>` 和 `<filesystem>`。异常在这份 wasm 工具链上不可靠：可运行示例用返回值表达失败；`throw` 放在 `norun` 块里。`std::sort` 会把 libc++ 带进缺少 `__lttf2` 的链接，可运行示例改用 `min_element`、`count` 和 `count_if`。
+
+**PHP。** `php -q`，文件以 `<?php` 开头，用 `echo` 带换行。不调用 curl、mysqli、gd。实测：常量 `STDIN` 未定义，`php://stdin` 与 `php://fd/0` 打不开，`php://input` 读不到 WASI 标准输入。可运行示例处理字符串里的一行；`fgets(STDIN)` 标 `norun`。不用网页超全局。
+
+**Lua。** `print`、`io.read("*l")`、`pcall` 可用。不调用 `os.execute`、`io.popen`、`os.tmpname`，不 `require` 另一份磁盘上的文件。字符串按字节计长度时要在正文里说明，示例用英文或明确的中文并核对 `print` 结果。
+
+### 17.3 章节目录
+
+每本书第 0 章是概览（`index.md`），其余按文件名 `01-` 到 `11-`。
+
+Ruby：概览；输出与注释；数字与变量；字符串；分支与循环；数组；哈希；方法与块；类；错误；枚举与块的组合；记分小项目。
+
+SQL：概览；字面量与 `SELECT`；建表与 `INSERT`；`WHERE`；聚合；连接；`UPDATE` 与 `DELETE`；`NULL` 与约束；子查询；排序与限制；事务；账本小项目。
+
+C：概览；`printf` 与 `main`；类型与运算；分支与循环；函数；数组与字符串；指针；结构体；`scanf`；`malloc`；`stdio` 里够用的函数；行计数小项目。
+
+C++：概览；`cout`；类型与引用；控制流；函数；`vector` 与 `string`；类；失败不用异常；函数模板；`<algorithm>`；读入一行；待办小项目。
+
+PHP：概览；`echo`；类型；字符串；数组；控制流；函数；类；错误；标准输入；常用内置函数；命令小项目。
+
+Lua：概览；`print`；类型与 `nil`；字符串；控制流；函数与闭包；表；元表；`pcall`；不跨文件的模块；`string` / `math` / `table`；待办小项目。
+
+### 17.4 实现顺序
+
+1. 只提交本节。
+2. 按 Ruby、SQL、C、C++、PHP、Lua 的顺序各写一本。每本：生成器、`docs/<book>/*.md`、把 id 加入 `SHIPPED_BOOKS`、`tests/docs-smoke.mjs` 的书单、长度测试。该运行时的 docs-smoke 通过后再提交这一本。
+3. `tests/learn.spec.mjs` 里「Ruby 即将推出」在 Ruby 成书后改成打开 Ruby 概览。后面还没写的书继续抽一本做「即将推出」。六本都写完后，这条断言删掉，改为打开一本新书的章节。
+4. 全部完成后更新 §15 和本节勾选，跑 `./build.sh build` 与 `./build.sh test`。截图：两种新语言各一章（抽屉打开），以及 Lua 示例运行成功（终端里有期望输出）。
+
+### 17.5 验收
+
+- [x] 六本书都是概览 + 至少 10 章，达到 17.1 的绝对下限，正文为原创中文。
+- [x] 侧栏打开这六种语言时不再显示「即将推出」。
+- [x] 每个可运行块通过 docs-smoke。`norun` 与 `smoke=skip` 不被执行。
+- [x] `./build.sh build` 与 `./build.sh test` 通过。单色检查仍然通过。
+- [x] §15 把六种语言标成已交付，并附上章节截图与 Lua 运行截图。

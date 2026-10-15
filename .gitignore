@@ -14,9 +14,11 @@ dist-ssr/
 .vite/
 *.tsbuildinfo
 
-# vendored language binaries — regenerate with ./build.sh vendor (manifest is tracked)
-wasm/*
-!wasm/manifest.json
+# Vendored binaries and the manifest generated from them.
+# manifest.json records size/sha256 of the files on disk. Lua's wasm is not
+# byte-stable on Apple Silicon, so a committed Linux manifest must not be
+# checked back out over a locally built binary.
+wasm/
 
 # third-party source and toolchain caches (clone / vendor separately, see README)
 thirdparty/runno/
