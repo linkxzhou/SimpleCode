@@ -113,9 +113,9 @@
     },
     {
       "id": "quickjs",
-      "label": "QuickJS",
+      "label": "JS/TS",
       "short": "JS",
-      "version": "wasmedge",
+      "version": "QuickJS",
       "syntax": "javascript",
       "fileName": "main.js",
       "run": {

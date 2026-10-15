@@ -11,14 +11,14 @@
 1. 一个纯浏览器端的多语言代码运行器，界面类似 Runno embed：上方代码编辑器、Run 按钮、下方黑色终端输出。
 2. 与 Runno 的差异：**无顶栏**；**左侧为可折叠语言侧栏**（展开 240px / 折叠 56px 图标栏）；右侧主区 = 上编辑器 / 下终端（可拖拽分割）。
 3. 所有语言 wasm 统一放在本地 `wasm/` 目录（构建后由同源静态服务提供），点击语言才**首次下载**，显示进度；下载后缓存（Cache API），再次进入秒开。
-4. 支持语言：`python`、`ruby`、`quickjs`、`sqlite`、`clang`(C)、`clangpp`(C++)、`php-cgi`、`lua`、`go`。
+4. 支持语言：`python`、`ruby`、`quickjs`（界面标签 **JS/TS**；运行时仍是 QuickJS，TypeScript 在浏览器内去类型）、`sqlite`、`clang`(C)、`clangpp`(C++)、`php-cgi`、`lua`、`go`。
 5. 支持交互式 stdin（终端输入、Ctrl+D 发送 EOF）、Stop 终止。
 6. 技术栈：Vue 3 + TypeScript + Vite + Tailwind CSS + shadcn-vue，简洁极简风格，支持深色/浅色。
 
 ### 1.2 非目标
 - 不提供服务端执行、包管理（pip/gem/npm 安装）、网络访问；不支持的库在运行时自然报错即可。
 - 不做多文件项目/文件树（v1 仅单文件 `/program`；保留扩展点）。
-- Python / Ruby / QuickJS / SQLite / C / C++ / PHP 直接复用 Runno 仓库 `langs/` 中的二进制。Lua 与 Go 由 `scripts/builders/` 按锁定版本从源码构建（仍是 WASI preview1 命令，运行时零适配）。
+- Python / Ruby / QuickJS / SQLite / C / C++ / PHP 直接复用 Runno 仓库 `langs/` 中的二进制。Lua 与 Go 由 `scripts/builders/` 按锁定版本从源码构建（仍是 WASI preview1 命令，运行时零适配）。TypeScript 不换 wasm：运行前在浏览器里用 Sucrase 去掉类型，再交给同一份 QuickJS。
 - 不追求 IE/旧浏览器；需要支持 `SharedArrayBuffer` 的现代浏览器。
 - 不做账号、分享链接（可作为后续里程碑）。
 
@@ -358,7 +358,7 @@ SimpleCode/
       "id": "ruby", "label": "Ruby", "short": "Rb", "version": "3.2.0", "syntax": "ruby", "fileName": "main.rb",
       "run": { "asset": "ruby-wasm", "binaryName": "ruby", "args": ["-r", "/ruby-3.2.0/.rubyopts.rb", "{entry}"], "baseFS": "ruby-fs" }
     },
-    { "id": "quickjs", "label": "QuickJS", "short": "JS", "syntax": "js", "fileName": "main.js",
+    { "id": "quickjs", "label": "JS/TS", "short": "JS", "version": "QuickJS", "syntax": "javascript", "fileName": "main.js",
       "run": { "asset": "quickjs-wasm", "binaryName": "quickjs", "args": ["{entry}"] } },
     { "id": "sqlite", "label": "SQLite", "short": "SQL", "syntax": "sql", "fileName": "main.sql",
       "run": { "asset": "sqlite-wasm", "binaryName": "sqlite", "args": ["-cmd", ".read {entry}"] }, "autoEOF": true },
@@ -494,6 +494,7 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 **LanguageItem**：展开时 = 圆角行（固定 `h-10`）+ 图标 + 名称 + 行尾状态（`Download`+大小 / `Loader2`+百分比 / `Check` / `AlertCircle 重试`），下载进度是行底 2px 细条，不撑高行。选中行 `bg-accent font-medium`，图标反色。**折叠时只显示图标**（40px 圆角点击区，居中；无文字、徽标、进度文字），详细信息通过右侧 Tooltip 显示。
 **侧栏底部**：展开时两行、左缘与语言图标对齐、右缘对齐——第一行缓存（`HardDrive` + “缓存” + 体积）与「清除」；第二行主题（图标 + “跟随系统 / 浅色 / 深色”）与折叠按钮。折叠为图标轨时，底部只有三枚 **32×32、居中、纵向堆叠** 的图标按钮（清除缓存、主题、展开），无文字、不溢出、不截断；说明由右侧 Tooltip 给出。窄宽度下 CSS 容器查询会强制隐藏 `.sidebar-expanded-only` 文案，避免折叠动画或宽度不同步时把 “跟随系统 / 清除” 挤成截断文字。**折叠/展开按钮固定在侧栏底部**（展开态 `ChevronsLeft`，折叠态 `ChevronsRight`），快捷键 `⌘/Ctrl+B`，状态持久化 localStorage。侧栏 `border-r` 分隔主区。
 **Run 按钮**：default（primary 反色，xs 尺寸）；disabled（语言下载中）；loading（`Loader2` + “Running…/Compiling…”）。**Stop**：ghost xs，仅运行中显示。
+**JS/TS 切换**（仅 `quickjs`）：工具栏文件名右侧的分段按钮 `JS | TS`（`h-7`，选中项 `bg-accent`）。文件名随之变为 `main.js` / `main.ts`。选择写入 `simplecode:quickjs:dialect`。
 **TerminalHeader**（32px）：“Terminal” + 状态点 + 文本 + 耗时 + 清空 + **折叠/展开按钮**（展开态 `ChevronDown`，折叠态 `ChevronUp`；双击标题栏同样切换）。状态点（灰阶）：idle 深灰、preparing/compile/link 中灰脉冲、run 白色脉冲、done 白色实心、failed/crash 空心环、terminated 中灰。
 
 ### 11.7 终端样式
@@ -507,11 +508,12 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 
 ## 12. 编辑器（Monaco）
 - **Monaco Editor**（`monaco-editor@0.52.2`，固定版本），**完全本地打包，不使用 CDN / `@monaco-editor/loader`**（COEP `require-corp` 下跨源脚本会被拦截）。
-  - 入口 `src/core/monaco.ts`：`import * as monaco from "monaco-editor/esm/vs/editor/editor.api"` + `editor.all`（查找、折叠等编辑器功能）+ 按需引入 `basic-languages/{python,ruby,javascript,sql,cpp,php,lua,go}/*.contribution`（Monarch 高亮，`cpp` 同时注册 `c`）。
+  - 入口 `src/core/monaco.ts`：`import * as monaco from "monaco-editor/esm/vs/editor/editor.api"` + `editor.all`（查找、折叠等编辑器功能）+ 按需引入 `basic-languages/{python,ruby,javascript,typescript,sql,cpp,php,lua,go}/*.contribution`（Monarch 高亮，`cpp` 同时注册 `c`）。TypeScript 只用 Monarch，不做语言服务。
   - Worker：仅需基础 `editor.worker`，通过 Vite `import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker"` 打包为同源资产，在 `self.MonacoEnvironment.getWorker` 中返回；不引入 ts/json/css/html 语言服务 worker（体积大且无需）。同源 Worker 在 COOP/COEP 下可正常加载。
   - codicon 字体由 Vite 作为同源资产打包（`dist/assets/codicon-*.ttf`）。
-  - 每种语言一个 `ITextModel`（切换语言 `setModel` 保留撤销栈），`onDidChangeContent` 写回 localStorage；`automaticLayout: true` 适配分割条拖拽；关闭 minimap。
-- 每种语言独立草稿，存 localStorage（`simplecode:code:<id>`）；首次使用加载 `src/samples/<id>.*`（示例含 stdin 读取以展示交互）。
+  - 每种语言一个 `ITextModel`（切换语言 `setModel` 保留撤销栈）。JS/TS 例外：`quickjs:js` 与 `quickjs:ts` 各一个模型，语言 id 分别为 `javascript` 与 `typescript`。`onDidChangeContent` 写回 localStorage；`automaticLayout: true` 适配分割条拖拽；关闭 minimap。
+- 每种语言独立草稿，存 localStorage（`simplecode:code:<id>`）；首次使用加载 `src/samples` 中的示例（示例含 stdin 读取以展示交互）。JS 与 TS 分开：`simplecode:code:quickjs:js`、`simplecode:code:quickjs:ts`。旧键 `simplecode:code:quickjs` 在第一次读取 JS 草稿时迁入 JS 缓冲并删除。
+- **TypeScript 运行**：QuickJS 只执行 JavaScript。`src/core/transpile.ts` 在方言为 TS 时 `import("sucrase")`（Vite 打成独立同源 chunk，COOP/COEP 无跨源问题；JS 运行不加载它）。`transform(code, { transforms: ["typescript"], disableESTransforms: true, filePath: "main.ts" })` 只去类型，不降级语法，也不做完整类型检查。成功后把 JS 字符串交给现有 `quickjs {entry}`。失败则状态 `failed`、消息「转译失败」，终端写入 `[SimpleCode] TypeScript 转译失败` 以及 `main.ts:行:列`、源行和 `^`，不下载、不启动 wasm。
 - 快捷键：`Mod-Enter` 运行、`Mod-.` 停止（均通过 `editor.addCommand` 注册）、`Mod-B` 折叠/展开左侧语言栏（window capture 阶段监听，避免被 Monaco 吞掉）、Tab 缩进。
 
 ---
@@ -531,12 +533,12 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 
 ## 14. 风险与发现
 1. **体积**：语言二进制总计约 **152 MB**（未压缩，2026-10-15 manifest）：python 24.6、ruby 24.5、php 13.1、quickjs 4.0、sqlite 3.6、C/C++ 共享 52.5、Lua 0.7、Go（Yaegi）35.0 MB。必须按需下载 + 缓存 + 服务端 brotli/gzip。clang.wasm（29.8 MB）与 `yaegi-0.16.1.wasm`（35.0 MB）超过 Cloudflare Pages 单文件 25 MiB 限制 ⚠️，部署平台需注意；wasm 不入库，由 `./build.sh vendor` 生成。
-2. **许可证**：runno 为 MIT。二进制各有许可：CPython（PSF）、Ruby（Ruby License/BSD-2）、PHP（PHP License 3.01）、VMware WLR 构建脚本（Apache-2.0）、wasmedge-quickjs（Apache-2.0；QuickJS 本体 MIT）、SQLite（Public Domain）、binji wasm-clang / LLVM 8（Apache-2.0 with LLVM exception）、wasi-libc/libc++（MIT/Apache）、**Lua 5.4.9（MIT）**、**Yaegi（Apache-2.0）+ Go 标准库（BSD-3-Clause）**、wasi-sdk（Apache-2.0 with LLVM exceptions）。汇总见 `LICENSES/THIRD_PARTY.md`。
+2. **许可证**：runno 为 MIT。浏览器依赖 Sucrase（MIT，仅在运行 TypeScript 时懒加载，用于去类型）。二进制各有许可：CPython（PSF）、Ruby（Ruby License/BSD-2）、PHP（PHP License 3.01）、VMware WLR 构建脚本（Apache-2.0）、wasmedge-quickjs（Apache-2.0；QuickJS 本体 MIT）、SQLite（Public Domain）、binji wasm-clang / LLVM 8（Apache-2.0 with LLVM exception）、wasi-libc/libc++（MIT/Apache）、**Lua 5.4.9（MIT）**、**Yaegi（Apache-2.0）+ Go 标准库（BSD-3-Clause）**、wasi-sdk（Apache-2.0 with LLVM exceptions）。汇总见 `LICENSES/THIRD_PARTY.md`。
 3. **头要求**：COOP/COEP 是硬依赖；会影响嵌入第三方 iframe/资源、OAuth 弹窗等；GitHub Pages 需 coi-serviceworker。
 4. **php-cgi** 输出可能带 CGI 响应头 ⚠️，需实测，必要时加 `-q`。
 5. **sqlite** 会读 stdin，可能看起来“卡住” ⚠️。
 6. **clang 旧版本**（LLVM 8.0.1，C++17 部分支持，无 C++20），`-Werror` 让警告变错误（沿用上游；可考虑去掉 ⚠️）；无线程、无网络、无 `exceptions`？（wasm-clang 对 C++ 异常支持有限 ⚠️）。
-7. **quickjs** 为 wasmedge 版，部分 wasmedge 专有模块不可用；`console.log` 正常；ES module 语法支持需验证 ⚠️。
+7. **quickjs** 为 wasmedge 版，部分 wasmedge 专有模块不可用；`console.log` 正常；ES module 语法支持需验证 ⚠️。界面称 **JS/TS**，图标缩写仍是 `JS`。TypeScript 由 Sucrase 去类型后运行：`interface` 与参数/返回值标注可用；类型错误（例如把 `string` 赋给 `number`）不会在转译阶段报出。语法错误显示在终端。`import` / `export` 是否能在 QuickJS 中运行仍需验证 ⚠️。
 8. **性能**：每次运行都重新 `instantiateStreaming`；clang 编译慢（数秒级）。
 9. **Ruby tar.gz 只有 174 B**（仅 `.rubyopts.rb`），说明 Ruby 标准库嵌在 wasm 内——无需额外 FS。
 10. **stdin 8KB 缓冲**上限需分块写入。
@@ -623,3 +625,4 @@ npm test                # vitest；npm run test:e2e → playwright
 - v0.2（2026-10-15）：全应用黑白单色（Monaco 除外）；折叠侧栏仅显示语言图标；折叠/展开按钮移至侧栏底部；Run 按钮改为 xs（h-7）；终端默认 ~28% 高度并可折叠为标题栏。
 - v0.3（2026-10-15）：字体本地打包（`@fontsource/inter`、`@fontsource/jetbrains-mono`，latin 子集）；新增 `@font-face "SimpleCode CJK"`（`local()` 系统 CJK 字体 + `size-adjust: 120%`），使 CJK 字形正好占 xterm 两个单元格（`|abcdefghij|` 与 `|一二三四五|` 等宽）；xterm 在字体加载后重新测量。stderr 改为非粗体暗灰（`38;5;247`），且只对完整行着色——未以换行结束的 stderr 片段（如 CPython 在 TTY 下写到 stderr 的 `input()` 提示）40ms 内无后续则按普通文本输出。
 - v0.4（2026-10-15）：侧栏底改为 `--background`（浅色纯白、深色近黑，无强调色）。标题由 “Languages” 改为品牌名 “SimpleCode”。展开态为圆角等高语言行 + 对齐的缓存/主题/折叠页脚；折叠态底部为居中的纯图标按钮（清除缓存、主题、展开）与右侧 Tooltip。
+- v0.6（2026-10-15）：QuickJS 的界面标签改为 **JS/TS**（id 仍是 `quickjs`，wasm 仍是 `wasmedge_quickjs.wasm`，图标缩写 `JS`，版本字段 `QuickJS` 用于侧栏 Tooltip）。工具栏增加 JS/TS 切换，Monaco 模式与示例、草稿分开，选择持久化。TypeScript 经 Sucrase 懒加载去类型；转译错误进入终端且不启动 wasm。冒烟测试覆盖 JS、带 `interface` 与类型标注的 TS，以及一条转译失败用例。

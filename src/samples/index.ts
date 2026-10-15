@@ -11,11 +11,24 @@ puts "Hello, #{name}!"
 
 puts (1..5).map { |n| n * n }.inspect
 `,
-  quickjs: `const fib = (n) => (n < 2 ? n : fib(n - 1) + fib(n - 2));
+  "quickjs:js": `const fib = (n) => (n < 2 ? n : fib(n - 1) + fib(n - 2));
 
-console.log("Hello from QuickJS!");
+console.log("Hello from JS!");
 console.log("fib(20) =", fib(20));
 console.log([1, 2, 3].map((x) => x * 2));
+`,
+  "quickjs:ts": `interface Greeting {
+  name: string;
+  n: number;
+}
+
+function fib(n: number): number {
+  return n < 2 ? n : fib(n - 1) + fib(n - 2);
+}
+
+const hello: Greeting = { name: "TypeScript", n: 20 };
+console.log(\`Hello from \${hello.name}!\`);
+console.log("fib(20) =", fib(hello.n));
 `,
   sqlite: `CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER);
 INSERT INTO users (name, age) VALUES ('Ada', 36), ('Linus', 28), ('Grace', 45);

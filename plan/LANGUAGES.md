@@ -15,7 +15,7 @@
 | 3 | C++ | 同上 | WASI | 同上 | 同上 | ✅ 已支持 |
 | 4 | Java | TeaVM-javac（javac 21 + TeaVM，浏览器内编译为 Wasm） | JS/Wasm（非 WASI） | ⚠️ 约 10–30 MB | Apache-2.0（TeaVM）+ GPLv2+CPE（javac） | 🟡 可行（需适配） |
 | 5 | C# | Roslyn + .NET WebAssembly（Mono）运行时（Blazor 式） | .NET wasm（非 WASI） | ⚠️ 约 20–40 MB | MIT | 🟡 可行（工作量大） |
-| 6 | JavaScript | QuickJS（wasmedge，已集成） | WASI | 3.8 MB | MIT / Apache-2.0 | ✅ 已支持 |
+| 6 | JavaScript / TypeScript | QuickJS（wasmedge）+ 浏览器内 Sucrase 去类型 | WASI + JS | 3.8 MB（运行时） | MIT / Apache-2.0；Sucrase MIT | ✅ 已支持 |
 | 7 | Visual Basic | Roslyn VB 编译器 + .NET wasm（与 C# 共用） | .NET wasm | 与 C# 共享 +⚠️数 MB | MIT | 🟡 可行（随 C#） |
 | 8 | R | webR | Emscripten | ⚠️ 约 20–40 MB 起 | GPL-2.0+（R）⚠️ | 🟡 可行（需适配） |
 | 9 | SQL | SQLite 3.26（已集成） | WASI | 3.4 MB | Public Domain | ✅ 已支持 |
