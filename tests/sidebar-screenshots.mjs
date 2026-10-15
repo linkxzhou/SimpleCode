@@ -123,13 +123,13 @@ for (const scheme of ["light", "dark"]) {
     check(Math.abs(button.cx - collapsed.center) < 1, `${scheme} ${button.label} is centered`);
     check(button.text === "" && !button.overflow, `${scheme} ${button.label} has no overflow`);
   }
+  await side.screenshot({ path: `${OUT}/sidebar-collapsed-${scheme}.png` });
+  await page.screenshot({ path: `${OUT}/app-collapsed-${scheme}.png` });
+
   await page.hover('[data-testid="sidebar-theme"]');
   await page.waitForTimeout(400);
   const tip = await page.locator("[role=tooltip]").innerText().catch(() => "");
   check(tip.includes("主题"), `${scheme} theme tooltip visible (${tip})`);
-
-  await side.screenshot({ path: `${OUT}/sidebar-collapsed-${scheme}.png` });
-  await page.screenshot({ path: `${OUT}/app-collapsed-${scheme}.png` });
   await context.close();
 }
 
