@@ -4,26 +4,13 @@ import { describe, it } from "node:test";
 
 /** Body character counts before the essay rewrite. Acceptance stays 3× until that book moves to ESSAY. */
 const BASE: Record<string, number> = {
-  "go/index.md": 990,
-  "go/01-vars.md": 1145,
-  "go/02-types.md": 1119,
-  "go/03-control.md": 1417,
-  "go/04-collections.md": 1415,
-  "go/05-funcs.md": 1451,
-  "go/06-structs.md": 1518,
-  "go/07-interfaces.md": 1506,
-  "go/08-errors.md": 1456,
-  "go/09-concurrency.md": 1312,
-  "go/10-generics.md": 1219,
-  "go/11-stdlib.md": 1621,
-  "go/12-todo.md": 1455,
 };
 
 /** Books still on the §17 absolute floors. */
 const ABSOLUTE = ["ruby", "sqlite", "c", "cpp", "php", "lua"];
 
 /** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. */
-const ESSAY = ["python", "js"];
+const ESSAY = ["python", "js", "go"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
