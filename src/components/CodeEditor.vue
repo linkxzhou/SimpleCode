@@ -18,7 +18,10 @@ function modelFor(id: string, syntax: string) {
   let m = models.get(id);
   if (!m) {
     m = monaco.editor.createModel(editorStore.get(id), syntax);
-    m.onDidChangeContent(() => editorStore.set(id, m!.getValue()));
+    m.onDidChangeContent(() => {
+      const value = m!.getValue();
+      if (value !== editorStore.get(id)) editorStore.set(id, value, { origin: "model" });
+    });
     models.set(id, m);
   }
   return m;
@@ -55,7 +58,7 @@ watch(
   },
   { immediate: true, flush: "post" },
 );
-// external resets (editor store) -> model
+// external resets (editor store) -> model. Post flush so a dialect switch lands first.
 watch(
   () => {
     const l = langs.selected;
@@ -63,9 +66,21 @@ watch(
   },
   (code) => {
     const l = langs.selected;
-    const m = l && models.get(editorStore.activeBuffer(l.id));
-    if (m && code !== undefined && m.getValue() !== code) m.setValue(code);
+    if (!l) return;
+    const id = editorStore.activeBuffer(l.id);
+    const m = models.get(id);
+    if (!m || code === undefined || m.getValue() === code) {
+      editorStore.consumeOrigin(id);
+      return;
+    }
+    const origin = editorStore.consumeOrigin(id);
+    if (origin === "doc" && editor) {
+      m.pushEditOperations(editor.getSelections(), [{ range: m.getFullModelRange(), text: code }], () => [new monaco.Selection(1, 1, 1, 1)]);
+      editor.setPosition({ lineNumber: 1, column: 1 });
+      editor.revealLine(1);
+    } else m.setValue(code);
   },
+  { flush: "post" },
 );
 watch(isDark, (d) => monaco.editor.setTheme(d ? "simplecode-dark" : "simplecode-light"));
 

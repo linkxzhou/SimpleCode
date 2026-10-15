@@ -128,6 +128,11 @@ class TerminalController {
     this.errPending = "";
   }
 
+  /** Flush a held partial stderr line so tests can read a complete transcript. */
+  flush() {
+    this.flushStderr();
+  }
+
   system(msg: string, color = "2") {
     this.write(`\x1b[${color}m[SimpleCode] ${msg}\x1b[0m\n`);
   }

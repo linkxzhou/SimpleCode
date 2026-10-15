@@ -22,8 +22,15 @@ export function fileNameFor(langId: string, fileName: string, dialect: JsDialect
   return dialect === "ts" ? "main.ts" : "main.js";
 }
 
+export interface DocWrite {
+  blockId: string;
+  code: string;
+}
+
 export const useEditorStore = defineStore("editor", () => {
   const codes = reactive<Record<string, string>>({});
+  const docWrites: Record<string, DocWrite> = {};
+  const origins: Record<string, "user" | "doc" | "model"> = {};
   const stored = localStorage.getItem(DIALECT_KEY);
   const dialect = ref<JsDialect>(stored === "ts" ? "ts" : "js");
   watch(dialect, (d) => localStorage.setItem(DIALECT_KEY, d));
@@ -47,13 +54,26 @@ export const useEditorStore = defineStore("editor", () => {
     }
     return codes[id];
   }
-  function set(id: string, code: string) {
+  function set(id: string, code: string, opts?: { origin?: "user" | "doc" | "model"; blockId?: string }) {
+    const origin = opts?.origin ?? "user";
+    origins[id] = origin;
+    if (origin === "doc" && opts?.blockId) docWrites[id] = { blockId: opts.blockId, code };
     codes[id] = code;
-    localStorage.setItem(key(id), code);
+    if (origin !== "model") localStorage.setItem(key(id), code);
   }
   function reset(id: string) {
     localStorage.removeItem(key(id));
+    origins[id] = "user";
+    delete docWrites[id];
     codes[id] = samples[id] ?? "";
   }
-  return { codes, dialect, activeBuffer, get, set, reset };
+  function lastDocWrite(id: string): DocWrite | undefined {
+    return docWrites[id];
+  }
+  function consumeOrigin(id: string): "user" | "doc" | "model" {
+    const origin = origins[id] ?? "user";
+    origins[id] = "user";
+    return origin;
+  }
+  return { codes, dialect, activeBuffer, get, set, reset, lastDocWrite, consumeOrigin };
 });

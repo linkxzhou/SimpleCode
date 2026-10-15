@@ -17,6 +17,11 @@ export interface RunCallbacks {
   phase: (phase: Phase) => void;
 }
 
+export interface SessionOptions {
+  stdin?: string;
+  stdinEOF?: boolean;
+}
+
 export const ENTRY = "/program";
 
 function fill(args: string[] | undefined) {
@@ -31,7 +36,11 @@ export class RunSession {
   private host?: WASIWorkerHost;
   private killed = false;
 
-  constructor(private lang: LanguageSpec, private cb: RunCallbacks) {}
+  constructor(
+    private lang: LanguageSpec,
+    private cb: RunCallbacks,
+    private opts: SessionOptions = {},
+  ) {}
 
   get active() {
     return !!this.host;
@@ -97,11 +106,22 @@ export class RunSession {
     });
     this.host = host;
     try {
-      const p = host.start();
-      if (!interactive || this.lang.autoEOF) {
-        // compile steps never read stdin; sqlite would otherwise wait for input
-        void host.pushEOF();
-      }
+    const p = host.start();
+    const preset = interactive ? this.opts.stdin : undefined;
+    if (preset != null && preset !== "") {
+      const eof = this.opts.stdinEOF !== false;
+      void (async () => {
+        try {
+          await host.pushStdin(preset);
+          if (eof) await host.pushEOF();
+        } catch {
+          /* killed before stdin was accepted */
+        }
+      })();
+    } else if (!interactive || this.lang.autoEOF) {
+      // compile steps never read stdin; sqlite would otherwise wait for input
+      void host.pushEOF();
+    }
       const result = await p;
       return { exitCode: result.exitCode, fs: { ...fs, ...result.fs } };
     } finally {
