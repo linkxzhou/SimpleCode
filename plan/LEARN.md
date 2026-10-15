@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：§19 的短节正在铺到其余语言。Go、Python、JavaScript、Ruby、SQL、C、C++、PHP 已按菜鸟教程的章名改完，其余仍是 §18 的短文，直到各自的提交落地。界面文案仍是「快速入门」。
+> 状态：§19 的短节正在铺到其余语言。Go、Python、JavaScript、Ruby、SQL、C、C++、PHP、Lua 已按菜鸟教程的章名改完，Shell 仍是 §18 的短文，直到它的提交落地。界面文案仍是「快速入门」。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -960,10 +960,10 @@ print(f"你好，{name}！")
 | C | ✅ | 25 | 按 §19：C 语言教程到 C 错误处理。`fopen` 标为只读，可运行例子用 `sprintf` / `sscanf` |
 | C++ | ✅ | 39 | 按 §19：C++ 教程到 C++ STL 算法。`std::sort` 因链接缺少 `__lttf2` 标为只读，`throw` 和文件流也不运行 |
 | PHP | ✅ | 34 | 按 §19：PHP 教程到 PHP MySQL。读不到标准输入，`$_GET`、文件、Cookie 和 mysqli 标为只读 |
-| Lua | ✅ | 12 | 2766–3360，合计 35305 |
+| Lua | ✅ | 22 | 按 §19：Lua 教程到 Lua 数据库访问。文件、`require` 和 `os.execute` 标为只读 |
 | Shell | ✅ | 12 | 2748–3190，合计 33902。只有 wasi-sh 内建 |
 
-十种语言合计 258 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34，其余仍是短文）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
+十种语言合计 268 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22，Shell 仍是短文）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
 
 ### 验收
 
