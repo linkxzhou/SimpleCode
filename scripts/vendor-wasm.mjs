@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Copy Runno language binaries into wasm/ and build Lua/Go, then write wasm/manifest.json.
-import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, rmSync, symlinkSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { assets, languages } from "./languages.config.mjs";
+import { assets } from "./languages.config.mjs";
+import { refreshManifest } from "./write-manifest.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const args = process.argv.slice(2);
@@ -27,8 +27,7 @@ function buildAsset(builder, dest) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-const manifestAssets = {};
-for (const [id, spec] of Object.entries(assets)) {
+for (const spec of Object.values(assets)) {
   const to = join(out, spec.file);
   if (spec.build) buildAsset(spec.build, to);
   else {
@@ -39,23 +38,15 @@ for (const [id, spec] of Object.entries(assets)) {
     else copyFileSync(from, to);
   }
   if (!existsSync(to)) fail(`missing ${to}`);
-  const buf = readFileSync(to);
-  const isWasm = spec.file.endsWith(".wasm");
-  const magicOk = isWasm
-    ? buf.subarray(0, 4).equals(Buffer.from([0, 0x61, 0x73, 0x6d]))
-    : buf[0] === 0x1f && buf[1] === 0x8b;
-  if (!magicOk) fail(`${spec.file}: bad magic header (Git LFS pointer?)`);
-  const sha256 = createHash("sha256").update(buf).digest("hex");
-  manifestAssets[id] = { file: spec.file, size: buf.length, sha256, kind: isWasm ? "wasm" : "fs" };
-  console.log(`✓ ${spec.file.padEnd(24)} ${(buf.length / 1048576).toFixed(1).padStart(6)} MB  ${sha256.slice(0, 12)}`);
 }
 
-const manifest = {
-  version: 1,
-  generatedAt: new Date().toISOString(),
-  source: "thirdparty/runno/langs + scripts/builders",
-  assets: manifestAssets,
-  languages,
-};
-writeFileSync(join(out, "manifest.json"), JSON.stringify(manifest, null, 2) + "\n");
-console.log(`✓ wrote wasm/manifest.json (${languages.length} languages)`);
+let manifest;
+try {
+  manifest = refreshManifest(root);
+} catch (err) {
+  fail(err.message);
+}
+for (const asset of Object.values(manifest.assets)) {
+  console.log(`✓ ${asset.file.padEnd(24)} ${(asset.size / 1048576).toFixed(1).padStart(6)} MB  ${asset.sha256.slice(0, 12)}`);
+}
+console.log(`✓ wrote wasm/manifest.json from files on disk (${Object.keys(manifest.assets).length} assets)`);

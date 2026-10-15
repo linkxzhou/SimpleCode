@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { docsPlugin } from "./scripts/vite-plugin-docs";
+import { refreshManifest } from "./scripts/write-manifest.mjs";
 import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
 import { join, normalize, resolve } from "node:path";
 
@@ -12,6 +13,14 @@ const isolationHeaders = {
 
 const wasmDir = resolve(__dirname, "wasm");
 
+function syncManifest(warn: (message: string) => void) {
+  try {
+    refreshManifest(resolve(__dirname));
+  } catch (err) {
+    warn(err instanceof Error ? err.message : String(err));
+  }
+}
+
 /** Serve ./wasm in dev and copy it into dist/wasm on build. */
 function wasmAssets(): Plugin {
   let outDir = "dist";
@@ -20,7 +29,11 @@ function wasmAssets(): Plugin {
     configResolved(c) {
       outDir = resolve(c.root, c.build.outDir);
     },
+    buildStart() {
+      syncManifest((message) => this.warn(message));
+    },
     configureServer(server) {
+      syncManifest((message) => server.config.logger.warn(message));
       server.middlewares.use("/wasm", (req, res, next) => {
         const url = decodeURIComponent((req.url ?? "/").split("?")[0]);
         const file = normalize(join(wasmDir, url));

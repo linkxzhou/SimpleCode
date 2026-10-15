@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 
 /** Body character counts before this round. Acceptance is 3×. */
@@ -68,6 +68,9 @@ function runnableCount(body: string) {
   return n;
 }
 
+/** Books from plan/LEARN.md §17. Absolute floors, not the 3× table above. */
+const ABSOLUTE = ["ruby", "sqlite", "c", "cpp", "php", "lua"];
+
 describe("chapter length", () => {
   for (const [file, before] of Object.entries(BASE)) {
     it(file, () => {
@@ -85,5 +88,27 @@ describe("chapter length", () => {
       const minutes = Number(text.match(/^minutes:\s*(\d+)/m)?.[1]);
       assert.ok(minutes >= (overview ? 12 : 18), `minutes ${minutes}`);
     });
+  }
+
+  for (const book of ABSOLUTE) {
+    const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md")).sort();
+    for (const name of files) {
+      const file = `${book}/${name}`;
+      it(file, () => {
+        const text = readFileSync(`docs/${file}`, "utf8");
+        const body = bodyOf(text);
+        const overview = name === "index.md";
+        assert.ok(body.length >= (overview ? 2800 : 3200), `body ${body.length}`);
+        const prose = proseOf(body).length;
+        assert.ok(prose >= (overview ? 900 : 1500), `prose ${prose}`);
+        for (const heading of ["常见错误", "最佳实践", "小结", "练习"]) {
+          assert.ok(body.includes(`## ${heading}`), heading);
+        }
+        assert.ok((body.match(/::: answer/g) ?? []).length >= 2, "answers");
+        assert.ok(runnableCount(body) >= (overview ? 3 : 5), `runnable ${runnableCount(body)}`);
+        const minutes = Number(text.match(/^minutes:\s*(\d+)/m)?.[1]);
+        assert.ok(minutes >= (overview ? 12 : 18), `minutes ${minutes}`);
+      });
+    }
   }
 });
