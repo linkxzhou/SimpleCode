@@ -10,10 +10,10 @@ const BASE: Record<string, number> = {
 const ABSOLUTE: string[] = [];
 
 /** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. Go moved to TUTORIAL. */
-const ESSAY = ["php", "lua", "shell"];
+const ESSAY = ["lua", "shell"];
 
 /** plan/LEARN.md §19. Short tutorial sections, Runoob-style. */
-const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp"];
+const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp", "php"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
