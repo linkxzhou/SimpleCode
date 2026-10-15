@@ -21,7 +21,7 @@ GROUP BY 按列的值分组，每一组产生一行聚合。SELECT 里除了聚�
 
 WHERE 在分组前过滤行。分组之后还要丢掉某些组，用 HAVING。本教程的例子能用 WHERE 就不用 HAVING，少一层。
 
-```sqlite run expect="1|2|6" title="最小最大"
+```sqlite run expect="1|3|6" title="最小最大"
 CREATE TABLE t(n INTEGER);
 INSERT INTO t VALUES (3), (1), (2);
 SELECT MIN(n), MAX(n), SUM(n) FROM t;
@@ -39,7 +39,7 @@ SELECT COUNT(*), COUNT(n) FROM (SELECT 1 AS n UNION ALL SELECT NULL);
 
 ### 读「最小最大」
 
-先做这一例。把代码收成一行来记：`CREATE TABLE t(n INTEGER); INSERT INTO t VALUES (3), (1), (2); SELECT MIN(n), MAX(n), SUM(n) FROM t;`。先盖住终端，写下你预测的输出，里面要能找到「1|2|6」。这是子串：前面可以有别的字，后面通常有换行。
+先做这一例。把代码收成一行来记：`CREATE TABLE t(n INTEGER); INSERT INTO t VALUES (3), (1), (2); SELECT MIN(n), MAX(n), SUM(n) FROM t;`。先盖住终端，写下你预测的输出，里面要能找到「1|3|6」。这是子串：前面可以有别的字，后面通常有换行。
 
 然后点这个代码块上的 Run，不要点工具栏。代码块会备份草稿、写入示例再执行。找不到这段文字时，先看退出码。不是 0 就读错误类型，不要改期望。是 0 但内容不对，就只改产生该值的那一处。改完用工具栏的 Run，因为再点代码块会把修改盖掉。预测对了之后点撤销。
 
@@ -59,9 +59,9 @@ SELECT COUNT(*), COUNT(n) FROM (SELECT 1 AS n UNION ALL SELECT NULL);
 
 这一例要避开的失误是：用 COUNT(列) 以为在数全部行，NULL 被悄悄丢掉。。对应的做法是：数行用 COUNT(*)，数有值的格子用 COUNT(列)。。
 
-把代码收成一行来核对：`CREATE TABLE t(n INTEGER); INSERT INTO t VALUES (3), (1), (2); SELECT MIN(n), MAX(n), SUM(n) FROM t;`。盖住终端，先写下预测，里面要能找到「1|2|6」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
+把代码收成一行来核对：`CREATE TABLE t(n INTEGER); INSERT INTO t VALUES (3), (1), (2); SELECT MIN(n), MAX(n), SUM(n) FROM t;`。盖住终端，先写下预测，里面要能找到「1|3|6」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
 
-若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「1|2|6」才算失败。
+若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「1|3|6」才算失败。
 
 ### 只改一处：分组
 

@@ -152,7 +152,7 @@ GROUP BY 按列的值分组，每一组产生一行聚合。SELECT 里除了聚�
 
 WHERE 在分组前过滤行。分组之后还要丢掉某些组，用 HAVING。本教程的例子能用 WHERE 就不用 HAVING，少一层。`,
     samples: [
-      s("最小最大", "CREATE TABLE t(n INTEGER);\nINSERT INTO t VALUES (3), (1), (2);\nSELECT MIN(n), MAX(n), SUM(n) FROM t;", "1|2|6"),
+      s("最小最大", "CREATE TABLE t(n INTEGER);\nINSERT INTO t VALUES (3), (1), (2);\nSELECT MIN(n), MAX(n), SUM(n) FROM t;", "1|3|6"),
       s("分组", "CREATE TABLE t(name TEXT, n INTEGER);\nINSERT INTO t VALUES ('a', 1), ('a', 2), ('b', 5);\nSELECT name, SUM(n) FROM t GROUP BY name ORDER BY name;", "a|3"),
       s("不数空", "SELECT COUNT(*), COUNT(n) FROM (SELECT 1 AS n UNION ALL SELECT NULL);", "2|1"),
     ],
