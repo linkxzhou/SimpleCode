@@ -1,169 +1,164 @@
 ---
 language: python
 chapter: 8
-title: "异常处理"
+title: "没找到时交回空串，还是当场说明"
 level: intermediate
-minutes: 18
+minutes: 26
 goals:
-  - "用 try / except 接住失败"
-  - "用 finally 做收尾"
-  - "抛出自己的异常类型"
+  - "比较查找失败时返回空字符串和抛出异常"
+  - "用 try 接住指定的异常并让进程仍然成功结束"
+  - "在 finally 里做无论成败都要做的收尾"
 sources:
   - lxiy-python
   - byte-of-python
-  - python-tutorial
 updated: "2026-10-15"
 ---
 
-异常是一种控制流：出错的地方 `raise`，愿意处理的地方 `except`。只接住你准备处理的类型，不要写裸的 `except:`。
+东柜查一本书在哪一格。查得到，就交回柜名。查不到，有两种完全不同的做法。一种是交回空字符串，调用者自己判断空不空。另一种是抛出异常，调用者必须接住，否则进程失败。两种都能写进程序。它们的差别在于失败会不会伪装成一个普通的值。空字符串是普通的值，打印它得到一行空白，拼接它得到一张没有柜名的条子，条件里它还为假，于是和「没写柜名」走同一支。异常不是值，它打断调用，直到有人接住或进程结束。借书台若把「没有这本书」当成可以继续盖章的普通结果，空字符串很省事，也会让空白条子流出柜台。若没有这本书就根本不该继续，异常更诚实。
 
-`finally` 无论是否出错都会执行。自定义异常继承 `Exception`，这样调用者可以按类型区分。
+先看返回空字符串的查找。架子上只有小径在东柜。查海边，get 风格的写法交回空串。调用者用 `== ""` 判断，印出未找到。注意不要用真值草草分支却印出柜名本身：空串印出来是空的，测试会以为程序没说话。我们把判断的结果写成明确的四个字。
 
-```python run expect="5.0" title="安全除法"
-def divide(a, b):
-    try:
-        return a / b
-    except ZeroDivisionError:
-        return "undefined"
+```python run expect="未找到" title="失败变成空字符串"
+def find_shelf(title):
+    shelf = {"小径": "东柜", "夜航": "西柜"}
+    if title not in shelf:
+        return ""
+    return shelf[title]
 
-print(divide(10, 2))
-print(divide(1, 0))
-```
-
-```python run expect="空白" title="自定义异常"
-class EmptyInput(Exception):
-    pass
-
-def parse(text):
-    if text.strip() == "":
-        raise EmptyInput("空白")
-    return int(text)
-
-try:
-    parse("  ")
-except EmptyInput as err:
-    print(err)
-```
-
-```python run expect="bad" title="非零退出" exit="2"
-import sys
-print("bad")
-sys.exit(2)
-```
-
-异常用来报告「这一步无法按约定完成」。raise 抛出，try 围住可能失败的代码，except 按类型接住。可以写多个 except，更具体的类型放在前面，因为解释器按书写顺序匹配，前面的父类会把子类也接住。except Exception 几乎什么都接，调试时会把真正的缺陷藏起来。不要写裸的 except:。
-
-else 子句在 try 没有异常时运行，finally 无论是否异常都会运行，适合释放资源。文件用 with 打开时，离开块会自动关闭，通常不必再写 finally。异常不是另一种 if：能事先判断的情况（键在不在、除数是不是零）用条件更清楚；解析用户输入这种「格式错了才知道」的情况适合 try。
-
-自定义异常继承 Exception，名字以 Error 结尾。调用方就可以 except 你的类型，而不是去读错误消息的文字。消息是给人看的，类型才是给程序分支用的。
-
-traceback 从上到下是调用栈。最后一行是异常类型和消息，往上是谁调用了谁。修 bug 时先看最后一行，再看你自己的文件，跳过标准库内部的帧。这个环境的报错同样会进终端，退出码非零。
-
-try 里面放可能失败的最少代码。如果把整个函数都包进去，except 会接住不该接的错误，例如名字写错导致的 NameError。那样你会以为是输入坏了，其实是自己的变量名。
-
-异常对象可以带消息。str(err) 或 err 本身打印出来就是消息。不要靠消息的全文做分支，消息会改；用异常类型，或者在自定义异常上放一个稳定的属性。
-
-finally 里再抛异常会盖住原来的异常。清理代码保持简单，不要在 finally 里解析数据。with 语句能处理的资源就不要手写 finally。
-
-自定义异常类的主体可以只有 pass。继承 Exception 已经足够被 except 匹配。如果还需要错误码，在 __init__ 里保存，并调用 super().__init__(message)，这样打印时仍有文字。
-
-异常表示这一步无法按约定完成。raise 抛出，try 围住可能失败的最少代码，except 按类型接住。多个 except 更具体的写在前面，因为匹配按书写顺序，父类会把子类也接住。except Exception 几乎什么都接，名字写错这种缺陷也会被当成输入错误。不要写不带类型的 except。
-
-else 在 try 没有异常时运行，适合放「只有成功才继续」的语句。finally 无论是否异常都会运行。finally 里再抛异常会盖住原来的异常，所以清理代码保持简单。文件和锁优先用 with，离开块自动释放，不必在每条路径上手写 close。
-
-能事先判断的情况用 if：键在不在、除数是不是零。解析用户输入这种「格式错了才知道」的情况适合 try。不要为了演示捕获而把正常分支改成抛异常。自定义异常继承 Exception，名字以 Error 结尾，需要的错误码放在属性上，并调用父类初始化，这样打印时仍有文字。分支看类型，不看消息全文，因为消息会改。
-
-traceback 最后一行是类型和消息，往上是调用关系。先看最后一行，再看你自己的文件，跳过标准库内部的帧。这个环境的报错同样进终端，退出码非零。
-
-### 读「else 子句」
-
-先做这一例。代码收成一行是 `try: value = 1 except ZeroDivisionError: print('bad') else: print(value)`。先盖住终端，用手算结果，纸上的文本里要能找到「1」。这是子串：前面可以有别的输出，后面通常有换行，不要要求整屏只有这几个字。
-
-然后点这个代码块上的 Run，不要点工具栏。代码块会先备份草稿，再把示例写进编辑器并执行。终端里用眼睛找「1」。退出码不是 0 时，先读错误的类型和最后一行，此时不要改期望。退出码是 0 但找不到这段文字，说明打印了别的值，回到产生该值的表达式，只改一处。
-
-改过之后再点代码块上的 Run，会把你的修改盖掉。要验证修改，点工具栏上的 Run。预测和新输出一致后，点撤销，把草稿还给自己。一次只改这一例，不要连着改两个代码块。
-
-### 读「类型匹配」
-
-做完上一个再做这一例。代码收成一行是 `try: raise ValueError('x') except TypeError: print('type') except ValueError: print('value')`。先盖住终端，用手算结果，纸上的文本里要能找到「value」。这是子串：前面可以有别的输出，后面通常有换行，不要要求整屏只有这几个字。
-
-然后点这个代码块上的 Run，不要点工具栏。代码块会先备份草稿，再把示例写进编辑器并执行。终端里用眼睛找「value」。退出码不是 0 时，先读错误的类型和最后一行，此时不要改期望。退出码是 0 但找不到这段文字，说明打印了别的值，回到产生该值的表达式，只改一处。
-
-改过之后再点代码块上的 Run，会把你的修改盖掉。要验证修改，点工具栏上的 Run。预测和新输出一致后，点撤销，把草稿还给自己。一次只改这一例，不要连着改两个代码块。
-
-实践 1 写成一句就是：except 写出具体类型，并且更具体的写在前面。 用「else 子句」当检查对象。删掉一个保护条件，或把比较符号反过来，看失败是报错还是静默地打出另一个数。 看完失败的样子再改回来。看起来没变化的违反最危险，因为期望子串可能仍然在，换一个输入才暴露。参考答案「参考答案：接住 ValueError」按这一条来写。打开答案之前，先用自己的版本对着练习说明里的输入算一遍。
-
-实践 2 写成一句就是：能用条件判断的失败不要故意抛异常再接住。 用「类型匹配」当检查对象。把本该新建的对象改成复用已有的名字，看两个名字会不会一起变。 看完失败的样子再改回来。看起来没变化的违反最危险，因为期望子串可能仍然在，换一个输入才暴露。参考答案「参考答案：接住 ValueError」按这一条来写。打开答案之前，先用自己的版本对着练习说明里的输入算一遍。
-
-实践 3 写成一句就是：清理资源优先用 with，而不是记得在每条路径上 close。 用「else 子句」当检查对象。少写一个边界：少一次循环、少一个参数或少接住一个返回值，看输出正好差在哪。 看完失败的样子再改回来。看起来没变化的违反最危险，因为期望子串可能仍然在，换一个输入才暴露。参考答案「参考答案：接住 ValueError」按这一条来写。打开答案之前，先用自己的版本对着练习说明里的输入算一遍。
-
-练习先不看折叠答案。题目是：把字符串 no 转成整数，失败时打印「失败」。 做完再对照「参考答案：接住 ValueError」。能说出自己的写法和答案差在哪一行，这道题才算完成。本章的另一道练习查的不是同一件事，两道都做。
-
-收束时用一句话复述：异常按类型捕获，finally 和 with 负责清理。用户输入的格式错误适合 try，程序里的正常分支仍用 if。 若只能留下三句，就留下上面三条实践，并为每一条记住一个你刚刚故意做错的反例。
-
-```python run expect="1" title="else 子句"
-try:
-    value = 1
-except ZeroDivisionError:
-    print('bad')
+found = find_shelf("海边")
+if found == "":
+    print("未找到")
 else:
-    print(value)
+    print(found)
 ```
 
-```python run expect="value" title="类型匹配"
+这个函数对调用者很温和。温和的代价是每一个调用点都要记得检查空串。漏掉检查的那个调用点会把空串嵌进 f-string，印出「位置：」后面什么都没有，退出码仍是 0。成功的进程加上空白的位置，是这种设计最难查的事故，因为没有任何回溯提醒你忘记了检查。你只能靠期望里的「未找到」或者靠人眼。人眼在条子变多之后会漏。
+
+再看抛出。同一批架子，查不到就 raise KeyError。KeyError 是字典自己在键缺失时也会用的类型，这里我们主动抛，信息里带上书名，便于读回溯。调用者用 try 包住调用，except 只接 KeyError。接住之后打印类型名。进程成功，输出里有 KeyError。若删掉 try，进程会失败，期望对不上，终端里是回溯而不是我们打印的类型名。两种运行都值得在自己电脑上见一次。文章里的可运行块必须是接住的那一种，否则自动核对无法完成。
+
+```python run expect="KeyError" title="失败改为抛出"
+def find_shelf(title):
+    shelf = {"小径": "东柜", "夜航": "西柜"}
+    if title not in shelf:
+        raise KeyError(title)
+    return shelf[title]
+
 try:
-    raise ValueError('x')
-except TypeError:
-    print('type')
-except ValueError:
-    print('value')
+    print(find_shelf("海边"))
+except KeyError as exc:
+    print(type(exc).__name__)
 ```
 
-## 练习
+except 后面写了类型，就只接这种。书名写错导致的 KeyError 会被接住；若函数里还有别的错误，例如在返回之前对 None 做下标，那是 TypeError，不会被这个 except 接住，进程仍然失败。这是好事。一个什么都接的 `except:` 或 `except Exception` 会把写错的名字、写错的缩进之外的运行错误也变成「未找到」。借书台就会用「没有这本书」去解释一切故障。范围窄的 except 是这个设计能用的前提。
 
-读入一行，能转成整数就打印它，否则打印「不是整数」。
+raise 还可以不带新的类型，在 except 里把刚接住的异常再抛出去。当你只是记录一笔、并不想真正处理时，再抛出去是合理的。若你既打印了未找到，又再抛，调用者会看见两套说法。处理了就不要再抛；没处理就不要印成功。不要印完「已处理」再让进程失败，那会让人以为章已经盖了。
 
-::: answer 参考答案：解析整数
-```python run stdin="3.14\n" expect="不是整数" title="参考答案"
+finally 里的语句无论 try 是否成功都会执行。它适合做收尾：把「查询结束」印出来，或者在真实系统里放开一把锁。收尾不该决定业务结果。下面这一块查得到小径，try 里印出东柜，finally 里印出台面已清空。两行都出现。若把查找改成海边，except 印出未找到，finally 仍然印出台面已清空。收尾不因为失败而跳过，这正是 finally 比「在 try 末尾和 except 末尾各写一遍」更不容易漏的原因。
+
+```python run expect="台面已清空" title="成败都要收尾"
+def find_shelf(title):
+    shelf = {"小径": "东柜"}
+    if title not in shelf:
+        raise KeyError(title)
+    return shelf[title]
+
 try:
-    print(int(input()))
-except ValueError:
-    print("不是整数")
+    print(find_shelf("小径"))
+except KeyError:
+    print("未找到")
+finally:
+    print("台面已清空")
 ```
-:::
 
-把字符串 no 转成整数，失败时打印「失败」。
+输出先是东柜，然后是台面已清空。finally 若自己又抛出异常，原来的异常会被换成这个新的，调用者可能看不见真正的 KeyError。收尾应当是不容易失败的动作。打印一句话足够安全。不要在 finally 里再查一次可能缺失的键。
 
-::: answer 参考答案：接住 ValueError
-```python run expect="失败" title="参考答案"
+else 可以跟在 try 后面，表示「没有发生异常时执行」。它和 finally 不同。finally 总会执行；else 只在成功时执行。把「印出柜名之后的登记」放在 else 里，可以避免在失败路径上登记。这个结构比在 try 里写很长一串更清楚：try 里只放可能失败的那一句查找。本章的例子为了短，有时把 print 放在 try 里。规模变大时，try 的块越短越好，这样你知道被监视的是哪一句。
+
+自定义异常是你自己的类型，继承 Exception。当 KeyError 太泛，既可能是字典用错了键，也可能是书不在架上，就可以定义 `class MissingBook(Exception):` 然后 raise MissingBook(title)。调用者 except MissingBook，就不会把别的 KeyError 一起接住。类型是给调用者分支用的，消息是给人读的。两者都写。这一章的可运行例子仍用 KeyError，因为架子本身就是字典，用它的异常类型最直接。自定义类型在你有多种失败需要分开处理时再引入，不要为了一本小径就造一整套异常家族。
+
+返回空串和抛出还可以对同一本书放在一次进程里对照，但要写成两个函数，避免一个函数有时返回有时抛出却没有文档。一个函数若既可能返回空串又可能抛出，调用者两头都要防，这是最贵的接口。选一种。下面只是对照调用，不是鼓励一个函数脚踏两条船。空串那条印未找到，抛出那条印 KeyError。
+
+```python run expect="未找到" title="两种失败并排"
+def find_quiet(title):
+    shelf = {"小径": "东柜"}
+    return shelf[title] if title in shelf else ""
+
+def find_loud(title):
+    shelf = {"小径": "东柜"}
+    if title not in shelf:
+        raise KeyError(title)
+    return shelf[title]
+
+quiet = find_quiet("海边")
+print("未找到" if quiet == "" else quiet)
 try:
-    print(int("no"))
-except ValueError:
-    print("失败")
+    find_loud("海边")
+except KeyError as exc:
+    print(type(exc).__name__)
 ```
-:::
 
-## 最佳实践
+两行输出：未找到，以及 KeyError。第一行证明空串被翻译成了人话；若翻译漏了，第一行会是空的，期望失败。第二行证明异常被接住。两行的顺序固定，因为没有循环也没有随机。
 
-- except 写出具体类型，并且更具体的写在前面。
-- 能用条件判断的失败不要故意抛异常再接住。
-- 清理资源优先用 with，而不是记得在每条路径上 close。
+输入转换成整数时也会失败。读者在天数那一格填了「三」。int("三") 抛出 ValueError，不是 KeyError。接住 ValueError 才能说「天数不是整数」。把它接成 KeyError 的 except 不会生效。不同的失败用不同的类型，调用者才能说不同的句子。下面这一块不读取真正的 input，把「三」直接放进源码，这样失败稳定。若用 input，就要在代码块上准备 stdin，而且读者还可能输入别的。教材要的是 ValueError 这条路径。
+
+```python run expect="ValueError" title="天数字样不对"
+try:
+    days = int("三")
+    print(days)
+except ValueError as exc:
+    print(type(exc).__name__)
+```
+
+int 的失败不要用返回空串来模仿，除非整个程序的风格就是「转换函数不抛异常」。标准的 int 会抛。包一层去吞掉 ValueError 再返回空串，等于把上一节刚批评过的温和接口又盖在一个本来诚实的函数上。可以包，但要有理由，例如交互式输入要反复问。反复问的循环应当在 except 里提示再读，而不是返回空串让远处的代码去猜。
+
+异常不是用来代替条件的日常分支。书在不在架上，若两个结果都常见，用条件返回柜名或一个明确的结果对象，代码会更直。异常的成本在于阅读时要记得跳转到 except，也在于把它用在循环的每一本上会把控制流扯碎。东柜若预期大多数查询都查得到，偶尔的缺失用异常可以接受。若一半的查询都会缺失，例如在一批读者自报的书名里查找，缺失是正常业务，返回值更合适。选择取决于失败算不算意外，不取决于哪种写法更「高级」。
+
+不要捕获之后只写 pass。那是空串问题的异常版本：进程成功，信息消失。本章每一个 except 都把类型名或「未找到」印出来。印出来，失败才仍然可见。可见，才谈得上处理。
+
+异常对象上还可以带书名。`raise KeyError(title)` 之后，except 里的 exc 转成字符串时通常能看到那个书名。我们在例子里只打印类型名，是为了让期望不依赖引号的样式。你在自己排查时可以打印 exc，看见是哪一本没有。不要只打印类型就以为信息已经够了。类型告诉你失败属于哪一类，参数告诉你是哪一条索书号。两者都要在真正的柜台日志里出现。教程的期望选类型名，是因为类型名跨版本更稳，不是因为书名不重要。
+
+try 可以嵌套。内层接住 KeyError 并打印未找到，外层若再接 Exception，就不会再看见这个 KeyError，因为它已经被处理了。外层能看见的是内层没有接住的那些。把「未找到」处理在离查找最近的地方，把「柜台整体失败」留在外层，层次才清楚。全部堆在最外层的一个 except 里，你会分不清是哪一次查找失败。借书台一次当班要查好几本时，每查一本就近处理，已查到的那些才能留在名单上。最外层再失败，不该把已经成功的查找说成没发生，所以成功的结果要在异常抛出之前已经放进一个你还握着的列表里。
+
+`else` 分支和 for 的 else 不是一回事。循环也有 else，它在循环没有被 break 时执行。try 的 else 在没有异常时执行。两个 else 都容易被读成「否则」，但一个是「没打断」，一个是「没失败」。这一章只使用 try 的 else 这个概念，不在例子里混进循环的 else，免得两套「否则」叠在同一段借书流程里。你若在别的代码里看见 for 后面跟着 else，先确认它不属于 try。读错分支会把「找到了」和「找完都没有」说反。
+
+自定义异常的消息用中文也可以。`raise MissingBook("架上没有小径")` 然后在 except 里打印异常的字符串，输出就是这句中文。这样做时期望可以锁定中文句子。代价是你把给人看的句子写进了异常，调用者若还想自己组织句子，就会重复。类型给程序分支，消息给人看，调用者可以选择只看类型、自己写「未找到」。本章的例子走类型名，就是把句子的组织权留在 except 里，而不是留在 raise 里。两种都成立，不要两种各写一半又互相矛盾。
+
+最后分清三层结果。函数正常 return 柜名，调用者接着盖章。函数 return 空串，调用者必须记得翻译成未找到，否则空白进入条子。函数 raise，调用者不写 try 则进程失败，写了匹配的 except 才能改口。三层里只有第一层能直接把返回值交进 json。后两层都需要一次翻译。翻译的位置要固定，不要有的调用点翻译、有的不翻译。
 
 ## 小结
 
-异常按类型捕获，finally 和 with 负责清理。用户输入的格式错误适合 try，程序里的正常分支仍用 if。
+返回空字符串时，每个调用点都要检查，漏查会印出空白位置且退出码为 0。raise 把失败从普通值里分开，调用者用窄的 except 接住指定类型。finally 无论成败都执行，适合收尾，不适合再做一次可能失败的查找。int 对非法文字抛出 ValueError，和 KeyError 不是同一种失败。常见的缺失不一定要用异常，意外的缺失才值得打断调用。
 
-## 常见错误
+## 练习
 
-- 用异常代替普通的 if。找不到键可以先用 in 判断，不必每次 KeyError。
-- except Exception 把 KeyboardInterrupt 以外几乎所有错误都吞掉，真实的缺陷会被藏住。
+架子上只有夜航在西柜。写查找函数，没有就返回空字符串。查询小径，若结果是空串就打印未找到。
 
-## 延伸阅读
+::: answer 参考答案：空串路径
+```python run expect="未找到" title="参考答案"
+def find_shelf(title):
+    shelf = {"夜航": "西柜"}
+    if title not in shelf:
+        return ""
+    return shelf[title]
 
-- [The Python Tutorial](https://docs.python.org/3/tutorial/)（PSF，仅链接）
-- [Think Python 3e](https://greenteapress.com/wp/think-python-3rd-edition/)（CC BY-NC-SA，仅链接）
-- [Automate the Boring Stuff with Python](https://automatetheboringstuff.com/)（CC BY-NC-SA，仅链接）
+found = find_shelf("小径")
+print("未找到" if found == "" else found)
+```
+:::
 
-## 参考与致谢
+同一架子，没有就 raise KeyError。用 try 查询小径，打印异常类型名。
 
-正文为原创。示例的知识点范围参考了 Learn X in Y minutes — Python（CC BY-SA 3.0）与 A Byte of Python（CC BY-SA 4.0），没有逐字搬用原文。
+::: answer 参考答案：抛出路径
+```python run expect="KeyError" title="参考答案"
+def find_shelf(title):
+    shelf = {"夜航": "西柜"}
+    if title not in shelf:
+        raise KeyError(title)
+    return shelf[title]
+
+try:
+    print(find_shelf("小径"))
+except KeyError as exc:
+    print(type(exc).__name__)
+```
+:::

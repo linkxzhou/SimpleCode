@@ -1,22 +1,5 @@
-import { writeBook } from "./lib.mjs";
-import { pages as python } from "./books/python.mjs";
-import { pages as js } from "./books/js.mjs";
-import { pages as go } from "./books/go.mjs";
-import { pages as ruby } from "./books/ruby.mjs";
-import { pages as sqlite } from "./books/sqlite.mjs";
-import { pages as c } from "./books/c.mjs";
-import { pages as cpp } from "./books/cpp.mjs";
-import { pages as php } from "./books/php.mjs";
-import { pages as lua } from "./books/lua.mjs";
-
-const root = new URL("../..", import.meta.url).pathname;
-writeBook(root, "python", python);
-writeBook(root, "js", js);
-writeBook(root, "go", go);
-writeBook(root, "ruby", ruby);
-writeBook(root, "sqlite", sqlite);
-writeBook(root, "c", c);
-writeBook(root, "cpp", cpp);
-writeBook(root, "php", php);
-writeBook(root, "lua", lua);
-console.log(`wrote python ${python.length}, js ${js.length}, go ${go.length}, ruby ${ruby.length}, sqlite ${sqlite.length}, c ${c.length}, cpp ${cpp.length}, php ${php.length}, lua ${lua.length}`);
+// The language books are hand-written essays in docs/.
+// This generator used to stamp the same 常见错误 / 最佳实践 skeleton
+// into every chapter. Running it would erase that prose, so it refuses.
+console.error("docs/ is the source of the essays. Refusing to overwrite them from scripts/curriculum.");
+process.exit(1);
