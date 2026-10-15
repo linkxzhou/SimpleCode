@@ -585,10 +585,10 @@ npm test                # vitest；npm run test:e2e → playwright
 
 ### 17.3 vendor-wasm.mjs 行为
 1. 读取 `scripts/languages.config.mjs`（语言定义与 asset 文件名；Runno 语言移植自 `commands.ts`，`build` 字段指向 `scripts/builders/<name>/build.sh`）。
-2. 无 `build` 的 asset 从 `thirdparty/runno/langs/` 复制到 `wasm/`（`--link` 用符号链接）。`build: "lua"` / `build: "go"` 调用对应脚本：按 `scripts/sources.lock.json` 下载工具链（校验 sha256）、编译、并核对产物 sha256。产物已匹配则跳过重编译。
+2. 无 `build` 的 asset 从 `thirdparty/runno/langs/` 复制到 `wasm/`（`--link` 用符号链接）。`build: "lua"` / `build: "go"` 调用对应脚本：按 `uname` 从 `scripts/sources.lock.json` 选择本机的 wasi-sdk / Go 压缩包（校验 sha256）、编译、并核对产物 sha256。产物已匹配则跳过重编译。摘要与参考值不同、且该宿主没有单独登记时，脚本警告并保留产物（`SIMPLECODE_STRICT_WASM_DIGEST=1` 则失败）。编译失败则尝试下载 Release 上的预编译 wasm。
 3. 校验文件头：wasm 魔数 `\0asm`、gzip 魔数 `1f8b`（防止 Git LFS 指针文件）。
 4. 计算 size + sha256，写 `wasm/manifest.json`。
-5. Lua/Go 构建需要 Linux x86_64。工具链缓存在 `thirdparty/cache/`（gitignore）。
+5. Lua/Go 构建支持 Linux 与 macOS 的 x86_64 / arm64（bash 3.2、`sha256sum` 或 `shasum`）。工具链缓存在 `thirdparty/cache/`（gitignore）。
 
 ### 17.4 添加一门新语言
 1. 准备 WASI preview1（`wasi_snapshot_preview1`）兼容的 `.wasm`；若需要标准库/资源文件，打包成 ustar `.tar.gz`（路径即运行时绝对路径）。
