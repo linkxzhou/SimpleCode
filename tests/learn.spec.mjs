@@ -207,9 +207,10 @@ try {
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-lua"]');
   await openLearn(page);
-  await page.waitForSelector('[data-testid="docs-soon"]');
-  const soon = await page.textContent('[data-testid="docs-title"]');
-  check(soon?.includes("Lua 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "lua coming soon");
+  const luaTitle = await page.textContent('[data-testid="docs-title"]');
+  check(luaTitle?.includes("Lua 101") && !(await page.$('[data-testid="docs-soon"]')), `lua book opens ${luaTitle}`);
+  await page.click('[data-testid="chapter-link"][data-chapter="1"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
   await page.click('[data-testid="docs-close"]');
 
   await page.click('[data-testid="lang-python"]');
