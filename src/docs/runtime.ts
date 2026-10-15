@@ -41,7 +41,7 @@ export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua"
 export type BookId = (typeof BOOKS)[number];
 
 /** Books with a full curriculum in this release. Other ids stay in the map and show “即将推出”. */
-export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite"] as const;
+export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c"] as const;
 
 export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   python: "python",
