@@ -103,4 +103,14 @@ func main() {
 	fmt.Println(squares)
 }
 `,
+  shell: `printf "What's your name? "
+read name
+printf "Hello, %s!\\n" "$name"
+
+echo "builtin pipe" | cat
+echo "squares:"
+for n in 1 2 3 4 5; do
+  echo "$n"
+done
+`,
 };

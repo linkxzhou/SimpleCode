@@ -22,6 +22,15 @@
     },
     "prebuiltUrl": "https://github.com/linkxzhou/SimpleCode/releases/download/wasi-runtimes-1/yaegi-0.16.1.wasm"
   },
+  "shell": {
+    "version": "1",
+    "output": "wasi-sh.wasm",
+    "outputSha256": "0dcaeccb81ad6ae506674171cfae935697ea2e6b5687067357bf38fd6d4e3807",
+    "outputSha256ByHost": {
+      "linux-x86_64": "0dcaeccb81ad6ae506674171cfae935697ea2e6b5687067357bf38fd6d4e3807"
+    },
+    "prebuiltUrl": "https://github.com/linkxzhou/SimpleCode/releases/download/wasi-runtimes-1/wasi-sh.wasm"
+  },
   "toolchains": {
     "linux-x86_64": {
       "wasiSdk": {

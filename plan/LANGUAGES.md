@@ -38,6 +38,7 @@
 - 现架构（WASI 命令模块 + `WASIWorkerHost`）可**零改动**接入的只有“真正的 WASI preview1 命令程序”。**Lua 5.4.9 与 Go（Yaegi wasip1）已按此接入**（§8）。Perl 仍需 reactor 适配。
 - 其余（Java/C#/VB/R/Fortran/Pascal/Octave）都是 Emscripten / .NET / JS 产物，需要引入 **Runtime 适配层**（§2）。
 - Rust 能做到“浏览器内编译”，但依赖 wasi-threads、体积巨大、仍属实验，建议作为后期“实验语言”。
+- **Shell / Java / Rust 的 2026-10-15 复核**（体积、许可证、与 `WASIWorkerHost` 是否兼容、建议顺序）见 §9。结论：先做 Shell（WASI 命令），Java 单独评估适配器，Rust 暂缓。
 
 ---
 
@@ -47,7 +48,7 @@
 见 `plan/DESIGN.md` §2、§6。来源：Runno `langs/`（VMware webassembly-language-runtimes、binji/wasm-clang、second-state/wasmedge-quickjs、SQLite）。
 - 可选升级：VMware WLR 已发布 Python 3.12.0、PHP 8.2.6、Ruby 3.2.2（https://github.com/vmware-labs/webassembly-language-runtimes ），可替换以获得新版本（需重测 baseFS 布局）。
 
-### 1.2 Java（#4）— 🟡
+### 1.2 Java（#4）— 🟡（2026-10-15 复核见 §9.2）
 - **TeaVM-javac**：https://github.com/konsoletyper/teavm-javac ；在线演示 https://teavm.org/playground.html （作者 2025-06 发布，javac 21 + TeaVM 打包为一个 Wasm 模块，`compiler.wasm`）。流程：`addSourceFile` → `compile()` → `generateWebAssembly({mainClass})` → 得到用户程序 wasm（TeaVM 的 Wasm GC 输出 + JS 运行时）。
 - 类型：非 WASI；需在 Worker 中加载 TeaVM 运行时 JS。用户程序 `System.out` 可接到回调；**交互式 `System.in`** 需要 TeaVM classlib 支持同步读取 ⚠️（可用 SharedArrayBuffer+Atomics.wait 在 Worker 中实现阻塞读，需验证 TeaVM 的 stdin 钩子）。
 - 限制：TeaVM 限制反射、类加载等；标准库子集。依赖浏览器 **Wasm GC** 支持（Chrome 119+/Firefox 120+/Safari 18.2+）⚠️。
@@ -67,7 +68,7 @@
 - 体积：基础 R ≈ 数十 MB ⚠️；扩展包按需（默认从其仓库 CDN 安装 → 需本地托管或禁用）。许可证 R 为 GPL-2.0+（webR 本身 MIT？⚠️ 需核实）。
 - 工作量：中。
 
-### 1.5 Rust（#10）— 🟠 详见 §4
+### 1.5 Rust（#10）— 🟠 详见 §4；2026-10-15 复核见 §9.3
 
 ### 1.6 Go（#11）— ✅ 已集成（原评估 🟡）
 - **Yaegi**（Go 解释器，Traefik）：https://github.com/traefik/yaegi ，Apache-2.0，纯 Go 实现，支持几乎完整的 Go 规范与标准库（反射实现）。
@@ -266,7 +267,7 @@ export interface RuntimeAdapter {
 
 ## 8. Phase 1 实现记录（2026-10-15）
 
-Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建。构建机可以是 **Linux 或 macOS** 的 x86_64 / arm64（见 §8.3）。
+Lua、Go 与 Shell 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建。构建机可以是 **Linux 或 macOS** 的 x86_64 / arm64（见 §8.3）。
 
 ### 8.1 Lua 5.4.9
 - 脚本：`scripts/builders/lua/build.sh`。wasi-sdk **33.0**（按宿主选择压缩包，Linux x86_64 为 `0ba8b5bf…`）+ Lua **5.4.9**（`2335b6c5…`）。产物 `lua-5.4.9.wasm`，720,144 字节，sha256 `06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb`。
@@ -308,17 +309,82 @@ Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。�
 本地编译失败，或系统不在上表中时，下载 `prebuiltUrl` 的 wasm，sha256 必须等于 `outputSha256`。默认地址是 GitHub Release `wasi-runtimes-1` 的 `lua-5.4.9.wasm` 与 `yaegi-0.16.1.wasm`（需要发布后备用下载才会成功）：
 
 ```bash
-gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wasm/yaegi-0.16.1.wasm
+gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wasm/yaegi-0.16.1.wasm wasm/wasi-sh.wasm
 ```
 
-临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
+临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`、`SIMPLECODE_SHELL_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
 
-### 8.4 清单跟磁盘上的文件走
+### 8.4 Shell（wasi-sh）
 
-`wasm/manifest.json` 不入库。`.gitignore` 忽略整个 `wasm/`。`scripts/write-manifest.mjs` 读取已经放在 `wasm/` 里的每个文件，写入它的真实 `size` 和 `sha256`。下面三处都会调用它：
+公开的 bash / BusyBox wasm 不能交给 `WASIWorkerHost`（导入了 `nimbus_proc`、`env` 或 Emscripten 胶水，见 §9.1）。因此 Shell 是本仓库的 `scripts/builders/shell/wasi-sh.c`，用 §8.3 的 wasi-sdk 33 编成 preview1 命令。脚本：`scripts/builders/shell/build.sh`。产物 `wasi-sh.wasm`，55,023 字节，sha256 `0dcaeccb81ad6ae506674171cfae935697ea2e6b5687067357bf38fd6d4e3807`（Linux x86_64，同一源码在两个目录各编一次，摘要一致）。导入只有 `wasi_snapshot_preview1`，导出 `_start` 与 `memory`。许可证 MIT。预编译备用地址与 Lua/Go 相同，文件名 `wasi-sh.wasm`（需要发布后才下载得到）。
+
+能做的事（已在 Node `node:wasi` preview1 上跑过）：
+
+- 内建：`echo`（`-n`）、`printf`（`%s` `%d` `%%` 和 `\n` `\t`）、`read`、`cat`、`true` / `false` / `:`、`exit`、`test` 与 `[ ]`（`-z` `-n`、字符串 `=` `!=`、整数 `-eq` `-ne` `-lt` `-le` `-gt` `-ge`）。
+- 赋值 `NAME=value`，展开 `$VAR` `${VAR}` `$?` `$#` `$$`（固定为 `1`）`$0`–`$9`。单引号按字面，双引号里展开变量。
+- `if` / `elif` / `else` / `fi`，`while` / `do` / `done`，`for NAME in …; do` / `done`，`;` 与换行，`&&` 与 `||`。
+- 内建之间的管道（内存缓冲，左结合，例如 `echo a | cat | cat`）。重定向 `<` `>` `>>` 走 WASI 预打开的文件系统。
+- 外部命令写到 stderr：`shell: NAME: external commands are not available (no fork)`，退出码 127。语法错误退出码 2。`while` / `for` 超过 100000 次会停下来。
+
+做不到的事，因为 preview1 没有进程和管道系统调用，这个宿主也没有补：
+
+- `fork`、`exec`、后台 `&`、真正的 OS 管道、`cd`（没有 `chdir`）、命令替换 `$(…)`、算术 `$((…))`、子 shell、通配、here-doc、函数、`source`。
+- 管道右边如果是外部程序，同样是 127；左边的输出不会交给宿主去启动另一个 wasm。
+
+### 8.5 清单跟磁盘上的文件走
+
+`wasm/manifest.json` 不入库。`.gitignore` 忽略整个 `wasm/`。`scripts/write-manifest.mjs` 读取已经放在 `wasm/` 里的每个文件，写入它的真实 `size` 和 `sha256`。资产名和语言列表来自 `scripts/languages.config.mjs`，所以 Shell 的 `wasi-sh.wasm` 和 Lua、Go 一样写进这份清单。下面三处都会调用它：
 
 - `./build.sh vendor` 在复制或编译结束之后。
 - `./build.sh dev` 与 `./build.sh build` 在启动 Vite 之前。缺文件时才去 vendor，文件在但清单过期时只重写清单。
 - Vite 插件在 dev server 启动和 `buildStart` 时再写一次，然后把 `wasm/` 拷进 `dist/wasm`。`./build.sh preview` 会再同步一次，避免预览一份旧的 `dist/wasm`。
 
 下载时的大小检查仍对照清单里的 `size`（`src/core/wasmLoader.ts`）。清单和被提供的文件来自同一目录，所以 Apple Silicon 上 Lua 从 720144 字节变成 720592 字节不会再报「大小不匹配」。不要把清单提交回来，也不要用 `git checkout -- wasm/manifest.json` 恢复某一台机器的摘要。`tests/manifest-refresh.test.mjs` 用一份故意写错的清单确认重写后的 `size` 等于文件字节数，并确认 `wasm/manifest.json` 不在 git 索引里。
+
+---
+
+## 9. Java、Rust 与 Shell（2026-10-15 复核）
+
+本节只回答三件事：有哪些浏览器内方案、和现有 `@runno/wasi` `WASIWorkerHost`（只提供 `wasi_snapshot_preview1`）能不能直接跑、建议的顺序。链接在 2026-10-15 用 HTTP 或包内清单核对过；返回非 200 的页面会单独注明。WASI preview1 是扁平的 `wasi_snapshot_preview1` 导入，没有创建进程的调用（没有 `fork` / `exec` / `pipe`）。来源：https://wasi.dev/releases/wasi-p1 （200）。
+
+建议顺序：**Shell → Java（评估，不在本轮做适配器）→ Rust 暂缓。**
+
+### 9.1 Shell
+
+要接进现有侧栏，二进制必须是 WASI preview1 **命令模块**（导出 `_start`，导入只有 `wasi_snapshot_preview1`）。下面三份公开产物都不是这样：
+
+| 产物 | 体积（实测字节） | 许可证 | 导入 | 能否用于 `WASIWorkerHost` |
+|---|---|---|---|---|
+| [mayflower/busybox-wasm](https://github.com/mayflower/busybox-wasm/releases/tag/v1.37.1) `v1.37.1` 的 `busybox.wasm` | 226,326；sha256 `7fc7e424188eb9edf966a74c87390b3652b726f1edec9c0e120a957127284012` | 上游 BusyBox 为 GPLv2（https://busybox.net/license.html ，200） | 模块名被压成 `a`，配套 `busybox.js`（77,468 字节） | 否。这是给 JS 胶水用的，不是 preview1 命令 |
+| [@nimbus-sh/runtime-bash](https://registry.npmjs.org/@nimbus-sh/runtime-bash) `5.2.37-3` 的 `bash.async.wasm` | 3,896,320；sha256 `dcfd8bb774351e890c2b0fef70809564ea574a1c27f276f381748c2aa0d92362` | 包声明 `GPL-3.0-or-later AND GPL-2.0-only`（registry JSON，200）。GNU bash 文档：https://www.gnu.org/software/bash/manual/bash.html （200） | `wasi_snapshot_preview1` **加上** `env`（`getuid`、`dlopen` 等）和 `nimbus_proc`（`fork`、`execve`、`pipe`、`waitpid`、`dup2` 等），并导出 Asyncify 符号 | 否。实例化时缺 `nimbus_proc` / `env` |
+| 同包 `coreutils/busybox.wasm`（BusyBox 1.37.0） | 293,648；sha256 `51a04c6e0fa2dad05cd4b6fc729615e7765b3bb76842ab9528916ae2eaac7475` | 同上，BusyBox 部分为 GPL-2.0-only | `wasi_snapshot_preview1` **加上** `nimbus_proc`（`chmod`、`chown` 等） | 否 |
+| [agentskillmania/busybox-wasi](https://github.com/agentskillmania/busybox-wasi) | 未取二进制 | 仓库未标 SPDX | 说明文字写的是 **WASI Preview 2** | 否。Preview 2 组件不能交给 preview1 宿主 |
+
+Nimbus 仓库：https://github.com/AshishKumar4/Nimbus （200）。这些包要的进程模型（`fork` / `exec` / 管道）正是 preview1 没有的系统调用，所以不能靠“再包一层下载”接进 `WASIWorkerHost`。
+
+可行做法：用已有的 wasi-sdk 33（Linux / macOS、x86_64 / arm64，见 §8.3）编一个 **只导入 preview1** 的 shell 命令。内建命令在同一个 wasm 实例里跑；内建之间的管道用内存接起来。外部程序、`fork`、真正的子进程管道做不到，失败要写在终端里。许可证选 MIT（自写）比把 GPLv2 BusyBox 或 GPLv3 bash 打进站点更干净；若以后换上游 BusyBox，必须按 GPLv2 提供对应源码（https://busybox.net/license.html ）。
+
+### 9.2 Java
+
+| 方案 | 许可证 | 形态 | 体积 | 与 preview1 宿主 |
+|---|---|---|---|---|
+| [TeaVM](https://github.com/konsoletyper/teavm) + [teavm-javac](https://github.com/konsoletyper/teavm-javac) | TeaVM **Apache-2.0**（GitHub API）。自带类库，不用 OpenJDK；类库来源含 Apache Harmony、Joda-Time、jzlib（仓库 README，200）。javac 本体是 GPLv2+CPE | 浏览器里把源码编成 Wasm GC + JS 运行时。演示 https://teavm.org/playground.html （200） | 仍约 10–30 MB ⚠️（本轮没有独立称到 `compiler.wasm`） | 否。不是 `_start` 命令模块 |
+| [CheerpJ 4.3](https://labs.leaningtech.com/blog/cheerpj-4.3) | 商业软件；FOSS、个人项目、一人公司可免费使用（该文，200）。自托管 CheerpJ Core 需要商业许可或技术评估，社区许可不能自托管（https://cheerpj.com/licensing/ ；本机 `curl` 对该站返回 403，条文来自同一天的页面检索） | 浏览器内 Wasm JVM + 未修改的 OpenJDK，Java 8 / 11 / 17 | 典型下载约 10–20 MB（https://labs.leaningtech.com/docs/cheerpj2/guides/Startup-time-optimization ）；有人测 BrowserCraft 首屏约 32 MB（公开讨论，未复测）⚠️ | 否。JS 库 + 按需字节区间，不是 WASI 命令 |
+
+TeaVM 曾经有 WASI 草稿（https://github.com/konsoletyper/teavm/pull/610 ）。GitHub API：`state=closed`，`merged_at=null`，没有并进主线。草稿自己也写了类库仍要非 WASI 的宿主导入（时区、大小写、数学函数）。因此 Java **不能**零改动接上 `WASIWorkerHost`。若要做，TeaVM 的许可证和“完全在浏览器内编译”更接近本项目；CheerpJ 更完整，但自托管和商业条款与 `wasm/` 本地分发冲突。这是评估项，不是本轮实现。
+
+### 9.3 Rust
+
+| 方案 | 许可证 | 体积 | 与 preview1 宿主 |
+|---|---|---|---|
+| [weblings](https://github.com/AngelOnFira/weblings) | MIT（GitHub API） | 说明写 rustc（Cranelift）+ sysroot 约 **187 MB**（仓库 Actions 工作流注释，https://github.com/AngelOnFira/weblings ） | 否。浏览器里的整套编译器，不是一条 WASI 命令 |
+| [rubrc](https://github.com/oligamiq/rubrc) | README 写 MIT OR Apache-2.0（GitHub API 的 license 字段为空） | rustc + LLVM + Cargo + clang，远大于单语言 wasm ⚠️ | 否。依赖其 `browser_wasi_shim-threads` / wasi-threads，不是 preview1 单线程宿主 |
+| [rubri](https://github.com/LyonSyonII/rubri) | MIT（GitHub API）。描述：“Rust interpreter that runs in the browser!” | 解释器，无独立称重 ⚠️ | 仍是浏览器应用，不是 `_start` 命令。Miri 维护者认为编到 Wasm 不是官方支持，而且慢：https://github.com/rust-lang/miri/issues/722 （200） |
+
+Rust 工具链的许可证（MIT / Apache-2.0）没问题，卡在体积、线程和实验状态。默认构建不收录。维持 §4 的“实验语言”，排在 Shell 和 Java 之后。
+
+### 9.4 顺序
+
+1. **Shell**：唯一能留在 `WASIWorkerHost` 里的。用 wasi-sdk 编 preview1 命令，内建 + 内建管道；明确没有 `fork`。
+2. **Java**：下一轮评估 TeaVM 适配器（新的 JS/Wasm GC 宿主、stdin 桥、本地托管）。不选 CheerpJ 作为默认。
+3. **Rust**：暂缓。不下载 100 MB 以上的实验编译器，也不为 wasi-threads 改宿主。

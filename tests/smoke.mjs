@@ -46,6 +46,15 @@ const cases = [
     expect: "Hello, Ada from Go 42",
     screenshot: "go-run.png",
   },
+  {
+    id: "shell",
+    code: 'read name\necho "Hello, $name from Shell"\necho pipe | cat\n',
+    stdin: "Ada",
+    expect: ["Hello, Ada from Shell", "pipe"],
+    screenshot: "shell-run.png",
+    monaco: "shell",
+    fileName: "main.sh",
+  },
 ].filter((c) => !only.length || only.includes(c.id));
 
 const server = spawn("yarn", ["vite", "preview", "--port", String(PORT), "--strictPort"], { stdio: ["ignore", "pipe", "pipe"] });
@@ -95,6 +104,13 @@ try {
       await page.click(`[data-testid="lang-${c.id}"]`);
       await page.waitForSelector(`[data-testid="lang-${c.id}"]:is([data-status="ready"],[data-status="error"])`, { timeout: 180_000 });
       if ((await page.getAttribute(`[data-testid="lang-${c.id}"]`, "data-status")) !== "ready") throw new Error("download failed");
+      if (c.fileName) {
+        await page.waitForFunction((name) => document.querySelector('[data-testid="filename"]')?.textContent === name, c.fileName);
+      }
+      if (c.monaco) {
+        const mode = await page.evaluate(() => globalThis.__simplecodeEditor.getModel().getLanguageId());
+        if (mode !== c.monaco) throw new Error(`monaco mode ${mode}, want ${c.monaco}`);
+      }
       if (c.dialect) {
         await page.click(`[data-testid="dialect-${c.dialect}"]`);
         const file = c.dialect === "ts" ? "main.ts" : "main.js";

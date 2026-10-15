@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Copy Runno language binaries into wasm/ and build Lua/Go, then write wasm/manifest.json.
+// Copy Runno language binaries into wasm/ and build Lua/Go/Shell, then
+// write wasm/manifest.json from the files on disk.
 import { copyFileSync, existsSync, mkdirSync, rmSync, symlinkSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
