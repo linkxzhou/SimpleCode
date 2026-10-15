@@ -1,5 +1,6 @@
-#!/usr/bin/env node
 // Fingerprint wasm/ from the files on disk and write wasm/manifest.json.
+// Invoked as `node scripts/write-manifest.mjs` and imported by Vite. No shebang:
+// esbuild bundles this module into the Vite config and rejects a mid-stream #!.
 // The manifest is generated, not committed: Lua's wasm is not byte-stable on
 // Apple Silicon, so a Linux digest checked in beside a local binary fails the
 // size check at download time.
