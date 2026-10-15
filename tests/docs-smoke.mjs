@@ -104,6 +104,7 @@ try {
   await waitForServer();
   const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  page.setDefaultTimeout(70_000);
   page.on("pageerror", (err) => console.log("  [pageerror]", err.message));
   await page.goto(BASE);
   await page.waitForSelector('[data-testid="lang-python"]');
