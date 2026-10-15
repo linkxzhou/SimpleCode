@@ -115,10 +115,21 @@ try {
     try {
       await prepare(page, c.runtime, c.lang);
       await page.evaluate((code) => globalThis.__simplecodeEditor.setValue(code), c.code);
-      await page.evaluate(
+      const run = page.evaluate(
         (opts) => globalThis.__simplecodeRun(opts),
         { stdin: c.stdin, stdinEOF: c.stdinEOF, source: "docs-smoke" },
       );
+      // page.evaluate itself has no timeout; a blocked read would stall the suite.
+      run.catch(() => {});
+      let timer;
+      const timed = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error("run timed out")), limit);
+      });
+      try {
+        await Promise.race([run, timed]);
+      } finally {
+        clearTimeout(timer);
+      }
       await page.waitForFunction(
         () => ["done", "failed", "crash", "terminated"].includes(document.querySelector('[data-testid="run-status"]')?.getAttribute("data-status") ?? ""),
         null,
