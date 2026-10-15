@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
+import { docsPlugin } from "./scripts/vite-plugin-docs";
 import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
 import { join, normalize, resolve } from "node:path";
 
@@ -47,7 +48,7 @@ function wasmAssets(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [vue(), wasmAssets()],
+  plugins: [docsPlugin(), vue(), wasmAssets()],
   resolve: { alias: { "@": resolve(__dirname, "src") } },
   server: { headers: isolationHeaders },
   preview: { headers: isolationHeaders },

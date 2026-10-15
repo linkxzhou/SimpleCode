@@ -21,6 +21,7 @@ export const useLanguageStore = defineStore("language", () => {
   const selectedId = ref<string>(localStorage.getItem(SELECTED_KEY) || "python");
   const states = reactive<Record<string, LangState>>({});
   const usage = ref(0);
+  const selectionOrigin = ref<"user" | "doc">("user");
   const controllers = new Map<string, AbortController>();
   const pending = new Map<string, Promise<boolean>>();
 
@@ -66,10 +67,11 @@ export const useLanguageStore = defineStore("language", () => {
     if (selected.value) void ensure(selected.value.id);
   }
 
-  async function select(id: string) {
+  async function select(id: string, origin: "user" | "doc" = "user") {
+    selectionOrigin.value = origin;
     selectedId.value = id;
     localStorage.setItem(SELECTED_KEY, id);
-    await ensure(id);
+    return ensure(id);
   }
 
   function ensure(id: string): Promise<boolean> {
@@ -137,5 +139,5 @@ export const useLanguageStore = defineStore("language", () => {
     await refreshUsage();
   }
 
-  return { manifest, manifestError, languages, selectedId, selected, selectedState, states, usage, init, select, ensure, cancel, clearCache, sizeOf };
+  return { manifest, manifestError, languages, selectedId, selected, selectedState, states, usage, selectionOrigin, init, select, ensure, cancel, clearCache, sizeOf };
 });

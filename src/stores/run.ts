@@ -8,11 +8,19 @@ import { useEditorStore } from "./editor";
 
 export type RunStatus = "idle" | "preparing" | "compile" | "link" | "run" | "done" | "failed" | "terminated" | "crash";
 
+export interface RunOptions {
+  stdin?: string;
+  stdinEOF?: boolean;
+  /** "editor" or a docs block id. */
+  source?: string;
+}
+
 export const useRunStore = defineStore("run", () => {
   const status = ref<RunStatus>("idle");
   const exitCode = ref<number>();
   const elapsed = ref(0);
   const message = ref<string>();
+  const source = ref<string>();
   let session: RunSession | undefined;
   let timer: number | undefined;
   let started = 0;
@@ -29,11 +37,18 @@ export const useRunStore = defineStore("run", () => {
     elapsed.value = performance.now() - started;
   }
 
-  async function run() {
+  async function waitUntilIdle(timeout = 1500) {
+    const t0 = Date.now();
+    while (running.value && Date.now() - t0 < timeout) await new Promise((r) => setTimeout(r, 30));
+    return !running.value;
+  }
+
+  async function run(opts?: RunOptions) {
     const langs = useLanguageStore();
     const editor = useEditorStore();
     const lang = langs.selected;
     if (!lang || running.value) return;
+    source.value = opts?.source ?? "editor";
     status.value = "preparing";
     message.value = undefined;
     exitCode.value = undefined;
@@ -60,25 +75,39 @@ export const useRunStore = defineStore("run", () => {
     stop();
     terminal.clear();
     status.value = "preparing";
-    const s = new RunSession(lang, {
-      stdout: (t) => terminal.write(t),
-      stderr: (t) => terminal.stderr(t),
-      phase: (p: Phase) => {
-        status.value = p;
-        if (p === "run") terminal.setInputHandler(inputHandler);
+    const stdin = opts?.stdin;
+    const stdinEOF = opts?.stdinEOF;
+    let inputHandler: { onLine: (line: string) => void; onEOF: () => void; onInterrupt: () => void };
+    const s = new RunSession(
+      lang,
+      {
+        stdout: (t) => terminal.write(t),
+        stderr: (t) => terminal.stderr(t),
+        phase: (p: Phase) => {
+          status.value = p;
+          if (p === "run") {
+            terminal.setInputHandler(inputHandler);
+            if (stdin) {
+              const shown = stdin.endsWith("\n") ? stdin : `${stdin}\n`;
+              terminal.write(`\x1b[38;5;247m${shown}\x1b[39m`);
+            }
+          }
+        },
       },
-    });
-    session = s;
-    const inputHandler = {
+      { stdin, stdinEOF },
+    );
+    inputHandler = {
       onLine: (line: string) => void s.pushStdin(line),
       onEOF: () => void s.pushEOF(),
       onInterrupt: () => stop(),
     };
+    session = s;
     startTimer();
     const out = await s.run(code);
     stopTimer();
+    terminal.flush();
     terminal.setInputHandler(undefined);
-    if (session !== s) return; // superseded
+    if (session !== s) return;
     session = undefined;
     switch (out.type) {
       case "complete":
@@ -102,10 +131,8 @@ export const useRunStore = defineStore("run", () => {
   }
 
   function stop() {
-    if (session) {
-      session.kill();
-    }
+    if (session) session.kill();
   }
 
-  return { status, exitCode, elapsed, message, running, run, stop };
+  return { status, exitCode, elapsed, message, source, running, run, stop, waitUntilIdle };
 });

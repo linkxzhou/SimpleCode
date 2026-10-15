@@ -1,0 +1,172 @@
+# 教程参考资料登记。adapt: true 的资料允许改编代码示例（须在章节中署名）；
+# adapt: false 只可在“延伸阅读”中链接，不得搬入原文。
+python-tutorial:
+  title: The Python Tutorial
+  url: https://docs.python.org/3/tutorial/
+  license: PSF
+  adapt: false
+lxiy-python:
+  title: Learn X in Y minutes — Python
+  url: https://learnxinyminutes.com/python/
+  license: CC-BY-SA-3.0
+  adapt: true
+byte-of-python:
+  title: A Byte of Python
+  url: https://python.swaroopch.com/
+  license: CC-BY-SA-4.0
+  adapt: true
+think-python:
+  title: Think Python 3e
+  url: https://greenteapress.com/wp/think-python-3rd-edition/
+  license: CC-BY-NC-SA-4.0
+  adapt: false
+automate:
+  title: Automate the Boring Stuff with Python
+  url: https://automatetheboringstuff.com/
+  license: CC-BY-NC-SA-3.0
+  adapt: false
+ruby-twenty:
+  title: Ruby in Twenty Minutes
+  url: https://www.ruby-lang.org/en/documentation/quickstart/
+  license: ruby-lang.org
+  adapt: false
+ruby-koans:
+  title: Ruby Koans
+  url: https://github.com/edgecase/ruby_koans
+  license: CC-BY-NC-SA-3.0
+  adapt: false
+poignant:
+  title: Why's (Poignant) Guide to Ruby
+  url: https://poignant.guide/
+  license: CC-BY-SA-2.5
+  adapt: true
+lxiy-ruby:
+  title: Learn X in Y minutes — Ruby
+  url: https://learnxinyminutes.com/ruby/
+  license: CC-BY-SA-3.0
+  adapt: true
+mdn-js:
+  title: MDN JavaScript Guide
+  url: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide
+  license: CC-BY-SA-2.5
+  adapt: true
+ts-handbook:
+  title: TypeScript Handbook
+  url: https://www.typescriptlang.org/docs/handbook/intro.html
+  license: CC-BY-4.0
+  adapt: true
+javascript-info:
+  title: javascript.info
+  url: https://javascript.info/
+  license: CC-BY-NC-SA-4.0
+  adapt: false
+eloquent-js:
+  title: Eloquent JavaScript
+  url: https://eloquentjavascript.net/
+  license: CC-BY-NC-3.0
+  adapt: false
+lxiy-js:
+  title: Learn X in Y minutes — JavaScript
+  url: https://learnxinyminutes.com/javascript/
+  license: CC-BY-SA-3.0
+  adapt: true
+sqlite-lang:
+  title: SQLite SQL Language Reference
+  url: https://www.sqlite.org/lang.html
+  license: Public-Domain
+  adapt: true
+sqlbolt:
+  title: SQLBolt
+  url: https://sqlbolt.com/
+  license: All-rights-reserved
+  adapt: false
+select-star:
+  title: Select Star SQL
+  url: https://selectstarsql.com/
+  license: Unknown
+  adapt: false
+beej-c:
+  title: Beej's Guide to C Programming
+  url: https://beej.us/guide/bgc/
+  license: CC-BY-NC-ND-3.0
+  adapt: false
+modern-c:
+  title: Modern C
+  url: https://gustedt.gitlabpages.inria.fr/modern-c/
+  license: CC-BY-NC-ND
+  adapt: false
+learn-c:
+  title: learn-c.org
+  url: https://www.learn-c.org/
+  license: Unknown
+  adapt: false
+learncpp:
+  title: LearnCpp
+  url: https://www.learncpp.com/
+  license: All-rights-reserved
+  adapt: false
+cpp-core:
+  title: C++ Core Guidelines
+  url: https://github.com/isocpp/CppCoreGuidelines
+  license: MIT-style
+  adapt: false
+cppreference:
+  title: cppreference
+  url: https://en.cppreference.com/
+  license: CC-BY-SA-3.0
+  adapt: true
+php-manual:
+  title: PHP Manual
+  url: https://www.php.net/manual/en/
+  license: CC-BY-3.0
+  adapt: true
+php-right-way:
+  title: PHP The Right Way
+  url: https://github.com/codeguy/php-the-right-way
+  license: CC-BY-NC-SA-3.0
+  adapt: false
+pil:
+  title: Programming in Lua (1st edition)
+  url: https://www.lua.org/pil/
+  license: All-rights-reserved
+  adapt: false
+lua-manual:
+  title: Lua 5.4 Reference Manual
+  url: https://www.lua.org/manual/5.4/
+  license: Lua.org
+  adapt: false
+lxiy-lua:
+  title: Learn X in Y minutes — Lua
+  url: https://learnxinyminutes.com/lua/
+  license: CC-BY-SA-3.0
+  adapt: true
+gobyexample:
+  title: Go by Example
+  url: https://gobyexample.com/
+  license: CC-BY-3.0
+  adapt: true
+go-tour:
+  title: A Tour of Go
+  url: https://go.dev/tour/
+  license: Unknown
+  adapt: false
+little-go-book:
+  title: The Little Go Book
+  url: https://github.com/karlseguin/the-little-go-book
+  license: CC-BY-NC-SA-4.0
+  adapt: false
+learn-go-tests:
+  title: Learn Go with Tests
+  url: https://github.com/quii/learn-go-with-tests
+  license: MIT
+  adapt: true
+effective-go:
+  title: Effective Go
+  url: https://go.dev/doc/effective_go
+  license: Unknown
+  adapt: false
+norvig-ten:
+  title: Teach Yourself Programming in Ten Years
+  url: https://norvig.com/21-days.html
+  license: All-rights-reserved
+  adapt: false

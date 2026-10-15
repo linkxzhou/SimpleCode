@@ -48,9 +48,34 @@ cmd_preview() {
 
 cmd_test() {
   need_deps
+  local docs_only=0 smoke_only=0
+  local args=()
+  for a in "$@"; do
+    case "$a" in
+      --docs) docs_only=1 ;;
+      --smoke) smoke_only=1 ;;
+      *) args+=("$a") ;;
+    esac
+  done
+  info "Docs unit tests"
+  node --experimental-strip-types --test tests/docs-unit.test.ts
+  info "Monochrome check"
+  node scripts/check-mono.mjs
+  if [ "$docs_only" = 1 ]; then
+    [ -f dist/index.html ] || cmd_build
+    node --experimental-strip-types tests/docs-smoke.mjs "${args[@]}"
+    return
+  fi
+  if [ "$smoke_only" = 1 ]; then
+    [ -f dist/index.html ] || cmd_build
+    node tests/smoke.mjs "${args[@]}"
+    return
+  fi
   info "Running headless smoke test (builds if needed)"
   [ -f dist/index.html ] || cmd_build
-  node tests/smoke.mjs "$@"
+  node tests/smoke.mjs "${args[@]}"
+  node --experimental-strip-types tests/docs-smoke.mjs
+  node tests/learn.spec.mjs
 }
 
 cmd_clean() {
@@ -76,7 +101,8 @@ Usage: ./build.sh <command> [args]
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)
   preview | run      Serve dist/ with COOP/COEP headers (http://localhost:4173)
-  test               Headless smoke test (Playwright/Chromium) against a preview server
+  test [--docs|--smoke]  Headless tests. Default: unit + mono + smoke + docs-smoke + learn UI.
+                     --docs runs the tutorial smoke test; --smoke runs the language hello-world smoke test.
   clean [--all]      Remove dist/ (and node_modules/, wasm/ with --all)
   help               Show this help
 

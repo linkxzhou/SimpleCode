@@ -3,10 +3,15 @@ import { onBeforeUnmount, onMounted, ref } from "vue";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import LanguageSidebar from "./LanguageSidebar.vue";
 import MainArea from "./MainArea.vue";
+import DocsDrawer from "./docs/DocsDrawer.vue";
+import { useDocsStore } from "@/stores/docs";
+import { useRunFromDoc } from "@/composables/useRunFromDoc";
 
 const COLLAPSE_KEY = "simplecode:sidebar-collapsed";
 const sidebar = ref<InstanceType<typeof ResizablePanel>>();
 const collapsed = ref(localStorage.getItem(COLLAPSE_KEY) === "1");
+const docs = useDocsStore();
+const learn = useRunFromDoc();
 
 function setCollapsed(v: boolean) {
   collapsed.value = v;
@@ -22,6 +27,29 @@ function onKey(e: KeyboardEvent) {
     e.preventDefault();
     e.stopPropagation();
     toggle();
+    return;
+  }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
+    e.preventDefault();
+    e.stopPropagation();
+    docs.toggle();
+    return;
+  }
+  if (!docs.open) return;
+  const target = e.target as HTMLElement | null;
+  const inDrawer = !!target?.closest("[data-testid='docs-drawer']");
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z" && !e.shiftKey && inDrawer) {
+    e.preventDefault();
+    learn.undoLastReplace();
+    return;
+  }
+  if (!inDrawer || target?.closest("input, textarea, [contenteditable='true']")) return;
+  if (e.key === "[") {
+    e.preventDefault();
+    docs.prev();
+  } else if (e.key === "]") {
+    e.preventDefault();
+    docs.next();
   }
 }
 onMounted(() => {
@@ -56,4 +84,5 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey, true));
       <MainArea />
     </ResizablePanel>
   </ResizablePanelGroup>
+  <DocsDrawer />
 </template>

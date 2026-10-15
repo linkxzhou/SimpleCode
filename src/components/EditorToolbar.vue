@@ -3,6 +3,7 @@ import { computed } from "vue";
 import { Loader2, Play, RotateCcw, Square, X } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import LearnButton from "./docs/LearnButton.vue";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
 import { fileNameFor, useEditorStore } from "@/stores/editor";
@@ -66,6 +67,7 @@ function reset() {
         TS
       </button>
     </div>
+    <LearnButton />
     <template v-if="downloading && langs.selected">
       <Button variant="ghost" size="xs" @click="langs.cancel(langs.selected.id)"><X />取消下载</Button>
     </template>
