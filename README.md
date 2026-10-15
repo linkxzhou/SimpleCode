@@ -4,7 +4,7 @@
 
 ## 快速开始
 
-语言运行时（`.wasm` / `.tar.gz`，约 158 MB）**不随仓库提交**。`./build.sh vendor` 从 Runno 复制已有运行时，并按 `scripts/sources.lock.json` 的版本和 sha256 下载工具链、编译 Lua 与 Go（需要 **Linux x86_64**）：
+语言运行时（`.wasm` / `.tar.gz`，约 158 MB）**不随仓库提交**。`./build.sh vendor` 从 Runno 复制已有运行时，并按 `scripts/sources.lock.json` 为当前系统下载工具链、编译 Lua 与 Go（Linux 与 macOS 的 x86_64 / arm64，macOS 自带 bash 3.2 即可）：
 
 ```bash
 git clone https://github.com/linkxzhou/SimpleCode && cd SimpleCode

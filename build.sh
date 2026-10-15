@@ -70,7 +70,7 @@ Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
   vendor [--link]    Copy wasm runtimes from thirdparty/runno/langs into wasm/,
-                     build Lua and Go (scripts/builders, Linux x86_64), and
+                     build Lua and Go (scripts/builders; Linux or macOS, x86_64 or arm64), and
                      write wasm/manifest.json (--link: symlink Runno files,
                      --source <dir>: alternative Runno directory)
   dev                Start the Vite dev server (http://localhost:5173)

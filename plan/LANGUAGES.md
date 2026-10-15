@@ -266,10 +266,10 @@ export interface RuntimeAdapter {
 
 ## 8. Phase 1 实现记录（2026-10-15）
 
-Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建，产物 sha256 不匹配则失败。构建机需要 **Linux x86_64**（锁定的 wasi-sdk 与 Go 工具链是 linux-amd64）。
+Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建。构建机可以是 **Linux 或 macOS** 的 x86_64 / arm64（见 §8.3）。
 
 ### 8.1 Lua 5.4.9
-- 脚本：`scripts/builders/lua/build.sh`。wasi-sdk **33.0**（`0ba8b5bf…`）+ Lua **5.4.9**（`2335b6c5…`）。产物 `lua-5.4.9.wasm`，720,144 字节，sha256 `06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb`。
+- 脚本：`scripts/builders/lua/build.sh`。wasi-sdk **33.0**（按宿主选择压缩包，Linux x86_64 为 `0ba8b5bf…`）+ Lua **5.4.9**（`2335b6c5…`）。产物 `lua-5.4.9.wasm`，720,144 字节，sha256 `06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb`。
 - 关键参数：`--target=wasm32-wasip1 -mllvm -wasm-enable-sjlj -mllvm -wasm-use-legacy-eh=false`，链接 `-lsetjmp`。**不定义 `LUA_USE_POSIX`**，否则 `ldo.c` 使用 `_setjmp`/`_longjmp`，LLVM 的 sjlj pass 不会改写它们，`pcall` 仍然无效。
 - 实测（`@runno/wasi`，需 Wasm `exnref`）：`pcall(error)` 捕获错误并继续执行；嵌套 `pcall` 正常；语法错误输出 `lua: /program:2: unexpected symbol near <eof>` 并以退出码 1 结束；`io.read("*l")` 走 WASI stdin。
 - 浏览器需要**标准** Wasm 异常处理（`try_table`，不是旧版 legacy EH）。Playwright 附带的 Chromium 156 可通过。缺少该特性的浏览器会在实例化阶段失败。
@@ -277,7 +277,7 @@ Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。�
 - 未采用 `@antonz/lua-wasi` 5.4.6：那份预编译包在本运行器里能跑 stdin，但 `pcall` 会以非零退出结束。
 
 ### 8.2 Go（Yaegi 0.16.1，Go 1.22.12）
-- 脚本：`scripts/builders/go/build.sh`。官方 Go **1.22.12** linux-amd64（`4fa4f869…`），不使用系统上的 `go`。`GOOS=wasip1 GOARCH=wasm`，`-mod=readonly -buildvcs=false -trimpath -ldflags="-s -w -buildid="`。Yaegi 模块校验和在 `scripts/builders/go/go.sum`。
+- 脚本：`scripts/builders/go/build.sh`。官方 Go **1.22.12**（按宿主选择压缩包，Linux x86_64 为 `4fa4f869…`），不使用系统上的 `go`。`GOOS=wasip1 GOARCH=wasm`，`-mod=readonly -buildvcs=false -trimpath -ldflags="-s -w -buildid="`，`GOTOOLCHAIN=local`。Yaegi 模块校验和在 `scripts/builders/go/go.sum`。
 - 包装程序 `scripts/builders/go/main.go`：`interp.Use(stdlib.Symbols)` 后 `EvalPath` 解释 `/program`（必须是 `package main` 且含 `func main`）。manifest 参数为 `yaegi {entry}`。
 - 产物 `yaegi-0.16.1.wasm`，36,736,740 字节（35.0 MB），sha256 `570999c368119300b76785385555683355fb1a474819f30c603675070ee9db7d`。同一源码在仓库内和仓库外各构建一次，摘要一致。
 - 已在 `@runno/wasi` 上验证：`fmt`、`strings`、`bufio`/`os.Stdin`、`time.Now()`、向带缓冲 channel 发送的 goroutine。
@@ -287,3 +287,28 @@ Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。�
   - 无网络（`sock_*` 为 ENOSYS）。
   - 单文件 35 MB，超过部分静态托管的 25 MiB 上限（与 clang.wasm 同类问题）。
 - 不采用 `GOOS=js`：那份产物依赖 `wasm_exec.js`，不能作为 `WASIWorkerHost` 的命令模块。Yaegi v0.16.1 的标准库符号与 Go 1.22 可以一起编译；更新 Go 大版本前需要重测符号是否仍能编译。
+
+### 8.3 构建机：Linux 与 macOS
+
+`scripts/builders/*.sh` 用 `uname -s` 与 `uname -m` 选择工具链（测试可设 `SIMPLECODE_UNAME_S` / `SIMPLECODE_UNAME_M`）：
+
+| 宿主 | wasi-sdk 33.0 | Go 1.22.12 |
+| --- | --- | --- |
+| linux-x86_64 | `wasi-sdk-33.0-x86_64-linux.tar.gz` `0ba8b5bf…` | `go1.22.12.linux-amd64.tar.gz` `4fa4f869…` |
+| linux-arm64 | `wasi-sdk-33.0-arm64-linux.tar.gz` `4f98ee73…` | `go1.22.12.linux-arm64.tar.gz` `fd017e64…` |
+| darwin-arm64 | `wasi-sdk-33.0-arm64-macos.tar.gz` `85c997a2…` | `go1.22.12.darwin-arm64.tar.gz` `416c3521…` |
+| darwin-x86_64 | `wasi-sdk-33.0-x86_64-macos.tar.gz` `18f3f201…` | `go1.22.12.darwin-amd64.tar.gz` `e7bbe07e…` |
+
+脚本按 bash 3.2 编写（macOS `/bin/bash`）。校验和用 `sha256sum` 或 `shasum -a 256`，解压用 `tar -xzf`。编译 Lua 前去掉 `SDKROOT` 等变量，避免 clang 去找 Xcode SDK。Go 设置 `GOTOOLCHAIN=local`。
+
+`outputSha256` 是 Linux x86_64 上的参考摘要。Lua 用相对路径 `-include wasi-lua.h`；Go 使用 `-trimpath -buildvcs=false -buildid=`。Go 的 wasm 在 Linux x86_64 与 Linux arm64（qemu-user 跑官方 arm64 工具链）上摘要相同，因此 `go.outputSha256ByHost` 登记了这两个宿主。四个宿主包里的 `libc.a` / `libsetjmp.a` 字节相同；darwin-x86_64 的 wasi sysroot 与 compiler-rt 也和 Linux x86_64 相同。darwin-arm64 的 `libclang_rt.builtins.a` 有 142/149 个成员不同，Apple Silicon 上编出来的 Lua 摘要可能不一样。
+
+`outputSha256ByHost` 里登记过的宿主摘要不符则失败。还没登记的宿主（例如 darwin-arm64 的 Lua）若摘要不同，脚本打印实际摘要并保留刚编译的文件，下次 vendor 会再编一次；把该摘要写进 lock 后即可跳过。`SIMPLECODE_STRICT_WASM_DIGEST=1` 改为失败。
+
+本地编译失败，或系统不在上表中时，下载 `prebuiltUrl` 的 wasm，sha256 必须等于 `outputSha256`。默认地址是 GitHub Release `wasi-runtimes-1` 的 `lua-5.4.9.wasm` 与 `yaegi-0.16.1.wasm`（需要发布后备用下载才会成功）：
+
+```bash
+gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wasm/yaegi-0.16.1.wasm
+```
+
+临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
