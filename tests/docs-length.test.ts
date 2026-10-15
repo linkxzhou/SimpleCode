@@ -9,8 +9,11 @@ const BASE: Record<string, number> = {
 /** Books still on the §17 absolute floors. None remain after the essay rewrite. */
 const ABSOLUTE: string[] = [];
 
-/** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. */
-const ESSAY = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
+/** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. Go moved to TUTORIAL. */
+const ESSAY = ["python", "js", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
+
+/** plan/LEARN.md §19. Short tutorial sections, Runoob-style. */
+const TUTORIAL = ["go"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
@@ -100,9 +103,33 @@ describe("chapter length", () => {
     }
   }
 
-  it("essay chapters do not share a 60-character run", () => {
+  for (const book of TUTORIAL) {
+    const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md")).sort();
+    assert.ok(files.length >= 20, `${book} chapters ${files.length}`);
+    for (const name of files) {
+      const file = `${book}/${name}`;
+      it(file, () => {
+        const text = readFileSync(`docs/${file}`, "utf8");
+        const body = bodyOf(text);
+        const prose = proseOf(body);
+        const headings = prose.match(/^### .+$/gm) ?? [];
+        assert.ok(headings.length >= 3, `sections ${headings.length}`);
+        const intro = prose.split(/^### /m)[0] ?? "";
+        assert.ok(hanCount(intro) <= 180, `intro han ${hanCount(intro)}`);
+        const parts = prose.split(/^### /m).slice(1);
+        for (const part of parts) {
+          const han = hanCount(part);
+          assert.ok(han > 0 && han <= 400, `section han ${han}`);
+        }
+        assert.ok(runnableCount(body) >= 2, `runnable ${runnableCount(body)}`);
+        assert.ok(!body.includes("## 常见错误") && !body.includes("## 最佳实践"), "template headings");
+      });
+    }
+  }
+
+  it("chapters do not share a 60-character run", () => {
     const seen = new Map<string, string>();
-    for (const book of ESSAY) {
+    for (const book of [...ESSAY, ...TUTORIAL]) {
       const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md"));
       for (const name of files) {
         const file = `${book}/${name}`;
