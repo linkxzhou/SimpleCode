@@ -88,3 +88,40 @@
   background: #404040;
   border-radius: 4px;
 }
+
+/*
+ * Sidebar is a container so a narrow rail (collapsed, or mid-drag) never
+ * shows truncated labels. The Vue `collapsed` prop swaps in the icon layout;
+ * this is the safety net when width and that flag briefly disagree.
+ */
+[data-testid="sidebar"] {
+  container-type: inline-size;
+  container-name: sidebar;
+}
+
+@container sidebar (max-width: 5rem) {
+  .sidebar-expanded-only {
+    display: none !important;
+  }
+  .sidebar-header {
+    justify-content: center;
+    padding-inline: 0;
+  }
+  .sidebar-item {
+    width: 2.5rem;
+    margin-inline: auto;
+    justify-content: center;
+    padding-inline: 0;
+    gap: 0;
+  }
+  .sidebar-footer {
+    padding-inline: 0;
+  }
+  .sidebar-footer button {
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+    padding: 0;
+    justify-content: center;
+  }
+}
