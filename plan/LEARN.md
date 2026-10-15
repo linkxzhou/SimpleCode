@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 101」教学系统设计（LEARN）
 
-> 状态：设计稿，仅规划，不含实现。日期 2026-10-15，基于 main@ed4082b（已含 Lua 5.4.9、Go/Yaegi）。
+> 状态：抽屉、流水线和 Run 按钮已落地。Python、JavaScript/TypeScript、Go 已交付；Ruby、SQL、C、C++、PHP、Lua **待完成**。详见 §15。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -8,6 +8,7 @@
 1. 目标与非目标 · 2. UI 草图 · 3. 架构 · 4. 组件设计 · 5. 样式规范（摘要，详见 §13）· 6. 文档目录与 frontmatter · 7. 各语言课程 · 8. 实现要点 · 9. 写作规范 · 10. 参考资料 · 11. 里程碑 · 12. 风险
 - **§13 [文档 UI 黑白主题规范](#13-文档-ui-黑白主题规范)** —— 需求（4）：文档 UI 与主界面一致、纯黑白（token、配色表、排版、Shiki 单色主题、组件、状态、ASCII）
 - **§14 [代码块运行按钮设计](#14-代码块运行按钮设计)** —— 需求（5）：每个代码块的「复制 / 运行」按钮，复制到主编辑器并运行（状态、行为、边界、时序图、API、语法、无障碍、测试）
+- **§15 [完成情况](#15-完成情况)** —— 各里程碑与语言的交付状态
 
 ---
 
@@ -925,3 +926,51 @@ print(f"你好，{name}！")
 9. `norun` 块无 `doc-run` 按钮；未知语言块无运行按钮。
 10. 单色校验：对抽屉截图（浅/深）做像素检查——所有像素 R=G=B（容差 ±2，排除抗锯齿可放宽为 99% 像素满足）。
 **文档全量（docs-smoke）**：见 §9：遍历所有 `run` 块，exit 0 且 expect 命中。
+
+---
+
+## 15. 完成情况
+
+对照 §11。✅ 已交付，⚠️ 有偏差或未测完，❌ 未做。日期 2026-10-15。
+
+| 里程碑 | 状态 | 说明 |
+|---|---|---|
+| L0 文档流水线 | ✅ | `scripts/docs/render.ts` + `scripts/vite-plugin-docs.ts` 校验 frontmatter 并预渲染。单色 Shiki 主题。schema 错误会使 `./build.sh build` 失败。 |
+| L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。桌面抽屉是非模态固定面板，编辑器仍可操作。 |
+| L2 从文档运行 | ✅ | 切换语言、按需下载 wasm、备份与撤销、stdin。TypeScript 块复用 `src/core/transpile.ts` 的 Sucrase，编辑器写入带 `// 由 TypeScript 转译（原始代码见文档）` 的 JavaScript，方言切到 JS。 |
+| L3 内容第一批 | ⚠️ | Python、Go 已交付。Lua、SQL **待完成**。 |
+| L4 内容第二批 | ⚠️ | JavaScript/TypeScript 已交付。C、C++、Ruby、PHP **待完成**。 |
+| L5 搜索、进度、无障碍、截图 | ⚠️ | MiniSearch、阅读进度和抽屉快捷键已接上。抽屉浅色/深色截图像素检查 100% 灰阶。未跑 Lighthouse。 |
+
+### 语言
+
+| 语言 | 状态 | 内容 |
+|---|---|---|
+| Python | ✅ | 概览 + 13 章 |
+| JavaScript / TypeScript | ✅ | 概览 + 12 章；第 11–12 章是 `ts` 块 |
+| Go | ✅ | 概览 + 12 章 |
+| Ruby | 待完成 | 无 Markdown。抽屉显示「即将推出」 |
+| SQL | 待完成 | 同上 |
+| C | 待完成 | 同上 |
+| C++ | 待完成 | 同上 |
+| PHP | 待完成 | 同上 |
+| Lua | 待完成 | 同上 |
+
+九种语言的按钮和运行时映射都还在。未交付的书没有 `docs/<book>/`，所以不会打开空白页。补上概览和至少 10 章后，构建会把该书纳入索引；`SHIPPED_BOOKS` 只决定目录缺失时构建是否失败。
+
+### 验收
+
+- `./build.sh build`：vue-tsc 通过，`docs: 40 chapters, 155 runnable blocks`。
+- `./build.sh test`：单元测试 4 项、`check-mono`、各语言 hello-world、`docs-smoke` 154 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
+- 截图：`tests/screenshots/learn-drawer-light.png`、`learn-drawer-dark.png`、`learn-chapter.png`、`learn-after-run.png`。抽屉浅色/深色灰阶 100%（通道差不超过 2，忽略几乎透明的像素）。
+
+### 与计划的偏差
+
+- 单元测试用 `node:test`，不用 Vitest。`useRunFromDoc` 的切换、撤销、确认停止和 TypeScript 注释由 `tests/learn.spec.mjs` 覆盖。
+- Toast 是自写 `ToastHost`，不用 vue-sonner，以便单色检查保持干净。
+- 滚动区域是带样式的 overflow 容器。Shiki 的 `fontStyle` 不能表达字重 500/600，关键字用 bold。
+- 未做 `adapt: false` 来源的正文相似度检查。这些来源只出现在延伸阅读链接里。
+- Yaegi 0.16 在自定义 `error` 存进接口再调用 `Error()` 时会 panic（`reflect: Method index out of range`）。该练习标了 `norun`，可运行答案改用 `errors.New`。
+- `defer` 示例用 `fmt.Print`，期望输出 `abc`。在 `return` 前用 `Println` 会先打出换行。
+- 跨语言示例放在 Python 概览里的 Ruby 块（下载进度 + `来自 Ruby 的 42`），而不是尚未成书的 SQL。
+- 运行状态带 `data-source`。测试要等到来源变成当前代码块再读 `done`，避免把上一次运行的 `done` 当成这次。

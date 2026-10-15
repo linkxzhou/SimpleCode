@@ -56,7 +56,7 @@ onBeforeUnmount(() => ro?.disconnect());
       @dblclick="$emit('toggle')"
     >
       <span class="font-medium text-neutral-300">Terminal</span>
-      <span class="flex min-w-0 flex-1 items-center gap-1.5 truncate text-neutral-400" data-testid="run-status" :data-status="run.status">
+      <span class="flex min-w-0 flex-1 items-center gap-1.5 truncate text-neutral-400" data-testid="run-status" :data-status="run.status" :data-source="run.source ?? ''">
         <span :class="['size-1.5 shrink-0 rounded-full', indicator.dot]" />{{ indicator.text }}
       </span>
       <span class="tabular-nums text-neutral-500">{{ seconds }}</span>

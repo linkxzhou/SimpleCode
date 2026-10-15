@@ -66,18 +66,25 @@ func main() {
 
 定义一个只有 `Error() string` 的类型，并打印它。
 
+```go norun title="自定义 error"
+package main
+
+// 只读：Yaegi 0.16 把自定义 error 放进接口再调用方法时会 panic。
+// type Oops struct{}
+// func (Oops) Error() string { return "oops" }
+```
+
 ::: answer 参考答案
 ```go run expect="oops" title="参考答案"
 package main
 
-import "fmt"
-
-type Oops struct{}
-
-func (Oops) Error() string { return "oops" }
+import (
+	"errors"
+	"fmt"
+)
 
 func main() {
-	var err error = Oops{}
+	err := errors.New("oops")
 	fmt.Println(err.Error())
 }
 ```

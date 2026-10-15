@@ -194,6 +194,7 @@ const runTip = computed(() => {
     role="group"
     tabindex="0"
     data-testid="doc-code-block"
+    :data-block="block.id"
     :data-lang="block.lang"
     :data-code="block.code"
     :data-expect="block.expect ?? ''"

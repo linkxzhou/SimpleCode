@@ -103,6 +103,20 @@ async function openLearn(page) {
   await page.waitForSelector('[data-testid="docs-drawer"]');
 }
 
+/** Wait until this block's run reaches a terminal status. A previous example can still show "done". */
+async function waitForBlock(page, block, statuses = ["done", "failed", "crash", "terminated"]) {
+  const id = await block.getAttribute("data-block");
+  await page.waitForFunction(
+    ({ id, statuses }) => {
+      const el = document.querySelector('[data-testid="run-status"]');
+      const status = el?.getAttribute("data-status") ?? "";
+      return el?.getAttribute("data-source") === id && statuses.includes(status);
+    },
+    { id, statuses },
+    { timeout: 180_000 },
+  );
+}
+
 try {
   await waitForServer();
   const browser = await launchBrowser();
@@ -135,16 +149,7 @@ try {
   const expectText = await block.getAttribute("data-expect");
   check(code?.includes('input("名字？")') && expectText === "你好，Ada！", "chapter 3 opens on the greeting");
   await block.locator('[data-testid="doc-run"]').click();
-  await page.waitForFunction(
-    () => ["preparing", "run", "done", "failed"].includes(document.querySelector('[data-testid="run-status"]')?.getAttribute("data-status") ?? ""),
-    null,
-    { timeout: 60_000 },
-  );
-  await page.waitForFunction(
-    () => ["done", "failed", "crash", "terminated"].includes(document.querySelector('[data-testid="run-status"]')?.getAttribute("data-status") ?? ""),
-    null,
-    { timeout: 60_000 },
-  );
+  await waitForBlock(page, block);
   const status = await page.getAttribute('[data-testid="run-status"]', "data-status");
   const editorValue = await page.evaluate(() => globalThis.__simplecodeEditor.getValue());
   const transcript = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
@@ -166,8 +171,9 @@ try {
   await showToc(page);
   await page.click('[data-testid="chapter-link"][data-chapter="1"]');
   await page.waitForSelector('[data-testid="docs-chapter"]');
-  await page.locator('[data-testid="doc-run"]').first().click();
-  await page.waitForSelector('[data-testid="run-status"][data-status="done"]', { timeout: 60_000 });
+  const chapterOne = page.locator('[data-testid="doc-code-block"]').first();
+  await chapterOne.locator('[data-testid="doc-run"]').click();
+  await waitForBlock(page, chapterOne);
   await page.click('[data-testid="doc-undo"]');
   const restored = await page.evaluate(() => globalThis.__simplecodeEditor.getValue());
   check(restored === draft, "undo restores the editor");
@@ -175,14 +181,15 @@ try {
   await showToc(page);
   await page.click('[data-testid="chapter-link"][data-chapter="4"]');
   await page.waitForSelector('[data-smoke="skip"] [data-testid="doc-run"]');
-  await page.locator('[data-smoke="skip"] [data-testid="doc-run"]').click();
-  await page.waitForSelector('[data-testid="run-status"][data-status="run"]', { timeout: 60_000 });
+  const looping = page.locator('[data-smoke="skip"]').first();
+  await looping.locator('[data-testid="doc-run"]').click();
+  await waitForBlock(page, looping, ["run"]);
   const other = page.locator('[data-testid="doc-code-block"][data-runnable="1"]:not([data-smoke="skip"])').first();
   const otherCode = await other.getAttribute("data-code");
   await other.locator('[data-testid="doc-run"]').click();
   await page.waitForSelector('[data-testid="doc-confirm"]');
   await page.click('[data-testid="doc-confirm-yes"]');
-  await page.waitForSelector('[data-testid="run-status"][data-status="done"]', { timeout: 60_000 });
+  await waitForBlock(page, other);
   const afterStop = await page.evaluate(() => globalThis.__simplecodeEditor.getValue());
   check(afterStop === otherCode, "confirm stop runs the next example");
 
@@ -196,10 +203,14 @@ try {
   const ts = page.locator('[data-lang="ts"]').first();
   const tsExpect = await ts.getAttribute("data-expect");
   await ts.locator('[data-testid="doc-run"]').click();
-  await page.waitForSelector('[data-testid="run-status"][data-status="done"]', { timeout: 60_000 });
+  await waitForBlock(page, ts);
   const tsEditor = await page.evaluate(() => globalThis.__simplecodeEditor.getValue());
   const tsOut = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
-  check(tsEditor.includes("由 TypeScript 转译") && tsOut.includes(tsExpect) && (await page.textContent('[data-testid="filename"]')) === "main.js", "ts block transpiled into the editor");
+  const filename = await page.textContent('[data-testid="filename"]');
+  check(
+    tsEditor.includes("由 TypeScript 转译") && tsOut.includes(tsExpect) && filename === "main.js",
+    `ts block transpiled into the editor (file=${filename}, expect=${tsExpect}, editor=${tsEditor.slice(0, 80).replaceAll("\n", " ")})`,
+  );
 
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await context.route("**/*ruby*.wasm", async (route) => {
@@ -212,14 +223,15 @@ try {
   await fresh.click('[data-testid="learn-button"]');
   await fresh.click('[data-testid="chapter-link"][data-chapter="0"]');
   await fresh.waitForSelector('[data-lang="ruby"] [data-testid="doc-run"]');
-  await fresh.locator('[data-lang="ruby"] [data-testid="doc-run"]').click();
+  const ruby = fresh.locator('[data-lang="ruby"]').first();
+  await ruby.locator('[data-testid="doc-run"]').click();
   await fresh.waitForFunction(
     () => /下载/.test(document.querySelector('[data-lang="ruby"] [data-testid="doc-run"]')?.textContent ?? ""),
     null,
     { timeout: 20_000 },
   );
   check(true, "ruby download progress shows on the doc button");
-  await fresh.waitForSelector('[data-testid="run-status"][data-status="done"]', { timeout: 180_000 });
+  await waitForBlock(fresh, ruby);
   const rubyOut = stripAnsi(await fresh.evaluate(() => globalThis.__simplecodeTerminal.transcript));
   check(rubyOut.includes("来自 Ruby 的 42"), "cross-language ruby block");
 

@@ -73,7 +73,6 @@ func main() {
 	fmt.Print("a")
 	defer fmt.Print("c")
 	fmt.Print("b")
-	fmt.Println()
 }
 ```
 

@@ -83,7 +83,7 @@ ${run("go", pkg('import "fmt"\n\nfunc main() {\n\tfor n := 1; n <= 7; n++ {\n\t\
 
 ${run("go", pkg('import "fmt"\n\nfunc prime(n int) bool {\n\tif n < 2 {\n\t\treturn false\n\t}\n\tfor i := 2; i*i <= n; i++ {\n\t\tif n%i == 0 {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n\nfunc main() {\n\tif prime(5) {\n\t\tfmt.Println("质数")\n\t}\n}'), "质数", { title: "质数" })}
 
-${run("go", pkg('import "fmt"\n\nfunc main() {\n\tfmt.Print("a")\n\tdefer fmt.Print("c")\n\tfmt.Print("b")\n\tfmt.Println()\n}'), "abc", { title: "defer" })}
+${run("go", pkg('import "fmt"\n\nfunc main() {\n\tfmt.Print("a")\n\tdefer fmt.Print("c")\n\tfmt.Print("b")\n}'), "abc", { title: "defer" })}
 
 ## 练习
 
@@ -165,7 +165,9 @@ ${run("go", pkg('import "fmt"\n\nfunc main() {\n\tvar v any = 42\n\tif n, ok := 
 
 定义一个只有 \`Error() string\` 的类型，并打印它。
 
-${answerRun("参考答案", "go", pkg('import "fmt"\n\ntype Oops struct{}\n\nfunc (Oops) Error() string { return "oops" }\n\nfunc main() {\n\tvar err error = Oops{}\n\tfmt.Println(err.Error())\n}'), "oops")}
+${fence("go", 'package main\n\n// 只读：Yaegi 0.16 把自定义 error 放进接口再调用方法时会 panic。\n// type Oops struct{}\n// func (Oops) Error() string { return "oops" }', { norun: true, title: "自定义 error" })}
+
+${answerRun("参考答案", "go", pkg('import (\n\t"errors"\n\t"fmt"\n)\n\nfunc main() {\n\terr := errors.New("oops")\n\tfmt.Println(err.Error())\n}'), "oops")}
 
 ${tail(["类型断言不接 ok，类型不对时 panic。", "接口里放大方法集。实现者要全部满足，小接口更好组合。"])}`),
 
