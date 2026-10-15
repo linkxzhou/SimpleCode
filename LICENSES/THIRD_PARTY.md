@@ -1,6 +1,6 @@
 # Third-party licenses
 
-SimpleCode vendors language runtimes into `wasm/` (not committed; see `./build.sh vendor`). The notices below cover those runtimes and the toolchains used to build Lua and Go. License texts are the upstream notices; they are included so a deployment can ship them with the binaries.
+SimpleCode vendors language runtimes into `wasm/` (not committed; see `./build.sh vendor`). The notices below cover those runtimes and the toolchains used to build Lua, Go, and Shell. License texts are the upstream notices; they are included so a deployment can ship them with the binaries.
 
 ## Application
 
@@ -84,3 +84,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
 Source for the small WASI wrapper is `scripts/builders/go/main.go` in this repository.
+
+## Shell (wasi-sh)
+
+`wasi-sh.wasm` is compiled from `scripts/builders/shell/wasi-sh.c` in this repository with wasi-sdk 33. It is a small single-process shell (builtins and in-memory pipes only). It is not GNU bash and not BusyBox.
+
+The shell source is MIT:
+
+```
+Copyright (c) 2026 SimpleCode contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+The binary links wasi-libc from wasi-sdk (MIT, BSD, and Apache-2.0; see the wasi-sdk sysroot). Public bash and BusyBox wasm builds were not vendored: they need host imports this runtime does not provide, and their licenses are GPL (see plan/LANGUAGES.md §9.1).

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-15T04:48:16.228Z",
+  "generatedAt": "2026-10-15T08:24:26.841Z",
   "source": "thirdparty/runno/langs + scripts/builders",
   "assets": {
     "python-wasm": {
@@ -73,6 +73,12 @@
       "file": "yaegi-0.16.1.wasm",
       "size": 36736740,
       "sha256": "570999c368119300b76785385555683355fb1a474819f30c603675070ee9db7d",
+      "kind": "wasm"
+    },
+    "shell-wasm": {
+      "file": "wasi-sh.wasm",
+      "size": 55023,
+      "sha256": "0dcaeccb81ad6ae506674171cfae935697ea2e6b5687067357bf38fd6d4e3807",
       "kind": "wasm"
     }
   },
@@ -314,6 +320,23 @@
       "run": {
         "asset": "go-wasm",
         "binaryName": "yaegi",
+        "args": [
+          "{entry}"
+        ]
+      }
+    },
+    {
+      "id": "shell",
+      "label": "Shell",
+      "short": "Sh",
+      "version": "wasi-sh",
+      "syntax": "shell",
+      "fileName": "main.sh",
+      "license": "MIT",
+      "homepage": "https://github.com/linkxzhou/SimpleCode",
+      "run": {
+        "asset": "shell-wasm",
+        "binaryName": "sh",
         "args": [
           "{entry}"
         ]

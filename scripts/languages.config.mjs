@@ -14,6 +14,7 @@ export const assets = {
   "clang-fs": { file: "clang-fs.tar.gz" },
   "lua-wasm": { file: "lua-5.4.9.wasm", build: "lua" },
   "go-wasm": { file: "yaegi-0.16.1.wasm", build: "go" },
+  "shell-wasm": { file: "wasi-sh.wasm", build: "shell" },
 };
 
 const clangLink = (extra) => ({
@@ -90,5 +91,10 @@ export const languages = [
     id: "go", label: "Go", short: "Go", version: "Yaegi 0.16.1", syntax: "go", fileName: "main.go",
     license: "Apache-2.0", homepage: "https://github.com/traefik/yaegi",
     run: { asset: "go-wasm", binaryName: "yaegi", args: ["{entry}"] },
+  },
+  {
+    id: "shell", label: "Shell", short: "Sh", version: "wasi-sh", syntax: "shell", fileName: "main.sh",
+    license: "MIT", homepage: "https://github.com/linkxzhou/SimpleCode",
+    run: { asset: "shell-wasm", binaryName: "sh", args: ["{entry}"] },
   },
 ];

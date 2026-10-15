@@ -16,6 +16,7 @@ fail() {
 bash -n "$BUILDERS_DIR/common.sh"
 bash -n "$BUILDERS_DIR/lua/build.sh"
 bash -n "$BUILDERS_DIR/go/build.sh"
+bash -n "$BUILDERS_DIR/shell/build.sh"
 bash -n "$BUILDERS_DIR/self-check.sh"
 
 # Reject syntax macOS bash 3.2 does not have. Fixed strings, not a bash-4 regex.
@@ -33,6 +34,7 @@ reject_bash4() {
 reject_bash4 "$BUILDERS_DIR/common.sh"
 reject_bash4 "$BUILDERS_DIR/lua/build.sh"
 reject_bash4 "$BUILDERS_DIR/go/build.sh"
+reject_bash4 "$BUILDERS_DIR/shell/build.sh"
 
 expect_host() {
   local os="$1" arch="$2" want="$3" got=""
@@ -89,7 +91,8 @@ if [[ "$dir" != "wasi-sdk-33.0-arm64-macos" ]]; then
 fi
 check_sha "$(lock_get "$LOCK" lua.outputSha256)" "lua output"
 check_sha "$(lock_get "$LOCK" go.outputSha256)" "go output"
-if [[ -z "$(lock_get "$LOCK" lua.prebuiltUrl)" || -z "$(lock_get "$LOCK" go.prebuiltUrl)" ]]; then
+check_sha "$(lock_get "$LOCK" shell.outputSha256)" "shell output"
+if [[ -z "$(lock_get "$LOCK" lua.prebuiltUrl)" || -z "$(lock_get "$LOCK" go.prebuiltUrl)" || -z "$(lock_get "$LOCK" shell.prebuiltUrl)" ]]; then
   fail "prebuilt URLs must be set"
 fi
 
@@ -185,6 +188,10 @@ if [[ -x "$ROOT/thirdparty/cache/wasi-sdk-33.0-x86_64-linux/bin/clang" ]]; then
   if ! grep -q "7f454c46" "$tmp/inspect-lua"; then
     fail "linux clang is not ELF"
   fi
+  SIMPLECODE_UNAME_S=Linux SIMPLECODE_UNAME_M=x86_64 bash "$BUILDERS_DIR/shell/build.sh" --inspect >"$tmp/inspect-shell"
+  if ! grep -q "7f454c46" "$tmp/inspect-shell"; then
+    fail "linux clang is not ELF (shell)"
+  fi
 fi
 
 if command -v shellcheck >/dev/null 2>&1; then
@@ -192,6 +199,7 @@ if command -v shellcheck >/dev/null 2>&1; then
     "$BUILDERS_DIR/common.sh" \
     "$BUILDERS_DIR/lua/build.sh" \
     "$BUILDERS_DIR/go/build.sh" \
+    "$BUILDERS_DIR/shell/build.sh" \
     "$BUILDERS_DIR/self-check.sh"
 fi
 
@@ -201,6 +209,7 @@ if [[ "${SIMPLECODE_INSPECT_TOOLCHAINS:-}" == "1" ]]; then
     printf 'inspect %s %s\n' "$os" "$arch"
     SIMPLECODE_UNAME_S="$os" SIMPLECODE_UNAME_M="$arch" bash "$BUILDERS_DIR/lua/build.sh" --inspect
     SIMPLECODE_UNAME_S="$os" SIMPLECODE_UNAME_M="$arch" bash "$BUILDERS_DIR/go/build.sh" --inspect
+    SIMPLECODE_UNAME_S="$os" SIMPLECODE_UNAME_M="$arch" bash "$BUILDERS_DIR/shell/build.sh" --inspect
   }
   inspect_one Linux x86_64
   inspect_one Linux aarch64

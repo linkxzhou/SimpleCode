@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Copy Runno language binaries into wasm/ and build Lua/Go, then write wasm/manifest.json.
+// Copy Runno language binaries into wasm/ and build Lua/Go/Shell, then write wasm/manifest.json.
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

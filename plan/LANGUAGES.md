@@ -267,7 +267,7 @@ export interface RuntimeAdapter {
 
 ## 8. Phase 1 实现记录（2026-10-15）
 
-Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建。构建机可以是 **Linux 或 macOS** 的 x86_64 / arm64（见 §8.3）。
+Lua、Go 与 Shell 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。二进制不入库；`./build.sh vendor` 按 `scripts/sources.lock.json` 下载并校验 sha256 后构建。构建机可以是 **Linux 或 macOS** 的 x86_64 / arm64（见 §8.3）。
 
 ### 8.1 Lua 5.4.9
 - 脚本：`scripts/builders/lua/build.sh`。wasi-sdk **33.0**（按宿主选择压缩包，Linux x86_64 为 `0ba8b5bf…`）+ Lua **5.4.9**（`2335b6c5…`）。产物 `lua-5.4.9.wasm`，720,144 字节，sha256 `06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb`。
@@ -312,7 +312,24 @@ Lua 与 Go 已接入现有 `WASIWorkerHost`，没有新增 Runtime 适配器。�
 gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wasm/yaegi-0.16.1.wasm
 ```
 
-临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
+临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`、`SIMPLECODE_SHELL_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
+
+### 8.4 Shell（wasi-sh）
+
+公开的 bash / BusyBox wasm 不能交给 `WASIWorkerHost`（导入了 `nimbus_proc`、`env` 或 Emscripten 胶水，见 §9.1）。因此 Shell 是本仓库的 `scripts/builders/shell/wasi-sh.c`，用 §8.3 的 wasi-sdk 33 编成 preview1 命令。脚本：`scripts/builders/shell/build.sh`。产物 `wasi-sh.wasm`，55,023 字节，sha256 `0dcaeccb81ad6ae506674171cfae935697ea2e6b5687067357bf38fd6d4e3807`（Linux x86_64，同一源码在两个目录各编一次，摘要一致）。导入只有 `wasi_snapshot_preview1`，导出 `_start` 与 `memory`。许可证 MIT。预编译备用地址与 Lua/Go 相同，文件名 `wasi-sh.wasm`（需要发布后才下载得到）。
+
+能做的事（已在 Node `node:wasi` preview1 上跑过）：
+
+- 内建：`echo`（`-n`）、`printf`（`%s` `%d` `%%` 和 `\n` `\t`）、`read`、`cat`、`true` / `false` / `:`、`exit`、`test` 与 `[ ]`（`-z` `-n`、字符串 `=` `!=`、整数 `-eq` `-ne` `-lt` `-le` `-gt` `-ge`）。
+- 赋值 `NAME=value`，展开 `$VAR` `${VAR}` `$?` `$#` `$$`（固定为 `1`）`$0`–`$9`。单引号按字面，双引号里展开变量。
+- `if` / `elif` / `else` / `fi`，`while` / `do` / `done`，`for NAME in …; do` / `done`，`;` 与换行，`&&` 与 `||`。
+- 内建之间的管道（内存缓冲，左结合，例如 `echo a | cat | cat`）。重定向 `<` `>` `>>` 走 WASI 预打开的文件系统。
+- 外部命令写到 stderr：`shell: NAME: external commands are not available (no fork)`，退出码 127。语法错误退出码 2。`while` / `for` 超过 100000 次会停下来。
+
+做不到的事，因为 preview1 没有进程和管道系统调用，这个宿主也没有补：
+
+- `fork`、`exec`、后台 `&`、真正的 OS 管道、`cd`（没有 `chdir`）、命令替换 `$(…)`、算术 `$((…))`、子 shell、通配、here-doc、函数、`source`。
+- 管道右边如果是外部程序，同样是 127；左边的输出不会交给宿主去启动另一个 wasm。
 
 ---
 
