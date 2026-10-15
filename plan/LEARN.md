@@ -967,8 +967,8 @@ print(f"你好，{name}！")
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 123 chapters, 720 runnable blocks`。
-- `./build.sh test`：单元测试合计 135 项通过（含每章篇幅、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 719 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
+- `./build.sh build`：vue-tsc 通过，`docs: 140 chapters, 760 runnable blocks`。
+- `./build.sh test`：单元测试合计 152 项通过（含每章篇幅或 Go 的短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 759 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
 - 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
