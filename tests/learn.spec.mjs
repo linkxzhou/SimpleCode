@@ -62,7 +62,7 @@ async function openChapterMatching(page, match) {
   for (let i = 0; i < n; i++) {
     await showToc(page);
     await links.nth(i).click();
-    await page.waitForSelector('[data-testid="docs-chapter"]');
+    await page.waitForSelector('[data-testid="docs-chapter"] [data-testid="doc-code-block"]');
     if (await match(page)) return true;
   }
   return false;
