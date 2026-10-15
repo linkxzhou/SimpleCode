@@ -1,0 +1,176 @@
+/* Document drawer. Colors come from existing grayscale tokens only. */
+
+.doc-drawer {
+  container-type: inline-size;
+  container-name: docs;
+}
+
+.doc-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--foreground) / 0.2) transparent;
+}
+.doc-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.doc-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.2);
+  border-radius: 4px;
+}
+.doc-scroll::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.35);
+}
+.dark .doc-scroll::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.25);
+}
+
+.doc-drawer ::selection {
+  background: hsl(var(--foreground) / 0.15);
+}
+.dark .doc-drawer ::selection {
+  background: hsl(var(--foreground) / 0.25);
+}
+
+.doc-prose {
+  max-width: 68ch;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.doc-prose > :first-child {
+  margin-top: 0;
+}
+.doc-prose h2 {
+  margin: 28px 0 8px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.doc-prose h3 {
+  margin: 20px 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.doc-prose p,
+.doc-prose li {
+  margin: 12px 0;
+}
+.doc-prose ul,
+.doc-prose ol {
+  padding-left: 1.25rem;
+}
+.doc-prose ul {
+  list-style: disc;
+}
+.doc-prose ol {
+  list-style: decimal;
+}
+.doc-prose li::marker {
+  color: hsl(var(--muted-foreground));
+}
+.doc-prose a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: hsl(var(--foreground) / 0.4);
+}
+.doc-prose a:hover {
+  text-decoration-color: hsl(var(--foreground));
+}
+.doc-prose :not(pre) > code {
+  border: 1px solid hsl(var(--border));
+  border-radius: 4px;
+  background: hsl(var(--muted));
+  padding: 0 4px;
+  font-family: "JetBrains Mono", "SimpleCode CJK", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+}
+.dark .doc-prose :not(pre) > code {
+  background: hsl(var(--accent));
+}
+.doc-prose blockquote {
+  margin: 16px 0;
+  border-left: 2px solid hsl(var(--foreground) / 0.3);
+  padding-left: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+.doc-prose hr {
+  margin: 24px 0;
+  border: 0;
+  border-top: 1px solid hsl(var(--border));
+}
+.doc-prose table {
+  width: 100%;
+  margin: 16px 0;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.doc-prose th,
+.doc-prose td {
+  border: 1px solid hsl(var(--border));
+  padding: 4px 8px;
+  text-align: left;
+}
+.doc-prose th {
+  background: hsl(var(--muted));
+  font-weight: 600;
+}
+.doc-prose tr:nth-child(even) td {
+  background: hsl(var(--muted) / 0.5);
+}
+.doc-prose mark,
+.doc-drawer mark {
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.doc-code .shiki,
+.doc-code .shiki span,
+.doc-code code span {
+  color: var(--shiki-light);
+  background-color: transparent;
+  font-style: var(--shiki-light-font-style, normal);
+  font-weight: var(--shiki-light-font-weight, inherit);
+}
+.dark .doc-code .shiki,
+.dark .doc-code .shiki span,
+.dark .doc-code code span {
+  color: var(--shiki-dark);
+  background-color: transparent;
+  font-style: var(--shiki-dark-font-style, normal);
+  font-weight: var(--shiki-dark-font-weight, inherit);
+}
+.doc-code .line {
+  display: block;
+  min-height: 1.6em;
+}
+
+@container docs (max-width: 420px) {
+  .doc-btn-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+}
+
+.doc-drawer-enter-active,
+.doc-drawer-leave-active {
+  transition: transform 200ms ease;
+}
+.doc-drawer-enter-from[data-side="right"],
+.doc-drawer-leave-to[data-side="right"] {
+  transform: translateX(100%);
+}
+.doc-drawer-enter-from[data-side="bottom"],
+.doc-drawer-leave-to[data-side="bottom"] {
+  transform: translateY(100%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .doc-drawer-enter-active,
+  .doc-drawer-leave-active {
+    transition: none;
+  }
+}
