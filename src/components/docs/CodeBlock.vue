@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { Check, Circle, Copy, Loader2, Play, Square } from "lucide-vue-next";
+import { Check, Copy, Square } from "lucide-vue-next";
 import { CollapsibleContent, CollapsibleRoot, CollapsibleTrigger } from "reka-ui";
 import { Button } from "@/components/ui/button";
+import RunButton from "@/components/RunButton.vue";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRunFromDoc } from "@/composables/useRunFromDoc";
 import { BOOK_TO_RUNTIME, resolveRuntime, runtimeLabel, type BookId, type RuntimeId } from "@/docs/runtime";
@@ -58,23 +59,16 @@ const needsInput = computed(() => {
 const busy = computed(
   () => active.value && (run.status === "preparing" || run.status === "compile" || run.status === "link" || run.status === "run"),
 );
-const phaseLabel = computed(() => {
+const note = computed(() => {
+  if (downloading.value) return `下载 ${pct.value}%`;
+  if (downloadError.value) return "下载失败";
+  if (!active.value || !pinned.value) return "";
   if (pinned.value === "done") return `exit ${run.exitCode ?? 0}`;
   if (pinned.value === "failed") return run.message ?? `exit ${run.exitCode ?? 1}`;
   if (pinned.value === "crash") return "崩溃";
   if (pinned.value === "terminated") return "已终止";
-  if (!active.value) return idleLabel.value;
-  if (run.status === "compile") return "编译中…";
-  if (run.status === "link") return "链接中…";
-  if (run.status === "preparing" || run.status === "run") return "运行中…";
-  return idleLabel.value;
+  return "";
 });
-const idleLabel = computed(() => {
-  if (downloadError.value) return "下载失败 · 重试";
-  if (needsDownload.value) return sizeLabel.value ? `下载并运行 ${sizeLabel.value}` : "下载并运行";
-  return "运行";
-});
-const showResultIcon = computed(() => pinned.value === "done" || pinned.value === "failed" || pinned.value === "crash" || pinned.value === "terminated");
 
 watch(
   () => [run.status, run.source, run.exitCode] as const,
@@ -96,7 +90,7 @@ watch(
         matched.value = text.includes(props.block.expect);
         actualTail.value = text.trim().slice(-600);
       }
-      live.value = status === "done" ? `运行结束，退出码 ${run.exitCode ?? 0}` : `运行结束，${phaseLabel.value}`;
+      live.value = status === "done" ? `运行结束，退出码 ${run.exitCode ?? 0}` : `运行结束，${note.value}`;
     }
   },
 );
@@ -223,31 +217,29 @@ const runTip = computed(() => {
       <Tooltip v-if="block.runnable">
         <TooltipTrigger as-child>
           <span>
-            <Button
-              type="button"
-              size="xs"
-              class="min-w-[8.75rem] justify-center"
-              data-testid="doc-run"
-              :disabled="!isolated || downloading"
+            <RunButton
+              test-id="doc-run"
+              :disabled="!isolated || downloading || busy"
+              :running="busy"
+              :status="run.status"
               :aria-label="runAria"
               :aria-busy="downloading || busy"
               :aria-valuenow="downloading ? pct : undefined"
               @click="onRun"
-            >
-              <Loader2 v-if="downloading || (busy && !showResultIcon)" class="animate-spin motion-reduce:animate-none" />
-              <Check v-else-if="pinned === 'done'" />
-              <Circle v-else-if="showResultIcon" />
-              <Play v-else />
-              <span class="doc-btn-label">{{ downloading ? `下载 ${pct}%` : phaseLabel }}</span>
-            </Button>
+            />
           </span>
         </TooltipTrigger>
         <TooltipContent side="bottom">{{ runTip }}</TooltipContent>
       </Tooltip>
+      <span
+        v-if="note"
+        class="shrink-0 text-[11px] text-muted-foreground"
+        :data-testid="downloading ? 'doc-download' : 'doc-run-note'"
+      >{{ note }}</span>
       <Button v-if="downloading" type="button" variant="ghost" size="xs" @click="cancelDownload">取消</Button>
       <Button v-if="busy" type="button" variant="ghost" size="xs" data-testid="doc-stop" @click="runner.stopFromDoc(block.id)">
         <Square />
-        <span class="doc-btn-label">停止</span>
+        <span class="doc-btn-label">Stop</span>
       </Button>
     </div>
     <pre class="max-h-[480px] overflow-auto px-3 py-2.5 font-mono text-[13px] leading-[1.6]"><code ref="codeEl" v-html="block.html" /></pre>

@@ -1,8 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
+import { createHighlighter } from "shiki";
 import { shouldBackup } from "../src/docs/backup.ts";
 import { parseFenceInfo } from "../src/docs/fence.ts";
 import { DOC_LANG_TO_RUNTIME, resolveRuntime } from "../src/docs/runtime.ts";
+import { collapseShikiLines } from "../src/docs/text.ts";
+import { highlight } from "../scripts/docs/render.ts";
+import { darkTheme, lightTheme } from "../scripts/docs/themes.ts";
 
 describe("parseFenceInfo", () => {
   it("parses quoted, escaped, and unknown attributes", () => {
@@ -69,5 +73,25 @@ describe("shouldBackup", () => {
     assert.equal(shouldBackup("print(1)", "print(2)", { code: "print(1)" }), false);
     assert.equal(shouldBackup("user", "print(2)", { code: "print(1)" }), true);
     assert.equal(shouldBackup("user", "print(2)", undefined), true);
+  });
+});
+
+describe("collapseShikiLines", () => {
+  it("drops separators between line spans and keeps empty lines", () => {
+    const html = '<span class="line">a</span>\n<span class="line"></span>\n<span class="line">  </span>\n<span class="line">b</span>';
+    const out = collapseShikiLines(html);
+    assert.equal(out.includes("\n"), false);
+    assert.equal((out.match(/class="line"/g) ?? []).length, 4);
+  });
+});
+
+describe("highlight", () => {
+  it("renders one line span per source line, including a blank line", async () => {
+    const code = ["package main", "", "func main() {", "\tch := 1", "\tfmt.Println(ch)", "}"].join("\n");
+    const highlighter = await createHighlighter({ themes: [lightTheme, darkTheme], langs: ["go"] });
+    const html = highlight(highlighter, "go", code);
+    assert.equal((html.match(/class="line"/g) ?? []).length, code.split("\n").length);
+    assert.equal(html.includes("\n"), false);
+    assert.match(html, /<span class="line"><\/span>/);
   });
 });

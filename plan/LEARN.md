@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 101」教学系统设计（LEARN）
 
-> 状态：抽屉、流水线和 Run 按钮已落地。Python、JavaScript/TypeScript、Go 已交付；Ruby、SQL、C、C++、PHP、Lua **待完成**。下一轮优化（工具栏不被挡住、代码行距、Run 按钮、加厚三本书）见 §16，尚未实现。详见 §15。
+> 状态：§16 已完成。抽屉从工具栏下沿开始，代码块行数与源码一致，文档与工具栏共用同一个 Run 按钮。Python、JavaScript/TypeScript、Go 每一章已按 §16.6 加厚。Ruby、SQL、C、C++、PHP、Lua 仍 **待完成**。详见 §15。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -937,7 +937,7 @@ print(f"你好，{name}！")
 | 里程碑 | 状态 | 说明 |
 |---|---|---|
 | L0 文档流水线 | ✅ | `scripts/docs/render.ts` + `scripts/vite-plugin-docs.ts` 校验 frontmatter 并预渲染。单色 Shiki 主题。schema 错误会使 `./build.sh build` 失败。 |
-| L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。桌面抽屉是非模态固定面板，编辑器仍可操作。 |
+| L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。抽屉 `top` 为 `--editor-toolbar-h`（2.5rem），不盖住工具栏。 |
 | L2 从文档运行 | ✅ | 切换语言、按需下载 wasm、备份与撤销、stdin。TypeScript 块复用 `src/core/transpile.ts` 的 Sucrase，编辑器写入带 `// 由 TypeScript 转译（原始代码见文档）` 的 JavaScript，方言切到 JS。 |
 | L3 内容第一批 | ⚠️ | Python、Go 已交付。Lua、SQL **待完成**。 |
 | L4 内容第二批 | ⚠️ | JavaScript/TypeScript 已交付。C、C++、Ruby、PHP **待完成**。 |
@@ -961,9 +961,9 @@ print(f"你好，{name}！")
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 40 chapters, 155 runnable blocks`。
-- `./build.sh test`：单元测试 4 项、`check-mono`、各语言 hello-world、`docs-smoke` 154 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
-- 截图：`tests/screenshots/learn-drawer-light.png`、`learn-drawer-dark.png`、`learn-chapter.png`、`learn-after-run.png`。抽屉浅色/深色灰阶 100%（通道差不超过 2，忽略几乎透明的像素）。
+- `./build.sh build`：vue-tsc 通过，`docs: 40 chapters, 275 runnable blocks`。
+- `./build.sh test`：`tests/docs-unit.test.ts` 与 `tests/docs-length.test.ts` 共 46 项、`check-mono`、各语言 hello-world、`docs-smoke` 274 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
+- 截图：`learn-drawer-light.png`、`learn-drawer-dark.png`（整页，工具栏可见）、`learn-chapter.png`、`learn-after-run.png`、`learn-code-lines.png`、`learn-run-buttons.png`。抽屉元素浅色/深色灰阶 100%。Go 的 channel 示例渲染 9 行、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。
 
 ### 与计划的偏差
 
@@ -975,12 +975,15 @@ print(f"你好，{name}！")
 - `defer` 示例用 `fmt.Print`，期望输出 `abc`。在 `return` 前用 `Println` 会先打出换行。
 - 跨语言示例放在 Python 概览里的 Ruby 块（下载进度 + `来自 Ruby 的 42`），而不是尚未成书的 SQL。
 - 运行状态带 `data-source`。测试要等到来源变成当前代码块再读 `done`，避免把上一次运行的 `done` 当成这次。
+- 侧栏按钮在 `refreshStatuses` 填完 `states` 之前就会出现。`ensure` 若发现该语言还没有状态条目，会先补一条再下载，避免第一次选中语言时读到空状态。
+- 代码块行距：Shiki 插在 `.line` 之间的换行由 `collapseShikiLines` 去掉，`.doc-code pre` 使用 `white-space: normal`。空行仍保留空的 `.line`。
+- 文档 Run 与工具栏 Run 都是 `RunButton`（`size="xs"`，空闲文案 `Run`）。下载百分比和退出码在按钮旁边。
 
 ---
 
 ## 16. 优化：工具栏、行距、Run 按钮与加厚正文
 
-本节只描述这一轮要改什么。写完本节并单独提交之后才改代码。Ruby、SQL、C、C++、PHP、Lua 仍然 **待完成**，本轮不加它们的正文。
+本节先作为计划单独提交，随后按 16.7 实现。验收已在 16.8 勾选。Ruby、SQL、C、C++、PHP、Lua 仍然 **待完成**，本轮不加它们的正文。
 
 ### 16.1 问题
 
@@ -1119,12 +1122,12 @@ print(f"你好，{name}！")
 
 ### 16.8 验收
 
-- [ ] 抽屉打开时，工具栏的 Run、101、JS|TS 完整可见且可点击；浅色和深色截图能同时看到工具栏和抽屉。
-- [ ] 任一代码块的渲染行数等于源码行数，截图里 `func main` 内部不再出现源码没有的空行。
-- [ ] 文档 Run 与工具栏 Run 是同一个组件，并排截图可以看出尺寸、图标和 `Run` 文案一致。
-- [ ] 三本书每一章达到 §16.6 的下限；docs-smoke 全部可运行块通过。
-- [ ] `./build.sh build` 与 `./build.sh test` 通过。单色检查仍然通过。
-- [ ] §15 写明本轮结果；六种未写的语言仍是待完成。
+- [x] 抽屉打开时，工具栏的 Run、101、JS|TS 完整可见且可点击；浅色和深色截图能同时看到工具栏和抽屉。
+- [x] 任一代码块的渲染行数等于源码行数，截图里 `func main` 内部不再出现源码没有的空行。Go channel 示例 9 行，相邻行顶距与行高之差为 0。
+- [x] 文档 Run 与工具栏 Run 是同一个组件，并排截图可以看出尺寸、图标和 `Run` 文案一致（高度均为 28px）。
+- [x] 三本书每一章达到 §16.6 的下限；docs-smoke 274 个可运行块通过（1 个 `smoke=skip`）。
+- [x] `./build.sh build` 与 `./build.sh test` 通过。单色检查仍然通过。
+- [x] §15 写明本轮结果；六种未写的语言仍是待完成。
 
 截图文件：
 

@@ -58,7 +58,7 @@ onBeforeUnmount(() => {
         :aria-modal="mobile ? 'true' : 'false'"
         :aria-label="`${docs.title} 教程`"
         class="doc-drawer fixed z-40 flex flex-col bg-background shadow-sm"
-        :class="mobile ? 'inset-x-0 bottom-0 h-[92vh] rounded-t-lg border-t border-border' : 'inset-y-0 right-0 border-l border-border'"
+        :class="mobile ? 'inset-x-0 bottom-0 top-[var(--editor-toolbar-h)] rounded-t-lg border-t border-border' : 'bottom-0 right-0 top-[var(--editor-toolbar-h)] border-l border-border'"
         :data-side="mobile ? 'bottom' : 'right'"
         :style="mobile ? undefined : { width: `min(${docs.width}px, 92vw)` }"
       >

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { Loader2, Play, RotateCcw, Square, X } from "lucide-vue-next";
+import { RotateCcw, Square, X } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import LearnButton from "./docs/LearnButton.vue";
+import RunButton from "./RunButton.vue";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
 import { fileNameFor, useEditorStore } from "@/stores/editor";
@@ -16,9 +17,6 @@ const mod = isMac ? "⌘" : "Ctrl";
 
 const downloading = computed(() => langs.selectedState?.status === "downloading");
 const ready = computed(() => ["ready", "cached"].includes(langs.selectedState?.status ?? ""));
-const runLabel = computed(() =>
-  ({ preparing: "Preparing…", compile: "Compiling…", link: "Linking…", run: "Running…" })[run.status as string] ?? "Run",
-);
 const fileName = computed(() => {
   const l = langs.selected;
   if (!l) return "";
@@ -35,7 +33,7 @@ function reset() {
 </script>
 
 <template>
-  <div class="flex h-10 shrink-0 items-center gap-1 border-b border-border px-3">
+  <div class="flex h-[var(--editor-toolbar-h)] shrink-0 items-center gap-1 border-b border-border px-3" data-testid="editor-toolbar">
     <span class="flex-1 truncate font-mono text-xs text-muted-foreground" data-testid="filename">{{ fileName }}</span>
     <div
       v-if="jsTs"
@@ -74,11 +72,7 @@ function reset() {
     <Tooltip>
       <TooltipTrigger as-child>
         <span>
-          <Button size="xs" data-testid="run" :disabled="!langs.selected || run.running || downloading" @click="run.run()">
-            <Loader2 v-if="run.running" class="animate-spin" />
-            <Play v-else />
-            {{ runLabel }}
-          </Button>
+          <RunButton test-id="run" :disabled="!langs.selected || run.running || downloading" :running="run.running" :status="run.status" @click="run.run()" />
         </span>
       </TooltipTrigger>
       <TooltipContent side="bottom">{{ ready || downloading ? `运行 ${mod}+Enter` : "首次运行将下载该语言" }}</TooltipContent>

@@ -86,6 +86,10 @@ export const useLanguageStore = defineStore("language", () => {
     const m = manifest.value;
     const lang = m?.languages.find((l) => l.id === id);
     if (!m || !lang) return false;
+    // Sidebar buttons appear as soon as the manifest is assigned, which is
+    // before refreshStatuses fills `states`. Selecting in that window must
+    // not throw on a missing entry.
+    if (!states[id]) states[id] = { status: "idle", loaded: 0, total: sizeOf(lang) };
     const st = states[id];
     if (st.status === "ready") return true;
     const ids = languageAssetIds(lang);

@@ -1,7 +1,13 @@
-import { answerRun, fence, lesson, mistakes, note, run } from "../format.mjs";
+import { answerRun, deepen, fence, lesson, mistakes, note, run } from "../format.mjs";
+import { goPack } from "./depth-go.mjs";
 
 const SRC = ["gobyexample", "learn-go-tests"];
-const G = (meta, body) => lesson({ language: "go", sources: SRC }, meta, body);
+const G = (meta, body) =>
+  lesson(
+    { language: "go", sources: SRC },
+    { ...meta, minutes: Math.max(meta.chapter === 0 ? 12 : 18, meta.minutes ?? 0) },
+    deepen(body, goPack(meta.chapter)),
+  );
 const tail = (items) => `${mistakes(items)}
 
 ## 延伸阅读

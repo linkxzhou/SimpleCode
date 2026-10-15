@@ -103,6 +103,23 @@ async function openLearn(page) {
   await page.waitForSelector('[data-testid="docs-drawer"]');
 }
 
+async function assertToolbarClear(page) {
+  const boxes = await page.evaluate(() => {
+    const drawer = document.querySelector('[data-testid="docs-drawer"]').getBoundingClientRect();
+    return ["run", "learn-button"].map((id) => {
+      const el = document.querySelector(`[data-testid="${id}"]`);
+      const r = el.getBoundingClientRect();
+      const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+      const intersects = !(r.right <= drawer.left || r.left >= drawer.right || r.bottom <= drawer.top || r.top >= drawer.bottom);
+      return { id, intersects, covered: !!hit?.closest("[data-testid='docs-drawer']"), visible: r.width > 0 && r.height > 0 };
+    });
+  });
+  check(
+    boxes.every((b) => b.visible && !b.intersects && !b.covered),
+    `toolbar stays clear of the drawer (${boxes.map((b) => `${b.id}:${b.intersects ? "overlap" : "ok"}`).join(" ")})`,
+  );
+}
+
 /** Wait until this block's run reaches a terminal status. A previous example can still show "done". */
 async function waitForBlock(page, block, statuses = ["done", "failed", "crash", "terminated"]) {
   const id = await block.getAttribute("data-block");
@@ -129,14 +146,20 @@ try {
   await openLearn(page);
   const title = await page.textContent('[data-testid="docs-title"]');
   check(title?.includes("Python 101"), `drawer title ${title}`);
-  await saveShot(page, "learn-drawer-light.png", page.locator('[data-testid="docs-drawer"]'));
-  const lightRatio = monoRatio(`${shotDir}/learn-drawer-light.png`);
+  await assertToolbarClear(page);
+  await saveShot(page, "learn-drawer-light.png");
+  const lightDrawer = "/tmp/learn-drawer-light-element.png";
+  await page.locator('[data-testid="docs-drawer"]').screenshot({ path: lightDrawer });
+  const lightRatio = monoRatio(lightDrawer);
   check(lightRatio >= 0.99, `light drawer grayscale ${(lightRatio * 100).toFixed(2)}%`);
 
   await setTheme(page, "dark");
   await openLearn(page);
-  await saveShot(page, "learn-drawer-dark.png", page.locator('[data-testid="docs-drawer"]'));
-  const darkRatio = monoRatio(`${shotDir}/learn-drawer-dark.png`);
+  await assertToolbarClear(page);
+  await saveShot(page, "learn-drawer-dark.png");
+  const darkDrawer = "/tmp/learn-drawer-dark-element.png";
+  await page.locator('[data-testid="docs-drawer"]').screenshot({ path: darkDrawer });
+  const darkRatio = monoRatio(darkDrawer);
   check(darkRatio >= 0.99, `dark drawer grayscale ${(darkRatio * 100).toFixed(2)}%`);
 
   await setTheme(page, "light");
@@ -212,6 +235,54 @@ try {
     `ts block transpiled into the editor (file=${filename}, expect=${tsExpect}, editor=${tsEditor.slice(0, 80).replaceAll("\n", " ")})`,
   );
 
+  await page.click('[data-testid="docs-close"]');
+  await page.click('[data-testid="lang-go"]');
+  await page.waitForSelector('[data-testid="lang-go"][data-status="ready"]', { timeout: 180_000 });
+  await showToc(page);
+  await page.click('[data-testid="chapter-link"][data-chapter="9"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  const goCount = await page.locator('[data-testid="doc-code-block"]').count();
+  let goBlock = page.locator('[data-testid="doc-code-block"]').first();
+  for (let i = 0; i < goCount; i++) {
+    const sample = await page.locator('[data-testid="doc-code-block"]').nth(i).getAttribute("data-code");
+    if (sample?.includes("make(chan int, 1)") && sample.includes("func main")) {
+      goBlock = page.locator('[data-testid="doc-code-block"]').nth(i);
+      break;
+    }
+  }
+  const goCode = (await goBlock.getAttribute("data-code")) ?? "";
+  const sourceLines = goCode.replace(/\n$/, "").split("\n").length;
+  const renderedLines = await goBlock.locator(".line").count();
+  const gap = await goBlock.locator("pre").evaluate((pre) => {
+    const lines = [...pre.querySelectorAll(".line")];
+    const tops = lines.map((node) => node.getBoundingClientRect().top);
+    const height = lines[0]?.getBoundingClientRect().height ?? 0;
+    const worst = tops.slice(1).reduce((max, top, i) => Math.max(max, Math.abs(top - tops[i] - height)), 0);
+    return { height, worst };
+  });
+  check(renderedLines === sourceLines && gap.worst <= 1, `code lines rendered=${renderedLines} source=${sourceLines} gap=${gap.worst.toFixed(2)}`);
+  await goBlock.scrollIntoViewIfNeeded();
+  await saveShot(page, "learn-code-lines.png", goBlock);
+  const buttons = await page.evaluate(() => {
+    const text = (el) => (el?.textContent ?? "").replace(/\s+/g, " ").trim();
+    const a = document.querySelector('[data-testid="run"]');
+    const b = document.querySelector('[data-testid="doc-run"]');
+    const sa = getComputedStyle(a);
+    const sb = getComputedStyle(b);
+    return {
+      label: text(a) === "Run" && text(b) === "Run",
+      height: sa.height === sb.height,
+      fontSize: sa.fontSize === sb.fontSize,
+      background: sa.backgroundColor === sb.backgroundColor,
+      heightPx: sa.height,
+    };
+  });
+  check(
+    buttons.label && buttons.height && buttons.fontSize && buttons.background && buttons.heightPx === "28px",
+    `run buttons match (${JSON.stringify(buttons)})`,
+  );
+  await saveShot(page, "learn-run-buttons.png");
+
   const context = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await context.route("**/*ruby*.wasm", async (route) => {
     await new Promise((r) => setTimeout(r, 700));
@@ -226,7 +297,7 @@ try {
   const ruby = fresh.locator('[data-lang="ruby"]').first();
   await ruby.locator('[data-testid="doc-run"]').click();
   await fresh.waitForFunction(
-    () => /下载/.test(document.querySelector('[data-lang="ruby"] [data-testid="doc-run"]')?.textContent ?? ""),
+    () => /下载/.test(document.querySelector('[data-lang="ruby"] [data-testid="doc-download"]')?.textContent ?? ""),
     null,
     { timeout: 20_000 },
   );

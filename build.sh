@@ -58,7 +58,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then

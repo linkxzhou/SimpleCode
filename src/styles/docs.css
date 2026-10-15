@@ -141,8 +141,12 @@
   font-style: var(--shiki-dark-font-style, normal);
   font-weight: var(--shiki-dark-font-weight, inherit);
 }
+.doc-code pre {
+  white-space: normal;
+}
 .doc-code .line {
   display: block;
+  white-space: pre;
   min-height: 1.6em;
 }
 

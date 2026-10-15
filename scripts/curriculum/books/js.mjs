@@ -1,7 +1,13 @@
-import { answerRun, fence, lesson, mistakes, note, run } from "../format.mjs";
+import { answerRun, deepen, fence, lesson, mistakes, note, run } from "../format.mjs";
+import { jsPack } from "./depth-js.mjs";
 
 const SRC = ["mdn-js", "lxiy-js"];
-const J = (meta, body) => lesson({ language: "js", sources: SRC }, meta, body);
+const J = (meta, body) =>
+  lesson(
+    { language: "js", sources: SRC },
+    { ...meta, minutes: Math.max(meta.chapter === 0 ? 12 : 18, meta.minutes ?? 0) },
+    deepen(body, jsPack(meta.chapter)),
+  );
 const tail = (items) => `${mistakes(items)}
 
 ## 延伸阅读
