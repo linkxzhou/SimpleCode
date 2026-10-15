@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：§19 的短节正在铺到其余语言。Go、Python、JavaScript、Ruby 已按菜鸟教程的章名改完，其余仍是 §18 的短文，直到各自的提交落地。界面文案仍是「快速入门」。
+> 状态：§19 的短节正在铺到其余语言。Go、Python、JavaScript、Ruby、SQL 已按菜鸟教程的章名改完，其余仍是 §18 的短文，直到各自的提交落地。界面文案仍是「快速入门」。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -956,14 +956,14 @@ print(f"你好，{name}！")
 | JavaScript / TypeScript | ✅ | 30 | 按 §19：JavaScript 教程到 TypeScript 类型断言。类型块用 `ts` 围栏 |
 | Go | ✅ | 29 | 按 §19：正式标题、每章至少 3 个 `###` 短节。不再要求 2500 字 |
 | Ruby | ✅ | 23 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出 |
-| SQL | ✅ | 12 | 2734–3136，合计 35239 |
+| SQL | ✅ | 26 | 按 §19：SQLite 教程到 SQLite 常用函数 |
 | C | ✅ | 12 | 2721–3125，合计 33471 |
 | C++ | ✅ | 12 | 2729–3227，合计 34556。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
 | PHP | ✅ | 12 | 2784–3111，合计 35148。读不到标准输入，行处理用字符串 |
 | Lua | ✅ | 12 | 2766–3360，合计 35305 |
 | Shell | ✅ | 12 | 2748–3190，合计 33902。只有 wasi-sh 内建 |
 
-十种语言合计 182 章（Go 29、Python 28、JavaScript 30、Ruby 23，其余仍是短文）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
+十种语言合计 196 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26，其余仍是短文）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
 
 ### 验收
 
