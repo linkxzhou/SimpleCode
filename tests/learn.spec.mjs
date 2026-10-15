@@ -148,6 +148,7 @@ try {
   check(title?.includes("Python 快速入门"), `drawer title ${title}`);
   await assertToolbarClear(page);
   await saveShot(page, "learn-drawer-light.png");
+  await saveShot(page, "learn-toolbar.png");
   const lightDrawer = "/tmp/learn-drawer-light-element.png";
   await page.locator('[data-testid="docs-drawer"]').screenshot({ path: lightDrawer });
   const lightRatio = monoRatio(lightDrawer);
@@ -261,6 +262,10 @@ try {
   await page.waitForSelector('[data-testid="lang-quickjs"][data-status="ready"]', { timeout: 180_000 });
   await showToc(page);
   check((await page.textContent('[data-testid="docs-title"]'))?.includes("JavaScript 快速入门"), "javascript book label");
+  await page.click('[data-testid="chapter-link"][data-chapter="4"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-js-chapter.png");
+  await showToc(page);
   await page.click('[data-testid="chapter-link"][data-chapter="11"]');
   await page.waitForSelector('[data-lang="ts"] [data-testid="doc-run"]');
   const ts = page.locator('[data-lang="ts"]').first();
@@ -276,6 +281,22 @@ try {
   );
 
   await page.click('[data-testid="docs-close"]');
+  await page.click('[data-testid="lang-shell"]');
+  await openLearn(page);
+  const shellTitle = await page.textContent('[data-testid="docs-title"]');
+  check(shellTitle?.includes("Shell 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `shell book opens ${shellTitle}`);
+  await page.click('[data-testid="chapter-link"][data-chapter="1"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-shell-chapter.png");
+  const shellBlock = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"][data-runnable="1"]').first();
+  const shellExpect = await shellBlock.getAttribute("data-expect");
+  await shellBlock.locator('[data-testid="doc-run"]').click();
+  await waitForBlock(page, shellBlock);
+  const shellOut = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
+  check(shellOut.includes(shellExpect), `shell chapter run ${shellExpect}`);
+  await saveShot(page, "learn-shell-run.png");
+  await page.click('[data-testid="docs-close"]');
+
   await page.click('[data-testid="lang-go"]');
   await page.waitForSelector('[data-testid="lang-go"][data-status="ready"]', { timeout: 180_000 });
   await showToc(page);
@@ -301,6 +322,7 @@ try {
     return { height, worst };
   });
   check(renderedLines === sourceLines && gap.worst <= 1, `code lines rendered=${renderedLines} source=${sourceLines} gap=${gap.worst.toFixed(2)}`);
+  await saveShot(page, "learn-go-chapter.png");
   await goBlock.scrollIntoViewIfNeeded();
   await saveShot(page, "learn-code-lines.png", goBlock);
   const buttons = await page.evaluate(() => {

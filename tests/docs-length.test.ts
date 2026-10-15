@@ -6,8 +6,8 @@ import { describe, it } from "node:test";
 const BASE: Record<string, number> = {
 };
 
-/** Books still on the §17 absolute floors. */
-const ABSOLUTE = ["lua"];
+/** Books still on the §17 absolute floors. None remain after the essay rewrite. */
+const ABSOLUTE: string[] = [];
 
 /** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. */
 const ESSAY = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
