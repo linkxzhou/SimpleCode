@@ -312,3 +312,13 @@ gh release create wasi-runtimes-1 --title "WASI runtimes" wasm/lua-5.4.9.wasm wa
 ```
 
 临时改地址：`SIMPLECODE_LUA_PREBUILT_URL`、`SIMPLECODE_GO_PREBUILT_URL`。`scripts/builders/self-check.sh` 检查宿主选择、校验和与失败后退回预编译文件；`SIMPLECODE_INSPECT_TOOLCHAINS=1` 会解压四个宿主的工具链并核对 ELF / Mach-O。
+
+### 8.4 清单跟磁盘上的文件走
+
+`wasm/manifest.json` 不入库。`.gitignore` 忽略整个 `wasm/`。`scripts/write-manifest.mjs` 读取已经放在 `wasm/` 里的每个文件，写入它的真实 `size` 和 `sha256`。下面三处都会调用它：
+
+- `./build.sh vendor` 在复制或编译结束之后。
+- `./build.sh dev` 与 `./build.sh build` 在启动 Vite 之前。缺文件时才去 vendor，文件在但清单过期时只重写清单。
+- Vite 插件在 dev server 启动和 `buildStart` 时再写一次，然后把 `wasm/` 拷进 `dist/wasm`。`./build.sh preview` 会再同步一次，避免预览一份旧的 `dist/wasm`。
+
+下载时的大小检查仍对照清单里的 `size`（`src/core/wasmLoader.ts`）。清单和被提供的文件来自同一目录，所以 Apple Silicon 上 Lua 从 720144 字节变成 720592 字节不会再报「大小不匹配」。不要把清单提交回来，也不要用 `git checkout -- wasm/manifest.json` 恢复某一台机器的摘要。`tests/manifest-refresh.test.mjs` 用一份故意写错的清单确认重写后的 `size` 等于文件字节数，并确认 `wasm/manifest.json` 不在 git 索引里。
