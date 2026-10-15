@@ -11,11 +11,12 @@ export const buttonVariants = cva(
         outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        "ghost-destructive": "text-destructive hover:bg-destructive/10",
+        "ghost-destructive": "text-foreground hover:bg-accent",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 px-3 text-xs",
+        xs: "h-7 gap-1 rounded-md px-2.5 text-xs [&_svg]:size-3.5",
         icon: "h-8 w-8",
       },
     },

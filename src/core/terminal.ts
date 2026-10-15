@@ -28,28 +28,29 @@ class TerminalController {
     lineHeight: 1.4,
     scrollback: 5000,
     allowProposedApi: false,
+    // Monochrome ANSI palette: every color maps to a neutral grey
     theme: {
       background: "#00000000",
-      foreground: "#e4e4e7",
-      cursor: "#e4e4e7",
+      foreground: "#e5e5e5",
+      cursor: "#fafafa",
       cursorAccent: "#000000",
-      selectionBackground: "#3f3f46",
-      black: "#18181b",
-      red: "#f87171",
-      green: "#4ade80",
-      yellow: "#facc15",
-      blue: "#60a5fa",
-      magenta: "#c084fc",
-      cyan: "#22d3ee",
-      white: "#e4e4e7",
-      brightBlack: "#71717a",
-      brightRed: "#fca5a5",
-      brightGreen: "#86efac",
-      brightYellow: "#fde047",
-      brightBlue: "#93c5fd",
-      brightMagenta: "#d8b4fe",
-      brightCyan: "#67e8f9",
-      brightWhite: "#fafafa",
+      selectionBackground: "#404040",
+      black: "#171717",
+      red: "#d4d4d4",
+      green: "#fafafa",
+      yellow: "#d4d4d4",
+      blue: "#a3a3a3",
+      magenta: "#d4d4d4",
+      cyan: "#a3a3a3",
+      white: "#e5e5e5",
+      brightBlack: "#737373",
+      brightRed: "#fafafa",
+      brightGreen: "#fafafa",
+      brightYellow: "#fafafa",
+      brightBlue: "#d4d4d4",
+      brightMagenta: "#fafafa",
+      brightCyan: "#d4d4d4",
+      brightWhite: "#ffffff",
     },
     allowTransparency: true,
   });
@@ -89,7 +90,7 @@ class TerminalController {
   }
 
   stderr(text: string) {
-    this.write(ANSI_RE.test(text) ? text : `\x1b[31m${text}\x1b[0m`);
+    this.write(ANSI_RE.test(text) ? text : `\x1b[1;37m${text}\x1b[0m`);
   }
 
   system(msg: string, color = "2") {

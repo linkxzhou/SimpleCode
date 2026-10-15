@@ -32,7 +32,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKey, true));
 </script>
 
 <template>
-  <ResizablePanelGroup direction="horizontal" auto-save-id="simplecode-layout" class="h-full w-full">
+  <ResizablePanelGroup direction="horizontal" auto-save-id="simplecode-layout-v2" class="h-full w-full">
     <!-- Left: language sidebar (order 1) -->
     <ResizablePanel
       ref="sidebar"

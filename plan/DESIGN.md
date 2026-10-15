@@ -119,7 +119,7 @@ thirdparty/runno/
 ### 3.1 侧栏展开（默认）
 ```
 ┌──────────────────┬───────────────────────────────────────────────────────────┐
-│ Languages    [«] │ main.py                        [▶ Run] [■ Stop] [⟲ Reset] │
+│ Languages        │ main.py                        [▶ Run] [■ Stop] [⟲ Reset] │
 │──────────────────│───────────────────────────────────────────────────────────│
 │▌● Python  ✓ 3.11 │  1  name = input("Name? ")                                │
 │   Ruby     ↓     │  2  print(f"Hello, {name}!")                              │
@@ -133,7 +133,7 @@ thirdparty/runno/
 │                  │ $ python main.py                                          │
 │ ──────────────── │ Name? Ada                                                 │
 │ 缓存 45 MB [清除]│ Hello, Ada!                                               │
-│ ☾/☀ 主题         │ █                                                         │
+│ ☾/☀ 主题     [«] │ █                                                         │
 └──────────────────┴───────────────────────────────────────────────────────────┘
  ✓ = 已缓存   ↓ = 未下载（点击下载）   ● = 当前选中   [«] = 向左折叠
 ```
@@ -141,22 +141,36 @@ thirdparty/runno/
 ### 3.2 侧栏折叠
 ```
 ┌────┬──────────────────────────────────────────────────────────────────────┐
-│ [»]│ main.py                                   [▶ Run] [■ Stop] [⟲ Reset] │
-│▌Py●│──────────────────────────────────────────────────────────────────────│
-│ Rb │  1  print("hello")                                                   │
-│ JS │                                                                      │
+│[Py]│ main.py                                          [▶ Run] [⟲]         │
+│ Rb │──────────────────────────────────────────────────────────────────────│
+│ JS │  1  print("hello")                                                   │
 │ SQL│                                                                      │
-│ C  │══════════════════════════════════════════════════════════════════════│
-│ C++│ hello                                                                │
-│ PHP│                                                                      │
+│ C  │                                                                      │
+│ C++│══════════════════════════════════════════════════════════════════════│
+│ PHP│ Terminal ● exit 0                                     0.12s  [⌫] [v] │
+│    │ hello                                                                │
+│ ☾  │                                                                      │
+│ [»]│                                                                      │
 └────┴──────────────────────────────────────────────────────────────────────┘
-  折叠后为左侧 56px 图标栏（语言缩写 + 状态点，Tooltip 在右侧弹出显示全名）；[»] 向右展开
+  折叠后为左侧 56px 仅图标栏（28px 语言图标方块，无文字；Tooltip 在右侧弹出显示全名）；底部 [»] 向右展开
+```
+
+### 3.2b 终端折叠
+```
+┌──────────────────┬───────────────────────────────────────────────────────────┐
+│ Languages        │ main.py                                [▶ Run] [⟲]        │
+│ [Py] Python    ✓ │───────────────────────────────────────────────────────────│
+│ ...              │  1  print("hello")                                        │
+│                  │                     （编辑器占满剩余高度）                  │
+│ 缓存 27 MB [清除]│═══════════════════════════════════════════════════════════│
+│ ☾ 跟随系统   [«] │ Terminal ● 就绪                              [⌫] [^]      │ ← 仅 32px 标题栏
+└──────────────────┴───────────────────────────────────────────────────────────┘
 ```
 
 ### 3.3 加载状态（首次点击 C++）
 ```
 ┌──────────────────┬───────────────────────────────────────────────────────────┐
-│ Languages    [«] │ main.cpp                    [▶ Run(禁用)] [✕ 取消下载]     │
+│ Languages        │ main.cpp                    [▶ Run(禁用)] [✕ 取消下载]     │
 │   Python   ✓     │───────────────────────────────────────────────────────────│
 │▌● C++   ◌ 38%    │  1  #include <iostream>     (编辑器可编辑，Run 禁用)        │
 │   ▓▓▓▓▓░░░░░░░   │  2  int main(){ std::cout << "hi\n"; }                    │
@@ -434,69 +448,60 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 ## 11. 前端样式规范
 
 ### 11.1 设计原则
-极简、内容优先：编辑器与终端占满可用空间；装饰只用细边框（1px）与微弱底色区分区域；无阴影或仅 `shadow-sm` 用于浮层。
+**黑白单色（monochrome）**：整个应用（侧栏、工具栏、按钮、进度、状态点、终端）只使用中性黑 / 白 / 灰（HSL 饱和度 0），浅色与深色模式均无任何强调色。**唯一例外是 Monaco 编辑器**，保留其语法高亮配色。状态差异通过形状（实心 / 空心环 / 虚线边框 / 脉冲动画）与明暗区分，而非颜色。极简、内容优先：细边框（1px）+ 微弱底色区分区域，无阴影（浮层仅 `shadow-sm`）。
 
-### 11.2 设计令牌（shadcn-vue CSS 变量，基于 Zinc 基色）
+### 11.2 设计令牌（shadcn-vue CSS 变量，Neutral 0% 饱和度）
 | Token | Light | Dark | 用途 |
 |---|---|---|---|
-| `--background` | `0 0% 100%` (#fff) | `240 10% 3.9%` (#09090b) | 页面/编辑器底 |
-| `--foreground` | `240 10% 3.9%` | `0 0% 98%` | 正文 |
-| `--muted` | `240 4.8% 95.9%` | `240 3.7% 15.9%` | 侧栏底、工具栏底 |
-| `--muted-foreground` | `240 3.8% 46.1%` | `240 5% 64.9%` | 次要文字 |
-| `--border` | `240 5.9% 90%` | `240 3.7% 15.9%` | 分割线 |
-| `--primary` | `240 5.9% 10%` | `0 0% 98%` | Run 按钮 |
-| `--accent` | `240 4.8% 95.9%` | `240 3.7% 15.9%` | hover/选中项 |
-| `--destructive` | `0 84.2% 60.2%` | `0 62.8% 30.6%` | Stop、失败 |
-| `--success`（自定义） | `142 71% 45%` | `142 69% 58%` | 已缓存 ✓、exit 0 |
-| `--warning`（自定义） | `38 92% 50%` | `48 96% 53%` | 下载中 |
-| `--terminal-bg`（自定义） | `#0b0b0c` | `#000000` | **终端在两种主题下都保持黑色** |
-| `--terminal-fg` | `#e4e4e7` | `#e4e4e7` | 终端文字 |
-| `--radius` | `0.5rem` | | 按钮/徽标圆角 |
+| `--background` | `0 0% 100%` | `0 0% 4%` | 页面/编辑器底 |
+| `--foreground` | `0 0% 4%` | `0 0% 98%` | 正文 |
+| `--muted` | `0 0% 97%` | `0 0% 7%` | 侧栏底 |
+| `--muted-foreground` | `0 0% 45%` | `0 0% 64%` | 次要文字 |
+| `--border` / `--input` | `0 0% 89%` | `0 0% 15%` | 分割线 |
+| `--primary` | `0 0% 9%` | `0 0% 98%` | Run 按钮、选中图标底（反色） |
+| `--accent` | `0 0% 92%` | `0 0% 15%` | hover / 选中行 |
+| `--destructive` | 同 primary（`0 0% 9%`） | `0 0% 98%` | 不使用红色 |
+| `--success` / `--warning` | `0 0% 9%` / `0 0% 45%` | `0 0% 98%` / `0 0% 64%` | 仅为兼容保留，均为灰阶 |
+| `--terminal-bg` | `#0a0a0a` | `#000000` | 终端在两种主题下都为黑色 |
+| `--radius` | `0.5rem` | | 圆角 |
 
 ### 11.3 字体与排版
-- UI：`Inter`（本地自托管 woff2，COEP 原因不用 Google Fonts），fallback `system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif`。
-- 代码/终端：`JetBrains Mono`（本地），fallback `ui-monospace, SFMono-Regular, Menlo, monospace`。
-- 字号：UI 正文 `text-sm`(14px)；侧栏标题 `text-xs uppercase tracking-wider text-muted-foreground`；编辑器 14px / 行高 1.6；终端 13px / 行高 1.4。
+- UI：`Inter` → `system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif`（当前未打包 Inter，使用系统字体）。
+- 代码/终端：`JetBrains Mono` → `ui-monospace, SFMono-Regular, Menlo, monospace`。
+- 字号：UI 正文 14px；侧栏标题 `text-xs uppercase tracking-wider text-muted-foreground`；编辑器 14px / 行高 22px；终端 13px / 行高 1.4。
 
 ### 11.4 间距与尺寸
-- 4px 基准网格（Tailwind 默认）。工具栏高 `h-10`(40px)，`px-3`，按钮 `size="sm"`(h-8)。
-- 左侧侧栏展开宽 240px（可拖 200–320），折叠为 56px 图标栏；条目高 36px，`px-3 gap-2`。
-- 终端头高 32px；编辑器/终端默认比例 60/40，最小各 20%。
-- 分割条可视 1px，可点击热区 6px，hover 显示 `bg-primary/20`。
+- 工具栏高 `h-10`(40px)，`px-3`。**Run 按钮为紧凑尺寸 `size="xs"`（h-7 / 28px，px-2.5，text-xs，图标 14px）**；Stop、取消下载同为 xs；重置为 28px 图标按钮。
+- **左侧侧栏**：展开 240px（可拖 200–320），折叠为 56px 仅图标栏（reka-ui `SplitterPanel sizeUnit="px"`）。条目高 40px；图标 28px。
+- **终端面板**：默认高度约视口 28%（`max(140px, 0.28 × innerHeight)`，px 单位），最小 96px；**可折叠**，折叠后仅保留 32px 标题栏；折叠状态存 `localStorage("simplecode:terminal-collapsed")`；开始运行时若已折叠会自动展开以显示输出。
+- 分割条可视 1px，可点击热区 7px，hover `bg-primary/20`。
 
 ### 11.5 使用的 shadcn-vue 组件
-`Button`、`Tooltip`、`Progress`、`Badge`、`Resizable`（ResizablePanelGroup/Panel/Handle）、`ScrollArea`、`Separator`、`AlertDialog`（清除缓存）、`DropdownMenu`（更多：示例代码/重置/主题）、`Sonner`（Toast）、`Kbd`（快捷键提示，若版本无则自建）。图标：`lucide-vue-next`（Play、Square、RotateCcw、ChevronsRight/Left、Download、Check、Loader2、AlertCircle、Trash2、Sun/Moon）。
+`Button`（variants: default / ghost / outline / secondary / ghost-destructive(灰阶)；sizes: default / sm / **xs** / icon）、`Tooltip`、`Progress`（前景色填充）、`Resizable`（SplitterGroup/Panel/Handle）、`Badge`。图标：`lucide-vue-next`（Play、Square、RotateCcw、ChevronsLeft/Right、ChevronUp/Down、Download、Check、Loader2、AlertCircle、Trash2、Eraser、Sun/Moon/SunMoon）。
 
 ### 11.6 组件状态
-**LanguageItem**
+**LanguageIcon（语言图标）**：28×28 圆角方块，内为等宽字母缩写（Py / Rb / JS / SQL / C / C++ / PHP），作为语言“图标”，展开与折叠侧栏通用。
 | 状态 | 视觉 |
 |---|---|
-| idle（未下载） | 文字 foreground，条目行尾 `Download` 图标 muted + 大小（如 `20 MB`） |
-| hover | `bg-accent`，cursor-pointer |
-| downloading | 行尾 `Loader2 animate-spin` + 百分比；下方 2px `Progress`（warning 色）；Tooltip 显示 `x/y MB` |
-| ready（已缓存） | 行尾 `Check` success 色 |
-| selected | 左侧 2px `bg-primary` 竖条 + `bg-accent font-medium` |
-| error | `AlertCircle` destructive + “重试” 文字按钮 |
-| collapsed 模式 | 仅显示 short（Py/Rb…）+ 右上角 4px 状态点（灰/黄/绿/红），Tooltip `side="right"` 显示全名；选中项左侧竖条保留 |
-| focus-visible | `ring-2 ring-ring ring-offset-1` |
+| idle（未下载） | 虚线边框 + 灰色字 |
+| cached / ready | 实线边框 + 前景色字 |
+| downloading | 方块内自下而上灰色填充表示进度 |
+| error | 虚线前景色边框 + 右上角实心小点 |
+| selected | 反色：`bg-primary text-primary-foreground` |
 
-**Run 按钮**：default（primary，`Play` + “Run” + `⌘↵` 提示）；disabled（语言未就绪，Tooltip“先下载语言”）；loading（`Loader2` + “Running…”，仍可见 Stop）。
-**Stop 按钮**：`variant="ghost"` + destructive 文字；非运行时隐藏或 disabled。
-**Reset**：ghost 图标按钮，恢复该语言示例代码（AlertDialog 确认）。
-**TerminalHeader**：左侧 “Terminal”；中间状态点：idle 灰、compiling 黄脉冲、running 绿脉冲、exit 0 绿、exit≠0 红、terminated 灰、crash 红；右侧耗时与「清空」图标。
-**侧栏折叠按钮**：位于侧栏顶部右端（折叠后在图标栏顶部居中）；展开态显示 `ChevronsLeft`（向左收起），折叠态显示 `ChevronsRight`（向右展开）；快捷键 `⌘/Ctrl+B`，状态持久化 localStorage。
-**侧栏/主区边界与面板顺序**：外层 `ResizablePanelGroup direction="horizontal"` 中面板顺序为 `LanguageSidebar（order=1, collapsible, collapsedSize≈56px, defaultSize≈240px, min 200 / max 320）` → `ResizableHandle` → `MainArea（order=2）`；侧栏使用 `border-r border-border`（右边框分隔主区），主区无左边框；侧栏条目选中竖条在左侧（`border-l-2`），与屏幕左边缘对齐。持久化 key 使用 `autoSaveId="simplecode-layout"`。
+**LanguageItem**：展开时 = 图标 + 名称 + 行尾状态（`Download`+大小 / `Loader2`+百分比+细进度条 / `Check` / `AlertCircle 重试`），选中行 `bg-accent font-medium`。**折叠时只显示图标**（无文字、徽标、进度文字），详细信息通过右侧 Tooltip 显示。
+**侧栏底部**：展开时 = 缓存占用 + 清除；一行“主题按钮 + 折叠按钮”。折叠时纵向排列 主题图标 / 展开图标。**折叠/展开按钮固定在侧栏底部**（展开态 `ChevronsLeft`，折叠态 `ChevronsRight`），快捷键 `⌘/Ctrl+B`，状态持久化 localStorage。侧栏 `border-r` 分隔主区。
+**Run 按钮**：default（primary 反色，xs 尺寸）；disabled（语言下载中）；loading（`Loader2` + “Running…/Compiling…”）。**Stop**：ghost xs，仅运行中显示。
+**TerminalHeader**（32px）：“Terminal” + 状态点 + 文本 + 耗时 + 清空 + **折叠/展开按钮**（展开态 `ChevronDown`，折叠态 `ChevronUp`；双击标题栏同样切换）。状态点（灰阶）：idle 深灰、preparing/compile/link 中灰脉冲、run 白色脉冲、done 白色实心、failed/crash 空心环、terminated 中灰。
 
 ### 11.7 终端样式
-- xterm 主题：background `#000`/`#0b0b0c`，foreground `#e4e4e7`，cursor `#e4e4e7`，selection `#3f3f46`；ANSI 16 色采用 Tailwind 调色（red `#f87171`、green `#4ade80`、yellow `#facc15`、blue `#60a5fa`、magenta `#c084fc`、cyan `#22d3ee`）。
-- 内边距 12px；`cursorBlink` 仅运行时开启；`convertEol: true`（程序输出 `\n` 正确换行）。
-- 系统消息前缀 `[SimpleCode]` 使用 dim 灰色（`\x1b[2m`）。
-- 使用 `@xterm/xterm` 5.x + `@xterm/addon-fit`（runno 用旧版 xterm 4，此处升级），ResizeObserver 触发 fit。
+- 背景 `#000`/`#0a0a0a`，前景 `#e5e5e5`，光标 `#fafafa`，选区 `#404040`。
+- **ANSI 16 色全部映射为灰阶**（red/yellow/magenta → `#d4d4d4`，blue/cyan → `#a3a3a3`，green → `#fafafa`，bright* → 更亮灰/白），因此 clang 彩色诊断也显示为黑白。
+- stderr 以粗体亮灰（`\x1b[1;37m`）区分（已带 ANSI 的内容不再包装）；系统消息 `[SimpleCode]` 使用 dim。
+- 内边距 12px / 8px；`convertEol: true`；运行时光标闪烁。
 
 ### 11.8 深浅色
-- `useTheme`：`system | light | dark`，`<html class="dark">` 切换；Monaco 主题随之切换（`monaco.editor.defineTheme` 定义 `simplecode-light`（基于 vs）/`simplecode-dark`（基于 vs-dark，zinc 背景 #09090b），`setTheme` 切换）。终端两种主题都是黑色（产品要求“黑色终端”）。
-
----
+- `useTheme`：`system | light | dark`，`<html class="dark">` 切换；两种模式都是纯黑白灰。Monaco 主题 `simplecode-light`（基于 vs，白底）/ `simplecode-dark`（基于 vs-dark，`#09090b` 底）保留语法颜色；终端两种模式都是黑色。
 
 ## 12. 编辑器（Monaco）
 - **Monaco Editor**（`monaco-editor@0.52.2`，固定版本），**完全本地打包，不使用 CDN / `@monaco-editor/loader`**（COEP `require-corp` 下跨源脚本会被拦截）。
@@ -612,3 +617,4 @@ npm test                # vitest；npm run test:e2e → playwright
 - **sqlite** 增加 `-batch`（去掉 banner 与 `sqlite>` 提示），并 autoEOF；**php-cgi** 增加 `-q`（实测去掉 `X-Powered-By`/`Content-type` 头）。
 - `.tar.gz` 资产在 `vite preview`（sirv）下可能被以 `Content-Encoding: gzip` 透明解压，因此仅对 wasm 校验字节大小；`extractTarGz` 对已解压数据自动回退。
 - 冒烟测试 `tests/smoke.mjs`（Playwright）：7 种语言 hello world 全部通过，Python / C 含 stdin 交互。
+- v0.2（2026-10-15）：全应用黑白单色（Monaco 除外）；折叠侧栏仅显示语言图标；折叠/展开按钮移至侧栏底部；Run 按钮改为 xs（h-7）；终端默认 ~28% 高度并可折叠为标题栏。

@@ -37,6 +37,8 @@ onMounted(() => {
     tabSize: 4,
     theme: isDark.value ? "simplecode-dark" : "simplecode-light",
     overviewRulerBorder: false,
+    overviewRulerLanes: 0,
+    hideCursorInOverviewRuler: true,
     scrollbar: { verticalScrollbarSize: 8, horizontalScrollbarSize: 8 },
   });
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => void run.run());

@@ -5,7 +5,7 @@ import { ShieldAlert } from "lucide-vue-next";
 <template>
   <div class="flex h-full items-center justify-center p-8">
     <div class="max-w-md space-y-3 text-sm">
-      <ShieldAlert class="size-8 text-destructive" />
+      <ShieldAlert class="size-8 text-foreground" />
       <h1 class="text-lg font-semibold">页面未启用跨源隔离（crossOriginIsolated）</h1>
       <p class="text-muted-foreground">
         SimpleCode 需要 <code>SharedArrayBuffer</code> 来支持程序输入（stdin）。请确保服务器返回以下响应头：

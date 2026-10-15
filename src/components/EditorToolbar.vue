@@ -29,12 +29,12 @@ function reset() {
   <div class="flex h-10 shrink-0 items-center gap-1 border-b border-border px-3">
     <span class="flex-1 truncate font-mono text-xs text-muted-foreground" data-testid="filename">{{ langs.selected?.fileName ?? "" }}</span>
     <template v-if="downloading && langs.selected">
-      <Button variant="ghost" size="sm" @click="langs.cancel(langs.selected.id)"><X />取消下载</Button>
+      <Button variant="ghost" size="xs" @click="langs.cancel(langs.selected.id)"><X />取消下载</Button>
     </template>
     <Tooltip>
       <TooltipTrigger as-child>
         <span>
-          <Button size="sm" data-testid="run" :disabled="!langs.selected || run.running || downloading" @click="run.run()">
+          <Button size="xs" data-testid="run" :disabled="!langs.selected || run.running || downloading" @click="run.run()">
             <Loader2 v-if="run.running" class="animate-spin" />
             <Play v-else />
             {{ runLabel }}
@@ -43,10 +43,10 @@ function reset() {
       </TooltipTrigger>
       <TooltipContent side="bottom">{{ ready || downloading ? `运行 ${mod}+Enter` : "首次运行将下载该语言" }}</TooltipContent>
     </Tooltip>
-    <Button v-if="run.running" variant="ghost-destructive" size="sm" data-testid="stop" @click="run.stop()"><Square />Stop</Button>
+    <Button v-if="run.running" variant="ghost-destructive" size="xs" data-testid="stop" @click="run.stop()"><Square />Stop</Button>
     <Tooltip>
       <TooltipTrigger as-child>
-        <Button variant="ghost" size="icon" aria-label="恢复示例代码" @click="reset"><RotateCcw /></Button>
+        <Button variant="ghost" size="icon" class="h-7 w-7" aria-label="恢复示例代码" @click="reset"><RotateCcw /></Button>
       </TooltipTrigger>
       <TooltipContent side="bottom">恢复示例代码</TooltipContent>
     </Tooltip>
