@@ -5,95 +5,98 @@ title: "标准输入"
 level: advanced
 minutes: 18
 goals:
-  - "用 fgets 读入一行"
-  - "去掉换行"
-  - "失败时不要把 false 当文本"
+  - "知道这里读不到标准输入"
+  - "用 rtrim 去掉一行末尾的换行"
+  - "把空行当成失败"
 sources:
   - php-manual
   - php-right-way
 updated: "2026-10-15"
 ---
 
-这份运行时是 php -q，没有定义常量 STDIN。写成 fgets(STDIN) 会直接致命错误。先 fopen("php://stdin", "r")，再对返回的句柄 fgets。读到的一行末尾通常带着换行。打印或比较之前用 rtrim 去掉。没有读到时返回 false，不能把它交给字符串函数。
+这份 php -q 没有常量 STDIN，fopen("php://stdin") 和 php://fd/0 都打不开，php://input 也拿不到运行时送进标准输入的那一行。可运行示例因此不调用 fgets。只读块里留着不能用的写法，避免你照着别的教程抄进来。
 
-文档示例带上标准输入。你自己在终端跑，就要亲手输入。不要使用只在网页里才有的 $_GET 或 $_POST。
+一行文本在这里就是一个字符串，末尾可能带着换行。处理之前用 rtrim 去掉。去掉之后如果是空字符串，打印「失败」，不要把空行当成数字 0。看起来像整数时再用 intval。
 
-读到的文本如果应当是整数，先确认它不是空行，再用 intval。空行不算成功，打印「失败」。
+这样你练的是「拿到一行之后怎么处理」。真正从键盘读，要等运行时把标准输入接进 PHP，现在还没有。
 
-```php run stdin="Ada\n" expect="Ada" title="一行"
+```php norun title="只读"
 <?php
-$in = fopen("php://stdin", "r");
-$line = fgets($in);
-if ($line === false) exit(1);
+// fgets(STDIN) 会报 Undefined constant STDIN。
+// fopen("php://stdin") 返回 false，不能交给 fgets。
+```
+
+```php run expect="Ada" title="去掉换行"
+<?php
+$line = "Ada\n";
 echo rtrim($line), "\n";
 ```
 
-```php run stdin="41\n" expect="42" title="加一"
+```php run expect="42" title="加一"
 <?php
-$in = fopen("php://stdin", "r");
-$line = fgets($in);
-if ($line === false) exit(1);
-$line = rtrim($line);
-if ($line === "") {
-  echo "失败\n";
-} else {
-  echo intval($line) + 1, "\n";
-}
+$line = rtrim("41\n");
+if ($line === "") echo "失败\n";
+else echo intval($line) + 1, "\n";
 ```
 
-```php run stdin="\n" expect="失败" title="空行"
+```php run expect="失败" title="空行"
 <?php
-$in = fopen("php://stdin", "r");
-$line = fgets($in);
-if ($line === false || rtrim($line) === "") echo "失败\n";
-else echo rtrim($line), "\n";
+$line = rtrim("\n");
+if ($line === "") echo "失败\n";
+else echo $line, "\n";
 ```
 
-### 读「一行」
+「只读」故意不能运行。先读它旁边的限制，再回到能点 Run 的例子上改一个值。不要把只读块当成坏掉的按钮。
 
-先做这一例。把代码收成一行来记：`<?php $in = fopen("php://stdin", "r"); $line = fgets($in); if ($line === false) exit(1); echo rtrim($line), "\n";`。先盖住终端，写下你预测的输出，里面要能找到「Ada」。这是子串：前面可以有别的字，后面通常有换行。
+### 读「去掉换行」
+
+做完上一例再做这一例。把代码收成一行来记：`<?php $line = "Ada\n"; echo rtrim($line), "\n";`。先盖住终端，写下你预测的输出，里面要能找到「Ada」。这是子串：前面可以有别的字，后面通常有换行。
 
 然后点这个代码块上的 Run，不要点工具栏。代码块会备份草稿、写入示例再执行。找不到这段文字时，先看退出码。不是 0 就读错误类型，不要改期望。是 0 但内容不对，就只改产生该值的那一处。改完用工具栏的 Run，因为再点代码块会把修改盖掉。预测对了之后点撤销。
 
 ### 读「加一」
 
-做完上一例再做这一例。把代码收成一行来记：`<?php $in = fopen("php://stdin", "r"); $line = fgets($in); if ($line === false) exit(1); $line = rtrim($line); if ($line === "") { echo "失败\n"; } else…`。先盖住终端，写下你预测的输出，里面要能找到「42」。这是子串：前面可以有别的字，后面通常有换行。
+做完上一例再做这一例。把代码收成一行来记：`<?php $line = rtrim("41\n"); if ($line === "") echo "失败\n"; else echo intval($line) + 1, "\n";`。先盖住终端，写下你预测的输出，里面要能找到「42」。这是子串：前面可以有别的字，后面通常有换行。
 
 然后点这个代码块上的 Run，不要点工具栏。代码块会备份草稿、写入示例再执行。找不到这段文字时，先看退出码。不是 0 就读错误类型，不要改期望。是 0 但内容不对，就只改产生该值的那一处。改完用工具栏的 Run，因为再点代码块会把修改盖掉。预测对了之后点撤销。
 
 ### 读「空行」
 
-做完上一例再做这一例。把代码收成一行来记：`<?php $in = fopen("php://stdin", "r"); $line = fgets($in); if ($line === false || rtrim($line) === "") echo "失败\n"; else echo rtrim($line), "\n";`。先盖住终端，写下你预测的输出，里面要能找到「失败」。这是子串：前面可以有别的字，后面通常有换行。
+做完上一例再做这一例。把代码收成一行来记：`<?php $line = rtrim("\n"); if ($line === "") echo "失败\n"; else echo $line, "\n";`。先盖住终端，写下你预测的输出，里面要能找到「失败」。这是子串：前面可以有别的字，后面通常有换行。
 
 然后点这个代码块上的 Run，不要点工具栏。代码块会备份草稿、写入示例再执行。找不到这段文字时，先看退出码。不是 0 就读错误类型，不要改期望。是 0 但内容不对，就只改产生该值的那一处。改完用工具栏的 Run，因为再点代码块会把修改盖掉。预测对了之后点撤销。
 
-### 只改一处：一行
+### 限制：只读
 
-这一例要避开的失误是：不 rtrim，换行留在字符串里。。对应的做法是：读入后先判断 false。。
+这一段故意不能运行。旁边的限制是：写 fgets(STDIN) 或 fopen("php://stdin")。这里都会失败。。做法是：先在字符串上把行处理写对。。把它留在抽屉里对照，不要粘进主编辑器再点工具栏的 Run。能运行的例子在它前后，改那些例子时不要把这里的调用加进去。
 
-把代码收成一行来核对：`<?php $in = fopen("php://stdin", "r"); $line = fgets($in); if ($line === false) exit(1); echo rtrim($line), "\n";`。盖住终端，先写下预测，里面要能找到「Ada」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
+### 只改一处：去掉换行
+
+这一例要避开的失误是：不 rtrim，换行留在字符串里。。对应的做法是：空字符串打印固定的「失败」。。
+
+把代码收成一行来核对：`<?php $line = "Ada\n"; echo rtrim($line), "\n";`。盖住终端，先写下预测，里面要能找到「Ada」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
 
 若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「Ada」才算失败。
 
 ### 只改一处：加一
 
-这一例要避开的失误是：fgets 失败时仍当字符串用。。对应的做法是：去掉换行再比较。。
+这一例要避开的失误是：把空行 intval 成 0，还当成用户输入了数字。。对应的做法是：不依赖网页超全局。。
 
-把代码收成一行来核对：`<?php $in = fopen("php://stdin", "r"); $line = fgets($in); if ($line === false) exit(1); $line = rtrim($line); if ($line === "") { echo "失败\n"; } else…`。盖住终端，先写下预测，里面要能找到「42」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
+把代码收成一行来核对：`<?php $line = rtrim("41\n"); if ($line === "") echo "失败\n"; else echo intval($line) + 1, "\n";`。盖住终端，先写下预测，里面要能找到「42」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
 
 若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「42」才算失败。
 
 ### 只改一处：空行
 
-这一例要避开的失误是：使用 STDIN 或 $_POST。这里没有这两个名字。。对应的做法是：示例写上 stdin。。
+这一例要避开的失误是：写 fgets(STDIN) 或 fopen("php://stdin")。这里都会失败。。对应的做法是：先在字符串上把行处理写对。。
 
-把代码收成一行来核对：`<?php $in = fopen("php://stdin", "r"); $line = fgets($in); if ($line === false || rtrim($line) === "") echo "失败\n"; else echo rtrim($line), "\n";`。盖住终端，先写下预测，里面要能找到「失败」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
+把代码收成一行来核对：`<?php $line = rtrim("\n"); if ($line === "") echo "失败\n"; else echo $line, "\n";`。盖住终端，先写下预测，里面要能找到「失败」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
 
 若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「失败」才算失败。
 
 ## 读完再动手
 
-本章要留下的是 「用 fgets 读入一行」、「去掉换行」、「失败时不要把 false 当文本」。合上抽屉之前，用自己的话说出每一项目标对应哪一个示例的标题。对不上标题，就还没有把目标和代码连起来，先别展开练习答案。
+本章要留下的是 「知道这里读不到标准输入」、「用 rtrim 去掉一行末尾的换行」、「把空行当成失败」。合上抽屉之前，用自己的话说出每一项目标对应哪一个示例的标题。对不上标题，就还没有把目标和代码连起来，先别展开练习答案。
 
 练习的答案默认折着。先在编辑器里自己写，再展开对照。对照时只看输出是否包含期望的那几个字。两道都过了再进入下一章。下一次运行是新进程，这次的变量不会留下。
 
@@ -103,43 +106,37 @@ else echo rtrim($line), "\n";
 
 ## 常见错误
 
+- 写 fgets(STDIN) 或 fopen("php://stdin")。这里都会失败。
 - 不 rtrim，换行留在字符串里。
-- fgets 失败时仍当字符串用。
-- 使用 STDIN 或 $_POST。这里没有这两个名字。
+- 把空行 intval 成 0，还当成用户输入了数字。
 
 ## 最佳实践
 
-- 读入后先判断 false。
-- 去掉换行再比较。
-- 示例写上 stdin。
+- 先在字符串上把行处理写对。
+- 空字符串打印固定的「失败」。
+- 不依赖网页超全局。
 
 ## 小结
 
-读入用 fopen("php://stdin") 再 fgets。STDIN 常量在这里不存在。去掉换行，失败不要当成文本。
+这份 PHP 读不到标准输入。示例把一行放在字符串里，用 rtrim 去掉换行，空行算失败。
 
 ## 练习
 
-读入一行并打印。输入是 SQL。
+去掉字符串 SQL 末尾的换行并打印。
 
 ::: answer 参考答案：原文
-```php run stdin="SQL\n" expect="SQL" title="参考答案"
+```php run expect="SQL" title="参考答案"
 <?php
-$in = fopen("php://stdin", "r");
-$line = fgets($in);
-if ($line === false) exit(1);
-echo rtrim($line), "\n";
+echo rtrim("SQL\n"), "\n";
 ```
 :::
 
-读入整数并打印两倍。输入是 21。
+把带换行的 21 转成整数并打印两倍。
 
 ::: answer 参考答案：两倍
-```php run stdin="21\n" expect="42" title="参考答案"
+```php run expect="42" title="参考答案"
 <?php
-$in = fopen("php://stdin", "r");
-$line = fgets($in);
-if ($line === false) exit(1);
-echo intval(rtrim($line)) * 2, "\n";
+echo intval(rtrim("21\n")) * 2, "\n";
 ```
 :::
 
