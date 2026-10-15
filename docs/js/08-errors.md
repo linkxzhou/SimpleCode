@@ -1,167 +1,155 @@
 ---
 language: js
 chapter: 8
-title: "错误处理"
+title: "JSON.parse 失败时用 try 接住"
 level: intermediate
-minutes: 18
+minutes: 26
 goals:
-  - "用 try / catch 接住 throw"
-  - "区分错误类型"
-  - "解析可能损坏的 JSON"
+  - "解析一条合法的书目文本并读出标题"
+  - "用 try 接住坏 JSON 的 SyntaxError"
+  - "把缺字段的 TypeError 和语法错误分开"
 sources:
   - mdn-js
   - lxiy-js
 updated: "2026-10-15"
 ---
 
-`throw` 可以抛任何值，习惯抛 `Error` 或其子类，这样有消息和堆栈。`catch` 接住后程序继续。不要空 catch。
+阅读清单不一定写在源码的数组里。它常常先是一段文本，例如 `{"title":"边城","pages":120}`。`JSON.parse` 把这种文本变成值：对象、数组、字符串、数字、布尔或 `null`。它不认识函数，不认识 `undefined`，也不认识注释。单引号、末尾逗号，在 JSON 里都是语法错误。解析成功，你得到普通的对象，没有你的类，也没有原型上的 `label`。解析失败，它抛出 `SyntaxError`，后面的语句不会再执行，除非你把抛出接住。
 
-JSON 损坏是可预期的失败，适合就地告诉调用者。
+`try` 后面的块若抛了，就跳到配对的 `catch`。`catch` 拿到错误对象。没有被接住的错误会终止这次脚本，终端里是栈，而不是你准备好的书名。对外部文本来说，语法坏了是预料之中的结果，应该变成清单上的一句「这行不能读」，而不是让整份脚本停掉。对自己写出的 `book.label()` 这种调用，若也用同一个 `catch` 吞掉，笔误就和坏输入长得一样。范围是这一章的判断：`try` 尽量只包住 `JSON.parse`。
 
-```js run expect="1" title="解析 JSON"
-function parse(text) {
+```js run expect="边城" title="合法文本变成对象"
+const raw = '{"title":"边城","pages":120}';
+const book = JSON.parse(raw);
+console.log(book.title);
+console.log(book.pages);
+console.log(typeof book);
+```
+
+三行是 `边城`、`120`、`object`。键必须是双引号字符串。数字 `120` 在 JSON 里是数字，解析之后也是数字，不是 `"120"`。这一点和上一章的表单文本不同。若你的文件里页数带了引号，解析结果就是字符串，随后的加法会拼接。解析成功不等于字段种类正确。`JSON.parse` 只保证文本符合 JSON 语法，并给出对应的值。
+
+坏文本用紧的 `try` 接住。
+
+```js run expect="SyntaxError" title="坏文本抛语法错误"
+const raw = '{"title":"边城",}';
+try {
+  JSON.parse(raw);
+  console.log("通过");
+} catch (err) {
+  console.log(err.name);
+}
+```
+
+末尾逗号让这一行非法。输出是 `SyntaxError`，不会是 `通过`。`err.name` 比 `err.message` 稳定，消息文本会带着位置，不适合当期望子串的全部内容，但可以用来读给自己看。接住之后，函数可以返回一个表示失败的值，例如 `null`，让调用方用值那一章的方式处理。也可以在 `catch` 里再抛一个自己的错误。再抛的取舍是：调用方仍要用 `try`，但错误的含义变成「书目行坏了」，而不是解析器的内部名称。本课在例子里打印名称，让失败看得见。
+
+成功解析之后，形状仍要检查。文本 `{}` 是合法 JSON，对象里没有 `title`。对 `book.title.length` 的访问会抛 `TypeError`，因为 `undefined` 没有 `length`。若这个访问和 `JSON.parse` 写在同一个 `try` 里，`catch` 会同时看见 `SyntaxError` 和 `TypeError`。把两者都说成「坏输入」，你就会去改文本，而文本其实是合法的，缺的是字段。
+
+```js run expect="TypeError" title="过宽的 try 会混进缺字段"
+function loadWide(raw) {
   try {
-    return JSON.parse(text).n;
+    const book = JSON.parse(raw);
+    return "len:" + book.title.length;
   } catch (err) {
-    return "坏 JSON";
+    return err.name;
   }
 }
-console.log(parse('{"n":1}'));
-console.log(parse("nope"));
+console.log(loadWide('{"title":"边城"}'));
+console.log(loadWide("{"));
+console.log(loadWide("{}"));
 ```
 
-```js run expect="空" title="自定义错误"
-class EmptyInput extends Error {}
-function need(text) {
-  if (text.trim() === "") throw new EmptyInput("空白");
-  return text;
+三行是 `len:2`、`SyntaxError`、`TypeError`。第三行不是坏语法。把 `try` 收紧之后，缺标题可以变成一句自己的话，而不是错误名称。
+
+```js run expect="页数不是数字" title="语法和形状分开处理"
+function load(raw) {
+  let book;
+  try {
+    book = JSON.parse(raw);
+  } catch (err) {
+    return "语法坏了";
+  }
+  if (typeof book !== "object" || book === null) return "不是对象";
+  if (typeof book.title !== "string") return "缺标题";
+  if (typeof book.pages !== "number") return "页数不是数字";
+  return book.title + "/" + book.pages;
 }
-try {
-  need("  ");
-} catch (err) {
-  console.log(err instanceof EmptyInput ? "空" : "其他");
-}
+console.log(load('{"title":"围城","pages":220}'));
+console.log(load("{"));
+console.log(load('{"title":"围城","pages":"很多"}'));
+console.log(load("null"));
 ```
 
-```js run expect="5" title="先检查再算"
-function divide(a, b) {
-  if (b === 0) throw new Error("zero");
-  return a / b;
-}
-console.log(divide(10, 2));
-```
+`JSON.parse("null")` 成功，得到 `null`。不检查的话，下一行 `book.title` 抛 `TypeError`。值那一章的洞在这里再出现一次：`typeof null` 是 `"object"`，所以检查写成 `typeof book === "object" && book !== null`。四行输出里应有 `围城/220`、`语法坏了`、`页数不是数字`、`不是对象`。页数是文本 `"很多"` 时，语法是好的，我们拒绝它，因为清单需要数字。这个拒绝是我们的规则，不是 JSON 的规则。
 
-throw 可以抛任何值，习惯抛 Error。自定义错误继承 Error，这样 instanceof 才好用。抛字符串时，catch 里的 instanceof Error 为假，栈也不完整。
+`throw` 用来把「不能继续」变成一次跳转。`throw new Error("缺标题")` 会带着消息。自定义时看 `err.message`，也看 `err.name`。不要用 `throw` 来做普通分支：缺一本可选的笔记并不是失败，返回 `null` 更合适。`throw` 的代价是调用方必须记得接，否则整份脚本停。适合停的情况是：程序员把必有的标题写丢了，继续跑只会打印出一串缺字。不适合停的情况是：一份导入文件里有一行坏了，其余行还可以读。对文件里的一行，接住并记录；对程序自己的不变量，让它抛。
 
-try 只包可能失败的那几行。catch 里要么处理，要么再抛出去。空的 catch 会把失败吞掉，后面的代码以为成功了。
+`finally` 里的语句无论 try 成功还是失败都会走，用来释放你确实拿着的资源。这个抽屉里没有需要关闭的文件句柄。若 `finally` 里又 `return`，它会盖住 `try` 里准备返回的书名。那很意外。没有资源要释放时，不要写空的 `finally`。它不使代码更安全，只多一条所有路径都会撞上的出口。
 
-JSON.parse 对坏文本抛 SyntaxError。这是可预期的输入错误，适合就地变成一句提示。程序自己的 bug，例如读了未定义的变量，不应该被同一个 catch (e) 悄悄吃掉。可以先判断 e instanceof SyntaxError。
+`catch` 的参数若不用，仍要接住，否则错误会继续往外。接住之后什么都不做，叫吞掉。吞掉适合你已经用返回值表达了失败、并且确定没有别的错误会混进来的时候。宽 `try` 加上空 `catch` 是最难查的组合：语法错误、笔误、`null` 访问全部消失，输出只是一份少了几本的清单。本课的 `catch` 都把结果写成可见的文字。
 
-finally 总会执行，适合清理。不要在 finally 里 return，它会盖住 try 里的返回值。本环境没有必须关闭的句柄，示例很少用 finally，知道它的顺序即可：try，然后 catch，然后 finally。
+解析出来的对象是全新的普通对象。你在类那一章定义的 `Entry.prototype.label` 不会自动出现。想要方法，就用解析出的 `title` 和 `pages` 去 `new Entry(...)`，并在 `new` 之前做完种类检查。不要 `Object.setPrototypeOf` 去硬接原型，除非你非常清楚链上的方法会读哪些字段。硬接之后，缺字段的 `label` 仍会在调用时失败，失败只是来得更晚。早检查比晚接原型更明显。
 
-错误消息写给人看，写成完整的短句。错误类型写给程序看。两者都要有。只写消息，调用方只好 indexOf 去找关键字，消息一改调用方就坏。
+错误对象上常用的是 `name` 和 `message`。`JSON.parse` 的 `message` 会带出位置，适合人读，不适合拿整句去比测试，因为位置文本可能随着引擎措辞变化。比 `name` 就够。栈在 `stack` 上，同样不稳定，而且可能很长。教学输出不打印栈。你自己排错时可以看栈的第一行，确认抛出点在 `JSON.parse` 还是在后面的 `.length`。第一行若在你的检查函数里，就不是语法问题。
 
-try 里面赋值的变量，在 catch 里可能还没有。把 let 放在 try 外面，catch 才能读到「失败前已经得到的一半结果」。本章例子不需要一半结果，直接在 catch 里打印固定文本。
+接住之后再抛，要把原因留住。`catch` 里 `throw err` 原样抛出，调用方仍看见 `SyntaxError`。若你 `throw new Error("语法坏了")`，原来的位置信息就断了，除非你把旧错误附在新错误上。这个引擎不一定支持标准的 `cause` 字段被打印出来。小例子里要么原样再抛，要么返回文字，不要造一个丢失位置的新错误还以为自己包了一层更好的说明。包装的价值在于分类，代价是线索变少。只在分类真的帮助调用方分支时才包装。
 
-不要用异常代替返回空数组。找不到数据通常是正常情况，返回空集合更清楚。解析失败、除以零、违反不变量，才值得 throw。
+`JSON.stringify` 对这本书的对象会留下 `title` 和 `pages`，丢掉函数和值为 `undefined` 的字段。`NaN` 和 `Infinity` 会被写成 `null`。若页数因为转换失败变成了 `NaN`，写进文本再读回来会变成 `null`，你分不清当初是「不是数字」还是「明确的空」。所以在 `stringify` 之前就把 `NaN` 拒绝掉，不要让它悄悄变成 `null` 再被下一轮解析接受。往返不是身份保留。它只保留 JSON 能表达的那些值。
 
-throw 抛出的应当是 Error 或其子类。抛字符串也能被 catch 接住，但没有栈，也没有 instanceof 可分。catch 的参数不要空着不管。空的 catch 会让失败消失，程序带着错的状态继续。至少打印消息，或者再抛出去。
+循环解析多行时，一行失败不应丢掉已经解析的那些行。函数返回失败说明，调用方把说明推进错误列表，把成功的书推进书架。这和「一抛就停」不同。停适合配置文件只有一份、坏了就不能启动的情况。书架的导入往往是许多本，一本坏标题不应该让前面的《边城》也消失。把「收集错误」和「遇到错误就抛」分成两种函数，名字上写清楚。不要用一个布尔参数切换两种行为，调用点会看不清这次到底停不停。
 
-try 只包住可能失败的那几行。把整段函数都包进去，名字写错也会被当成输入错误。用 instanceof 区分 SyntaxError、TypeError 和你自己的错误。消息写给人看，类型写给程序看。不要靠消息里的某个词来分支，消息一改分支就坏。
+`finally` 若抛出自己的错误，会盖住 `try` 里原来的 `SyntaxError`。你看见的是收尾失败，语法问题被吞了。收尾代码应是不会失败的清理。没有清理就不要写 `finally`。这个约束比「有 `try` 就配 `finally`」更重要。配对不是语法要求，`catch` 可以单独存在。
 
-JSON.parse 遇到不合法的文本会抛 SyntaxError。解析用户输入时，catch 这一类型并打印固定的短句。再抛出时可以包一层新的 Error，把原因留在 cause 或消息里。本章的例子若再抛，就打印它是不是 Error，确认类型还在。
+解析数字页数时，`JSON.parse` 不会替你把 `"120"` 收成数字。引号里的是字符串，这是合法 JSON。检查 `typeof pages !== "number"` 会拒绝它，然后你可以选择再 `Number` 一次，或要求对方改文件。自动再转一次更宽容，也把 `"120"` 和 `120` 混成同一种书。宽容适合手工表格，严格适合已经约定好的接口。本课的接口约定页数是 JSON 数字，因此拒绝字符串页数，不在解析后偷偷 `Number`。偷偷转换会让「很多」变成 `NaN` 再进入上一节说过的往返陷阱。拒绝则把问题停在边界，消息是「页数不是数字」，调用方知道要改文本而不是改加法。
 
-finally 里做清理，不要在 finally 里解析数据。清理代码再抛异常会盖住原来的错误。这个环境没有需要关闭的文件句柄时，不必为了形式写 finally。
+多个 `catch` 分支在旧语法里做不到按类型分成几块，你只有一个 `catch`，里面自己看 `name`。看 `name` 是普通的 `if`，不是新的控制结构。`SyntaxError` 走「这行文本废了」，`TypeError` 走「我们的检查写漏了，不该出现在这个窄 `try` 里」。若 `TypeError` 出现在只包住 `JSON.parse` 的 `try` 中，优先怀疑解析器以外的代码被你不小心放了进来，而不是数据长得像类型错误。把范围缩回去，比加更多 `if` 更有效。
 
-### 读「再抛」
+手动抛出时用 `Error` 或其子类，不要 `throw "缺标题"` 这种字符串。字符串没有 `name`，调用方的 `err.name` 会失败，因为你抛的根本不是对象。统一抛错误对象，`catch` 里才有稳定的形状。自己的子类在这个单文件里可以写成 `class ParseFail extends Error {}`，然后看 `instanceof`。`instanceof` 对跨多个全局环境的错误对象会失灵，这里只有一个环境，可以使用。若只是教学里的一行文本，返回字符串更简单，不需要子类。子类的价值是调用方能用类型分支，而不是用消息文字分支。消息文字会改，类的区分更稳。没有多个调用方时，不要为了一个 `catch` 发明子类。
 
-先做这一例。代码收成一行是 `function boom() { throw new Error('x'); } try { boom(); } catch (err) { console.log(err instanceof Error); }`。先盖住终端，用手算结果，纸上的文本里要能找到「true」。这是子串：前面可以有别的输出，后面通常有换行，不要要求整屏只有这几个字。
+`JSON.parse` 的第二个参数是复活函数，每遇见一个值就调用，可以改写字段。它能在解析过程中拒绝某些键，也能把数字页数换成别的。复活函数写错会让栈变得难读，因为抛出点在解析内部。本课把检查放在解析成功之后的普通代码里，调试时栈在我们自己的函数上。少一个钩子，多一段直直的判断，对这份短文本是更好的交换。
 
-然后点这个代码块上的 Run，不要点工具栏。代码块会先备份草稿，再把示例写进编辑器并执行。终端里用眼睛找「true」。退出码不是 0 时，先读错误的类型和最后一行，此时不要改期望。退出码是 0 但找不到这段文字，说明打印了别的值，回到产生该值的表达式，只改一处。
-
-改过之后再点代码块上的 Run，会把你的修改盖掉。要验证修改，点工具栏上的 Run。预测和新输出一致后，点撤销，把草稿还给自己。一次只改这一例，不要连着改两个代码块。
-
-### 读「区分类型」
-
-做完上一个再做这一例。代码收成一行是 `try { JSON.parse('no'); } catch (err) { console.log(err instanceof SyntaxError ? 'syntax' : 'other'); }`。先盖住终端，用手算结果，纸上的文本里要能找到「syntax」。这是子串：前面可以有别的输出，后面通常有换行，不要要求整屏只有这几个字。
-
-然后点这个代码块上的 Run，不要点工具栏。代码块会先备份草稿，再把示例写进编辑器并执行。终端里用眼睛找「syntax」。退出码不是 0 时，先读错误的类型和最后一行，此时不要改期望。退出码是 0 但找不到这段文字，说明打印了别的值，回到产生该值的表达式，只改一处。
-
-改过之后再点代码块上的 Run，会把你的修改盖掉。要验证修改，点工具栏上的 Run。预测和新输出一致后，点撤销，把草稿还给自己。一次只改这一例，不要连着改两个代码块。
-
-实践 1 写成一句就是：抛 Error 或其子类，不抛裸字符串。 用「再抛」当检查对象。删掉一个保护条件，或把比较符号反过来，看失败是报错还是静默地打出另一个数。 看完失败的样子再改回来。看起来没变化的违反最危险，因为期望子串可能仍然在，换一个输入才暴露。参考答案「参考答案：打印消息」按这一条来写。打开答案之前，先用自己的版本对着练习说明里的输入算一遍。
-
-实践 2 写成一句就是：catch 要处理或再抛，不要写空块。 用「区分类型」当检查对象。把本该新建的对象改成复用已有的名字，看两个名字会不会一起变。 看完失败的样子再改回来。看起来没变化的违反最危险，因为期望子串可能仍然在，换一个输入才暴露。参考答案「参考答案：打印消息」按这一条来写。打开答案之前，先用自己的版本对着练习说明里的输入算一遍。
-
-实践 3 写成一句就是：解析 JSON 时只把 SyntaxError 当成输入错误。 用「再抛」当检查对象。少写一个边界：少一次循环、少一个参数或少接住一个返回值，看输出正好差在哪。 看完失败的样子再改回来。看起来没变化的违反最危险，因为期望子串可能仍然在，换一个输入才暴露。参考答案「参考答案：打印消息」按这一条来写。打开答案之前，先用自己的版本对着练习说明里的输入算一遍。
-
-练习先不看折叠答案。题目是：throw 一个 Error，catch 后打印消息 oops。 做完再对照「参考答案：打印消息」。能说出自己的写法和答案差在哪一行，这道题才算完成。本章的另一道练习查的不是同一件事，两道都做。
-
-收束时用一句话复述：用类型区分错误，try 只包住可能失败的代码。空的 catch 和抛字符串都会让失败难以追查。 若只能留下三句，就留下上面三条实践，并为每一条记住一个你刚刚故意做错的反例。
-
-```js run expect="true" title="再抛"
-function boom() { throw new Error('x'); }
-try {
-  boom();
-} catch (err) {
-  console.log(err instanceof Error);
-}
-```
-
-```js run expect="syntax" title="区分类型"
-try {
-  JSON.parse('no');
-} catch (err) {
-  console.log(err instanceof SyntaxError ? 'syntax' : 'other');
-}
-```
-
-## 练习
-
-catch 住一次 throw，打印「接住了」。
-
-::: answer 参考答案
-```js run expect="接住了" title="参考答案"
-try {
-  throw new Error("x");
-} catch (err) {
-  console.log("接住了");
-}
-```
-:::
-
-throw 一个 Error，catch 后打印消息 oops。
-
-::: answer 参考答案：打印消息
-```js run expect="oops" title="参考答案"
-try {
-  throw new Error('oops');
-} catch (err) {
-  console.log(err.message);
-}
-```
-:::
-
-## 最佳实践
-
-- 抛 Error 或其子类，不抛裸字符串。
-- catch 要处理或再抛，不要写空块。
-- 解析 JSON 时只把 SyntaxError 当成输入错误。
+空字符串不是合法的 JSON 文本。`JSON.parse("")` 会抛 `SyntaxError`，和解析 `"null"` 成功得到 `null` 不同。导入文件里的空白行要在解析前跳过，不要交给 `JSON.parse` 再当成坏书。跳过空白是格式问题，坏括号才是语法问题。两者分开，日志里才知道该删空行还是该补引号。
 
 ## 小结
 
-用类型区分错误，try 只包住可能失败的代码。空的 catch 和抛字符串都会让失败难以追查。
+`JSON.parse` 把合法文本变成值，把非法文本变成 `SyntaxError`。`try` 只包住解析，形状用解析之后的 `typeof` 和 `=== null` 来查。过宽的 `try` 会把缺标题的 `TypeError` 和坏语法混在同一个 `catch` 里。
 
-## 常见错误
+预料之中的坏行用返回值记下；程序不该继续的不变量用 `throw`。解析结果不是类的实例，要方法就在检查通过之后再构造。下一章不再一次造出全部页码，而是写一个生成器，每次只交出下一本或下一页。
 
-- catch 之后不记录就继续。失败原因会消失。
-- 用字符串 throw。instanceof Error 会失败。
+## 练习
 
-## 延伸阅读
+1. 解析 `'{"title":"活着","pages":190}'`，打印 `title` 和 `pages`。再对文本 `"["` 做解析，接住错误并打印 `err.name`。
 
-- [javascript.info](https://javascript.info/)（CC BY-NC-SA，仅链接）
-- [Eloquent JavaScript](https://eloquentjavascript.net/)（CC BY-NC，仅链接）
+::: answer 参考答案
+```js run expect="SyntaxError" title="参考答案"
+const book = JSON.parse('{"title":"活着","pages":190}');
+console.log(book.title);
+console.log(book.pages);
+try {
+  JSON.parse("[");
+  console.log("通过");
+} catch (err) {
+  console.log(err.name);
+}
+```
+:::
 
-## 参考与致谢
+2. 写函数 `titleOf`，只在 `try` 里解析。成功且 `title` 是字符串时返回标题，否则返回 `不能读`。分别用于 `'{"title":"边城"}'`、`'{'` 和 `'{"pages":1}'`。
 
-正文为原创。知识点范围参考了 MDN JavaScript Guide（CC BY-SA 2.5）和 Learn X in Y minutes — JavaScript（CC BY-SA 3.0）。TypeScript 章节的概念范围参考 TypeScript Handbook（CC BY 4.0）。没有逐字搬用这些文档。
+::: answer 参考答案
+```js run expect="不能读" title="参考答案"
+function titleOf(raw) {
+  let book;
+  try {
+    book = JSON.parse(raw);
+  } catch (err) {
+    return "不能读";
+  }
+  if (typeof book !== "object" || book === null) return "不能读";
+  if (typeof book.title !== "string") return "不能读";
+  return book.title;
+}
+console.log(titleOf('{"title":"边城"}'));
+console.log(titleOf("{"));
+console.log(titleOf('{"pages":1}'));
+```
+:::

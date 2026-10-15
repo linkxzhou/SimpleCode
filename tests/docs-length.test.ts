@@ -4,19 +4,6 @@ import { describe, it } from "node:test";
 
 /** Body character counts before the essay rewrite. Acceptance stays 3× until that book moves to ESSAY. */
 const BASE: Record<string, number> = {
-  "js/index.md": 960,
-  "js/01-values.md": 1012,
-  "js/02-strings.md": 983,
-  "js/03-control.md": 1280,
-  "js/04-functions.md": 1269,
-  "js/05-arrays.md": 1109,
-  "js/06-objects.md": 1123,
-  "js/07-classes.md": 1465,
-  "js/08-errors.md": 1268,
-  "js/09-iterators.md": 1477,
-  "js/10-promises.md": 1322,
-  "js/11-typescript.md": 1194,
-  "js/12-typescript-project.md": 1558,
   "go/index.md": 990,
   "go/01-vars.md": 1145,
   "go/02-types.md": 1119,
@@ -36,7 +23,7 @@ const BASE: Record<string, number> = {
 const ABSOLUTE = ["ruby", "sqlite", "c", "cpp", "php", "lua"];
 
 /** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. */
-const ESSAY = ["python"];
+const ESSAY = ["python", "js"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
