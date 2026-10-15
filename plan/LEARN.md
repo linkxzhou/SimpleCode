@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：§16 与 §17 的篇幅加厚已经做完，但正文仍像同一套模板盖出来的。§18 规定按 *The Little Go Book* 的写法重写十本书，并改掉界面上的「101」。重写完成前，§15 里的交付勾选只表示「有章节」，不表示达到 §18。
+> 状态：§18 已经落地。十本书按短文重写，界面文案是「快速入门」。§15 的勾选对应当前正文和 2026-10-15 的 `./build.sh test`。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -942,30 +942,33 @@ print(f"你好，{name}！")
 | L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。抽屉 `top` 为 `--editor-toolbar-h`（2.5rem），不盖住工具栏。 |
 | L2 从文档运行 | ✅ | 切换语言、按需下载 wasm、备份与撤销、stdin。TypeScript 块复用 `src/core/transpile.ts` 的 Sucrase，编辑器写入带 `// 由 TypeScript 转译（原始代码见文档）` 的 JavaScript，方言切到 JS。 |
 | L3 内容第一批 | ✅ | Python、Go、Lua、SQL 已交付。 |
-| L4 内容第二批 | ✅ | JavaScript/TypeScript、C、C++、Ruby、PHP 已交付。 |
+| L4 内容第二批 | ✅ | JavaScript/TypeScript、C、C++、Ruby、PHP、Shell 已交付。 |
 | L5 搜索、进度、无障碍、截图 | ⚠️ | MiniSearch、阅读进度和抽屉快捷键已接上。抽屉浅色/深色截图像素检查 100% 灰阶。未跑 Lighthouse。 |
 
 ### 语言
 
-| 语言 | 状态 | 内容 |
-|---|---|---|
-| Python | ✅ | 概览 + 13 章 |
-| JavaScript / TypeScript | ✅ | 概览 + 12 章；第 11–12 章是 `ts` 块 |
-| Go | ✅ | 概览 + 12 章 |
-| Ruby | ✅ | 概览 + 11 章 |
-| SQL | ✅ | 概览 + 11 章 |
-| C | ✅ | 概览 + 11 章 |
-| C++ | ✅ | 概览 + 11 章。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
-| PHP | ✅ | 概览 + 11 章。读不到标准输入，行处理用字符串 |
-| Lua | ✅ | 概览 + 11 章 |
+汉字按去掉 frontmatter 和成对代码围栏之后的正文计，不含标点和代码。下限 2500。
 
-九种语言都有概览和至少 10 章，`SHIPPED_BOOKS` 含全部九本。缺目录时构建才会失败。
+| 语言 | 状态 | 章数 | 汉字（最少–最多，合计） |
+|---|---|---|---|
+| Python | ✅ | 14 | 2795–3787，合计 42578 |
+| JavaScript / TypeScript | ✅ | 13 | 2715–2937，合计 36378。第 11–12 章是 `ts` 块 |
+| Go | ✅ | 12 | 2796–3013，合计 34214 |
+| Ruby | ✅ | 12 | 2803–3149，合计 34859 |
+| SQL | ✅ | 12 | 2734–3136，合计 35239 |
+| C | ✅ | 12 | 2721–3125，合计 33471 |
+| C++ | ✅ | 12 | 2729–3227，合计 34556。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
+| PHP | ✅ | 12 | 2784–3111，合计 35148。读不到标准输入，行处理用字符串 |
+| Lua | ✅ | 12 | 2766–3360，合计 35305 |
+| Shell | ✅ | 12 | 2748–3190，合计 33902。只有 wasi-sh 内建 |
+
+十种语言合计 123 章。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 112 chapters, 629 runnable blocks`。
-- `./build.sh test`：`tests/docs-length.test.ts` 112 项、`tests/docs-unit.test.ts` 6 项、`tests/manifest-refresh.test.mjs` 5 项，合计 123 项全部通过；`check-mono`、各语言 hello-world（含 Lua）、`docs-smoke` 628 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
-- 截图：`learn-drawer-light.png`、`learn-drawer-dark.png`（整页，工具栏可见）、`learn-chapter.png`、`learn-after-run.png`、`learn-code-lines.png`、`learn-run-buttons.png`、`learn-ruby-chapter.png`、`learn-sql-chapter.png`、`learn-lua-chapter.png`、`learn-lua-run.png`。抽屉元素浅色/深色灰阶 100%。Go 的 channel 示例渲染 9 行、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Lua 第一章运行输出包含期望的 `Ada`。
+- `./build.sh build`：vue-tsc 通过，`docs: 123 chapters, 720 runnable blocks`。
+- `./build.sh test`：单元测试合计 135 项通过（含每章篇幅、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 719 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
+- 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
 
@@ -980,6 +983,7 @@ print(f"你好，{name}！")
 - 侧栏按钮在 `refreshStatuses` 填完 `states` 之前就会出现。`ensure` 若发现该语言还没有状态条目，会先补一条再下载，避免第一次选中语言时读到空状态。
 - 代码块行距：Shiki 插在 `.line` 之间的换行由 `collapseShikiLines` 去掉，`.doc-code pre` 使用 `white-space: normal`。空行仍保留空的 `.line`。
 - 文档 Run 与工具栏 Run 都是 `RunButton`（`size="xs"`，空闲文案 `Run`）。下载百分比和退出码在按钮旁边。
+- 围栏上的 `stdin=""` 是空输入而不是「没有声明输入」：运行时送出 EOF，`getline` 和 `io.read` 才能把「没有字节」和「空行」分开。Python 的 `input` 在这一份运行时里要等换行，问候和最后一章的样例写成 `Ada\n`、`林夏\n`。
 
 ---
 
@@ -1305,9 +1309,9 @@ Lua：概览；`print`；类型与 `nil`；字符串；控制流；函数与闭�
 
 ### 18.5 验收
 
-- [ ] 工具栏与抽屉标题是 `{Language} 快速入门`，测试不再寻找 `101`。
-- [ ] 十本书各有 12 到 14 章，每章汉字散文不少于 2500，且不是同一套骨架盖出来的。
-- [ ] 每个可运行块通过对应运行时的 docs-smoke。`norun` 与 `smoke=skip` 不执行。
-- [ ] `./build.sh build` 与 `./build.sh test` 通过。
-- [ ] §15 写明各语言章数和汉字数，并附上按钮、Go、另外两种语言、Shell 的截图。
+- [x] 工具栏与抽屉标题是 `{Language} 快速入门`，测试不再寻找 `101`。
+- [x] 十本书各有 12 到 14 章，每章汉字散文不少于 2500，且不是同一套骨架盖出来的。
+- [x] 每个可运行块通过对应运行时的 docs-smoke。`norun` 与 `smoke=skip` 不执行。
+- [x] `./build.sh build` 与 `./build.sh test` 通过。
+- [x] §15 写明各语言章数和汉字数，并附上按钮、Go、另外两种语言、Shell 的截图。
 
