@@ -55,6 +55,19 @@ async function showToc(page) {
   await page.waitForSelector('[data-testid="docs-search"]');
 }
 
+/** Chapter numbers follow each language's tutorial, so fixtures are found by content. */
+async function openChapterMatching(page, match) {
+  const links = page.locator('[data-testid="chapter-link"]');
+  const n = await links.count();
+  for (let i = 0; i < n; i++) {
+    await showToc(page);
+    await links.nth(i).click();
+    await page.waitForSelector('[data-testid="docs-chapter"]');
+    if (await match(page)) return true;
+  }
+  return false;
+}
+
 let failed = 0;
 function check(ok, message) {
   if (!ok) {
@@ -165,13 +178,17 @@ try {
 
   await setTheme(page, "light");
   await openLearn(page);
-  await page.click('[data-testid="chapter-link"][data-chapter="3"]');
-  await page.waitForSelector('[data-testid="docs-chapter"]');
+  const foundGreeting = await openChapterMatching(page, async (page) => {
+    const block = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"]').first();
+    const code = await block.getAttribute("data-code");
+    const expectText = await block.getAttribute("data-expect");
+    return !!(code?.includes('input("名字？")') && expectText === "你好，Ada！");
+  });
+  check(foundGreeting, "greeting chapter opens on input");
   await saveShot(page, "learn-chapter.png", page.locator('[data-testid="docs-drawer"]'));
   const block = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"]').first();
   const code = await block.getAttribute("data-code");
   const expectText = await block.getAttribute("data-expect");
-  check(code?.includes('input("名字？")') && expectText === "你好，Ada！", "chapter 3 opens on the greeting");
   await block.locator('[data-testid="doc-run"]').click();
   await waitForBlock(page, block);
   const status = await page.getAttribute('[data-testid="run-status"]', "data-status");
@@ -243,8 +260,8 @@ try {
   check(restored === draft, "undo restores the editor");
 
   await showToc(page);
-  await page.click('[data-testid="chapter-link"][data-chapter="4"]');
-  await page.waitForSelector('[data-smoke="skip"] [data-testid="doc-run"]');
+  const foundLoop = await openChapterMatching(page, async (page) => !!(await page.$('[data-smoke="skip"] [data-testid="doc-run"]')));
+  check(foundLoop, "a chapter keeps an infinite loop out of smoke");
   const looping = page.locator('[data-smoke="skip"]').first();
   await looping.locator('[data-testid="doc-run"]').click();
   await waitForBlock(page, looping, ["run"]);
@@ -266,8 +283,8 @@ try {
   await page.waitForSelector('[data-testid="docs-chapter"]');
   await saveShot(page, "learn-js-chapter.png");
   await showToc(page);
-  await page.click('[data-testid="chapter-link"][data-chapter="11"]');
-  await page.waitForSelector('[data-lang="ts"] [data-testid="doc-run"]');
+  const foundTs = await openChapterMatching(page, async (page) => !!(await page.$('[data-lang="ts"] [data-testid="doc-run"]')));
+  check(foundTs, "typescript chapter");
   const ts = page.locator('[data-lang="ts"]').first();
   const tsExpect = await ts.getAttribute("data-expect");
   await ts.locator('[data-testid="doc-run"]').click();
