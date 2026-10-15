@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 101」教学系统设计（LEARN）
 
-> 状态：抽屉、流水线和 Run 按钮已落地。Python、JavaScript/TypeScript、Go 已交付；Ruby、SQL、C、C++、PHP、Lua **待完成**。详见 §15。
+> 状态：§16 已完成。抽屉从工具栏下沿开始，代码块行数与源码一致，文档与工具栏共用同一个 Run 按钮。Python、JavaScript/TypeScript、Go 每一章已按 §16.6 加厚。Ruby、SQL、C、C++、PHP、Lua 仍 **待完成**。详见 §15。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -9,6 +9,7 @@
 - **§13 [文档 UI 黑白主题规范](#13-文档-ui-黑白主题规范)** —— 需求（4）：文档 UI 与主界面一致、纯黑白（token、配色表、排版、Shiki 单色主题、组件、状态、ASCII）
 - **§14 [代码块运行按钮设计](#14-代码块运行按钮设计)** —— 需求（5）：每个代码块的「复制 / 运行」按钮，复制到主编辑器并运行（状态、行为、边界、时序图、API、语法、无障碍、测试）
 - **§15 [完成情况](#15-完成情况)** —— 各里程碑与语言的交付状态
+- **§16 [优化：工具栏、行距、Run 按钮与加厚正文](#16-优化工具栏行距run-按钮与加厚正文)** —— 本轮问题、根因、布局与章节模板、验收
 
 ---
 
@@ -936,7 +937,7 @@ print(f"你好，{name}！")
 | 里程碑 | 状态 | 说明 |
 |---|---|---|
 | L0 文档流水线 | ✅ | `scripts/docs/render.ts` + `scripts/vite-plugin-docs.ts` 校验 frontmatter 并预渲染。单色 Shiki 主题。schema 错误会使 `./build.sh build` 失败。 |
-| L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。桌面抽屉是非模态固定面板，编辑器仍可操作。 |
+| L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。抽屉 `top` 为 `--editor-toolbar-h`（2.5rem），不盖住工具栏。 |
 | L2 从文档运行 | ✅ | 切换语言、按需下载 wasm、备份与撤销、stdin。TypeScript 块复用 `src/core/transpile.ts` 的 Sucrase，编辑器写入带 `// 由 TypeScript 转译（原始代码见文档）` 的 JavaScript，方言切到 JS。 |
 | L3 内容第一批 | ⚠️ | Python、Go 已交付。Lua、SQL **待完成**。 |
 | L4 内容第二批 | ⚠️ | JavaScript/TypeScript 已交付。C、C++、Ruby、PHP **待完成**。 |
@@ -960,9 +961,9 @@ print(f"你好，{name}！")
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 40 chapters, 155 runnable blocks`。
-- `./build.sh test`：单元测试 4 项、`check-mono`、各语言 hello-world、`docs-smoke` 154 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
-- 截图：`tests/screenshots/learn-drawer-light.png`、`learn-drawer-dark.png`、`learn-chapter.png`、`learn-after-run.png`。抽屉浅色/深色灰阶 100%（通道差不超过 2，忽略几乎透明的像素）。
+- `./build.sh build`：vue-tsc 通过，`docs: 40 chapters, 275 runnable blocks`。
+- `./build.sh test`：`tests/docs-unit.test.ts` 与 `tests/docs-length.test.ts` 共 46 项、`check-mono`、各语言 hello-world、`docs-smoke` 274 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
+- 截图：`learn-drawer-light.png`、`learn-drawer-dark.png`（整页，工具栏可见）、`learn-chapter.png`、`learn-after-run.png`、`learn-code-lines.png`、`learn-run-buttons.png`。抽屉元素浅色/深色灰阶 100%。Go 的 channel 示例渲染 9 行、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。
 
 ### 与计划的偏差
 
@@ -974,3 +975,164 @@ print(f"你好，{name}！")
 - `defer` 示例用 `fmt.Print`，期望输出 `abc`。在 `return` 前用 `Println` 会先打出换行。
 - 跨语言示例放在 Python 概览里的 Ruby 块（下载进度 + `来自 Ruby 的 42`），而不是尚未成书的 SQL。
 - 运行状态带 `data-source`。测试要等到来源变成当前代码块再读 `done`，避免把上一次运行的 `done` 当成这次。
+- 侧栏按钮在 `refreshStatuses` 填完 `states` 之前就会出现。`ensure` 若发现该语言还没有状态条目，会先补一条再下载，避免第一次选中语言时读到空状态。
+- 代码块行距：Shiki 插在 `.line` 之间的换行由 `collapseShikiLines` 去掉，`.doc-code pre` 使用 `white-space: normal`。空行仍保留空的 `.line`。
+- 文档 Run 与工具栏 Run 都是 `RunButton`（`size="xs"`，空闲文案 `Run`）。下载百分比和退出码在按钮旁边。
+
+---
+
+## 16. 优化：工具栏、行距、Run 按钮与加厚正文
+
+本节先作为计划单独提交，随后按 16.7 实现。验收已在 16.8 勾选。Ruby、SQL、C、C++、PHP、Lua 仍然 **待完成**，本轮不加它们的正文。
+
+### 16.1 问题
+
+1. 教程抽屉用 `fixed; inset-y-0; right-0; z-40` 挂到 `body`，盖住主编辑区右侧，包括顶部工具栏。Run、`{Language} 101`、JS|TS 切换被挡住，点不到。
+2. 文档代码块比源码多出许多空行。例如 Go 的 `func main` 里面没有空行，页面上语句之间却隔着空行。三种已交付语言都有这个问题。
+3. 文档里的运行按钮和工具栏 Run 不是同一个控件：文档按钮写「运行」、带最小宽度，结束时还会换成对勾或圆点。工具栏 Run 是默认变体、`size="xs"`（即 `h-7`）、Play 图标、英文标签 `Run`。
+4. 三本书每章大约 1000–1600 字，讲解短，示例少，缺少最佳实践和小结。需要把每一章加厚到大约现在的 3–4 倍，仍然是原创中文，可运行块继续通过 docs-smoke。
+
+### 16.2 根因
+
+**抽屉。** `DocsDrawer.vue` 桌面端类名是 `inset-y-0 right-0`。编辑器工具栏在主栏第一行，高度是 Tailwind `h-10`（2.5rem / 40px），和侧栏顶栏对齐。抽屉从视口顶端开始画，所以压在工具栏右半段上面。移动端底栏 `h-[92vh]` 同样会盖住这 40px。
+
+**空行。** Shiki `codeToHtml` 为每一行源码生成一个 `<span class="line">`，并在相邻 span 之间插入一个真正的换行字符。`highlight()` 把 `<code>` 内部 HTML 取出来，再放进组件自己的 `<pre><code>`。`<pre>` 默认 `white-space: pre`，这些分隔换行会各占一行；`src/styles/docs.css` 又把 `.line` 设成 `display: block; min-height: 1.6em`。一行源码因此变成「一块行盒 + 一条被保留的换行」，看起来像每行后面多一个空行。用 Go 的 channel 示例实测：9 行源码对应 9 个 `.line` 和 8 个分隔换行，行数本身没错，多出来的是渲染。
+
+**按钮。** 工具栏在 `EditorToolbar.vue` 里直接用 `Button size="xs"`。文档在 `CodeBlock.vue` 里另写了一套标签和图标。没有共享组件，所以尺寸和对齐会漂。
+
+### 16.3 抽屉布局
+
+工具栏保持主栏全宽，始终可点。抽屉从工具栏下沿开始，不再占用那 40px。桌面端仍然盖住编辑器和终端的右侧；本轮不把主栏改成三列重排。
+
+```
+┌────────────┬───────────────────────────────────────────────────────────┐
+│ SimpleCode │ main.py          [JS|TS] [Python 101] [▶ Run] [⟲]          │  ← 整行可见、可点
+│ Py Python  ├──────────────────────────────────────┬────────────────────┤
+│ Rb Ruby    │                                      │ Python 101      ✕  │
+│ …          │  编辑器                               │  章节正文          │
+│            │                                      │  ┌──────────────┐  │
+│            ├──────────────────────────────────────┤  │ ▶ Run        │  │  ← 与工具栏同一个按钮
+│            │ Terminal                             │  └──────────────┘  │
+└────────────┴──────────────────────────────────────┴────────────────────┘
+              ↑ 抽屉 top = 工具栏高度（2.5rem），right: 0，bottom: 0
+```
+
+移动端同样让出顶栏：`top: var(--editor-toolbar-h); bottom: 0`，不再用 `h-[92vh]` 从底往上盖满。
+
+实现：
+
+- 在 `:root` 定义 `--editor-toolbar-h: 2.5rem`。`EditorToolbar` 用这个高度，不再单独写死一个会漂的数。
+- 桌面抽屉去掉 `inset-y-0`，改为 `top: var(--editor-toolbar-h); right: 0; bottom: 0`。
+- 拖拽改变宽度的手柄从抽屉左缘开始，范围也在工具栏之下。
+- `tests/learn.spec.mjs` 断言：抽屉打开时 `[data-testid=run]`、`[data-testid=learn-button]` 的矩形与 `[data-testid=docs-drawer]` 不相交，并且按钮中心点的 `elementFromPoint` 不是抽屉。
+
+### 16.4 代码行距
+
+两处一起改，避免只修一处以后又漂：
+
+1. `highlight()` 去掉 Shiki 插在 `</span>` 和下一行 `<span class="line">` 之间的换行。空行仍是空的 `<span class="line"></span>`，不要把源码里真实的空行删掉。
+2. CSS：`.doc-code pre` 使用 `white-space: normal`，`.doc-code .line` 保持 `display: block; white-space: pre; min-height: 1.6em`。块与块之间的空白不再生成额外行盒；行内缩进仍按 pre 保留。
+
+测试：
+
+- 单元测试：对含空行、纯空格行和普通语句的片段，`.line` 的个数等于源码行数（去掉末尾多余换行之后），HTML 里不再有分隔用的原始换行。
+- 浏览器测试：打开一个 Go 代码块，`.line` 个数等于 `data-code` 的行数；相邻两行 `getBoundingClientRect().top` 的差等于第一行的高度（容差 1px），不能接近两倍行高。
+
+### 16.5 Run 按钮
+
+抽出 `src/components/RunButton.vue`，工具栏和文档代码块都用它。
+
+外观合同（两边必须一致）：
+
+- 组件是现有的 `Button`，变体 `default`，`size="xs"`（`h-7`、`text-xs`、图标 14px）。
+- 空闲：`Play` + 文案 `Run`。
+- 进行中：`Loader2`（旋转）+ 与工具栏相同的文案：`Preparing…`、`Compiling…`、`Linking…`、`Running…`。
+- 不设 `min-width`，不用对勾或圆点替换图标。
+
+下载进度、退出码、「输出符合预期」留在按钮外面的说明文字和 `aria-live` 里。文档按钮的 `data-testid` 仍是 `doc-run`，工具栏仍是 `run`。停止键继续是旁边的独立按钮，标签与工具栏一样用 `Stop`。`tests/learn.spec.mjs` 里「按钮文字含下载」改为检查按钮旁边的进度文字，不要求 Run 按钮自己变样。
+
+### 16.6 章节模板与篇幅
+
+三本书的正文仍由 `scripts/curriculum/books/{python,js,go}.mjs` 生成，再写回 `docs/<book>/*.md`。每章（含概览）都按这个骨架写，原创中文，不搬可链接资料的原文：
+
+```
+（frontmatter：goals、minutes）
+## 本章目标          ← 由 goals 生成亦可
+两段以上讲解，先讲概念，再讲这个运行时的限制
+
+## 示例
+每个可运行示例前有一两句说明它在看什么
+（内容章至少 5 个 run 块，概览至少 3 个）
+
+## 常见错误          ← 至少 3 条，每条说明为什么错
+## 最佳实践          ← 至少 3 条
+## 小结              ← 一段，至少 80 个字符
+## 练习              ← 至少 2 道，每道有 ::: answer，答案是可运行块
+## 延伸阅读          ← 只放链接
+## 参考与致谢
+```
+
+篇幅按正文（frontmatter 之后）的字符数。验收下限是现在的 3 倍；写作目标是大约 3–4 倍。只堆代码不算加厚：围栏以外的讲解文字，内容章至少 1500 字符，概览至少 900 字符。`minutes` 提到不少于 18（概览不少于 12）。
+
+必须保住已有测试夹具，加厚时不要把它们挪走：
+
+- Python 概览仍包含：一个 `text` 且不可运行的块、一个 `python norun`、`print("你好")`、Ruby `puts "来自 Ruby 的 42"`。
+- Python 第 3 章第一个围栏仍是 `input("名字？")`，stdin 为 Ada，期望 `你好，Ada！`。
+- Python 第 4 章的 `while True: pass` 仍标 `smoke=skip`，并且不是该章第一个围栏。
+- JavaScript 第 11 章第一个 `ts` 块期望输出仍含 `买笔`。
+- Go 的 `defer` 示例仍期望 `abc`；自定义 `error` 接口调用仍是 `norun`，可运行答案仍用 `errors.New`。
+
+当前正文字符数（frontmatter 之后），实现后的下限是表中数字的 3 倍：
+
+| 文件 | 现在 | 下限 | 文件 | 现在 | 下限 |
+|---|---:|---:|---|---:|---:|
+| python/index.md | 1029 | 3087 | js/07-classes.md | 1465 | 4395 |
+| python/01-hello.md | 1029 | 3087 | js/08-errors.md | 1268 | 3804 |
+| python/02-types.md | 1168 | 3504 | js/09-iterators.md | 1477 | 4431 |
+| python/03-strings.md | 1119 | 3357 | js/10-promises.md | 1322 | 3966 |
+| python/04-control.md | 1570 | 4710 | js/11-typescript.md | 1194 | 3582 |
+| python/05-lists.md | 1171 | 3513 | js/12-typescript-project.md | 1558 | 4674 |
+| python/06-dicts.md | 1134 | 3402 | go/index.md | 990 | 2970 |
+| python/07-functions.md | 1351 | 4053 | go/01-vars.md | 1145 | 3435 |
+| python/08-exceptions.md | 1339 | 4017 | go/02-types.md | 1119 | 3357 |
+| python/09-stdlib.md | 1240 | 3720 | go/03-control.md | 1417 | 4251 |
+| python/10-oop.md | 1555 | 4665 | go/04-collections.md | 1415 | 4245 |
+| python/11-iterators.md | 1478 | 4434 | go/05-funcs.md | 1451 | 4353 |
+| python/12-decorators.md | 1574 | 4722 | go/06-structs.md | 1518 | 4554 |
+| python/13-project.md | 1457 | 4371 | go/07-interfaces.md | 1506 | 4518 |
+| js/index.md | 960 | 2880 | go/08-errors.md | 1456 | 4368 |
+| js/01-values.md | 1012 | 3036 | go/09-concurrency.md | 1312 | 3936 |
+| js/02-strings.md | 983 | 2949 | go/10-generics.md | 1219 | 3657 |
+| js/03-control.md | 1280 | 3840 | go/11-stdlib.md | 1621 | 4863 |
+| js/04-functions.md | 1269 | 3807 | go/12-todo.md | 1455 | 4365 |
+| js/05-arrays.md | 1109 | 3327 | | | |
+| js/06-objects.md | 1123 | 3369 | | | |
+
+`tests/docs-length.test.ts` 读取这张表（或与表一致的常量），检查每章字符数、围栏外讲解字数、必需标题、练习答案和可运行块个数。生成脚本跑完后文档必须满足它，不能只改生成器不改 `docs/`。
+
+### 16.7 实现顺序
+
+1. 提交本节（只改 `plan/LEARN.md`）。
+2. 抽屉下移，加上「不与工具栏相交」的测试。
+3. 去掉代码块多余空行，加上行数测试。
+4. 抽出 `RunButton`，两边换上。
+5. 按 §16.6 重写三本书并重新生成 Markdown，跑 docs-smoke。
+6. 更新 §15 和本节的完成勾选。
+7. `./build.sh build` 与 `./build.sh test` 都通过后，再更新 PR。
+
+### 16.8 验收
+
+- [x] 抽屉打开时，工具栏的 Run、101、JS|TS 完整可见且可点击；浅色和深色截图能同时看到工具栏和抽屉。
+- [x] 任一代码块的渲染行数等于源码行数，截图里 `func main` 内部不再出现源码没有的空行。Go channel 示例 9 行，相邻行顶距与行高之差为 0。
+- [x] 文档 Run 与工具栏 Run 是同一个组件，并排截图可以看出尺寸、图标和 `Run` 文案一致（高度均为 28px）。
+- [x] 三本书每一章达到 §16.6 的下限；docs-smoke 274 个可运行块通过（1 个 `smoke=skip`）。
+- [x] `./build.sh build` 与 `./build.sh test` 通过。单色检查仍然通过。
+- [x] §15 写明本轮结果；六种未写的语言仍是待完成。
+
+截图文件：
+
+- `learn-drawer-light.png`、`learn-drawer-dark.png`：抽屉打开，工具栏在画面里。
+- `learn-code-lines.png`：一个没有多余空行的代码块。
+- `learn-run-buttons.png`：文档 Run 和工具栏 Run 同时在画面里。
+- 保留 `learn-chapter.png`、`learn-after-run.png`。
+- 灰阶检查仍只对抽屉元素做，编辑器里的彩色语法不计入。

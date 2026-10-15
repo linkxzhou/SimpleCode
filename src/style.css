@@ -20,6 +20,8 @@
 
 @layer base {
   :root {
+    /* Editor toolbar and the docs drawer share this offset so the drawer cannot cover Run. */
+    --editor-toolbar-h: 2.5rem;
     /* Monochrome palette: neutral (0 saturation) only */
     --background: 0 0% 100%;
     --foreground: 0 0% 4%;

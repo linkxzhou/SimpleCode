@@ -6,7 +6,7 @@ import type { Token as MdToken } from "markdown-it";
 import { createHighlighter, type Highlighter } from "shiki";
 import { parseFenceInfo } from "../../src/docs/fence.ts";
 import { BOOKS, SHIPPED_BOOKS, isBookId, type BookId } from "../../src/docs/runtime.ts";
-import { escapeHtml } from "../../src/docs/text.ts";
+import { collapseShikiLines, escapeHtml } from "../../src/docs/text.ts";
 import type { BookIndex, ChapterDoc, ChapterMeta, CodeBlockData, SearchDoc, Segment } from "../../src/docs/types";
 import { darkTheme, lightTheme } from "./themes.ts";
 
@@ -243,7 +243,7 @@ async function highlightAll(highlighter: Highlighter, segs: Segment[]) {
   }
 }
 
-function highlight(highlighter: Highlighter, lang: string, code: string): string {
+export function highlight(highlighter: Highlighter, lang: string, code: string): string {
   const shikiLang = SHIKI_LANG[lang.toLowerCase()];
   if (!shikiLang) return escapeHtml(code);
   try {
@@ -253,7 +253,7 @@ function highlight(highlighter: Highlighter, lang: string, code: string): string
       defaultColor: false,
     });
     const m = full.match(/<code[^>]*>([\s\S]*)<\/code>\s*<\/pre>\s*$/);
-    return m ? m[1] : escapeHtml(code);
+    return m ? collapseShikiLines(m[1]) : escapeHtml(code);
   } catch {
     return escapeHtml(code);
   }

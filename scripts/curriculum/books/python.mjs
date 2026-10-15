@@ -1,7 +1,13 @@
-import { answerRun, fence, lesson, mistakes, note, run } from "../format.mjs";
+import { answerRun, deepen, fence, lesson, mistakes, note, run } from "../format.mjs";
+import { pythonPack } from "./depth-python.mjs";
 
 const SRC = ["lxiy-python", "byte-of-python", "python-tutorial"];
-const P = (meta, body) => lesson({ language: "python", sources: SRC }, meta, body);
+const P = (meta, body) =>
+  lesson(
+    { language: "python", sources: SRC },
+    { ...meta, minutes: Math.max(meta.chapter === 0 ? 12 : 18, meta.minutes ?? 0) },
+    deepen(body, pythonPack(meta.chapter)),
+  );
 
 const tail = (items) => `${mistakes(items)}
 
