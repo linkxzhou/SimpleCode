@@ -9,11 +9,8 @@ const BASE: Record<string, number> = {
 /** Books still on the §17 absolute floors. None remain after the essay rewrite. */
 const ABSOLUTE: string[] = [];
 
-/** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. Go moved to TUTORIAL. */
-const ESSAY = ["shell"];
-
-/** plan/LEARN.md §19. Short tutorial sections, Runoob-style. */
-const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp", "php", "lua"];
+/** plan/LEARN.md §19. Short tutorial sections, Runoob-style. The 2500-character essay rule is retired. */
+const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
@@ -82,27 +79,6 @@ describe("chapter length", () => {
     }
   }
 
-  for (const book of ESSAY) {
-    const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md")).sort();
-    assert.ok(files.length >= 12 && files.length <= 14, `${book} chapters ${files.length}`);
-    for (const name of files) {
-      const file = `${book}/${name}`;
-      it(file, () => {
-        const text = readFileSync(`docs/${file}`, "utf8");
-        const body = bodyOf(text);
-        const han = hanCount(proseOf(body));
-        assert.ok(han >= 2500, `han ${han}`);
-        assert.ok(body.includes("## 小结"), "小结");
-        assert.ok(body.includes("## 练习"), "练习");
-        assert.ok(!body.includes("## 常见错误") && !body.includes("## 最佳实践"), "template headings");
-        assert.ok((body.match(/::: answer/g) ?? []).length >= 2, "answers");
-        assert.ok(runnableCount(body) >= 3, `runnable ${runnableCount(body)}`);
-        const minutes = Number(text.match(/^minutes:\s*(\d+)/m)?.[1]);
-        assert.ok(minutes >= 20, `minutes ${minutes}`);
-      });
-    }
-  }
-
   for (const book of TUTORIAL) {
     const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md")).sort();
     assert.ok(files.length >= 20, `${book} chapters ${files.length}`);
@@ -129,7 +105,7 @@ describe("chapter length", () => {
 
   it("chapters do not share a 60-character run", () => {
     const seen = new Map<string, string>();
-    for (const book of [...ESSAY, ...TUTORIAL]) {
+    for (const book of TUTORIAL) {
       const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md"));
       for (const name of files) {
         const file = `${book}/${name}`;
