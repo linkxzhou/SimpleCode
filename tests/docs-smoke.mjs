@@ -10,7 +10,7 @@ import { resolveRuntime } from "../src/docs/runtime.ts";
 
 const PORT = Number(process.env.DOCS_PORT ?? 4321);
 const BASE = `http://127.0.0.1:${PORT}`;
-const BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua"];
+const BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
 
 function stripAnsi(text) {
   return text.replace(/\x1b\[[0-9;]*m/g, "");
@@ -104,6 +104,7 @@ try {
   await waitForServer();
   const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+  page.setDefaultTimeout(70_000);
   page.on("pageerror", (err) => console.log("  [pageerror]", err.message));
   await page.goto(BASE);
   await page.waitForSelector('[data-testid="lang-python"]');
@@ -114,10 +115,21 @@ try {
     try {
       await prepare(page, c.runtime, c.lang);
       await page.evaluate((code) => globalThis.__simplecodeEditor.setValue(code), c.code);
-      await page.evaluate(
+      const run = page.evaluate(
         (opts) => globalThis.__simplecodeRun(opts),
         { stdin: c.stdin, stdinEOF: c.stdinEOF, source: "docs-smoke" },
       );
+      // page.evaluate itself has no timeout; a blocked read would stall the suite.
+      run.catch(() => {});
+      let timer;
+      const timed = new Promise((_, reject) => {
+        timer = setTimeout(() => reject(new Error("run timed out")), limit);
+      });
+      try {
+        await Promise.race([run, timed]);
+      } finally {
+        clearTimeout(timer);
+      }
       await page.waitForFunction(
         () => ["done", "failed", "crash", "terminated"].includes(document.querySelector('[data-testid="run-status"]')?.getAttribute("data-status") ?? ""),
         null,

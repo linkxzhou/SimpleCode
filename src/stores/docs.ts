@@ -42,7 +42,7 @@ export const useDocsStore = defineStore("docs", () => {
   const pending = computed(() => (pendingId.value ? !bookIds.includes(pendingId.value) : false));
   const title = computed(() => {
     const id = bookId.value ?? pendingId.value;
-    return id ? `${BOOK_LABEL[id]} 101` : "101";
+    return id ? `${BOOK_LABEL[id]} 快速入门` : "快速入门";
   });
   const current = computed(() => chapters.value.find((c) => c.id === chapterId.value));
 
@@ -98,7 +98,7 @@ export const useDocsStore = defineStore("docs", () => {
       pendingId.value = id;
       view.value = "toc";
       query.value = "";
-      live.value = `${BOOK_LABEL[id]} 101 即将推出`;
+      live.value = `${BOOK_LABEL[id]} 快速入门即将推出`;
       return;
     }
     pendingId.value = undefined;

@@ -53,7 +53,7 @@ const switchHint = computed(() => {
   return `→ 切换到 ${runtimeLabel(runtimeId.value)}`;
 });
 const needsInput = computed(() => {
-  if (props.block.stdin || !props.block.runnable) return false;
+  if (props.block.stdin != null || !props.block.runnable) return false;
   return /\b(input\s*\(|scanf\s*\(|gets\b|getline\s*\(|io\.read|fgets\s*\(|ReadString|bufio\.|cin\s*>>|STDIN)/.test(props.block.code);
 });
 const busy = computed(
@@ -119,7 +119,7 @@ async function onRun() {
   const result = await runner.runFromDoc(props.block.code, props.block.lang, {
     blockId: props.block.id,
     stdin: props.block.stdin,
-    useStdin: useStdin.value && !!props.block.stdin,
+    useStdin: useStdin.value && props.block.stdin != null,
     stdinEOF: props.block.eof,
     expect: props.block.expect,
     confirmStop: askConfirm,
@@ -201,7 +201,7 @@ const runTip = computed(() => {
       <span class="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{{ block.lang }}</span>
       <span v-if="block.title" class="truncate text-xs text-muted-foreground">{{ block.title }}</span>
       <span v-if="switchHint" class="truncate text-[11px] text-muted-foreground">{{ switchHint }}</span>
-      <span v-if="block.stdin" class="text-[11px] text-muted-foreground">需要输入</span>
+      <span v-if="block.stdin != null && block.stdin !== ''" class="text-[11px] text-muted-foreground">需要输入</span>
       <span class="flex-1" />
       <span v-if="!block.runnable" class="pr-2 text-[11px] text-muted-foreground">{{ block.reason }}</span>
       <Tooltip>
@@ -243,8 +243,8 @@ const runTip = computed(() => {
       </Button>
     </div>
     <pre class="max-h-[480px] overflow-auto px-3 py-2.5 font-mono text-[13px] leading-[1.6]"><code ref="codeEl" v-html="block.html" /></pre>
-    <div v-if="block.stdin || block.expect" class="space-y-1 border-t border-border px-3 py-1.5 text-xs text-muted-foreground">
-      <CollapsibleRoot v-if="block.stdin">
+    <div v-if="block.stdin != null || block.expect" class="space-y-1 border-t border-border px-3 py-1.5 text-xs text-muted-foreground">
+      <CollapsibleRoot v-if="block.stdin != null">
         <CollapsibleTrigger class="underline underline-offset-2">样例输入</CollapsibleTrigger>
         <CollapsibleContent>
           <pre class="mt-1 whitespace-pre-wrap font-mono text-[12px] text-foreground">{{ block.stdin }}</pre>

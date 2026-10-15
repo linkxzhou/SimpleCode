@@ -1,6 +1,6 @@
-# SimpleCode「{Language} 101」教学系统设计（LEARN）
+# SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：§16 与 §17 已完成。Python、JavaScript/TypeScript、Go、Ruby、SQL、C、C++、PHP、Lua 已交付。详见 §15。
+> 状态：§18 已经落地。十本书按短文重写，界面文案是「快速入门」。§15 的勾选对应当前正文和 2026-10-15 的 `./build.sh test`。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -11,13 +11,14 @@
 - **§15 [完成情况](#15-完成情况)** —— 各里程碑与语言的交付状态
 - **§16 [优化：工具栏、行距、Run 按钮与加厚正文](#16-优化工具栏行距run-按钮与加厚正文)** —— 本轮问题、根因、布局与章节模板、验收
 - **§17 [其余六本书](#17-其余六本书)** —— Ruby、SQL、C、C++、PHP、Lua 的运行时限制、章节目录、篇幅与验收
+- **§18 [按 The Little Go Book 重写](#18-按-the-little-go-book-重写)** —— 文风分析、每章汉字下限、十种语言的章节大纲、验收
 
 ---
 
 ## 1. 目标与非目标
 
 ### 1.1 目标
-1. 工具栏 Run 按钮旁新增 **「{Language} 101」** 按钮（如 “Python 101”），打开右侧抽屉（Sheet），展示当前语言的教程。
+1. 工具栏 Run 按钮旁新增 **「{Language} 快速入门」** 按钮（如 “Python 快速入门”），打开右侧抽屉（Sheet），展示当前语言的教程。
 2. 每种语言一本“小书”：**概览 + ≥10 章**，难度递进：入门（beginner）→ 进阶（intermediate）→ 高级（advanced）。
 3. 文档为 Markdown，存放在 `docs/<language>/`（一语言一目录），随应用打包、离线可读（无网络依赖，符合 COEP）。
 4. 文档 UI 完全遵循应用的黑白单色主题（shadcn-vue + Tailwind tokens）。
@@ -37,20 +38,20 @@
 ### 2.1 抽屉关闭（工具栏新增按钮）
 ```
 ┌──────────────────┬──────────────────────────────────────────────────────────────┐
-│ Languages        │ main.py                   [📖 Python 101] [▶ Run] [⟲]        │
+│ Languages        │ main.py                   [📖 Python 快速入门] [▶ Run] [⟲]        │
 │ [Py] Python    ✓ │──────────────────────────────────────────────────────────────│
 │ [Rb] Ruby      ↓ │  1  print("hello")                                           │
 │ ...              │                                                              │
 │                  │══════════════════════════════════════════════════════════════│
 │                  │ Terminal ● 就绪                                   [⌫] [v]    │
 └──────────────────┴──────────────────────────────────────────────────────────────┘
-  “Python 101” = ghost xs 按钮（BookOpen 图标 + 文字），切换语言时文字随之变化；快捷键 ⌘/Ctrl+J
+  “Python 快速入门” = ghost xs 按钮（BookOpen 图标 + 文字），切换语言时文字随之变化；快捷键 ⌘/Ctrl+J
 ```
 
 ### 2.2 抽屉打开 —— 目录（章节列表）
 ```
 ┌──────────────┬──────────────────────────────┬──────────────────────────────────┐
-│ Languages    │ main.py   [📖][▶ Run]        │ Python 101                  [×]  │
+│ Languages    │ main.py   [📖][▶ Run]        │ Python 快速入门                  [×]  │
 │ [Py] Python  │──────────────────────────────│──────────────────────────────────│
 │ ...          │  1 print("hello")            │ [🔍 搜索本书…]                    │
 │              │                              │ 概览                              │
@@ -113,7 +114,7 @@
 └──────────────────────────┘
         点击 📖 ↓
 ┌──────────────────────────┐
-│ Python 101          [×]  │   抽屉变为底部全屏 Sheet（side="bottom", 高 92vh）
+│ Python 快速入门          [×]  │   抽屉变为底部全屏 Sheet（side="bottom", 高 92vh）
 │ ← 目录 / 章节内容 …       │   点击代码块 Run → 自动关闭 Sheet，聚焦终端显示输出
 └──────────────────────────┘
 ```
@@ -125,7 +126,7 @@
 ### 3.1 组件树
 ```mermaid
 graph TD
-  Toolbar[EditorToolbar.vue] --> LearnBtn["LearnButton.vue<br/>{Language} 101"]
+  Toolbar[EditorToolbar.vue] --> LearnBtn["LearnButton.vue<br/>{Language} 快速入门"]
   App[AppShell.vue] --> Drawer["DocsDrawer.vue<br/>shadcn-vue Sheet (non-modal)"]
   Drawer --> Header[DocsHeader.vue<br/>标题/返回/关闭/搜索]
   Drawer --> List[ChapterList.vue<br/>按 level 分组]
@@ -209,9 +210,9 @@ sequenceDiagram
 
 | 组件 | 职责 | 关键 props/状态 | shadcn-vue |
 |---|---|---|---|
-| `LearnButton` | 工具栏按钮，文字 `${label} 101`，有文档才显示 | 当前语言是否有 docs | Button(ghost, xs) + Tooltip |
+| `LearnButton` | 工具栏按钮，文字 `${label} 快速入门`，有文档才显示 | 当前语言是否有 docs | Button(ghost, xs) + Tooltip |
 | `DocsDrawer` | 非模态 Sheet，右侧（桌面）/底部（移动）；宽度可拖拽并记忆 | `open`、`view: toc\|chapter`、`width` | Sheet / SheetContent / SheetHeader |
-| `DocsHeader` | 标题（Python 101）、返回目录、关闭、搜索框 | — | Button(icon)、Input |
+| `DocsHeader` | 标题（Python 快速入门）、返回目录、关闭、搜索框 | — | Button(icon)、Input |
 | `ChapterList` | 概览 + 章节按 level 分组，显示已读状态、时长 | 索引、进度 | ScrollArea、Separator |
 | `ChapterView` | 渲染章节、记录滚动位置、标记已读（滚动到底或停留 >30s） | chapterId | ScrollArea |
 | `MarkdownView` | 输入预渲染 HTML + blocks 元数据，挂载 CodeBlock | html、blocks[] | — |
@@ -223,7 +224,7 @@ sequenceDiagram
 - **Copy**：⧉ → “已复制”（1.5s）。
 - **ChapterList 项**：○ 未读 / ● 当前 / ✓ 已读；hover `bg-accent`；focus-visible ring。
 - 键盘：`⌘/Ctrl+J` 开关抽屉；抽屉内 `[`/`]` 上/下一章；代码块内 `⌘/Ctrl+Enter` 运行该块（焦点在块上时）。
-- 可访问性：Sheet `aria-label="Python 101 教程"`；代码块 Run `aria-label="运行此示例（Python）"`。
+- 可访问性：Sheet `aria-label="Python 快速入门 教程"`；代码块 Run `aria-label="运行此示例（Python）"`。
 
 ---
 
@@ -306,7 +307,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 
 > 约束总述（所有示例必须遵守）：无网络、无文件持久化（每次运行全新虚拟 FS，只有 `/program`）、无多线程并行、无第三方包、单文件程序；交互输入通过终端 stdin。
 
-### 7.1 Python 101（CPython 3.11）
+### 7.1 Python 快速入门（CPython 3.11）
 | # | 标题 | 级别 | 要点 | 示例程序 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览：Python 是什么 | — | 解释执行、REPL 思维、在 SimpleCode 中运行与输入 | `print("你好")` | 改写问候语 |
@@ -325,7 +326,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 13 | 类型标注与小项目 | 高级 | typing、dataclass、命令行小游戏 | 井字棋（stdin） | 扩展 AI |
 限制说明：不讲 pip/requests/threading/文件写入持久化；`random` 示例固定 seed 以保证测试可复现。来源：Python Tutorial、Learn X in Y（改编）、Think Python / Automate（仅链接）。
 
-### 7.2 Ruby 101（Ruby 3.2）
+### 7.2 Ruby 快速入门（Ruby 3.2）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | 一切皆对象、irb 思维 | `puts "你好"` | — |
@@ -343,7 +344,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 12 | 小项目：文字冒险 | 高级 | 状态机、stdin 交互 | 冒险游戏 | 增加房间 |
 来源：Ruby in Twenty Minutes（链接）、Ruby Koans（仅借鉴“公案”练习形式，不复制）、Poignant Guide（CC BY-SA，可少量改编）。
 
-### 7.3 JavaScript / TypeScript 101（QuickJS）
+### 7.3 JavaScript / TypeScript 快速入门（QuickJS）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | JS 引擎 vs 浏览器、QuickJS 环境（无 DOM） | `console.log` | — |
@@ -361,7 +362,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 12 | TS 进阶与小项目 | 高级 | 泛型、类型收窄、枚举（Sucrase 支持 enum ⚠️） | 状态机 | 扩展 |
 限制：无 DOM/fetch/模块导入（单文件）；stdin 读取在 QuickJS 版本中能力有限 ⚠️ → JS 书示例**不依赖 stdin**（实现阶段验证 `std`/`os` 模块后再决定）。来源：MDN（CC BY-SA，可改编）、TS Handbook（CC BY 4.0 ⚠️）、javascript.info / Eloquent JS（仅链接）。
 
-### 7.4 SQL 101（SQLite 3.26）
+### 7.4 SQL 快速入门（SQLite 3.26）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | 关系模型、每次运行=全新内存库、`.mode box` | 建表+查询 | — |
@@ -378,7 +379,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 11 | 小项目：图书馆 | 高级 | 建模 + 报表查询 | 借阅报表 | 逾期统计 |
 限制：不用 `RETURNING`、`STRICT`、`->>`、`UPSERT … DO UPDATE`（3.24 起支持，可用 ⚠️需测）、`generate_series`（扩展未编入）；不依赖文件库。来源：SQLite 官方文档（公有领域，可改编）、SQLBolt / Select Star SQL（仅链接，借鉴循序渐进结构）。
 
-### 7.5 C 101（clang 8 + wasi-libc）
+### 7.5 C 快速入门（clang 8 + wasi-libc）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | 编译→链接→运行（终端显示阶段）、`-Werror` 含义 | hello | — |
@@ -395,7 +396,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 11 | 小项目：栈式计算器 | 高级 | 逆波兰表达式（stdin） | RPN 计算器 | 支持变量 |
 限制：`-Werror` → 示例必须零警告（例如 `int main(void)`、检查 scanf 返回值）；无线程/信号/fork/文件持久化；`printf` 后提示前需 `fflush(stdout)`。来源：Beej / Modern C / learn-c.org（仅链接）。
 
-### 7.6 C++ 101（clang 8 + libc++）
+### 7.6 C++ 快速入门（clang 8 + libc++）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | C++ 与 C、本环境 C++17 部分支持 | hello | — |
@@ -413,7 +414,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 12 | 小项目：库存管理 | 高级 | 综合 | 命令行库存 | 扩展 |
 限制：避免 C++20（concepts/ranges/format）、`std::filesystem`、`std::thread`；异常（throw/try）是否可用 **需实测** ⚠️，若不可用则相关内容标 `norun` 并说明。来源：LearnCpp、cppreference（仅链接）、C++ Core Guidelines（可引用条目编号）。
 
-### 7.7 PHP 101（php-cgi 8.2）
+### 7.7 PHP 快速入门（php-cgi 8.2）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | `<?php`、CLI 式运行（-q 无头） | echo | — |
@@ -430,7 +431,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 11 | 小项目：JSON 报表 | 高级 | json_encode/decode、array 处理 | 报表 | 排序输出 |
 限制：无网络/数据库/会话/HTTP 请求处理；stdin 读取方式需实测（`fgets(STDIN)` vs `php://stdin`）⚠️，确认前 PHP 书示例不依赖 stdin。来源：PHP 手册（CC BY 3.0 ⚠️，可改编署名）、PHP The Right Way（仅链接）。
 
-### 7.8 Lua 101（Lua 5.4.9）
+### 7.8 Lua 快速入门（Lua 5.4.9）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | 轻量嵌入式语言、5.4 特性 | print | — |
@@ -448,7 +449,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 | 12 | 小项目：文字冒险 | 高级 | 状态机 + io.read | 冒险游戏 | 存档（内存） |
 限制：无 `io.popen`/`os.execute`/`io.tmpfile`/`os.tmpname`、无 `require` C 模块。来源：Lua 5.4 手册（引用条目）、Learn Lua in Y（CC BY-SA，可改编）、Programming in Lua（仅链接）。
 
-### 7.9 Go 101（Yaegi 0.16.1 解释器）
+### 7.9 Go 快速入门（Yaegi 0.16.1 解释器）
 | # | 标题 | 级别 | 要点 | 示例 | 练习 |
 |---|---|---|---|---|---|
 | 0 | 概览 | — | Go 特点；本环境为解释执行（Yaegi），仅标准库 | hello | — |
@@ -610,7 +611,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 - 文档字号阶梯（px / 行高 / 字重）：
 | 用途 | 字号 | 行高 | 字重 | 其它 |
 |---|---|---|---|---|
-| 抽屉标题（Python 101） | 14 | 20 | 600 | — |
+| 抽屉标题（Python 快速入门） | 14 | 20 | 600 | — |
 | 章节 h1 | 20 | 28 | 600 | `tracking-tight`，下方元信息 12px muted |
 | h2 | 16 | 24 | 600 | 上间距 28，下 8 |
 | h3 | 14 | 20 | 600 | 上间距 20，下 6 |
@@ -673,7 +674,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 浅色（白底、灰边、黑字）：
 ```
 ┌────────────────────────────────────────────┐  bg #FFFFFF  border-l #E3E3E3
-│ ← 目录   Python 101              [⌕] [×]   │  h-10, 14px/600, 下边框 #E3E3E3
+│ ← 目录   Python 快速入门              [⌕] [×]   │  h-10, 14px/600, 下边框 #E3E3E3
 ├────────────────────────────────────────────┤
 │ 03 字符串与输入输出                         │  h1 20px/600 #0A0A0A
 │ 入门 · 约 10 分钟                           │  12px #737373  [入门] Badge 描边
@@ -697,7 +698,7 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 深色（近黑底、深灰边、白字）：
 ```
 ┌────────────────────────────────────────────┐  bg #0A0A0A  border-l #262626
-│ ← 目录   Python 101              [⌕] [×]   │  文字 #FAFAFA
+│ ← 目录   Python 快速入门              [⌕] [×]   │  文字 #FAFAFA
 ├────────────────────────────────────────────┤
 │ 03 字符串与输入输出                         │  #FAFAFA
 │ 入门 · 约 10 分钟                           │  #A3A3A3
@@ -917,7 +918,7 @@ print(f"你好，{name}！")
 ### 14.9 测试
 **单元（Vitest）**：`parseFenceInfo`（引号、转义、未知属性）、`resolveRuntime`（全部别名、未知语言）、`useRunFromDoc` 的分支（mock stores）：跨语言切换、ensure 失败、运行中确认/取消、备份与撤销、TS 转译成功/失败、stdin 预填调用顺序。
 **E2E（Playwright，复用 tests/smoke.mjs 的 preview 服务器与系统 Chrome）** `tests/learn.spec.mjs`：
-1. 打开应用 → 点击 `[data-testid=learn-button]` → 抽屉出现，标题含 “Python 101”。
+1. 打开应用 → 点击 `[data-testid=learn-button]` → 抽屉出现，标题含 “Python 快速入门”。
 2. 打开第 3 章 → 定位第 1 个 `[data-testid=doc-code-block]`，读取其 `data-code`。
 3. 点击块内 `[data-testid=doc-run]` → 等待 `[data-testid=run-status][data-status=done]`。
 4. 断言：`__simplecodeEditor.getValue() === data-code`；`__simplecodeTerminal.transcript` 包含块的 `data-expect`；终端可见。
@@ -941,30 +942,33 @@ print(f"你好，{name}！")
 | L1 抽屉 UI | ✅ | Learn 按钮、目录、章节、代码块 Copy/Run。抽屉 `top` 为 `--editor-toolbar-h`（2.5rem），不盖住工具栏。 |
 | L2 从文档运行 | ✅ | 切换语言、按需下载 wasm、备份与撤销、stdin。TypeScript 块复用 `src/core/transpile.ts` 的 Sucrase，编辑器写入带 `// 由 TypeScript 转译（原始代码见文档）` 的 JavaScript，方言切到 JS。 |
 | L3 内容第一批 | ✅ | Python、Go、Lua、SQL 已交付。 |
-| L4 内容第二批 | ✅ | JavaScript/TypeScript、C、C++、Ruby、PHP 已交付。 |
+| L4 内容第二批 | ✅ | JavaScript/TypeScript、C、C++、Ruby、PHP、Shell 已交付。 |
 | L5 搜索、进度、无障碍、截图 | ⚠️ | MiniSearch、阅读进度和抽屉快捷键已接上。抽屉浅色/深色截图像素检查 100% 灰阶。未跑 Lighthouse。 |
 
 ### 语言
 
-| 语言 | 状态 | 内容 |
-|---|---|---|
-| Python | ✅ | 概览 + 13 章 |
-| JavaScript / TypeScript | ✅ | 概览 + 12 章；第 11–12 章是 `ts` 块 |
-| Go | ✅ | 概览 + 12 章 |
-| Ruby | ✅ | 概览 + 11 章 |
-| SQL | ✅ | 概览 + 11 章 |
-| C | ✅ | 概览 + 11 章 |
-| C++ | ✅ | 概览 + 11 章。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
-| PHP | ✅ | 概览 + 11 章。读不到标准输入，行处理用字符串 |
-| Lua | ✅ | 概览 + 11 章 |
+汉字按去掉 frontmatter 和成对代码围栏之后的正文计，不含标点和代码。下限 2500。
 
-九种语言都有概览和至少 10 章，`SHIPPED_BOOKS` 含全部九本。缺目录时构建才会失败。
+| 语言 | 状态 | 章数 | 汉字（最少–最多，合计） |
+|---|---|---|---|
+| Python | ✅ | 14 | 2795–3787，合计 42578 |
+| JavaScript / TypeScript | ✅ | 13 | 2715–2937，合计 36378。第 11–12 章是 `ts` 块 |
+| Go | ✅ | 12 | 2796–3013，合计 34214 |
+| Ruby | ✅ | 12 | 2803–3149，合计 34859 |
+| SQL | ✅ | 12 | 2734–3136，合计 35239 |
+| C | ✅ | 12 | 2721–3125，合计 33471 |
+| C++ | ✅ | 12 | 2729–3227，合计 34556。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
+| PHP | ✅ | 12 | 2784–3111，合计 35148。读不到标准输入，行处理用字符串 |
+| Lua | ✅ | 12 | 2766–3360，合计 35305 |
+| Shell | ✅ | 12 | 2748–3190，合计 33902。只有 wasi-sh 内建 |
+
+十种语言合计 123 章。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 112 chapters, 629 runnable blocks`。
-- `./build.sh test`：`tests/docs-length.test.ts` 112 项、`tests/docs-unit.test.ts` 6 项、`tests/manifest-refresh.test.mjs` 5 项，合计 123 项全部通过；`check-mono`、各语言 hello-world（含 Lua）、`docs-smoke` 628 个可运行块（另有 1 个 `smoke=skip`）、`tests/learn.spec.mjs` 全部通过。
-- 截图：`learn-drawer-light.png`、`learn-drawer-dark.png`（整页，工具栏可见）、`learn-chapter.png`、`learn-after-run.png`、`learn-code-lines.png`、`learn-run-buttons.png`、`learn-ruby-chapter.png`、`learn-sql-chapter.png`、`learn-lua-chapter.png`、`learn-lua-run.png`。抽屉元素浅色/深色灰阶 100%。Go 的 channel 示例渲染 9 行、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Lua 第一章运行输出包含期望的 `Ada`。
+- `./build.sh build`：vue-tsc 通过，`docs: 123 chapters, 720 runnable blocks`。
+- `./build.sh test`：单元测试合计 135 项通过（含每章篇幅、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 719 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
+- 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
 
@@ -979,6 +983,7 @@ print(f"你好，{name}！")
 - 侧栏按钮在 `refreshStatuses` 填完 `states` 之前就会出现。`ensure` 若发现该语言还没有状态条目，会先补一条再下载，避免第一次选中语言时读到空状态。
 - 代码块行距：Shiki 插在 `.line` 之间的换行由 `collapseShikiLines` 去掉，`.doc-code pre` 使用 `white-space: normal`。空行仍保留空的 `.line`。
 - 文档 Run 与工具栏 Run 都是 `RunButton`（`size="xs"`，空闲文案 `Run`）。下载百分比和退出码在按钮旁边。
+- 围栏上的 `stdin=""` 是空输入而不是「没有声明输入」：运行时送出 EOF，`getline` 和 `io.read` 才能把「没有字节」和「空行」分开。Python 的 `input` 在这一份运行时里要等换行，问候和最后一章的样例写成 `Ada\n`、`林夏\n`。
 
 ---
 
@@ -988,7 +993,7 @@ print(f"你好，{name}！")
 
 ### 16.1 问题
 
-1. 教程抽屉用 `fixed; inset-y-0; right-0; z-40` 挂到 `body`，盖住主编辑区右侧，包括顶部工具栏。Run、`{Language} 101`、JS|TS 切换被挡住，点不到。
+1. 教程抽屉用 `fixed; inset-y-0; right-0; z-40` 挂到 `body`，盖住主编辑区右侧，包括顶部工具栏。Run、`{Language} 快速入门`、JS|TS 切换被挡住，点不到。
 2. 文档代码块比源码多出许多空行。例如 Go 的 `func main` 里面没有空行，页面上语句之间却隔着空行。三种已交付语言都有这个问题。
 3. 文档里的运行按钮和工具栏 Run 不是同一个控件：文档按钮写「运行」、带最小宽度，结束时还会换成对勾或圆点。工具栏 Run 是默认变体、`size="xs"`（即 `h-7`）、Play 图标、英文标签 `Run`。
 4. 三本书每章大约 1000–1600 字，讲解短，示例少，缺少最佳实践和小结。需要把每一章加厚到大约现在的 3–4 倍，仍然是原创中文，可运行块继续通过 docs-smoke。
@@ -1007,9 +1012,9 @@ print(f"你好，{name}！")
 
 ```
 ┌────────────┬───────────────────────────────────────────────────────────┐
-│ SimpleCode │ main.py          [JS|TS] [Python 101] [▶ Run] [⟲]          │  ← 整行可见、可点
+│ SimpleCode │ main.py          [JS|TS] [Python 快速入门] [▶ Run] [⟲]          │  ← 整行可见、可点
 │ Py Python  ├──────────────────────────────────────┬────────────────────┤
-│ Rb Ruby    │                                      │ Python 101      ✕  │
+│ Rb Ruby    │                                      │ Python 快速入门      ✕  │
 │ …          │  编辑器                               │  章节正文          │
 │            │                                      │  ┌──────────────┐  │
 │            ├──────────────────────────────────────┤  │ ▶ Run        │  │  ← 与工具栏同一个按钮
@@ -1123,7 +1128,7 @@ print(f"你好，{name}！")
 
 ### 16.8 验收
 
-- [x] 抽屉打开时，工具栏的 Run、101、JS|TS 完整可见且可点击；浅色和深色截图能同时看到工具栏和抽屉。
+- [x] 抽屉打开时，工具栏的 Run、快速入门、JS|TS 完整可见且可点击；浅色和深色截图能同时看到工具栏和抽屉。
 - [x] 任一代码块的渲染行数等于源码行数，截图里 `func main` 内部不再出现源码没有的空行。Go channel 示例 9 行，相邻行顶距与行高之差为 0。
 - [x] 文档 Run 与工具栏 Run 是同一个组件，并排截图可以看出尺寸、图标和 `Run` 文案一致（高度均为 28px）。
 - [x] 三本书每一章达到 §16.6 的下限；docs-smoke 274 个可运行块通过（1 个 `smoke=skip`）。
@@ -1214,3 +1219,99 @@ Lua：概览；`print`；类型与 `nil`；字符串；控制流；函数与闭�
 - [x] 每个可运行块通过 docs-smoke。`norun` 与 `smoke=skip` 不被执行。
 - [x] `./build.sh build` 与 `./build.sh test` 通过。单色检查仍然通过。
 - [x] §15 把六种语言标成已交付，并附上章节截图与 Lua 运行截图。
+
+---
+
+## 18. 按 The Little Go Book 重写
+
+§16 和 §17 把每章加到了字符下限，但加厚的办法是同一套骨架：目标、三四段说明、若干彼此无关的代码块、常见错误、最佳实践、小结、两道练习。十本书读起来像同一个程序换了关键字。本节先把 Karl Seguin 的 *The Little Go Book*（<https://github.com/karlseguin/the-little-go-book>，`en/go.md`，CC-BY-NC-SA-4.0，`adapt: false`）读完，只借用它的结构与口气，不搬句子，也不搬 Saiyan、Goku 那套例子。正文仍是原创中文。
+
+界面文案同时改掉。「101」不再出现在按钮、抽屉标题、无障碍名称和测试断言里。工具栏按钮是 `{Language} 快速入门`，例如 `Python 快速入门`；没有选中语言时的兜底文案是 `快速入门`。语言 id、`data-testid`、文件名保持不变。
+
+### 18.1 那本书实际在做什么
+
+全书大约八万英文字符，不是词典。前面是作者自己的犹豫：语言值得学，但增量学习常常不划算，所以必须先回答「为什么是 Go」。接着才是安装和工作区。他明确劝你别把 Go 拧成自己习惯的目录，因为后面的包路径就靠这个约定。
+
+六章加上收束，每章是一篇文章，不是词条。第一章先解释编译、静态类型、类 C 语法、垃圾回收各自解决什么，然后才出现第一份能跑的程序：`println` 一行。下一节把同一份程序改成 `fmt` 和 `os.Args`，顺手讲为什么参数个数是 2、为什么函数要带包名、为什么不用的 import 会编译失败。他承认这很烦，然后说明烦的原因是编译速度。变量那一节也是同一条线：先 `var power int` 再赋值，再合成一行，再收成 `:=`，然后故意声明两次，把编译器的 *no new variables* 读给读者听。多返回值和 `_` 出现在你已经需要丢掉一个返回值的时候，不是提前列一张语法表。章末的 *Before You Continue* 按读者的来路说话：动态语言的人会觉得类型是退步，静态语言的人会觉得刚好，两种感觉都成立。
+
+后面的章沿用这个长法。结构体一章用同一个 `Saiyan` 从字段长到方法、指针、组合，并说明 Go 不走继承，组合是取舍不是功能清单。切片一章先承认动态数组用户会不习惯，再解释 `append` 和切片是数组上的窗口。包与接口一章用购物例子把目录、循环依赖、小接口串成一件事。并发一章先给一个必须 `Sleep` 的坏例子，明确说别这么写，再用共享 `counter++` 讲数据竞争，然后才引入 channel。他会说自己仍然用 `sync.Mutex`，channel 不是宗教。结尾称 Go *boring*，并承认声明语法并没有宣传的那么简单。
+
+可以搬进我们书里的，是这些习惯：
+
+- 先讲这个设计在回避什么代价，再给语法。
+- 例子是改出来的。后一个代码块保留前一个的名字和数据，只多一件事。
+- 把容易踩的地方写在概念旁边，并给出你真的会看到的报错或错误结果。不单开一节「常见错误三条」。
+- 承认取舍。某种写法更短，另一种更不容易在三个月后读错。
+- 章末用几段话把这一章改变了什么判断，再留练习。练习有答案，但答案藏在折叠里。
+- 口气是对一个会写程序的人说话，不是课件口吻，不用每章相同的小标题把文章切成表格。
+
+不要搬的：英文原句、角色名字、把安装 Go 工作区写成我们跑不了的步骤。我们的程序在浏览器里一次跑完，没有 `go build`，没有多文件包。讲到这些做不到的事时，用 `norun` 说明原因，不要改编译器去凑教程。
+
+### 18.2 写作标准
+
+每章（含概览）是一篇独立的短文，围着这一门语言里的一个判断来写。判断要具体，例如「Python 的默认参数在定义时就算好，列表会被下次调用继续用」，而不是「本章学习函数」。
+
+篇幅按汉字计。去掉成对的 ` ``` ` 围栏之后，正文里 Unicode Han 字符不少于 2500，写作时瞄准 3000 到 4000。标点、英文标识符和 Markdown 记号不算进这 2500。只把代码加长不算达标。`minutes` 不少于 20。
+
+文章里要有至少三个可运行围栏（info 含 `run` 且不含 `norun`）。它们是同一条叙事上的三次修改：第二个能看出第一个留下的名字或数据，第三个再加一个读者刚刚被提醒过的坑。`smoke=skip` 仍算可运行，但冒烟不执行它。做不到的写法单独用 `norun`，旁边用散文说明跑起来会怎样。
+
+坑写在当时。读者第一次见到 `:=` 和 `=` 的差别时，就给出重复声明的失败，而不是留到章末清单。不要求、也不要再使用每章固定的 `## 常见错误` 与 `## 最佳实践`。这两级标题是上一轮模板的标记。
+
+每章结尾保留两个读者找得到的落点，标题就用这两个，以免目录无法扫描：
+
+- `## 小结`：至少两段，告诉读者这一章之后做选择时该记住什么，并指出下一章要接上的问题。
+- `## 练习`：至少两道。每道先用散文出题，再给 `::: answer`，里面是带 `expect` 的可运行块。答案不要把题面换个说法再抄一遍。
+
+不同章之间不能互相复制。任意两章去掉围栏后，连续 60 个汉字不得相同。这是为了拦住「读完再动手」「差两个字也不要靠改期望」这类盖章句。frontmatter 的 `goals` 仍然要写，渲染器会在文首放目标；正文不必再安一节「本章目标」。
+
+`docs/<语言>/*.md` 是正文来源。不要再用 `scripts/curriculum/books/rich.mjs`、`depth-*.mjs`、`reinforce-*.mjs` 去盖文章。这些脚本按同一骨架填空，正是薄和假的来源。每写完一种语言，就让生成器不再输出该语言；十本都落地后，生成器不再写 `docs/`。手写时可以参考 `sources.yaml` 里 `adapt: true` 的资料组织例子，但句子必须是新的。`little-go-book` 这条来源是 `adapt: false`，只许链接。
+
+已有测试夹具留在原章，重写时不要挪走，否则 `tests/learn.spec.mjs` 会对着错误的章节：
+
+- Python 概览里保留一个不可运行的 `text` 围栏、一个 `python norun`、一个 `print("你好")`，以及 `puts "来自 Ruby 的 42"`。下载进度断言点的是概览里的 Ruby 块。
+- `docs/python/03-strings.md` 的第一个围栏仍是 `name = input("名字？")` 与 `print(f"你好，{name}！")`，stdin 为 Ada，期望 `你好，Ada！`。
+- `docs/python/04-control.md` 里 `while True: pass` 带 `smoke=skip`，并且不是该章第一个围栏。
+- `docs/js/11-typescript.md` 与第 12 章使用 `ts` 围栏。第 11 章第一个 `ts` 块的期望里含有 `买笔`。
+- `docs/go/09-concurrency.md` 里保留含 `make(chan int, 1)` 和 `func main` 的可运行块，行距测试靠它数 `.line`。
+
+### 18.3 各语言写什么
+
+每种语言 12 到 14 章（含概览，即 chapter 0 到 11、12 或 13）。目录按这门语言自己的弯路来排，不按「输出、类型、分支、函数、小项目」统一铺。下面每条是这一章要让读者改掉的判断，不是小标题模板。
+
+**Python**（14 章，借书台记录）。一次运行是一个新进程，所以文件和网络都别假设还在。名字绑的是对象，整数看起来被改了其实是换了一个对象。文本那章把问候夹具放在第一个可运行块，并说明 `input` 会留下什么、为什么期望值要带感叹号。条件章讲 `0`、空串、空列表都为假，死循环放在后面并跳过冒烟。列表章用同一份借阅记录演示改原地和切片复制的差别。字典章用读者姓名当键，讲不可哈希的列表当键会怎样。函数章把默认参数写成空列表，让第二次调用看见第一次留下的书。异常章区分「返回空」和「真的失败」。标准库只写 WASI 里能跑的 `json`、字符串和数学，不写网络。类章让一笔借阅同时带数据和还书行为。迭代器章解释为什么不必先造出全部序号。装饰器章只包一层计次，并说明被包函数的名字会丢。最后一章把借书台收成一次运行能读完的脚本。
+
+**JavaScript / TypeScript**（13 章）。先承认这里没有 DOM，也没有 npm。值那章把 `undefined` 和 `null` 放在同一次打印里，讲为什么两者都表示缺，却不该混用。相等那章用 `==` 把空串和 `0` 比成真，再改成 `===`。控制流讲数字和空串在条件里的强迫转换。函数章从普通函数收到闭包，让内层函数记住外层的计数，并说明 `this` 在这种调用里靠不住。数组章用同一份阅读清单演示 `push` 改原数组、`map` 给新数组。对象章讲属性查找走到原型。`class` 章说明它是写原型的一种语法，不是新的类型系统。错误章用 `try` 接住 `JSON.parse` 的坏输入。迭代章写一个只产生下一次的生成器。Promise 章只写 QuickJS 里能同步排完的微任务，不写浏览器网络。第 11 章起改用 `ts` 围栏，第一个例子仍打印 `买笔`；类型写在值旁边，转译注释那条测试继续成立。最后一章是一份带类型的阅读清单。
+
+**Go**（12 章，Yaegi 单文件）。开篇说明没有 `go build`，入口仍必须是 `package main` 里的 `main`，多文件包和本地 `import` 做不到，标 `norun`。声明章沿着 `var`、零值、`:=`、再次 `:=` 失败来写。结构体章用一份订单从字段长到值接收者和指针接收者，讲清楚复制会丢掉修改。切片和 map 必须 `make`，nil map 写入会失败，这一失败要在文中出现。接口章在同一个文件里写小接口，不用自定义 `error` 的方法集，因为 Yaegi 对这种接口会 panic。错误章用多返回值和 `errors.New`。`defer` 章保持先注册后执行，示例期望仍是 `abc` 这种不靠多余换行的结果。零值章把结构体字段的空串和 0 当成合法起点，而不是 null。组合章用嵌入代替继承。第 9 章保留带缓冲的 `make(chan int, 1)`，用一个能确定结束的发送和接收说明通信，不靠 `time.Sleep` 碰运气。泛型章只写 Yaegi 能跑的类型参数函数，跑不了的标 `norun`。最后一章在一个文件里把订单、错误和切片放在一起。
+
+**Ruby**（12 章）。开篇讲数字也是对象，方法调用可以不写括号，这会在后面咬人。输出章专门处理 `puts 0 ? "yes" : "no"` 被解析成先 `puts` 再三元，可运行例子写成 `puts(0 ? "yes" : "no")`。数字章讲整数除法截断，以及符号和字符串不是一回事。字符串章讲可变和切片：`s[0, 4]` 的第二个数是长度。条件章讲只有 `nil` 和 `false` 为假，`0` 和 `""` 为真。数组章用同一份书单演示 `each` 和 `map`，`puts` 数组会每项一行，想看结构用 `p`。哈希章用符号键。方法与块那章让 `yield` 把周围的变量交进去。类章在一个文件里写实例变量。异常章用 `Integer("no")` 的 `ArgumentError`。枚举章把 `select` 和 `map` 接在同一份数据上。最后是记分，`gets` 要 `chomp`。
+
+**SQL**（12 章，每次都是空的内存库）。开篇说明没有上次运行留下的表，结果要靠 `SELECT` 打出来，期望是单元格子串，列之间是 `|`。字面量章写 `20/6` 得到 3、`1/0` 得到 NULL 而不是报错、双引号是标识符。建表章用同一批书：插入、再查。`WHERE` 章在这批书上过滤。聚合章对 3、1、2 做 `MIN`、`MAX`、`SUM`，期望必须是 `1|3|6`。连接章引入第二张表，而不是换一套无关数据。更新和删除章改的是同一批行，并立刻 `SELECT` 证明。NULL 章说明 `NULL = NULL` 不是真，`COUNT(*)` 与 `COUNT(列)` 不同，空 `SUM` 是 NULL。子查询、排序与 `LIMIT`、事务都接着这批书。最后一章是账本：建表、插入、汇总、回滚，一次脚本里做完。不用 JSON 扩展，不用 `ATTACH` 一个下次还在的文件。
+
+**C**（12 章，`clang -Werror`，单文件）。开篇说明警告会让编译失败，未使用变量不能留着，`main` 返回 `int`。`printf` 章把格式和参数对上，多一个或少一个都是错。类型章讲整数除法和 `"你好"` 的 `strlen` 是 6 个字节。控制流、函数、数组接着同一组测温数字。指针章用这些数字的地址说明 `*` 和 `&`，而不是另起一个无关例子。结构体章把温度和单位放进一个 `struct`。`scanf` 章必须取地址并检查返回值，stdin 由围栏给出，默认会送到 EOF。`malloc` 章分配、使用、`free`，泄漏不在这次运行里表现出来，所以要在文中说明为什么仍然要写 `free`。stdio 章只用能在 WASI 预打开目录里完成的读写。最后把若干行温度数成一个数。没有线程，没有网络。现有三元组 `wasm32-unkown-wasi` 能工作，不要为了教程去改它。
+
+**C++**（12 章，clang 与 libc++，大约 gnu++14）。开篇对照 C：能用 `string` 和 `vector`，但仍是 `-Werror` 的单文件。`cout` 章讲 `<<` 的顺序。引用章强调引用必须在声明时绑上，不能像指针那样先空着。控制流和函数重载用同一份长度数据。`vector` 章让记录变长，`string::substr` 的第二个参数是长度，`size()` 对中文是字节。类章把这些数据收成成员。失败章用返回值或一个状态字段；`throw` 放在 `norun`，因为这份 wasm 上的异常不可靠。模板章写一个比较函数。`<algorithm>` 章不用 `std::sort`：它会把 libc++ 拉进缺少 `__lttf2` 的链接。可运行例子用 `min_element`、`count`、`count_if`、`max_element`。读入一行用 `getline`，输入来自围栏。最后是一份待办，仍然不排序。不写 `<thread>`、`<filesystem>`、`std::optional`。
+
+**PHP**（12 章，`php -q`，文件以 `<?php` 开头）。开篇说明这不是网页 SAPI，没有超全局。`echo` 章讲逗号分隔不会插入空格，换行要自己写。类型章讲 `==` 会把 `"0"` 和 `0` 看成相等，`===` 不会；`20/6` 是浮点，整数除用 `intdiv`。字符串章讲 `strlen` 是字节，拼接用 `.`。数组章把数组写成有序映射，缺键用 `??`，`echo` 一个数组会得到 `Array`，`implode` 的分隔符在前。控制流讲 `0`、`""`、`"0"`、`[]`、`null` 为假。函数和类都在一个文件里，字段用普通的私有属性，不用构造器提升。异常章用 `Exception`，这在当前运行时里能跑。标准输入章把 `fgets(STDIN)` 标 `norun`：常量 `STDIN` 未定义，`php://stdin` 和 `php://fd/0` 打不开，`php://input` 读不到 WASI 的标准输入。可运行例子改为 `rtrim` 一个已经放在字符串里的行。内置函数章只用字符串和数组。最后一章是一次命令式的小统计，仍然不读 stdin。
+
+**Lua**（12 章，5.4，单文件）。开篇说明表是唯一的结构，没有类这门语法。`print` 多个参数之间是制表符，要连成一个词先用 `..`。类型章讲只有 `nil` 和 `false` 为假，`0` 和 `""` 为真。字符串章讲 `#` 和 `string.sub` 的结束下标是包含的，`"你好"` 的长度是 6。控制流、函数与闭包接着同一张待办。表从 1 开始数，`#` 遇到中间的洞不可靠，这要在例子里发生一次。元表章只做 `__index`，让缺的键落到另一张表。`pcall` 章接住一次故意的错误，并说明成功时多出来的返回值。模块章不 `require` 另一文件，把函数放进一张本地表；`norun` 只用于那个不存在的文件。标准库只用 `string`、`math`、`table`。不调用 `os.execute`、`io.popen`、`os.tmpname`。最后一章用 `io.read("*l")` 读一行待办，stdin 由围栏提供。
+
+**Shell**（12 章，wasi-sh，只有内建）。这是新书，目录 `docs/shell`，运行时 id `shell`，围栏语言用 `sh`。按钮文案是 `Shell 快速入门`。开篇说明 preview1 没有 `fork`，所以这不是 bash：外部命令退出码 127，stderr 是 `external commands are not available`。能写进可运行块的只有 `echo`（含 `-n`）、`printf`（`%s` `%d` `%%`、`\n` `\t`）、`read`、`cat`、`true` / `false` / `:`、`exit`、`test` 与 `[ ]`、赋值、`$VAR` 与 `${VAR}`、`$?` `$#` `$$` `$0`–`$9`、单引号与双引号、`if` / `while` / `for`、`;` 与换行、`&&` 与 `||`、内建之间的管道、`<` `>` `>>`。写不成的标 `norun`：`cd`、`$(…)`、`$((…))`、函数、`source`、通配、here-doc、后台 `&`、子 shell、外部程序。引号章用同一变量演示单引号不展开、双引号展开。`test` 章把退出码当成数据，而不是只看成报错。`if` 章接这个退出码。短路章说明 `&&` 左边失败就不会执行右边。`while` 章用一个会变成假的条件，循环次数远小于 100000。`for` 章遍历词，不写算术扩展。管道章是 `echo` 接到 `cat`。重定向章写到文件再 `cat` 回来，路径放在这次运行能看见的目录里。`read` 章的 stdin 来自围栏。参数章只打印 `$#` 和 `$0`，因为运行参数就是脚本自己，不要假设抽屉会传入 `$1`。最后一章是一份只用内建的检查清单：变量、判断、循环、管道、重定向各用一次。`sources.yaml` 增加一条指向本仓库 `scripts/builders/shell/wasi-sh.c` 的说明，许可证 MIT，`adapt: true` 只表示可以按实现来写例子，不表示把 C 源码贴进课文。
+
+### 18.4 实现顺序
+
+1. 只提交本节，并先把计划正文里的「101」改成「快速入门」。此时按钮代码仍是旧文案。
+2. 改 `LearnButton.vue`、`src/stores/docs.ts` 和 `tests/learn.spec.mjs` 的可见文案。内部 id 不动。Shell 要出现在 `RuntimeId`、`BOOKS`、`BOOK_LABEL` 里，这样侧栏选中 Shell 时按钮不会消失；在 `docs/shell` 写完之前不放进 `SHIPPED_BOOKS`，抽屉显示即将推出。
+3. 按 Python、JavaScript、Go、Ruby、SQL、C、C++、PHP、Lua、Shell 的顺序重写。一种语言一次提交：替换 `docs/<book>/*.md`，更新 `tests/docs-length.test.ts` 的计量方式，跑该运行时的 docs-smoke。不要在同一次提交里改下一种语言。
+4. 长度测试改为：十个目录里每一章汉字散文不少于 2500，有 `## 小结` 与 `## 练习`，至少两个 `::: answer`，至少三个可运行围栏，`minutes` 不少于 20。去掉 3 倍基线表，也去掉对 `常见错误` 和 `最佳实践` 的强制标题。另加一条：任意两章不共享连续 60 个汉字。
+5. Shell 成书时把它加入 `SHIPPED_BOOKS` 和 `tests/docs-smoke.mjs`。`resolveRuntime("sh")` 指向 `shell`。单元测试里「`bash` 没有运行时」改为 `sh` 能解析；真正未知的语言仍应失败。
+6. 全部完成后更新 §15：十种语言、各章汉字数、docs-smoke 块数、`./build.sh build` 与 `./build.sh test`。截图要能看出工具栏按钮写着「快速入门」，并打开 Go 的一长章、另外两种语言的一长章，以及 Shell 的一章。
+
+### 18.5 验收
+
+- [x] 工具栏与抽屉标题是 `{Language} 快速入门`，测试不再寻找 `101`。
+- [x] 十本书各有 12 到 14 章，每章汉字散文不少于 2500，且不是同一套骨架盖出来的。
+- [x] 每个可运行块通过对应运行时的 docs-smoke。`norun` 与 `smoke=skip` 不执行。
+- [x] `./build.sh build` 与 `./build.sh test` 通过。
+- [x] §15 写明各语言章数和汉字数，并附上按钮、Go、另外两种语言、Shell 的截图。
+

@@ -145,9 +145,10 @@ try {
   await page.waitForSelector('[data-testid="lang-python"]');
   await openLearn(page);
   const title = await page.textContent('[data-testid="docs-title"]');
-  check(title?.includes("Python 101"), `drawer title ${title}`);
+  check(title?.includes("Python 快速入门"), `drawer title ${title}`);
   await assertToolbarClear(page);
   await saveShot(page, "learn-drawer-light.png");
+  await saveShot(page, "learn-toolbar.png");
   const lightDrawer = "/tmp/learn-drawer-light-element.png";
   await page.locator('[data-testid="docs-drawer"]').screenshot({ path: lightDrawer });
   const lightRatio = monoRatio(lightDrawer);
@@ -183,7 +184,7 @@ try {
   await page.click('[data-testid="lang-ruby"]');
   await openLearn(page);
   const rubyTitle = await page.textContent('[data-testid="docs-title"]');
-  check(rubyTitle?.includes("Ruby 101") && !(await page.$('[data-testid="docs-soon"]')), `ruby book opens ${rubyTitle}`);
+  check(rubyTitle?.includes("Ruby 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `ruby book opens ${rubyTitle}`);
   await page.click('[data-testid="chapter-link"][data-chapter="1"]');
   await page.waitForSelector('[data-testid="docs-chapter"]');
   await saveShot(page, "learn-ruby-chapter.png", page.locator('[data-testid="docs-drawer"]'));
@@ -191,7 +192,7 @@ try {
   await page.click('[data-testid="lang-sqlite"]');
   await openLearn(page);
   const sqlTitle = await page.textContent('[data-testid="docs-title"]');
-  check(sqlTitle?.includes("SQL 101") && !(await page.$('[data-testid="docs-soon"]')), `sql book opens ${sqlTitle}`);
+  check(sqlTitle?.includes("SQL 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `sql book opens ${sqlTitle}`);
   await page.click('[data-testid="chapter-link"][data-chapter="1"]');
   await page.waitForSelector('[data-testid="docs-chapter"]');
   await saveShot(page, "learn-sql-chapter.png", page.locator('[data-testid="docs-drawer"]'));
@@ -199,22 +200,22 @@ try {
   await page.click('[data-testid="lang-clang"]');
   await openLearn(page);
   const cTitle = await page.textContent('[data-testid="docs-title"]');
-  check(cTitle?.includes("C 101") && !cTitle?.includes("C++") && !(await page.$('[data-testid="docs-soon"]')), `c book opens ${cTitle}`);
+  check(cTitle?.includes("C 快速入门") && !cTitle?.includes("C++") && !(await page.$('[data-testid="docs-soon"]')), `c book opens ${cTitle}`);
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-clangpp"]');
   await openLearn(page);
   const cppTitle = await page.textContent('[data-testid="docs-title"]');
-  check(cppTitle?.includes("C++ 101") && !(await page.$('[data-testid="docs-soon"]')), `cpp book opens ${cppTitle}`);
+  check(cppTitle?.includes("C++ 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `cpp book opens ${cppTitle}`);
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-php-cgi"]');
   await openLearn(page);
   const phpTitle = await page.textContent('[data-testid="docs-title"]');
-  check(phpTitle?.includes("PHP 101") && !(await page.$('[data-testid="docs-soon"]')), `php book opens ${phpTitle}`);
+  check(phpTitle?.includes("PHP 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `php book opens ${phpTitle}`);
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-lua"]');
   await openLearn(page);
   const luaTitle = await page.textContent('[data-testid="docs-title"]');
-  check(luaTitle?.includes("Lua 101") && !(await page.$('[data-testid="docs-soon"]')), `lua book opens ${luaTitle}`);
+  check(luaTitle?.includes("Lua 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `lua book opens ${luaTitle}`);
   await page.click('[data-testid="chapter-link"][data-chapter="1"]');
   await page.waitForSelector('[data-testid="docs-chapter"]');
   await saveShot(page, "learn-lua-chapter.png", page.locator('[data-testid="docs-drawer"]'));
@@ -260,7 +261,11 @@ try {
   await page.click('[data-testid="lang-quickjs"]');
   await page.waitForSelector('[data-testid="lang-quickjs"][data-status="ready"]', { timeout: 180_000 });
   await showToc(page);
-  check((await page.textContent('[data-testid="docs-title"]'))?.includes("JavaScript 101"), "javascript book label");
+  check((await page.textContent('[data-testid="docs-title"]'))?.includes("JavaScript 快速入门"), "javascript book label");
+  await page.click('[data-testid="chapter-link"][data-chapter="4"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-js-chapter.png");
+  await showToc(page);
   await page.click('[data-testid="chapter-link"][data-chapter="11"]');
   await page.waitForSelector('[data-lang="ts"] [data-testid="doc-run"]');
   const ts = page.locator('[data-lang="ts"]').first();
@@ -276,6 +281,22 @@ try {
   );
 
   await page.click('[data-testid="docs-close"]');
+  await page.click('[data-testid="lang-shell"]');
+  await openLearn(page);
+  const shellTitle = await page.textContent('[data-testid="docs-title"]');
+  check(shellTitle?.includes("Shell 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `shell book opens ${shellTitle}`);
+  await page.click('[data-testid="chapter-link"][data-chapter="1"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-shell-chapter.png");
+  const shellBlock = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"][data-runnable="1"]').first();
+  const shellExpect = await shellBlock.getAttribute("data-expect");
+  await shellBlock.locator('[data-testid="doc-run"]').click();
+  await waitForBlock(page, shellBlock);
+  const shellOut = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
+  check(shellOut.includes(shellExpect), `shell chapter run ${shellExpect}`);
+  await saveShot(page, "learn-shell-run.png");
+  await page.click('[data-testid="docs-close"]');
+
   await page.click('[data-testid="lang-go"]');
   await page.waitForSelector('[data-testid="lang-go"][data-status="ready"]', { timeout: 180_000 });
   await showToc(page);
@@ -301,6 +322,7 @@ try {
     return { height, worst };
   });
   check(renderedLines === sourceLines && gap.worst <= 1, `code lines rendered=${renderedLines} source=${sourceLines} gap=${gap.worst.toFixed(2)}`);
+  await saveShot(page, "learn-go-chapter.png");
   await goBlock.scrollIntoViewIfNeeded();
   await saveShot(page, "learn-code-lines.png", goBlock);
   const buttons = await page.evaluate(() => {

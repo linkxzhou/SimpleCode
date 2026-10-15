@@ -170,3 +170,9 @@ norvig-ten:
   url: https://norvig.com/21-days.html
   license: All-rights-reserved
   adapt: false
+
+wasi-sh:
+  title: wasi-sh
+  url: https://github.com/linkxzhou/SimpleCode/blob/main/scripts/builders/shell/wasi-sh.c
+  license: MIT
+  adapt: true

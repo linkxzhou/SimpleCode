@@ -117,7 +117,7 @@ export function useRunFromDoc() {
     const keep = opts.keepDrawerOpen ?? !mobile;
     if (!keep) docs.close();
 
-    const useStdin = opts.useStdin !== false && !!opts.stdin;
+    const useStdin = opts.useStdin !== false && typeof opts.stdin === "string";
     await run.run({
       stdin: useStdin ? opts.stdin : undefined,
       stdinEOF: opts.stdinEOF !== false,

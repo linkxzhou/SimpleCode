@@ -108,8 +108,8 @@ export class RunSession {
     try {
     const p = host.start();
     const preset = interactive ? this.opts.stdin : undefined;
-    if (preset != null && preset !== "") {
-      const eof = this.opts.stdinEOF !== false;
+    const eof = this.opts.stdinEOF !== false;
+    if (preset) {
       void (async () => {
         try {
           await host.pushStdin(preset);
@@ -118,8 +118,9 @@ export class RunSession {
           /* killed before stdin was accepted */
         }
       })();
-    } else if (!interactive || this.lang.autoEOF) {
-      // compile steps never read stdin; sqlite would otherwise wait for input
+    } else if (!interactive || this.lang.autoEOF || (preset === "" && eof)) {
+      // compile steps never read stdin; sqlite would otherwise wait for input.
+      // An explicit empty preset is finished input: deliver EOF so getline / read return.
       void host.pushEOF();
     }
       const result = await p;
