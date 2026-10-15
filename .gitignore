@@ -18,8 +18,9 @@ dist-ssr/
 wasm/*
 !wasm/manifest.json
 
-# third-party source (clone separately, see README)
+# third-party source and toolchain caches (clone / vendor separately, see README)
 thirdparty/runno/
+thirdparty/cache/
 
 # tests / artifacts
 tests/screenshots/

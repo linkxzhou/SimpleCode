@@ -54,4 +54,40 @@ echo "Hello, $name!\\n";
 $squares = array_map(fn($n) => $n * $n, range(1, 5));
 echo implode(", ", $squares) . "\\n";
 `,
+  lua: `io.write("What's your name? ")
+io.flush()
+local name = io.read("*l") or ""
+print(string.format("Hello, %s!", name))
+
+local squares = {}
+for n = 1, 5 do
+  squares[#squares + 1] = tostring(n * n)
+end
+print(table.concat(squares, ", "))
+
+local ok, err = pcall(function() error("boom") end)
+print(ok and "pcall missed the error" or ("pcall caught: " .. tostring(err)))
+`,
+  go: `package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+func main() {
+	fmt.Print("What's your name? ")
+	in := bufio.NewReader(os.Stdin)
+	name, _ := in.ReadString('\\n')
+	fmt.Printf("Hello, %s!\\n", strings.TrimSpace(name))
+
+	squares := make([]int, 0, 5)
+	for n := 1; n <= 5; n++ {
+		squares = append(squares, n*n)
+	}
+	fmt.Println(squares)
+}
+`,
 };

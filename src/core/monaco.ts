@@ -8,6 +8,8 @@ import "monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution"
 import "monaco-editor/esm/vs/basic-languages/sql/sql.contribution";
 import "monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution";
 import "monaco-editor/esm/vs/basic-languages/php/php.contribution";
+import "monaco-editor/esm/vs/basic-languages/lua/lua.contribution";
+import "monaco-editor/esm/vs/basic-languages/go/go.contribution";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 
 (self as unknown as { MonacoEnvironment: monaco.Environment }).MonacoEnvironment = {

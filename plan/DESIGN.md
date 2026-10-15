@@ -11,14 +11,14 @@
 1. 一个纯浏览器端的多语言代码运行器，界面类似 Runno embed：上方代码编辑器、Run 按钮、下方黑色终端输出。
 2. 与 Runno 的差异：**无顶栏**；**左侧为可折叠语言侧栏**（展开 240px / 折叠 56px 图标栏）；右侧主区 = 上编辑器 / 下终端（可拖拽分割）。
 3. 所有语言 wasm 统一放在本地 `wasm/` 目录（构建后由同源静态服务提供），点击语言才**首次下载**，显示进度；下载后缓存（Cache API），再次进入秒开。
-4. 支持语言：`python`、`ruby`、`quickjs`、`sqlite`、`clang`(C)、`clangpp`(C++)、`php-cgi`。
+4. 支持语言：`python`、`ruby`、`quickjs`、`sqlite`、`clang`(C)、`clangpp`(C++)、`php-cgi`、`lua`、`go`。
 5. 支持交互式 stdin（终端输入、Ctrl+D 发送 EOF）、Stop 终止。
 6. 技术栈：Vue 3 + TypeScript + Vite + Tailwind CSS + shadcn-vue，简洁极简风格，支持深色/浅色。
 
 ### 1.2 非目标
 - 不提供服务端执行、包管理（pip/gem/npm 安装）、网络访问；不支持的库在运行时自然报错即可。
 - 不做多文件项目/文件树（v1 仅单文件 `/program`；保留扩展点）。
-- 不重新编译各语言 wasm（直接复用 Runno 仓库 `langs/` 中现成二进制）。
+- Python / Ruby / QuickJS / SQLite / C / C++ / PHP 直接复用 Runno 仓库 `langs/` 中的二进制。Lua 与 Go 由 `scripts/builders/` 按锁定版本从源码构建（仍是 WASI preview1 命令，运行时零适配）。
 - 不追求 IE/旧浏览器；需要支持 `SharedArrayBuffer` 的现代浏览器。
 - 不做账号、分享链接（可作为后续里程碑）。
 
@@ -60,7 +60,7 @@ thirdparty/runno/
 ### 2.2 关键模块
 
 **`packages/runtime/lib/types.ts`**
-- `Runtime = "python"|"quickjs"|"sqlite"|"clang"|"clangpp"|"ruby"|"php-cgi"` —— 与本项目语言列表完全一致。
+- `Runtime = "python"|"quickjs"|"sqlite"|"clang"|"clangpp"|"ruby"|"php-cgi"` —— 这是 Runno 当时的列表。SimpleCode 在此之外增加了 `lua` 与 `go`（同样是 WASI 命令，见 §19 / plan/LANGUAGES.md §8）。
 - `RunResult = CompleteResult | CrashResult | TerminatedResult | TimeoutResult`；`CompleteResult` 含 `stdout/stderr/tty/fs/exitCode`。
 
 **`packages/runtime/lib/commands.ts`**（语言 → 命令映射，本项目 manifest 的直接来源）
@@ -481,7 +481,7 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 `Button`（variants: default / ghost / outline / secondary / ghost-destructive(灰阶)；sizes: default / sm / **xs** / icon）、`Tooltip`、`Progress`（前景色填充）、`Resizable`（SplitterGroup/Panel/Handle）、`Badge`。图标：`lucide-vue-next`（Play、Square、RotateCcw、ChevronsLeft/Right、ChevronUp/Down、Download、Check、Loader2、AlertCircle、Trash2、Eraser、Sun/Moon/SunMoon）。
 
 ### 11.6 组件状态
-**LanguageIcon（语言图标）**：28×28 圆角方块，内为等宽字母缩写（Py / Rb / JS / SQL / C / C++ / PHP），作为语言“图标”，展开与折叠侧栏通用。
+**LanguageIcon（语言图标）**：28×28 圆角方块，内为等宽字母缩写（Py / Rb / JS / SQL / C / C++ / PHP / Lua / Go），作为语言“图标”，展开与折叠侧栏通用。
 | 状态 | 视觉 |
 |---|---|
 | idle（未下载） | 虚线边框 + 灰色字 |
@@ -507,7 +507,7 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 
 ## 12. 编辑器（Monaco）
 - **Monaco Editor**（`monaco-editor@0.52.2`，固定版本），**完全本地打包，不使用 CDN / `@monaco-editor/loader`**（COEP `require-corp` 下跨源脚本会被拦截）。
-  - 入口 `src/core/monaco.ts`：`import * as monaco from "monaco-editor/esm/vs/editor/editor.api"` + `editor.all`（查找、折叠等编辑器功能）+ 按需引入 `basic-languages/{python,ruby,javascript,sql,cpp,php}/*.contribution`（Monarch 高亮，`cpp` 同时注册 `c`）。
+  - 入口 `src/core/monaco.ts`：`import * as monaco from "monaco-editor/esm/vs/editor/editor.api"` + `editor.all`（查找、折叠等编辑器功能）+ 按需引入 `basic-languages/{python,ruby,javascript,sql,cpp,php,lua,go}/*.contribution`（Monarch 高亮，`cpp` 同时注册 `c`）。
   - Worker：仅需基础 `editor.worker`，通过 Vite `import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker"` 打包为同源资产，在 `self.MonacoEnvironment.getWorker` 中返回；不引入 ts/json/css/html 语言服务 worker（体积大且无需）。同源 Worker 在 COOP/COEP 下可正常加载。
   - codicon 字体由 Vite 作为同源资产打包（`dist/assets/codicon-*.ttf`）。
   - 每种语言一个 `ITextModel`（切换语言 `setModel` 保留撤销栈），`onDidChangeContent` 写回 localStorage；`automaticLayout: true` 适配分割条拖拽；关闭 minimap。
@@ -530,8 +530,8 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 ---
 
 ## 14. 风险与发现
-1. **体积**：语言二进制总计约 122 MB（未压缩）：python 24.6、ruby 24.5、php 13.1、quickjs 4.0、sqlite 3.6、C/C++ 共享 52.5 MB。必须按需下载 + 缓存 + 服务端 brotli/gzip。单个文件 >25 MB（clang 31 MB）超过 Cloudflare Pages 单文件 25 MiB 限制 ⚠️，部署平台需注意；放入 git 建议 Git LFS 或不入库（脚本生成）。
-2. **许可证**：runno 为 MIT。二进制各有许可：CPython（PSF）、Ruby（Ruby License/BSD-2）、PHP（PHP License 3.01）、VMware WLR 构建脚本（Apache-2.0）、wasmedge-quickjs（Apache-2.0；QuickJS 本体 MIT）、SQLite（Public Domain）、binji wasm-clang / LLVM 8（Apache-2.0 with LLVM exception；旧版 LLVM 8 部分为 UIUC License ⚠️）、wasi-libc/libc++（MIT/Apache）。需在 `LICENSES/` 汇总并在 UI「关于」中列出。⚠️ 需逐一核对来源。
+1. **体积**：语言二进制总计约 **152 MB**（未压缩，2026-10-15 manifest）：python 24.6、ruby 24.5、php 13.1、quickjs 4.0、sqlite 3.6、C/C++ 共享 52.5、Lua 0.7、Go（Yaegi）35.0 MB。必须按需下载 + 缓存 + 服务端 brotli/gzip。clang.wasm（29.8 MB）与 `yaegi-0.16.1.wasm`（35.0 MB）超过 Cloudflare Pages 单文件 25 MiB 限制 ⚠️，部署平台需注意；wasm 不入库，由 `./build.sh vendor` 生成。
+2. **许可证**：runno 为 MIT。二进制各有许可：CPython（PSF）、Ruby（Ruby License/BSD-2）、PHP（PHP License 3.01）、VMware WLR 构建脚本（Apache-2.0）、wasmedge-quickjs（Apache-2.0；QuickJS 本体 MIT）、SQLite（Public Domain）、binji wasm-clang / LLVM 8（Apache-2.0 with LLVM exception）、wasi-libc/libc++（MIT/Apache）、**Lua 5.4.9（MIT）**、**Yaegi（Apache-2.0）+ Go 标准库（BSD-3-Clause）**、wasi-sdk（Apache-2.0 with LLVM exceptions）。汇总见 `LICENSES/THIRD_PARTY.md`。
 3. **头要求**：COOP/COEP 是硬依赖；会影响嵌入第三方 iframe/资源、OAuth 弹窗等；GitHub Pages 需 coi-serviceworker。
 4. **php-cgi** 输出可能带 CGI 响应头 ⚠️，需实测，必要时加 `-q`。
 5. **sqlite** 会读 stdin，可能看起来“卡住” ⚠️。
@@ -561,7 +561,7 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 5. 程序需要输入时，直接在下方终端键入并回车；`Ctrl + D` 表示输入结束（EOF）；`Ctrl + C` 或 **Stop** 终止程序。
 6. 拖动编辑器与终端之间的分割条调整高度；点击左侧侧栏顶部的 `«`（或 `Ctrl/⌘ + B`）向左折叠为图标栏，再点 `»` 展开。编辑器与运行终端位于右侧。
 7. 侧栏底部可查看缓存占用、清除缓存、切换深浅色主题。
-8. 限制：所有代码在浏览器内运行，没有网络与第三方包（如 numpy、gem、npm 包），导入不存在的库会报错；C++ 编译器为 LLVM 8（C++17 子集）。需使用最新版 Chrome/Edge/Firefox/Safari 桌面版。
+8. 限制：所有代码在浏览器内运行，没有网络与第三方包（如 numpy、gem、npm 包、Go module），导入不存在的库会报错；C++ 编译器为 LLVM 8（C++17 子集）。Lua 需要支持标准 Wasm 异常处理的浏览器（`pcall` 才可用）。Go 由 Yaegi 解释，仅标准库，且 `time.Sleep` 在当前 WASI 宿主上不会返回。需使用最新版 Chrome/Edge/Firefox/Safari 桌面版。
 
 ---
 
@@ -582,16 +582,16 @@ npm test                # vitest；npm run test:e2e → playwright
 ```
 
 ### 17.3 vendor-wasm.mjs 行为
-1. 读取 `scripts/languages.config.mjs`（语言定义：命令参数、引用的源文件名，内容移植自 runno `commands.ts`）。
-2. 从 `thirdparty/runno/langs/` 复制所需文件到 `wasm/`（`--link` 选项用符号链接，节省空间）。
+1. 读取 `scripts/languages.config.mjs`（语言定义与 asset 文件名；Runno 语言移植自 `commands.ts`，`build` 字段指向 `scripts/builders/<name>/build.sh`）。
+2. 无 `build` 的 asset 从 `thirdparty/runno/langs/` 复制到 `wasm/`（`--link` 用符号链接）。`build: "lua"` / `build: "go"` 调用对应脚本：按 `scripts/sources.lock.json` 下载工具链（校验 sha256）、编译、并核对产物 sha256。产物已匹配则跳过重编译。
 3. 校验文件头：wasm 魔数 `\0asm`、gzip 魔数 `1f8b`（防止 Git LFS 指针文件）。
 4. 计算 size + sha256，写 `wasm/manifest.json`。
-5. 可选 `--source <url>`：从上游 `https://raw.githubusercontent.com/taybenlor/runno/main/langs/<file>` 下载（⚠️ 大文件是否走 LFS 需确认）。
+5. Lua/Go 构建需要 Linux x86_64。工具链缓存在 `thirdparty/cache/`（gitignore）。
 
 ### 17.4 添加一门新语言
 1. 准备 WASI preview1（`wasi_snapshot_preview1`）兼容的 `.wasm`；若需要标准库/资源文件，打包成 ustar `.tar.gz`（路径即运行时绝对路径）。
-2. 放入 `thirdparty/runno/langs/` 或任意目录，在 `scripts/languages.config.mjs` 中添加条目：`id/label/short/syntax/fileName/run{binaryName,args,env,baseFS}`，如需编译加 `prepare[]`（每步非零退出即中止）。
-3. `npm run vendor:wasm` 重新生成 manifest。
+2. 放入 `thirdparty/runno/langs/`，或为需要自行构建的运行时在 `scripts/builders/<name>/` 写脚本并在 asset 上标 `build`（版本与 sha256 写入 `scripts/sources.lock.json`）。在 `scripts/languages.config.mjs` 中添加条目：`id/label/short/syntax/fileName/run{binaryName,args,env,baseFS}`，如需编译加 `prepare[]`（每步非零退出即中止）。
+3. `./build.sh vendor` 重新生成 manifest。
 4. 在 `src/samples/` 添加示例代码；在 `src/core/monaco.ts` 引入对应 `monaco-editor/esm/vs/basic-languages/<lang>/<lang>.contribution`，manifest 中 `syntax` 填 Monaco 语言 id。
 5. 添加 E2E hello world 用例；在 `LICENSES/` 补充许可证。
 注意：@runno/wasi 不支持 WASIX 线程/socket（WASIX 提供者另有接口，v1 不用），依赖这些系统调用的二进制会 crash。
@@ -618,7 +618,8 @@ npm test                # vitest；npm run test:e2e → playwright
 - `@runno/wasi` 使用 npm 0.10.0（与克隆源码 0.10.3 的 WASIWorkerHost API 一致）。
 - **sqlite** 增加 `-batch`（去掉 banner 与 `sqlite>` 提示），并 autoEOF；**php-cgi** 增加 `-q`（实测去掉 `X-Powered-By`/`Content-type` 头）。
 - `.tar.gz` 资产在 `vite preview`（sirv）下可能被以 `Content-Encoding: gzip` 透明解压，因此仅对 wasm 校验字节大小；`extractTarGz` 对已解压数据自动回退。
-- 冒烟测试 `tests/smoke.mjs`（Playwright）：7 种语言 hello world 全部通过，Python / C 含 stdin 交互。
+- 冒烟测试 `tests/smoke.mjs`（Playwright）：语言 hello world；Python / C / Lua / Go 含 stdin。Lua 用例同时断言 `pcall` 捕获 `error`。
+- v0.5（2026-10-15）：新增 **Lua 5.4.9**（wasi-sdk 33，setjmp → 标准 Wasm 异常处理，`pcall` 可用，0.7 MB）与 **Go**（Yaegi 0.16.1 / Go 1.22.12 wasip1，35.0 MB）。`./build.sh vendor` 按 `scripts/sources.lock.json` 构建二者。Go 的 `time.Sleep` 在 `@runno/wasi` `poll_oneoff` 上不返回。许可证见 `LICENSES/THIRD_PARTY.md`。详见 plan/LANGUAGES.md §8。
 - v0.2（2026-10-15）：全应用黑白单色（Monaco 除外）；折叠侧栏仅显示语言图标；折叠/展开按钮移至侧栏底部；Run 按钮改为 xs（h-7）；终端默认 ~28% 高度并可折叠为标题栏。
 - v0.3（2026-10-15）：字体本地打包（`@fontsource/inter`、`@fontsource/jetbrains-mono`，latin 子集）；新增 `@font-face "SimpleCode CJK"`（`local()` 系统 CJK 字体 + `size-adjust: 120%`），使 CJK 字形正好占 xterm 两个单元格（`|abcdefghij|` 与 `|一二三四五|` 等宽）；xterm 在字体加载后重新测量。stderr 改为非粗体暗灰（`38;5;247`），且只对完整行着色——未以换行结束的 stderr 片段（如 CPython 在 TTY 下写到 stderr 的 `input()` 提示）40ms 内无后续则按普通文本输出。
 - v0.4（2026-10-15）：侧栏底改为 `--background`（浅色纯白、深色近黑，无强调色）。标题由 “Languages” 改为品牌名 “SimpleCode”。展开态为圆角等高语言行 + 对齐的缓存/主题/折叠页脚；折叠态底部为居中的纯图标按钮（清除缓存、主题、展开）与右侧 Tooltip。

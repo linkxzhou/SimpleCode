@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// Copy language binaries from thirdparty/runno/langs into wasm/ and generate wasm/manifest.json
+// Copy Runno language binaries into wasm/ and build Lua/Go, then write wasm/manifest.json.
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync, statSync, symlinkSync, rmSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { assets, languages } from "./languages.config.mjs";
 
@@ -14,35 +15,45 @@ const useLink = args.includes("--link");
 const out = join(root, "wasm");
 mkdirSync(out, { recursive: true });
 
+function fail(message) {
+  console.error(`✗ ${message}`);
+  process.exit(1);
+}
+
+function buildAsset(builder, dest) {
+  const script = join(root, "scripts/builders", builder, "build.sh");
+  if (!existsSync(script)) fail(`missing builder ${script}`);
+  const result = spawnSync("bash", [script, dest], { stdio: "inherit" });
+  if (result.status !== 0) process.exit(result.status ?? 1);
+}
+
 const manifestAssets = {};
-for (const [id, file] of Object.entries(assets)) {
-  const from = join(src, file);
-  if (!existsSync(from)) {
-    console.error(`✗ missing ${from}`);
-    process.exit(1);
+for (const [id, spec] of Object.entries(assets)) {
+  const to = join(out, spec.file);
+  if (spec.build) buildAsset(spec.build, to);
+  else {
+    const from = join(src, spec.file);
+    if (!existsSync(from)) fail(`missing ${from}`);
+    rmSync(to, { force: true });
+    if (useLink) symlinkSync(from, to);
+    else copyFileSync(from, to);
   }
-  const buf = readFileSync(from);
-  const isWasm = file.endsWith(".wasm");
+  if (!existsSync(to)) fail(`missing ${to}`);
+  const buf = readFileSync(to);
+  const isWasm = spec.file.endsWith(".wasm");
   const magicOk = isWasm
     ? buf.subarray(0, 4).equals(Buffer.from([0, 0x61, 0x73, 0x6d]))
     : buf[0] === 0x1f && buf[1] === 0x8b;
-  if (!magicOk) {
-    console.error(`✗ ${file}: bad magic header (Git LFS pointer?)`);
-    process.exit(1);
-  }
-  const to = join(out, file);
-  rmSync(to, { force: true });
-  if (useLink) symlinkSync(from, to);
-  else copyFileSync(from, to);
+  if (!magicOk) fail(`${spec.file}: bad magic header (Git LFS pointer?)`);
   const sha256 = createHash("sha256").update(buf).digest("hex");
-  manifestAssets[id] = { file, size: statSync(from).size, sha256, kind: isWasm ? "wasm" : "fs" };
-  console.log(`✓ ${file.padEnd(24)} ${(buf.length / 1048576).toFixed(1).padStart(6)} MB  ${sha256.slice(0, 12)}`);
+  manifestAssets[id] = { file: spec.file, size: buf.length, sha256, kind: isWasm ? "wasm" : "fs" };
+  console.log(`✓ ${spec.file.padEnd(24)} ${(buf.length / 1048576).toFixed(1).padStart(6)} MB  ${sha256.slice(0, 12)}`);
 }
 
 const manifest = {
   version: 1,
   generatedAt: new Date().toISOString(),
-  source: "thirdparty/runno/langs",
+  source: "thirdparty/runno/langs + scripts/builders",
   assets: manifestAssets,
   languages,
 };

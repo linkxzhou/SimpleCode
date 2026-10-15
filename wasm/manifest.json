@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-15T02:45:56.743Z",
-  "source": "thirdparty/runno/langs",
+  "generatedAt": "2026-10-15T04:48:16.228Z",
+  "source": "thirdparty/runno/langs + scripts/builders",
   "assets": {
     "python-wasm": {
       "file": "python-3.11.3.wasm",
@@ -62,6 +62,18 @@
       "size": 1790862,
       "sha256": "7ed12063619882e4dfa710ab371fc91848b256f85a4075747e8bd5c167902b50",
       "kind": "fs"
+    },
+    "lua-wasm": {
+      "file": "lua-5.4.9.wasm",
+      "size": 720144,
+      "sha256": "06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb",
+      "kind": "wasm"
+    },
+    "go-wasm": {
+      "file": "yaegi-0.16.1.wasm",
+      "size": 36736740,
+      "sha256": "570999c368119300b76785385555683355fb1a474819f30c603675070ee9db7d",
+      "kind": "wasm"
     }
   },
   "languages": [
@@ -269,6 +281,40 @@
         "binaryName": "php",
         "args": [
           "-q",
+          "{entry}"
+        ]
+      }
+    },
+    {
+      "id": "lua",
+      "label": "Lua",
+      "short": "Lua",
+      "version": "5.4.9",
+      "syntax": "lua",
+      "fileName": "main.lua",
+      "license": "MIT",
+      "homepage": "https://www.lua.org/",
+      "run": {
+        "asset": "lua-wasm",
+        "binaryName": "lua",
+        "args": [
+          "{entry}"
+        ]
+      }
+    },
+    {
+      "id": "go",
+      "label": "Go",
+      "short": "Go",
+      "version": "Yaegi 0.16.1",
+      "syntax": "go",
+      "fileName": "main.go",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/traefik/yaegi",
+      "run": {
+        "asset": "go-wasm",
+        "binaryName": "yaegi",
+        "args": [
           "{entry}"
         ]
       }

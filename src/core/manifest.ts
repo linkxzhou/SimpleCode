@@ -26,6 +26,8 @@ export interface LanguageSpec {
   version?: string;
   syntax: string;
   fileName: string;
+  license?: string;
+  homepage?: string;
   prepare?: CommandSpec[];
   run: CommandSpec;
   autoEOF?: boolean;
