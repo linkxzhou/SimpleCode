@@ -7,10 +7,10 @@ const BASE: Record<string, number> = {
 };
 
 /** Books still on the §17 absolute floors. */
-const ABSOLUTE = ["ruby", "sqlite", "c", "cpp", "php", "lua"];
+const ABSOLUTE = ["sqlite", "c", "cpp", "php", "lua"];
 
 /** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. */
-const ESSAY = ["python", "js", "go"];
+const ESSAY = ["python", "js", "go", "ruby"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
