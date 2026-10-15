@@ -8,6 +8,8 @@ export interface InputHandler {
   onInterrupt: () => void;
 }
 
+export const MONO_STACK = '"JetBrains Mono", "SimpleCode CJK", ui-monospace, SFMono-Regular, Menlo, monospace';
+
 const ANSI_RE = /\x1b\[[0-9;]*m/;
 
 function charWidth(ch: string) {
@@ -23,7 +25,7 @@ class TerminalController {
   term = new Terminal({
     convertEol: true,
     cursorBlink: false,
-    fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontFamily: MONO_STACK,
     fontSize: 13,
     lineHeight: 1.4,
     scrollback: 5000,
@@ -70,6 +72,18 @@ class TerminalController {
     if (!this.opened) {
       this.term.open(el);
       this.opened = true;
+      // xterm measures cell size at open time; re-measure once the bundled fonts are ready
+      void Promise.all([
+        document.fonts.load('13px "JetBrains Mono"'),
+        document.fonts.load('700 13px "JetBrains Mono"'),
+        document.fonts.load('13px "SimpleCode CJK"', "中"),
+      ])
+        .catch(() => {})
+        .then(() => {
+          this.term.options.fontFamily = "monospace";
+          this.term.options.fontFamily = MONO_STACK;
+          this.resize();
+        });
     } else if (this.term.element && this.term.element.parentElement !== el) {
       el.appendChild(this.term.element);
     }
@@ -85,12 +99,33 @@ class TerminalController {
   }
 
   write(text: string) {
+    if (this.errPending && text !== this.errPending) this.flushStderr();
     this.transcript += text;
     this.term.write(text);
   }
 
+  /**
+   * stderr is shown in a dimmer grey, but only for complete lines.
+   * A trailing partial line (e.g. CPython's input() prompt, which goes to stderr on a TTY)
+   * is held briefly; if nothing completes it, it is written as normal text.
+   */
+  private errPending = "";
+  private errTimer?: ReturnType<typeof setTimeout>;
   stderr(text: string) {
-    this.write(ANSI_RE.test(text) ? text : `\x1b[1;37m${text}\x1b[0m`);
+    clearTimeout(this.errTimer);
+    const data = this.errPending + text;
+    const nl = data.lastIndexOf("\n");
+    const full = nl >= 0 ? data.slice(0, nl + 1) : "";
+    this.errPending = "";
+    if (full) this.write(ANSI_RE.test(full) ? full : `\x1b[38;5;247m${full}\x1b[39m`);
+    this.errPending = nl >= 0 ? data.slice(nl + 1) : data;
+    if (this.errPending) this.errTimer = setTimeout(() => this.flushStderr(), 40);
+  }
+
+  flushStderr() {
+    clearTimeout(this.errTimer);
+    if (this.errPending) this.write(this.errPending);
+    this.errPending = "";
   }
 
   system(msg: string, color = "2") {
@@ -116,6 +151,7 @@ class TerminalController {
   private onData(data: string) {
     const h = this.handler;
     if (!h) return;
+    this.flushStderr();
     if (data.startsWith("\x1b")) return; // ignore arrows / escape sequences
     for (const ch of data) {
       switch (ch) {

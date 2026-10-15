@@ -91,7 +91,7 @@ export class RunSession {
       args: [cmd.binaryName, ...fill(cmd.args)],
       env: cmd.env ?? {},
       fs,
-      isTTY: interactive,
+      isTTY: interactive && cmd.tty !== false,
       stdout: (t) => this.cb.stdout(t),
       stderr: (t) => this.cb.stderr(t),
     });

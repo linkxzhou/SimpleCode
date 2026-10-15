@@ -2,7 +2,13 @@
 
 纯浏览器内运行代码：Python · Ruby · QuickJS · SQLite · C · C++ · PHP（WebAssembly / WASI，基于 [Runno](https://github.com/taybenlor/runno) 的 `@runno/wasi`）。
 
+## 快速开始
+
+语言运行时（`.wasm` / `.tar.gz`，约 120 MB）**不随仓库提交**，需从 Runno 仓库获取后 vendor 到 `wasm/`（仓库中只保留 `wasm/manifest.json`）：
+
 ```bash
+git clone https://github.com/linkxzhou/SimpleCode && cd SimpleCode
+git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提供 langs/*.wasm
 ./build.sh install   # yarn install
 ./build.sh vendor    # thirdparty/runno/langs → wasm/ + manifest.json
 ./build.sh dev       # http://localhost:5173

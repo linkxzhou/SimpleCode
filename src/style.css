@@ -1,3 +1,19 @@
+/*
+ * CJK fallback for the terminal/editor monospace stack.
+ * xterm gives each CJK char 2 cells (= 2 × 0.6em with JetBrains Mono = 1.2em),
+ * while CJK system fonts have a 1em advance, which looked like extra spacing.
+ * size-adjust: 120% makes CJK glyphs exactly fill two cells. Uses local() system
+ * fonts only (no network), so it works under COOP/COEP.
+ */
+@font-face {
+  font-family: "SimpleCode CJK";
+  src: local("PingFang SC"), local("PingFangSC-Regular"), local("Hiragino Sans GB"), local("HiraginoSansGB-W3"),
+    local("Microsoft YaHei"), local("Noto Sans CJK SC"), local("NotoSansCJKsc-Regular"), local("Noto Sans SC"),
+    local("Source Han Sans SC"), local("WenQuanYi Micro Hei");
+  unicode-range: U+1100-11FF, U+2E80-9FFF, U+AC00-D7AF, U+F900-FAFF, U+FE30-FE4F, U+FF00-FFEF, U+20000-2FA1F;
+  size-adjust: 120%;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

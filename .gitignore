@@ -1,15 +1,54 @@
+# dependencies
 node_modules/
-dist/
-.vite/
-.yarn/*
-!.yarn/releases
 .pnp.*
-*.log
-.DS_Store
-# vendored language binaries (regenerate with ./build.sh vendor)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# build output
+dist/
+dist-ssr/
+.vite/
+*.tsbuildinfo
+
+# vendored language binaries — regenerate with ./build.sh vendor (manifest is tracked)
 wasm/*
 !wasm/manifest.json
-tests/*.png
-# local clone of upstream: git clone https://github.com/taybenlor/runno thirdparty/runno
+
+# third-party source (clone separately, see README)
 thirdparty/runno/
+
+# tests / artifacts
 tests/screenshots/
+tests/*.png
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+coverage/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# env / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

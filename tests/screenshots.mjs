@@ -23,7 +23,7 @@ for (const scheme of ["light", "dark"]) {
   await page.click('[data-testid="lang-quickjs"]'); // show a cached language too
   await page.waitForSelector('[data-testid="lang-quickjs"][data-status="ready"]');
   await page.click('[data-testid="lang-python"]');
-  await page.evaluate(() => globalThis.__simplecodeEditor.setValue('name = input("Name? ")\nprint(f"Hello, {name}!")\nprint([n * n for n in range(1, 6)])\n'));
+  await page.evaluate(() => globalThis.__simplecodeEditor.setValue('import sys\nname = input("Name? ")\nprint(f"Hello, {name}!")\nprint("你好，世界！中文输出对齐测试：一二三四五")\nprint("|abcdefghij|")\nprint("|一二三四五|")\nprint([n * n for n in range(1, 6)])\nprint("这是一条 stderr 消息 (warning)", file=sys.stderr)\n'));
   if (scheme === "light") {
     await shoot(page, "1-sidebar-expanded.png");
     await page.click('[data-testid="sidebar-toggle"]');

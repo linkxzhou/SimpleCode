@@ -27,7 +27,7 @@ function modelFor(id: string, syntax: string) {
 onMounted(() => {
   editor = monaco.editor.create(el.value!, {
     automaticLayout: true,
-    fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
+    fontFamily: '"JetBrains Mono", "SimpleCode CJK", ui-monospace, SFMono-Regular, Menlo, monospace',
     fontSize: 14,
     lineHeight: 22,
     minimap: { enabled: false },

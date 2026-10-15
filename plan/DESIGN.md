@@ -618,3 +618,4 @@ npm test                # vitest；npm run test:e2e → playwright
 - `.tar.gz` 资产在 `vite preview`（sirv）下可能被以 `Content-Encoding: gzip` 透明解压，因此仅对 wasm 校验字节大小；`extractTarGz` 对已解压数据自动回退。
 - 冒烟测试 `tests/smoke.mjs`（Playwright）：7 种语言 hello world 全部通过，Python / C 含 stdin 交互。
 - v0.2（2026-10-15）：全应用黑白单色（Monaco 除外）；折叠侧栏仅显示语言图标；折叠/展开按钮移至侧栏底部；Run 按钮改为 xs（h-7）；终端默认 ~28% 高度并可折叠为标题栏。
+- v0.3（2026-10-15）：字体本地打包（`@fontsource/inter`、`@fontsource/jetbrains-mono`，latin 子集）；新增 `@font-face "SimpleCode CJK"`（`local()` 系统 CJK 字体 + `size-adjust: 120%`），使 CJK 字形正好占 xterm 两个单元格（`|abcdefghij|` 与 `|一二三四五|` 等宽）；xterm 在字体加载后重新测量。stderr 改为非粗体暗灰（`38;5;247`），且只对完整行着色——未以换行结束的 stderr 片段（如 CPython 在 TTY 下写到 stderr 的 `input()` 提示）40ms 内无后续则按普通文本输出。

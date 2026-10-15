@@ -15,6 +15,8 @@ export interface CommandSpec {
   args?: string[];
   env?: Record<string, string>;
   baseFS?: string;
+  /** run with isTTY (default true for the run step) */
+  tty?: boolean;
 }
 
 export interface LanguageSpec {

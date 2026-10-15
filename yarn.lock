@@ -267,6 +267,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fontsource/inter@npm:^5":
+  version: 5.3.0
+  resolution: "@fontsource/inter@npm:5.3.0"
+  checksum: 10c0/568601c10c83601c23005f8cd7434499df6e007eaa22c4dabbb1dcae327cc8e4a148ece8d4a4edaa8bafc5d2371ea97a37d1cc91ffbed77a43e2d8c15a6e831b
+  languageName: node
+  linkType: hard
+
+"@fontsource/jetbrains-mono@npm:^5":
+  version: 5.3.0
+  resolution: "@fontsource/jetbrains-mono@npm:5.3.0"
+  checksum: 10c0/1351b2350e893f5da39559ed90ff0e5e60bcc876b1f40531ad081ad4bf2f3cda3fa9e8940364aef5a7430ae3140685c9cd4819c36d8ad62bcd3fa37e3cc66b1d
+  languageName: node
+  linkType: hard
+
 "@internationalized/date@npm:^3.5.0":
   version: 3.12.4
   resolution: "@internationalized/date@npm:3.12.4"
@@ -1914,6 +1928,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "simplecode@workspace:."
   dependencies:
+    "@fontsource/inter": "npm:^5"
+    "@fontsource/jetbrains-mono": "npm:^5"
     "@obsidize/tar-browserify": "npm:^3.0.0"
     "@runno/wasi": "npm:^0.10.0"
     "@types/node": "npm:^22.10.0"
