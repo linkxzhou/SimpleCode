@@ -6,6 +6,7 @@ import { pages as ruby } from "./books/ruby.mjs";
 import { pages as sqlite } from "./books/sqlite.mjs";
 import { pages as c } from "./books/c.mjs";
 import { pages as cpp } from "./books/cpp.mjs";
+import { pages as php } from "./books/php.mjs";
 
 const root = new URL("../..", import.meta.url).pathname;
 writeBook(root, "python", python);
@@ -15,4 +16,5 @@ writeBook(root, "ruby", ruby);
 writeBook(root, "sqlite", sqlite);
 writeBook(root, "c", c);
 writeBook(root, "cpp", cpp);
-console.log(`wrote python ${python.length}, js ${js.length}, go ${go.length}, ruby ${ruby.length}, sqlite ${sqlite.length}, c ${c.length}, cpp ${cpp.length}`);
+writeBook(root, "php", php);
+console.log(`wrote python ${python.length}, js ${js.length}, go ${go.length}, ruby ${ruby.length}, sqlite ${sqlite.length}, c ${c.length}, cpp ${cpp.length}, php ${php.length}`);

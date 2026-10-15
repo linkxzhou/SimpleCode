@@ -202,9 +202,14 @@ try {
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-php-cgi"]');
   await openLearn(page);
+  const phpTitle = await page.textContent('[data-testid="docs-title"]');
+  check(phpTitle?.includes("PHP 101") && !(await page.$('[data-testid="docs-soon"]')), `php book opens ${phpTitle}`);
+  await page.click('[data-testid="docs-close"]');
+  await page.click('[data-testid="lang-lua"]');
+  await openLearn(page);
   await page.waitForSelector('[data-testid="docs-soon"]');
   const soon = await page.textContent('[data-testid="docs-title"]');
-  check(soon?.includes("PHP 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "php coming soon");
+  check(soon?.includes("Lua 101") && (await page.textContent('[data-testid="docs-soon"]'))?.includes("即将推出"), "lua coming soon");
   await page.click('[data-testid="docs-close"]');
 
   await page.click('[data-testid="lang-python"]');
