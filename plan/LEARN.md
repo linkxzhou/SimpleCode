@@ -3,6 +3,12 @@
 > 状态：设计稿，仅规划，不含实现。日期 2026-10-15，基于 main@ed4082b（已含 Lua 5.4.9、Go/Yaegi）。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
+
+## 目录
+1. 目标与非目标 · 2. UI 草图 · 3. 架构 · 4. 组件设计 · 5. 样式规范（摘要，详见 §13）· 6. 文档目录与 frontmatter · 7. 各语言课程 · 8. 实现要点 · 9. 写作规范 · 10. 参考资料 · 11. 里程碑 · 12. 风险
+- **§13 [文档 UI 黑白主题规范](#13-文档-ui-黑白主题规范)** —— 需求（4）：文档 UI 与主界面一致、纯黑白（token、配色表、排版、Shiki 单色主题、组件、状态、ASCII）
+- **§14 [代码块运行按钮设计](#14-代码块运行按钮设计)** —— 需求（5）：每个代码块的「复制 / 运行」按钮，复制到主编辑器并运行（状态、行为、边界、时序图、API、语法、无障碍、测试）
+
 ---
 
 ## 1. 目标与非目标
@@ -12,7 +18,7 @@
 2. 每种语言一本“小书”：**概览 + ≥10 章**，难度递进：入门（beginner）→ 进阶（intermediate）→ 高级（advanced）。
 3. 文档为 Markdown，存放在 `docs/<language>/`（一语言一目录），随应用打包、离线可读（无网络依赖，符合 COEP）。
 4. 文档 UI 完全遵循应用的黑白单色主题（shadcn-vue + Tailwind tokens）。
-5. 文档中**每个代码块都有 Run 按钮**：点击 → 把代码写入主编辑器（必要时切换语言、触发运行时下载）→ 自动运行；另有 Copy 按钮。
+5. 文档中**每个代码块都有 Run 按钮**：点击 → 把代码写入主编辑器（必要时切换语言、触发运行时下载）→ 自动运行；另有 Copy 按钮。**详细设计见 §14 代码块运行按钮设计。**
 6. 覆盖语言：python、ruby、js/ts（QuickJS；TS 先转译）、sqlite、c（clang）、c++（clangpp）、php（php-cgi）、lua、go（Yaegi）。
 7. 每个可运行代码块都被自动化测试实际运行验证（smoke），确保教程示例在我们的运行时里可运行。
 
@@ -86,6 +92,7 @@
 ```
 
 ### 2.4 代码块 Run 状态
+> 完整状态与行为见 §14.2–§14.4。
 ```
 │ python               [⧉ 已复制][◌ Running…] │   运行中：Run 变为 loading，主工具栏同步
 │ python   需要下载 Ruby 23 MB  [▶ 下载并运行] │   跨语言且未缓存：按钮文字提示下载
@@ -163,6 +170,7 @@ flowchart LR
 - **搜索（可选，M4）**：构建期为每语言生成轻量倒排索引（标题 + 小节标题 + 正文前 N 字），用 MiniSearch（MIT，~7KB gzip ⚠️）在抽屉内搜索。
 
 ### 3.3 从文档运行的时序
+> 精确版本（含停止确认、TS 转译、备份撤销、expect 比对）见 §14.5；API 契约见 §14.6。
 ```mermaid
 sequenceDiagram
   actor U as 用户
@@ -217,6 +225,7 @@ sequenceDiagram
 ---
 
 ## 5. 样式规范（单色）
+> 本节为摘要；**完整规范（实际 token 值、明暗配色表、排版、Shiki 主题、组件与状态）见 §13。**
 - 完全使用现有 tokens（`--background/--foreground/--muted/--border/--accent/--primary`），**无任何彩色**；深/浅色同 DESIGN §11。
 - 抽屉：`bg-background border-l border-border`，宽 `min(560px,45vw)`，标题栏 h-10，内容 `px-5 py-4`。
 - 排版（`prose` 自定义，不用 @tailwindcss/typography 默认色）：正文 14px/1.7；h1 20px semibold；h2 16px semibold + 上间距 24px；h3 14px semibold；列表 `pl-5`；链接 `underline underline-offset-2`；引用块 `border-l-2 border-foreground/30 pl-3 text-muted-foreground`；表格 1px 边框、表头 `bg-muted`；行内代码 `bg-muted px-1 rounded font-mono text-[13px]`。
@@ -533,3 +542,386 @@ little-go-book: { title: The Little Go Book, url: https://github.com/karlseguin/
 5. **体积**：预渲染 HTML + 索引随语言数线性增长（估计每本 200–400 KB，按章懒加载可接受）。
 6. **覆盖用户代码**：Run 文档示例会替换编辑器内容 → 必须有备份与恢复。
 7. **与并行开发冲突**：实现阶段需改 EditorToolbar/AppShell/runStore（其他 PR 也在改）→ 实现前 rebase，并以新增组件为主、最小化对既有文件的修改。
+
+---
+
+## 13. 文档 UI 黑白主题规范
+
+> 对应需求（4）：文档 UI 与主界面主题**完全一致**，纯黑白灰。本节所有取值均来自现有代码：`src/style.css`（CSS 变量，HSL 三元组，饱和度全部为 0）、`tailwind.config.js`（颜色映射 `hsl(var(--x))`、字体栈）、`src/main.ts`（本地打包字体）、`src/components/ui/button`（尺寸 variants）。文档组件**不得新增任何颜色变量**，只能组合以下 token 与其透明度（如 `foreground/60`）。
+
+### 13.1 铁律：文档中不使用任何强调色
+- 禁止 `text-red-*`/`blue-*`/`green-*`/`yellow-*`… 等任何带色相的 Tailwind 类，禁止十六进制彩色、禁止 Shiki/Monaco 默认彩色主题、禁止 emoji 作为状态指示（正文 emoji 可保留但不承担语义）。
+- 状态差异只用：**明度**（foreground / muted-foreground / 透明度）、**字重**（400/500/600）、**形状**（实心●/空心○/✓/虚线边框）、**动画**（pulse/spin）。
+- 校验：CI 增加 `scripts/check-mono.mjs`：扫描 `src/components/docs/**` 与 Shiki 主题 JSON，若出现饱和度 > 0 的颜色值或彩色 Tailwind 类则失败。
+- 唯一允许“有色”的区域仍只有主编辑器 Monaco（不在抽屉内）。
+
+### 13.2 复用的设计 token（实际值）
+| CSS 变量（`src/style.css`） | Light（`:root`） | Dark（`.dark`） | Tailwind 类 |
+|---|---|---|---|
+| `--background` | `0 0% 100%`（#FFFFFF） | `0 0% 4%`（#0A0A0A） | `bg-background` |
+| `--foreground` | `0 0% 4%`（#0A0A0A） | `0 0% 98%`（#FAFAFA） | `text-foreground` |
+| `--muted` | `0 0% 97%`（#F7F7F7） | `0 0% 7%`（#121212） | `bg-muted` |
+| `--muted-foreground` | `0 0% 45%`（#737373） | `0 0% 64%`（#A3A3A3） | `text-muted-foreground` |
+| `--accent` | `0 0% 92%`（#EBEBEB） | `0 0% 15%`（#262626） | `bg-accent` |
+| `--secondary` | `0 0% 96%` | `0 0% 15%` | `bg-secondary` |
+| `--primary` / `--primary-foreground` | `0 0% 9%` / `0 0% 98%` | `0 0% 98%` / `0 0% 9%` | `bg-primary text-primary-foreground` |
+| `--border` / `--input` | `0 0% 89%`（#E3E3E3） | `0 0% 15%`（#262626） | `border-border` |
+| `--ring` | `0 0% 9%` | `0 0% 83%` | `ring-ring` |
+| `--popover` | `0 0% 100%` | `0 0% 4%` | `bg-popover`（Tooltip/菜单） |
+| `--terminal-bg` | `#0a0a0a` | `#000000` | `bg-terminal`（仅终端，不用于文档） |
+| `--radius` | `0.5rem` | 同 | `rounded-lg`=8px / `rounded-md`=6px / `rounded-sm`=4px |
+（`--success/--warning/--destructive` 在本应用中也是灰阶，但文档组件不使用它们，避免语义混淆。）
+
+### 13.3 文档元素配色表
+| 元素 | Light | Dark | 实现 |
+|---|---|---|---|
+| 抽屉背景 | `--background` #FFF | `--background` #0A0A0A | `bg-background` |
+| 抽屉左边框 / 分隔线 | `--border` #E3E3E3 | `--border` #262626 | `border-l border-border` |
+| 抽屉标题栏 | 背景 `--background`，下边框 `--border` | 同 | `h-10 border-b` |
+| 正文文字 | `--foreground` | `--foreground` | `text-foreground` |
+| 次要文字（元信息、时长、页脚） | `--muted-foreground` #737373 | #A3A3A3 | `text-muted-foreground` |
+| 标题 h1/h2/h3 | `--foreground`，600 | 同 | `font-semibold` |
+| 链接 | `--foreground` + 下划线；hover 下划线加粗、`foreground/80` | 同 | `underline underline-offset-2 decoration-foreground/40 hover:decoration-foreground` |
+| 行内代码 | 背景 `--muted`，文字 `--foreground`，1px `--border` | 背景 `--accent` #262626 | `rounded-sm bg-muted px-1 py-px font-mono text-[13px] border` |
+| 代码块背景 | `--muted` #F7F7F7 | `--muted` #121212 | `bg-muted` |
+| 代码块边框 / 头部分隔 | `--border` | `--border` | `border rounded-md`，头部 `border-b` |
+| 代码块语言标签 | `--muted-foreground` | 同 | `text-[11px] font-mono uppercase tracking-wider` |
+| 表格边框 | `--border` | `--border` | `border-collapse border` |
+| 表头 | 背景 `--muted`，600 | 背景 `--muted` | `bg-muted font-semibold` |
+| 表格斑马纹 | 偶数行 `muted/50` | 同 | `even:bg-muted/50` |
+| 引用块 blockquote | 左边框 2px `foreground/30`，文字 `--muted-foreground` | 同 | `border-l-2 border-foreground/30 pl-3` |
+| 提示框 tip/note/warning | 1px `--border`、背景 `--background`、左侧 lucide 图标（Lightbulb/Info/AlertTriangle）`foreground`；warning 用**2px 实线边框**区分，不用颜色 | 同 | `rounded-md border p-3`（warning：`border-2 border-foreground/60`） |
+| 列表标记 | `--muted-foreground` | 同 | `marker:text-muted-foreground` |
+| 有序列表数字 | `--muted-foreground`，tabular-nums | 同 | — |
+| 分隔线 hr | 1px `--border` | 同 | `border-t my-6` |
+| 章节列表：hover | `--accent` | `--accent` | `hover:bg-accent` |
+| 章节列表：当前章 | `--accent` 背景 + 500 字重 + 左侧 2px `--foreground` 竖条 | 同 | `bg-accent font-medium border-l-2 border-foreground` |
+| 章节状态符号 | 已读 ✓（foreground）/ 当前 ●（foreground）/ 未读 ○（muted-foreground） | 同 | lucide Check / Circle(fill) / Circle |
+| 分组标题（入门/进阶/高级） | `--muted-foreground`，11px uppercase | 同 | 与侧栏 “LANGUAGES” 标题一致 |
+| 滚动条 thumb / track | thumb `foreground/20`（hover `/35`），track 透明，宽 8px，圆角 4px | thumb `foreground/25` | ScrollArea 的 `ScrollAreaThumb` 类：`bg-foreground/20 rounded-full` |
+| 选区 | `foreground/15` | `foreground/25` | `selection:bg-foreground/15` |
+| 搜索命中高亮 | 文字加粗 + 下划线（不用黄色 mark） | 同 | `mark { background: transparent; font-weight:600; text-decoration: underline }` |
+
+### 13.4 字体与排版（实际已打包字体）
+- 已打包：`@fontsource/inter` latin 400/500/600、`@fontsource/jetbrains-mono` latin 400（`src/main.ts`；实现时需追加 `latin-700.css` 供代码关键字加粗，约 +20KB）；CJK 使用系统字体：UI 文本走 `tailwind.config.js` 的 `sans` 栈（`Inter, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif`），代码走 `mono` 栈（`"JetBrains Mono", "SimpleCode CJK", ui-monospace, SFMono-Regular, Menlo, monospace`，其中 `SimpleCode CJK` 为 `local()` 系统字体 + `size-adjust:120%`）。
+- 文档字号阶梯（px / 行高 / 字重）：
+| 用途 | 字号 | 行高 | 字重 | 其它 |
+|---|---|---|---|---|
+| 抽屉标题（Python 101） | 14 | 20 | 600 | — |
+| 章节 h1 | 20 | 28 | 600 | `tracking-tight`，下方元信息 12px muted |
+| h2 | 16 | 24 | 600 | 上间距 28，下 8 |
+| h3 | 14 | 20 | 600 | 上间距 20，下 6 |
+| 正文 p / li | 14 | 24（1.7） | 400 | 段间距 12 |
+| 小字（元信息、表格注） | 12 | 16 | 400 | muted |
+| 行内代码 | 13 | — | 400 | mono |
+| 代码块 | 13 | 21（1.6） | 400 | mono；粗体关键字 700（需追加打包 JetBrains Mono 700） |
+| 章节列表项 | 13 | 20 | 400 / 当前 500 | — |
+| 分组标题 | 11 | 16 | 500 | uppercase、`tracking-wider` |
+
+### 13.5 间距与尺寸
+- 4px 网格。抽屉宽默认 `min(560px, 45vw)`，拖拽范围 400–760px；标题栏 `h-10 px-3`（与编辑器工具栏同高 40px）；内容区 `px-5 py-4`；正文最大行宽 68ch。
+- 代码块：外边距 `my-4`，头部 `h-8 pl-3 pr-1`，代码区 `px-3 py-2.5`；按钮间距 `gap-1`。
+- 章节列表项 `h-9 px-3`（与侧栏条目节奏一致）；分组标题 `px-3 pt-4 pb-1`。
+- 圆角：代码块/提示框 `rounded-md`(6px)，行内代码 `rounded-sm`(4px)，按钮沿用 Button（`rounded-md`）。
+
+### 13.6 单色 Shiki 主题 `simplecode-mono-{light,dark}`
+| Scope（TextMate） | Light | Dark | 字形 |
+|---|---|---|---|
+| 默认文本 `editor.foreground` | #0A0A0A | #FAFAFA | 400 |
+| `keyword`, `storage`, `keyword.control` | #0A0A0A | #FAFAFA | **700** |
+| `entity.name.function`, `support.function` | #0A0A0A | #FAFAFA | 500（下划线不用） |
+| `entity.name.type`, `support.type`, `entity.name.class` | #262626 | #E5E5E5 | 600 |
+| `string`, `string.template` | #525252 | #C4C4C4 | 400 |
+| `constant.numeric`, `constant.language` | #404040 | #D4D4D4 | 400 |
+| `comment` | #737373（= muted-foreground） | #A3A3A3 | *italic* |
+| `punctuation`, `meta.brace` | #737373 | #8A8A8A | 400 |
+| `variable.parameter` | #0A0A0A | #FAFAFA | *italic* |
+| `invalid` | #0A0A0A | #FAFAFA | 下划线 wavy |
+| 背景 `editor.background` | 透明（由代码块 `bg-muted` 提供） | 透明 | — |
+- 主题 JSON 中所有颜色均为灰阶（R=G=B），`check-mono.mjs` 校验。
+- 构建期生成 light/dark 两套 class（Shiki dual themes：`themes: { light, dark }`，输出 CSS 变量，随 `<html class="dark">` 切换），无需运行时重新高亮。
+
+### 13.7 使用的 shadcn-vue 组件（新增 `npx shadcn-vue add` 的标注 *新增*）
+| 组件 | 用途 | 关键类 |
+|---|---|---|
+| **Sheet**（*新增*，reka-ui Dialog） | 抽屉：桌面 `side="right"` 非模态（`:modal="false"`、无遮罩），移动 `side="bottom"` 模态 | `SheetContent class="w-[min(560px,45vw)] p-0 border-l"` |
+| **ScrollArea**（*新增*） | 章节列表 / 正文滚动，统一灰阶滚动条 | thumb `bg-foreground/20` |
+| **Button**（已有） | 复制/运行（`size="xs"`=h-7）、关闭/返回（`size="icon"` 收紧为 h-7 w-7）、上一章/下一章（`variant="outline" size="xs"`） | 见 §14 |
+| **Tooltip**（已有） | 图标按钮说明、语言下载提示 | `bg-primary text-primary-foreground text-xs` |
+| **Separator**（*新增*） | 分组间分隔、页脚分隔 | `bg-border` |
+| **Input**（*新增*） | 书内搜索 | `h-8 text-sm border-input focus-visible:ring-1 ring-ring` |
+| **Collapsible**（*新增*） | 练习“参考答案”、代码块“期望输出 / stdin 样例” | 触发器 `text-xs underline` |
+| **Badge**（已有） | 章节级别（入门/进阶/高级）、时长 | 单色描边 |
+| **Sonner / Toast**（*新增*） | “已替换编辑器内容 [撤销]” | `bg-primary text-primary-foreground`（反色，单色） |
+| **Kbd**（自建，已在 Tooltip 中使用 `<kbd>`） | 快捷键提示 | `font-mono text-[10px] opacity-70` |
+
+### 13.8 交互状态（所有文档可交互元素）
+| 状态 | 规则 |
+|---|---|
+| hover | 背景 `bg-accent`；文字不变；链接下划线变实 |
+| focus-visible | `ring-2 ring-ring ring-offset-1 ring-offset-background`（与 Button 一致），列表项为 `ring-inset` |
+| active / pressed | 背景 `bg-accent` + `translate-y-px`（按钮）；主按钮 `bg-primary/90` |
+| selected（当前章） | `bg-accent font-medium border-l-2 border-foreground` |
+| disabled | `opacity-50 pointer-events-none`，Tooltip 说明原因 |
+| loading | lucide `Loader2 animate-spin`；文字改为进行时 |
+| reduced motion | `motion-reduce:animate-none`，Sheet 动画关闭 |
+
+### 13.9 ASCII：抽屉与渲染后的章节（浅色 / 深色）
+浅色（白底、灰边、黑字）：
+```
+┌────────────────────────────────────────────┐  bg #FFFFFF  border-l #E3E3E3
+│ ← 目录   Python 101              [⌕] [×]   │  h-10, 14px/600, 下边框 #E3E3E3
+├────────────────────────────────────────────┤
+│ 03 字符串与输入输出                         │  h1 20px/600 #0A0A0A
+│ 入门 · 约 10 分钟                           │  12px #737373  [入门] Badge 描边
+│                                            │
+│ 本章目标                                    │  h2 16px/600
+│  • 掌握 f-string 格式化                     │  marker #737373
+│  • 用 input() 读取输入                      │
+│                                            │
+│ 用 `input()` 读取一行文本……                 │  行内代码 bg #F7F7F7 + 1px #E3E3E3
+│ ┌────────────────────────────────────────┐ │  代码块 bg #F7F7F7 border #E3E3E3
+│ │ PYTHON                [复制] [运行 ▷]  │ │  头部 h-8，标签 11px #737373
+│ ├────────────────────────────────────────┤ │
+│ │ name = input("名字？")                 │ │  关键字/函数黑 700，字符串 #525252
+│ │ print(f"你好，{name}！")  # 输出问候    │ │  注释 #737373 斜体
+│ └────────────────────────────────────────┘ │
+│ ▎ 提示：input() 总是返回字符串。            │  blockquote 左边 2px foreground/30
+│ ────────────────────────────────────────── │  hr #E3E3E3
+│ [‹ 02 变量与类型]        [04 列表与元组 ›]  │  outline xs 按钮
+└────────────────────────────────────────────┘
+```
+深色（近黑底、深灰边、白字）：
+```
+┌────────────────────────────────────────────┐  bg #0A0A0A  border-l #262626
+│ ← 目录   Python 101              [⌕] [×]   │  文字 #FAFAFA
+├────────────────────────────────────────────┤
+│ 03 字符串与输入输出                         │  #FAFAFA
+│ 入门 · 约 10 分钟                           │  #A3A3A3
+│ ┌────────────────────────────────────────┐ │  代码块 bg #121212 border #262626
+│ │ PYTHON                [复制] [运行 ▷]  │ │  [运行 ▷] = 反色：白底黑字
+│ │ name = input("名字？")                 │ │  字符串 #C4C4C4，注释 #A3A3A3 斜体
+│ └────────────────────────────────────────┘ │
+└────────────────────────────────────────────┘
+```
+章节列表（浅色）：
+```
+│ 入门                                       │  11px uppercase #737373
+│ ✓ 01 你好，Python                    5 分 │
+│ ✓ 02 变量与类型                      8 分 │
+│▌● 03 字符串与输入输出               10 分 │  bg #EBEBEB + 2px 黑竖条 + 500
+│ ○ 04 列表与元组                     12 分 │  ○ 为 #737373
+```
+
+---
+
+## 14. 代码块运行按钮设计
+
+> 对应需求（5）：文档中**每个代码块**都有运行按钮；点击后把代码复制到**当前主界面编辑器**并运行。本节定义外观、状态、精确行为、边界情况、API 契约、语法、无障碍与测试。现有可复用 API（main@b6a1c07 实际代码）：`useLanguageStore().select(id)` / `.ensure(id): Promise<boolean>` / `.states[id].status`（`idle|cached|downloading|ready|error`，含 `loaded/total`）；`useEditorStore().get(id)` / `.set(id, code)`；`useRunStore().run()` / `.stop()` / `.running` / `.status` / `.exitCode`；`terminal`（`src/core/terminal.ts`）`.focus()` / `.transcript`。
+
+### 14.1 外观（与主工具栏 Run 一致：Button `size="xs"` = `h-7 px-2.5 text-xs`，图标 14px）
+```
+┌──────────────────────────────────────────────────────────┐
+│ PYTHON  · 需要输入                     [⧉ 复制] [运行 ▷] │  头部 h-8；[复制]=ghost xs，[运行 ▷]=default xs（反色）
+├──────────────────────────────────────────────────────────┤
+│ name = input("名字？")                                   │
+│ print(f"你好，{name}！")                                  │
+├──────────────────────────────────────────────────────────┤
+│ ▸ 样例输入：Ada        ▸ 期望输出                         │  Collapsible，12px muted，可选
+└──────────────────────────────────────────────────────────┘
+```
+- 按钮顺序固定：`[复制]` 在左、`[运行 ▷]` 在右（主操作最右，与工具栏一致）；图标 lucide `Copy` / `Play`。
+- 窄抽屉（< 420px）时按钮只显示图标，Tooltip 显示文字。
+- 语言标签使用代码块 info 中的语言（大写 11px muted），跨语言时追加 `→ 切换到 Ruby` 提示（muted 小字）。
+
+### 14.2 状态
+| 状态 | 按钮呈现 | 说明 |
+|---|---|---|
+| idle（目标语言已缓存/就绪） | `[运行 ▷]` | 可点击 |
+| idle（目标语言未下载） | `[下载并运行 ▷ 23 MB]` | Tooltip：“首次运行需下载 Ruby 运行时（23.4 MB）” |
+| downloading | `[◌ 下载 38%]`（Loader2 spin + 百分比，取 `states[id].loaded/total`），按钮宽度固定避免抖动；旁边 `[取消]` ghost xs | 侧栏条目同步显示进度 |
+| preparing / compile / link / running | `[◌ 运行中…]`，右侧出现 `[■ 停止]` ghost xs | 状态取 `runStore.status`（仅当本块为“当前运行来源”时显示） |
+| done | `[✓ exit 0]` 2 秒后回到 idle | 形状区分，单色 |
+| failed / crash | `[○ exit 1]`（空心圆）或 `[○ 编译失败]`，2 秒后回 idle；不自动消失的说明在终端 | — |
+| download error | `[○ 下载失败 · 重试]` | 点击重试 |
+| disabled — `norun` 块 | 无运行按钮，仅 `[复制]`；头部右侧 `仅供阅读` muted 文本 | — |
+| disabled — 语言不支持 | 无运行按钮，`[复制]` 保留；标签旁 `不可运行` | 见 §14.4 |
+| disabled — 页面未隔离（!crossOriginIsolated） | `[运行 ▷]` disabled，Tooltip 说明 | 与 IsolationGuard 一致 |
+| 复制 | `[⧉ 复制]` → `[✓ 已复制]` 1.5s | Clipboard API；失败时选中代码并提示 ⌘C |
+
+### 14.3 精确行为（点击「运行」）
+1. **解析目标语言**：`blockLang = normalize(infoLang)`（映射表见 §14.6），得到运行时 id（如 `py → python`、`js → quickjs`、`ts → quickjs`、`c → clang`、`cpp|c++ → clangpp`、`php → php-cgi`、`sql|sqlite → sqlite`、`lua`、`go`、`rb|ruby → ruby`）。
+2. **处理进行中的运行**：若 `runStore.running`：
+   - 来源是同一代码块 → 视为“停止”（按钮已变为停止）。
+   - 否则弹出确认（Popover，非阻塞）：“当前程序正在运行，停止并运行此示例？[停止并运行] [取消]”；设置项“不再询问”（localStorage `simplecode:learn:autoStop`）。确认后 `runStore.stop()` 并等待状态离开 running（≤1s）。
+3. **切换语言**：若 `blockLang !== languageStore.selectedId` → `languageStore.select(blockLang)`（侧栏与编辑器随之切换；抽屉中的书**不切换**，保持当前阅读位置）。
+4. **确保运行时**：`await languageStore.ensure(blockLang)`；期间按钮显示下载进度；返回 false → 按钮进入“下载失败 · 重试”，流程终止。
+5. **备份编辑器**：`prev = editorStore.get(blockLang)`；若 `prev !== code` 且 `prev` 不是“本次会话由文档写入且未被修改”的内容，则写入 `localStorage["simplecode:backup:<lang>"] = { code: prev, at }`，并显示 Toast：“已用示例替换编辑器内容（Python） [撤销]”，8 秒；点击撤销 → `editorStore.set(lang, prev)`（若运行中先停止）。
+6. **转译（TS）**：若 infoLang 为 `ts/typescript` → 懒加载 Sucrase，`transform(code, { transforms: ["typescript"] })`；失败 → 代码块下方显示单色错误框（行列信息），终止。编辑器里放**原始 TS 源码**还是转译结果？→ 放**转译后的 JS**（因为编辑器语言为 QuickJS/JavaScript，可直接再次运行），并在首行加注释 `// 由 TypeScript 转译（原始代码见文档）`。
+7. **写入编辑器**：`editorStore.set(blockLang, finalCode)`（`CodeEditor` 已 watch store 变化同步到 Monaco model；光标置于开头，撤销栈：用 `model.pushEditOperations` 实现，使 ⌘Z 也能恢复 — 实现细节）。
+8. **stdin 预填**：若块有 `stdin="..."` 且用户在块的 Collapsible 中勾选“使用样例输入”（默认：勾选），则 `runStore.run({ stdin })`：运行开始（phase=run）后 `pushStdin(stdin.replaceAll("\\n","\n"))`，并在终端回显该输入（灰色），然后 `pushEOF()`（可配置 `stdinEOF: true` 默认）。未勾选 → 正常交互输入。
+9. **自动运行**：`runStore.run(opts)`；终端若折叠则自动展开（MainArea 已实现）；记录 `runSource = blockId` 供按钮显示状态。
+10. **焦点**：运行开始后 `terminal.focus()`（便于直接输入）；桌面端抽屉**保持打开**（默认，可在抽屉菜单设置“运行后关闭抽屉”）；移动端（底部 Sheet）**先关闭** Sheet 再运行。
+11. **结果**：按钮显示 `exit N`；若块有 `expect` → 运行结束后比对 `terminal.transcript` 是否包含 expect，块底部显示 `✓ 输出符合预期` / `○ 输出与预期不同 [查看差异]`（单色）。
+
+### 14.4 边界情况
+| 情况 | 处理 |
+|---|---|
+| 运行中再点同一块 | 按钮为「停止」，点击即 `stop()` |
+| 运行中点其它块 | 确认停止（§14.3-2） |
+| 目标语言正在下载（由侧栏触发） | 复用同一下载 Promise（`ensure` 已去重），按钮显示进度 |
+| 用户在下载中取消 | 按钮回 idle，不改动编辑器 |
+| TS 块 | Sucrase 去类型；不做类型检查；转译失败显示错误不运行 |
+| info 语言未知/不支持（如 `rust`、`bash`、`text`、`json`、无语言） | 不显示运行按钮，只有复制；`text/console/output` 类块视为输出示例 |
+| `norun` 块 | 只读，仅复制 |
+| 多文件 C/C++（如 `main.c` + `util.h`） | v1 不支持多文件：作者需写成单文件（教程中用“单文件内模拟头文件”约定）；预留语法 `file="util.h" group="ex3"`：同组块合并为 WASI FS 多文件后编译（需要 runner 支持 `headlessRunFS` 式多文件 + clang 参数追加，列入 L5 后续）；v1 遇到 `group` 属性仅显示复制并提示“多文件示例请在本地运行” |
+| 代码块需要 stdin 但未提供样例 | 正常运行，终端等待输入（焦点已在终端），块下提示“此示例需要输入” |
+| 抽屉中所看书的语言 ≠ 块语言（如 SQL 书中的 Python 块） | 照常切换主语言；Toast 文案注明“已切换到 Python” |
+| 编辑器内容为空或与块相同 | 不备份、不弹 Toast，直接运行 |
+| 页面不支持 Clipboard API | 复制降级为选中代码 + 提示 |
+| 极长代码块（> 200 行） | 正常写入；渲染时代码区 `max-h-[480px] overflow-auto` |
+
+### 14.5 时序图
+```mermaid
+sequenceDiagram
+  actor U as 用户
+  participant CB as CodeBlock.vue
+  participant H as useRunFromDoc()
+  participant RS as runStore
+  participant LS as languageStore
+  participant ES as editorStore
+  participant TP as transpile(Sucrase)
+  participant T as terminal
+  U->>CB: 点击 [运行 ▷]
+  CB->>H: runFromDoc({ code, lang, blockId, stdin, expect })
+  H->>H: resolveRuntime(lang) → runtimeId / 不支持则抛出
+  alt RS.running
+    alt 来源为同一 block
+      H->>RS: stop() ; return
+    else 其它来源
+      H-->>U: 确认 “停止并运行？”
+      U->>H: 确认
+      H->>RS: stop() 并等待 idle
+    end
+  end
+  opt runtimeId ≠ LS.selectedId
+    H->>LS: select(runtimeId)
+  end
+  H->>LS: ensure(runtimeId)
+  LS-->>CB: states[runtimeId] 进度（响应式）
+  LS-->>H: true / false
+  opt lang = ts
+    H->>TP: transform(code)
+    TP-->>H: js | error
+  end
+  H->>ES: get(runtimeId) → prev
+  opt prev 需要备份
+    H->>H: saveBackup(runtimeId, prev) + toast[撤销]
+  end
+  H->>ES: set(runtimeId, finalCode)
+  H->>RS: run({ stdin, source: blockId })
+  RS->>T: 清屏 / 输出 / 自动展开终端
+  H->>T: focus()
+  RS-->>H: 结束（exitCode / status）
+  H->>H: expect 比对 terminal.transcript
+  H-->>CB: RunFromDocResult
+```
+
+### 14.6 Store / API 契约（TypeScript）
+```ts
+// src/composables/useRunFromDoc.ts
+export type DocLang =
+  | "python" | "py" | "ruby" | "rb" | "js" | "javascript" | "ts" | "typescript"
+  | "sql" | "sqlite" | "c" | "cpp" | "c++" | "php" | "lua" | "go";
+
+export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go";
+
+export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
+  python: "python", py: "python", ruby: "ruby", rb: "ruby",
+  js: "quickjs", javascript: "quickjs", ts: "quickjs", typescript: "quickjs",
+  sql: "sqlite", sqlite: "sqlite", c: "clang", cpp: "clangpp", "c++": "clangpp",
+  php: "php-cgi", lua: "lua", go: "go",
+};
+
+export interface RunFromDocOptions {
+  blockId: string;            // `${book}/${chapter}#${index}`，用于按钮状态归属
+  stdin?: string;             // 样例输入（已反转义）
+  useStdin?: boolean;         // 默认 true（有 stdin 时）
+  stdinEOF?: boolean;         // 预填后是否发送 EOF，默认 true
+  expect?: string;            // 期望输出子串
+  confirmStop?: () => Promise<boolean>; // 运行中时的确认回调（UI 注入）
+  keepDrawerOpen?: boolean;   // 默认 desktop=true, mobile=false
+}
+
+export type RunFromDocResult =
+  | { type: "unsupported"; lang: string }
+  | { type: "cancelled" }                       // 用户取消停止/下载
+  | { type: "download-failed"; error?: string }
+  | { type: "transpile-error"; message: string; line?: number; column?: number }
+  | { type: "finished"; status: "done" | "failed" | "crash" | "terminated"; exitCode?: number; matchedExpect?: boolean };
+
+export function resolveRuntime(lang: string): RuntimeId | undefined;
+
+export function useRunFromDoc(): {
+  /** 当前由哪个代码块发起运行（用于按钮状态） */
+  activeBlockId: Readonly<Ref<string | undefined>>;
+  runFromDoc(code: string, lang: string, opts: RunFromDocOptions): Promise<RunFromDocResult>;
+  stopFromDoc(blockId: string): void;
+  undoLastReplace(): void;   // Toast [撤销] 调用
+};
+```
+需要对现有 store 做的**最小扩展**（实现阶段）：
+```ts
+// stores/run.ts
+run(opts?: { stdin?: string; stdinEOF?: boolean; source?: string }): Promise<void>;
+readonly source: Ref<string | undefined>;      // 当前运行来源（"editor" | blockId）
+// stores/editor.ts（无破坏）
+set(id: string, code: string, opts?: { origin?: "user" | "doc"; blockId?: string }): void;
+lastDocWrite(id: string): { blockId: string; code: string } | undefined; // 判断是否需要备份
+```
+- `useRunFromDoc` 是唯一入口；CodeBlock 不直接调用 store。
+- 备份 key：`simplecode:backup:<runtimeId>` → `{ code, at, reason: "doc-run" }`，只保留最近 1 份；Toast 撤销后删除。
+
+### 14.7 Markdown 代码块 info string 语法
+```
+```<lang> [run|norun] [stdin="..."] [expect="..."] [title="..."] [file="..." group="..."] [eof=false]
+```
+| 片段 | 含义 | 默认 |
+|---|---|---|
+| `<lang>` | 必填；见 §14.6 映射；未知语言 → 不可运行 | — |
+| `run` / `norun` | 是否显示运行按钮 | 可运行语言默认 `run` |
+| `stdin="Ada\n42"` | 样例输入，`\n` 表示换行，`\"` 转义引号 | 无 |
+| `expect="你好，Ada"` | 期望输出子串（测试与“输出符合预期”提示） | 无 |
+| `title="猜数字"` | 头部显示标题（替代语言标签旁） | 无 |
+| `eof=false` | 预填 stdin 后不发送 EOF（用于还需继续交互的示例） | `true` |
+| `file`/`group` | 多文件示例（v1 仅复制，见 §14.4） | — |
+示例：
+````markdown
+```python run stdin="Ada" expect="你好，Ada！" title="问候"
+name = input("名字？")
+print(f"你好，{name}！")
+```
+````
+解析：自写 `parseFenceInfo(info: string): { lang, attrs }`（支持带引号值与转义），单元测试覆盖。
+
+### 14.8 无障碍与键盘
+- 按钮均为 `<button>`，`aria-label`：复制 → “复制 Python 代码”；运行 → “运行此 Python 示例（会替换编辑器内容）”；下载中 `aria-busy="true"` + `aria-valuenow`。
+- 代码块容器 `role="group" aria-label="代码示例 3：问候"`，`tabindex="0"`；焦点在代码块上时：`⌘/Ctrl+Enter` = 运行，`⌘/Ctrl+Shift+C` = 复制，`Esc` = 停止（运行中）。
+- 状态变化通过 `aria-live="polite"` 区域播报（“正在下载 Ruby 38%”“运行结束，退出码 0”“已替换编辑器内容，可撤销”）。
+- 焦点管理：运行后焦点移到终端（xterm `textarea`）；Toast 的“撤销”可用 `⌘/Ctrl+Z`（焦点在抽屉内时）触发；关闭抽屉后焦点回到 LearnButton。
+- 对比度：所有前景/背景组合 ≥ 4.5:1（#737373 on #FFFFFF = 4.74:1 ✓；#A3A3A3 on #0A0A0A ≈ 8.3:1 ✓）。
+
+### 14.9 测试
+**单元（Vitest）**：`parseFenceInfo`（引号、转义、未知属性）、`resolveRuntime`（全部别名、未知语言）、`useRunFromDoc` 的分支（mock stores）：跨语言切换、ensure 失败、运行中确认/取消、备份与撤销、TS 转译成功/失败、stdin 预填调用顺序。
+**E2E（Playwright，复用 tests/smoke.mjs 的 preview 服务器与系统 Chrome）** `tests/learn.spec.mjs`：
+1. 打开应用 → 点击 `[data-testid=learn-button]` → 抽屉出现，标题含 “Python 101”。
+2. 打开第 3 章 → 定位第 1 个 `[data-testid=doc-code-block]`，读取其 `data-code`。
+3. 点击块内 `[data-testid=doc-run]` → 等待 `[data-testid=run-status][data-status=done]`。
+4. 断言：`__simplecodeEditor.getValue() === data-code`；`__simplecodeTerminal.transcript` 包含块的 `data-expect`；终端可见。
+5. 跨语言：在 SQL 书中点 Python 块 → 断言侧栏选中 Python、编辑器语言为 python、输出匹配。
+6. 下载状态：清除缓存后点 Ruby 块 → 断言按钮出现 `下载` 百分比 → 最终 done。
+7. 备份/撤销：先在编辑器输入自定义代码 → 运行文档块 → 点击 Toast「撤销」→ 编辑器恢复为自定义代码。
+8. 运行中冲突：运行 Python 死循环块 → 点击另一块 → 出现确认 → 确认后前一运行状态为 terminated、新块 done。
+9. `norun` 块无 `doc-run` 按钮；未知语言块无运行按钮。
+10. 单色校验：对抽屉截图（浅/深）做像素检查——所有像素 R=G=B（容差 ±2，排除抗锯齿可放宽为 99% 像素满足）。
+**文档全量（docs-smoke）**：见 §9：遍历所有 `run` 块，exit 0 且 expect 命中。
