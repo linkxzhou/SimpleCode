@@ -1,0 +1,57 @@
+import { defineConfig, type Plugin } from "vite";
+import vue from "@vitejs/plugin-vue";
+import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
+import { join, normalize, resolve } from "node:path";
+
+const isolationHeaders = {
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Embedder-Policy": "require-corp",
+  "Cross-Origin-Resource-Policy": "same-origin",
+};
+
+const wasmDir = resolve(__dirname, "wasm");
+
+/** Serve ./wasm in dev and copy it into dist/wasm on build. */
+function wasmAssets(): Plugin {
+  let outDir = "dist";
+  return {
+    name: "simplecode-wasm-assets",
+    configResolved(c) {
+      outDir = resolve(c.root, c.build.outDir);
+    },
+    configureServer(server) {
+      server.middlewares.use("/wasm", (req, res, next) => {
+        const url = decodeURIComponent((req.url ?? "/").split("?")[0]);
+        const file = normalize(join(wasmDir, url));
+        if (!file.startsWith(wasmDir) || !existsSync(file) || !statSync(file).isFile()) return next();
+        const type = file.endsWith(".wasm")
+          ? "application/wasm"
+          : file.endsWith(".json")
+            ? "application/json"
+            : "application/gzip";
+        res.setHeader("Content-Type", type);
+        res.setHeader("Content-Length", String(statSync(file).size));
+        res.setHeader("Cache-Control", file.endsWith(".json") ? "no-cache" : "public, max-age=86400");
+        for (const [k, v] of Object.entries(isolationHeaders)) res.setHeader(k, v);
+        createReadStream(file).pipe(res);
+      });
+    },
+    closeBundle() {
+      if (!existsSync(join(wasmDir, "manifest.json"))) {
+        this.warn("wasm/manifest.json missing — run ./build.sh vendor");
+        return;
+      }
+      cpSync(wasmDir, join(outDir, "wasm"), { recursive: true, dereference: true });
+    },
+  };
+}
+
+export default defineConfig({
+  plugins: [vue(), wasmAssets()],
+  resolve: { alias: { "@": resolve(__dirname, "src") } },
+  server: { headers: isolationHeaders },
+  preview: { headers: isolationHeaders },
+  worker: { format: "es" },
+  build: { target: "es2022", chunkSizeWarningLimit: 4096 },
+  optimizeDeps: { include: ["monaco-editor/esm/vs/editor/editor.worker"] },
+});

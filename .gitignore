@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.vite/
+.yarn/*
+!.yarn/releases
+.pnp.*
+*.log
+.DS_Store
+# vendored language binaries (regenerate with ./build.sh vendor)
+wasm/*
+!wasm/manifest.json
+tests/*.png
+# local clone of upstream: git clone https://github.com/taybenlor/runno thirdparty/runno
+thirdparty/runno/
