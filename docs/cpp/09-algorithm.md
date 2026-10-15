@@ -5,8 +5,8 @@ title: "algorithm"
 level: advanced
 minutes: 18
 goals:
-  - "用 sort 得到有序序列"
   - "用 min_element 找最小"
+  - "用 count 数相等的元素"
   - "用 count_if 数满足条件的元素"
 sources:
   - learncpp
@@ -15,11 +15,11 @@ sources:
 updated: "2026-10-15"
 ---
 
-algorithm 里的算法接收一段迭代器范围。vector 的 begin 和 end 表示整段。sort 会改原来的顺序。min_element 返回指向最小元素的迭代器，要先确认区间不是空的，再解引用。
+algorithm 里的算法接收一段迭代器范围。vector 的 begin 和 end 表示整段。min_element 返回指向最小元素的迭代器，要先确认区间不是空的，再解引用。count 数某个值出现了几次，不改容器。
 
-count_if 配一个函数或 lambda，数使条件为真的元素。lambda 写成 [](int n) { return n % 2 == 1; }。它不改容器。
+count_if 配一个函数或 lambda，数使条件为真的元素。lambda 写成 [](int n) { return n % 2 == 1; }。它也不改容器。
 
-需要保留原顺序时，先复制一份再 sort。本教程的例子可以直接排序，因为之后只看最小的那个或第一个。
+std::sort 会改原来的顺序，但这份 libc++ 在链接时缺少 __lttf2，可运行示例不用它。排序留在只读块里。要最小的元素时用 min_element，不要为了取最小去 sort。
 
 ```cpp run expect="1" title="最小"
 #include <algorithm>
@@ -33,14 +33,19 @@ int main() {
 }
 ```
 
-```cpp run expect="1" title="排序后第一个"
+```cpp norun title="排序不可用"
+/* std::sort 会把这段 libc++ 带进缺少 __lttf2 的链接。
+   可运行示例改用 min_element 或 count。 */
+```
+
+```cpp run expect="2" title="数二"
 #include <algorithm>
 #include <iostream>
 #include <vector>
 int main() {
-  std::vector<int> a{3, 1, 2};
-  std::sort(a.begin(), a.end());
-  std::cout << a[0] << "\n";
+  std::vector<int> a{1, 2, 2, 3};
+  int n = std::count(a.begin(), a.end(), 2);
+  std::cout << n << "\n";
   return 0;
 }
 ```
@@ -63,9 +68,11 @@ int main() {
 
 然后点这个代码块上的 Run，不要点工具栏。代码块会备份草稿、写入示例再执行。找不到这段文字时，先看退出码。不是 0 就读错误类型，不要改期望。是 0 但内容不对，就只改产生该值的那一处。改完用工具栏的 Run，因为再点代码块会把修改盖掉。预测对了之后点撤销。
 
-### 读「排序后第一个」
+「排序不可用」故意不能运行。先读它旁边的限制，再回到能点 Run 的例子上改一个值。不要把只读块当成坏掉的按钮。
 
-做完上一例再做这一例。把代码收成一行来记：`#include <algorithm> #include <iostream> #include <vector> int main() { std::vector<int> a{3, 1, 2}; std::sort(a.begin(), a.end()); std::cout << a[0] …`。先盖住终端，写下你预测的输出，里面要能找到「1」。这是子串：前面可以有别的字，后面通常有换行。
+### 读「数二」
+
+做完上一例再做这一例。把代码收成一行来记：`#include <algorithm> #include <iostream> #include <vector> int main() { std::vector<int> a{1, 2, 2, 3}; int n = std::count(a.begin(), a.end(), 2); std…`。先盖住终端，写下你预测的输出，里面要能找到「2」。这是子串：前面可以有别的字，后面通常有换行。
 
 然后点这个代码块上的 Run，不要点工具栏。代码块会备份草稿、写入示例再执行。找不到这段文字时，先看退出码。不是 0 就读错误类型，不要改期望。是 0 但内容不对，就只改产生该值的那一处。改完用工具栏的 Run，因为再点代码块会把修改盖掉。预测对了之后点撤销。
 
@@ -83,17 +90,21 @@ int main() {
 
 若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「1」才算失败。
 
-### 只改一处：排序后第一个
+### 限制：排序不可用
 
-这一例要避开的失误是：sort 之后还以为原来的第一个元素留在原位。。对应的做法是：需要旧顺序就先复制。。
+这一段故意不能运行。旁边的限制是：在这份环境里调用 std::sort，链接失败。。做法是：要最小元素用 min_element，不调用 std::sort。。把它留在抽屉里对照，不要粘进主编辑器再点工具栏的 Run。能运行的例子在它前后，改那些例子时不要把这里的调用加进去。
 
-把代码收成一行来核对：`#include <algorithm> #include <iostream> #include <vector> int main() { std::vector<int> a{3, 1, 2}; std::sort(a.begin(), a.end()); std::cout << a[0] …`。盖住终端，先写下预测，里面要能找到「1」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
+### 只改一处：数二
 
-若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「1」才算失败。
+这一例要避开的失误是：count_if 的条件写反。。对应的做法是：条件写成看得到的 lambda。。
+
+把代码收成一行来核对：`#include <algorithm> #include <iostream> #include <vector> int main() { std::vector<int> a{1, 2, 2, 3}; int n = std::count(a.begin(), a.end(), 2); std…`。盖住终端，先写下预测，里面要能找到「2」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
+
+若出现报错，先看错误类型的名字，再回到本章的常见错误。期望是子串，多出来的说明行不算失败，缺了「2」才算失败。
 
 ### 只改一处：奇数个数
 
-这一例要避开的失误是：count_if 的条件写反。。对应的做法是：条件写成看得到的 lambda。。
+这一例要避开的失误是：对空 vector 解引用 min_element 的结果。。对应的做法是：用算法前确认区间非空，或自己处理空。。
 
 把代码收成一行来核对：`#include <algorithm> #include <iostream> #include <vector> int main() { std::vector<int> a{1, 2, 3, 4, 5}; int n = std::count_if(a.begin(), a.end(), […`。盖住终端，先写下预测，里面要能找到「3」。然后点这个代码块上的 Run。结果不同时，只改产生该值的那一行，再用工具栏的 Run 看新结果。不要把两处不相关的改动叠在一起。确认之后点撤销，下一例才会从文档里的代码开始。
 
@@ -101,7 +112,7 @@ int main() {
 
 ## 读完再动手
 
-本章要留下的是 「用 sort 得到有序序列」、「用 min_element 找最小」、「用 count_if 数满足条件的元素」。合上抽屉之前，用自己的话说出每一项目标对应哪一个示例的标题。对不上标题，就还没有把目标和代码连起来，先别展开练习答案。
+本章要留下的是 「用 min_element 找最小」、「用 count 数相等的元素」、「用 count_if 数满足条件的元素」。合上抽屉之前，用自己的话说出每一项目标对应哪一个示例的标题。对不上标题，就还没有把目标和代码连起来，先别展开练习答案。
 
 练习的答案默认折着。先在编辑器里自己写，再展开对照。对照时只看输出是否包含期望的那几个字。两道都过了再进入下一章。下一次运行是新进程，这次的变量不会留下。
 
@@ -112,18 +123,18 @@ int main() {
 ## 常见错误
 
 - 对空 vector 解引用 min_element 的结果。
-- sort 之后还以为原来的第一个元素留在原位。
+- 在这份环境里调用 std::sort，链接失败。
 - count_if 的条件写反。
 
 ## 最佳实践
 
 - 用算法前确认区间非空，或自己处理空。
-- 需要旧顺序就先复制。
+- 要最小元素用 min_element，不调用 std::sort。
 - 条件写成看得到的 lambda。
 
 ## 小结
 
-algorithm 作用在一段范围上。sort 会改顺序。min_element 和 count_if 用来找最小和计数。
+algorithm 作用在一段范围上。min_element、count 和 count_if 不改容器。std::sort 在这里链接不过，不要放进可运行示例。
 
 ## 练习
 

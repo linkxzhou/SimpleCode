@@ -311,28 +311,29 @@ throw 留在只读块里。这份编译目标上的异常不可靠，可运行�
     slug: "algorithm",
     title: "algorithm",
     level: "advanced",
-    goals: ["用 sort 得到有序序列", "用 min_element 找最小", "用 count_if 数满足条件的元素"],
-    prose: `algorithm 里的算法接收一段迭代器范围。vector 的 begin 和 end 表示整段。sort 会改原来的顺序。min_element 返回指向最小元素的迭代器，要先确认区间不是空的，再解引用。
+    goals: ["用 min_element 找最小", "用 count 数相等的元素", "用 count_if 数满足条件的元素"],
+    prose: `algorithm 里的算法接收一段迭代器范围。vector 的 begin 和 end 表示整段。min_element 返回指向最小元素的迭代器，要先确认区间不是空的，再解引用。count 数某个值出现了几次，不改容器。
 
-count_if 配一个函数或 lambda，数使条件为真的元素。lambda 写成 [](int n) { return n % 2 == 1; }。它不改容器。
+count_if 配一个函数或 lambda，数使条件为真的元素。lambda 写成 [](int n) { return n % 2 == 1; }。它也不改容器。
 
-需要保留原顺序时，先复制一份再 sort。本教程的例子可以直接排序，因为之后只看最小的那个或第一个。`,
+std::sort 会改原来的顺序，但这份 libc++ 在链接时缺少 __lttf2，可运行示例不用它。排序留在只读块里。要最小的元素时用 min_element，不要为了取最小去 sort。`,
     samples: [
       s("最小", "#include <algorithm>\n#include <iostream>\n#include <vector>\nint main() {\n  std::vector<int> a{3, 1, 2};\n  auto it = std::min_element(a.begin(), a.end());\n  std::cout << *it << \"\\n\";\n  return 0;\n}", "1"),
-      s("排序后第一个", "#include <algorithm>\n#include <iostream>\n#include <vector>\nint main() {\n  std::vector<int> a{3, 1, 2};\n  std::sort(a.begin(), a.end());\n  std::cout << a[0] << \"\\n\";\n  return 0;\n}", "1"),
+      s("排序不可用", "/* std::sort 会把这段 libc++ 带进缺少 __lttf2 的链接。\n   可运行示例改用 min_element 或 count。 */", "", { norun: true }),
+      s("数二", "#include <algorithm>\n#include <iostream>\n#include <vector>\nint main() {\n  std::vector<int> a{1, 2, 2, 3};\n  int n = std::count(a.begin(), a.end(), 2);\n  std::cout << n << \"\\n\";\n  return 0;\n}", "2"),
       s("奇数个数", "#include <algorithm>\n#include <iostream>\n#include <vector>\nint main() {\n  std::vector<int> a{1, 2, 3, 4, 5};\n  int n = std::count_if(a.begin(), a.end(), [](int x) { return x % 2 == 1; });\n  std::cout << n << \"\\n\";\n  return 0;\n}", "3"),
     ],
     mistakes: [
       "对空 vector 解引用 min_element 的结果。",
-      "sort 之后还以为原来的第一个元素留在原位。",
+      "在这份环境里调用 std::sort，链接失败。",
       "count_if 的条件写反。",
     ],
     practices: [
       "用算法前确认区间非空，或自己处理空。",
-      "需要旧顺序就先复制。",
+      "要最小元素用 min_element，不调用 std::sort。",
       "条件写成看得到的 lambda。",
     ],
-    summary: "algorithm 作用在一段范围上。sort 会改顺序。min_element 和 count_if 用来找最小和计数。",
+    summary: "algorithm 作用在一段范围上。min_element、count 和 count_if 不改容器。std::sort 在这里链接不过，不要放进可运行示例。",
     exercises: [
       { title: "参考答案：最大", prompt: "用 max_element 打印 {1, 4, 2} 的最大元素。", code: "#include <algorithm>\n#include <iostream>\n#include <vector>\nint main() {\n  std::vector<int> a{1, 4, 2};\n  auto it = std::max_element(a.begin(), a.end());\n  std::cout << *it << \"\\n\";\n  return 0;\n}", expect: "4" },
       { title: "参考答案：偶数", prompt: "数出 {1, 2, 3, 4} 里的偶数个数。", code: "#include <algorithm>\n#include <iostream>\n#include <vector>\nint main() {\n  std::vector<int> a{1, 2, 3, 4};\n  int n = std::count_if(a.begin(), a.end(), [](int x) { return x % 2 == 0; });\n  std::cout << n << \"\\n\";\n  return 0;\n}", expect: "2" },
