@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：§19 起，Go 改成菜鸟教程那种短节。其余九种语言仍是 §18 的短文，等审阅后再改。界面文案仍是「快速入门」。
+> 状态：十种语言都已按 §19 改成菜鸟教程那种短节。2500 字的短文规则已退出验收。界面文案仍是「快速入门」。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -948,27 +948,27 @@ print(f"你好，{name}！")
 
 ### 语言
 
-汉字按去掉 frontmatter 和成对代码围栏之后的正文计，不含标点和代码。下限 2500。
+十种语言都按 §19 计：至少 20 章，每章至少 3 个 `###` 短节。不再使用 2500 字下限。
 
 | 语言 | 状态 | 章数 | 汉字（最少–最多，合计） |
 |---|---|---|---|
-| Python | ✅ | 14 | 2795–3787，合计 42578 |
-| JavaScript / TypeScript | ✅ | 13 | 2715–2937，合计 36378。第 11–12 章是 `ts` 块 |
+| Python | ✅ | 28 | 按 §19：Python3 教程到 Python3 文件，每章至少 3 个短节 |
+| JavaScript / TypeScript | ✅ | 30 | 按 §19：JavaScript 教程到 TypeScript 类型断言。类型块用 `ts` 围栏 |
 | Go | ✅ | 29 | 按 §19：正式标题、每章至少 3 个 `###` 短节。不再要求 2500 字 |
-| Ruby | ✅ | 12 | 2803–3149，合计 34859 |
-| SQL | ✅ | 12 | 2734–3136，合计 35239 |
-| C | ✅ | 12 | 2721–3125，合计 33471 |
-| C++ | ✅ | 12 | 2729–3227，合计 34556。`std::sort` 因链接缺少 `__lttf2` 标为只读 |
-| PHP | ✅ | 12 | 2784–3111，合计 35148。读不到标准输入，行处理用字符串 |
-| Lua | ✅ | 12 | 2766–3360，合计 35305 |
-| Shell | ✅ | 12 | 2748–3190，合计 33902。只有 wasi-sh 内建 |
+| Ruby | ✅ | 23 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出 |
+| SQL | ✅ | 26 | 按 §19：SQLite 教程到 SQLite 常用函数 |
+| C | ✅ | 25 | 按 §19：C 语言教程到 C 错误处理。`fopen` 标为只读，可运行例子用 `sprintf` / `sscanf` |
+| C++ | ✅ | 39 | 按 §19：C++ 教程到 C++ STL 算法。`std::sort` 因链接缺少 `__lttf2` 标为只读，`throw` 和文件流也不运行 |
+| PHP | ✅ | 34 | 按 §19：PHP 教程到 PHP MySQL。读不到标准输入，`$_GET`、文件、Cookie 和 mysqli 标为只读 |
+| Lua | ✅ | 22 | 按 §19：Lua 教程到 Lua 数据库访问。文件、`require` 和 `os.execute` 标为只读 |
+| Shell | ✅ | 21 | 按 §19：Shell 教程到 Shell 外部命令。只有 wasi-sh 内建，没有函数、数组、算术展开和外部命令 |
 
-十种语言合计 140 章（Go 从 12 章改为 29 章）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
+十种语言合计 277 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Shell 21）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 140 chapters, 760 runnable blocks`。
-- `./build.sh test`：单元测试合计 152 项通过（含每章篇幅或 Go 的短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 759 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
+- `./build.sh build`：vue-tsc 通过，`docs: 277 chapters, 810 runnable blocks`。
+- `./build.sh test`：单元测试合计 289 项通过（含每章短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 809 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
 - 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
@@ -1379,6 +1379,6 @@ Go 已改按 §19，不再用本节的 2500 字和「小结 / 练习」。下面
 
 ### 19.4 测试
 
-`tests/docs-length.test.ts` 把 `go` 移出短文列表。Go 改为：至少 20 章，每章至少 3 个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块。其余语言的 2500 字、小结、练习和 60 字不重复检查不变。Go 也参加 60 字不重复，避免把同一段说明贴进两章。
+`tests/docs-length.test.ts` 对十种语言都用短节结构：至少 20 章，每章至少 3 个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块。2500 字、小结和练习不再检查。十种语言一起做 60 字不重复，避免把同一段说明贴进两章。
 
 
