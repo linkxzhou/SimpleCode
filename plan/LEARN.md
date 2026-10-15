@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 101」教学系统设计（LEARN）
 
-> 状态：§16 已完成。抽屉从工具栏下沿开始，代码块行数与源码一致，文档与工具栏共用同一个 Run 按钮。Python、JavaScript/TypeScript、Go 每一章已按 §16.6 加厚。Ruby、SQL、C、C++、PHP、Lua 仍 **待完成**。详见 §15。
+> 状态：§16 已完成。Ruby、SQL、C、C++、PHP、Lua 的成书计划见 §17，尚未写正文。Python、JavaScript/TypeScript、Go 已交付。详见 §15。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -10,6 +10,7 @@
 - **§14 [代码块运行按钮设计](#14-代码块运行按钮设计)** —— 需求（5）：每个代码块的「复制 / 运行」按钮，复制到主编辑器并运行（状态、行为、边界、时序图、API、语法、无障碍、测试）
 - **§15 [完成情况](#15-完成情况)** —— 各里程碑与语言的交付状态
 - **§16 [优化：工具栏、行距、Run 按钮与加厚正文](#16-优化工具栏行距run-按钮与加厚正文)** —— 本轮问题、根因、布局与章节模板、验收
+- **§17 [其余六本书](#17-其余六本书)** —— Ruby、SQL、C、C++、PHP、Lua 的运行时限制、章节目录、篇幅与验收
 
 ---
 
@@ -1136,3 +1137,80 @@ print(f"你好，{name}！")
 - `learn-run-buttons.png`：文档 Run 和工具栏 Run 同时在画面里。
 - 保留 `learn-chapter.png`、`learn-after-run.png`。
 - 灰阶检查仍只对抽屉元素做，编辑器里的彩色语法不计入。
+
+---
+
+## 17. 其余六本书
+
+本节只定计划。提交本节之后才写 Ruby、SQL、C、C++、PHP、Lua 的正文。抽屉、Run 按钮、行距和已交付的三本书保持 §16 的做法，不另起一套 UI。
+
+### 17.1 要补上的书
+
+侧栏里这六种语言现在打开抽屉会看到「即将推出」，因为 `SHIPPED_BOOKS` 只有 `python`、`js`、`go`，并且 `docs/` 下没有对应目录。每一种都要有概览加至少 10 章，原创中文，可运行块通过 docs-smoke。写完一种就把该书 id 放进 `SHIPPED_BOOKS`，生成器写入 `docs/<book>/`，并单独提交。
+
+| 书 id | 运行时 | 文件名 | 概览 + 章 |
+|---|---|---|---|
+| ruby | ruby 3.2 | main.rb | 概览 + 11 章 |
+| sqlite | sqlite3 `-batch` | main.sql | 概览 + 11 章 |
+| c | clang 8 → wasm32 | main.c | 概览 + 11 章 |
+| cpp | clang 8 + libc++ | main.cpp | 概览 + 11 章 |
+| php | php 8.2 `-q` | main.php | 概览 + 11 章 |
+| lua | Lua 5.4.9 | main.lua | 概览 + 11 章 |
+
+目录沿用 §16.6 的骨架：本章目标、讲解、至少若干可运行示例、常见错误、最佳实践、小结、至少两道带 `::: answer` 的练习、延伸阅读、参考与致谢。`minutes` 概览不少于 12，内容章不少于 18。
+
+新书没有「加厚前」的字符基线，所以不用 3 倍表。验收用和已加厚短章同一量级的绝对下限：
+
+- 正文（frontmatter 之后）概览不少于 2800 字符，内容章不少于 3200 字符。
+- 围栏以外的讲解：概览不少于 900，内容章不少于 1500。
+- 可运行围栏（info 含 `run` 且不含 `norun`；`smoke=skip` 仍算可运行）：概览不少于 3，内容章不少于 5。
+- 标题包含 `## 常见错误`、`## 最佳实践`、`## 小结`、`## 练习`，且至少两个 `::: answer`。
+
+`tests/docs-length.test.ts` 对这六本书用上述绝对下限，不套用 Python/JS/Go 的 3 倍表。生成脚本写完 `docs/` 之后测试才算通过。
+
+### 17.2 各运行时不能写进可运行块的事
+
+示例必须在现有 WASI 运行时里一次跑完。做不到的写法标 `norun`，并在旁边说明原因。不要为了教程去改编译参数。
+
+**Ruby。** 没有 `gem install`，没有网络。不 `require` 镜像里没有的文件。可运行示例只用语言核心：`puts`、`gets`、数组、哈希、方法、块、类。`gets` 要 `chomp`。整数相除得到整数。
+
+**SQL。** 每次运行都是空的内存库，`-batch` 读整个文件后结束。用 `SELECT` 把结果打出来，期望写成结果单元格里的子串。不要依赖 `.headers on` 的表头文本，不要 `ATTACH` 一个下次还在的文件。不用 JSON 扩展。
+
+**C。** `clang -Werror`，单文件，`#include <stdio.h>` 这一级的标准头。`printf` / `scanf` 可用。没有线程，没有网络。警告会让编译失败，所以不写未使用变量。`main` 返回 `int`。
+
+**C++。** 同样 `-Werror`，标准库是 libc++。`iostream`、`string`、`vector`、`algorithm` 可以用。不写 `<thread>` 和 `<filesystem>`。异常在这份 wasm 工具链上不可靠：可运行示例用返回值或 `optional` 表达失败；`throw` 放在 `norun` 块里，等探测证实能跑再改。
+
+**PHP。** `php -q`，文件以 `<?php` 开头，用 `echo` 带换行。不调用 curl、mysqli、gd。读入用 `fgets(STDIN)`，不用靠 Web SAPI 才有的超全局。
+
+**Lua。** `print`、`io.read("*l")`、`pcall` 可用。不调用 `os.execute`、`io.popen`、`os.tmpname`，不 `require` 另一份磁盘上的文件。字符串按字节计长度时要在正文里说明，示例用英文或明确的中文并核对 `print` 结果。
+
+### 17.3 章节目录
+
+每本书第 0 章是概览（`index.md`），其余按文件名 `01-` 到 `11-`。
+
+Ruby：概览；输出与注释；数字与变量；字符串；分支与循环；数组；哈希；方法与块；类；错误；枚举与块的组合；记分小项目。
+
+SQL：概览；字面量与 `SELECT`；建表与 `INSERT`；`WHERE`；聚合；连接；`UPDATE` 与 `DELETE`；`NULL` 与约束；子查询；排序与限制；事务；账本小项目。
+
+C：概览；`printf` 与 `main`；类型与运算；分支与循环；函数；数组与字符串；指针；结构体；`scanf`；`malloc`；`stdio` 里够用的函数；行计数小项目。
+
+C++：概览；`cout`；类型与引用；控制流；函数；`vector` 与 `string`；类；失败不用异常；函数模板；`<algorithm>`；读入一行；待办小项目。
+
+PHP：概览；`echo`；类型；字符串；数组；控制流；函数；类；错误；标准输入；常用内置函数；命令小项目。
+
+Lua：概览；`print`；类型与 `nil`；字符串；控制流；函数与闭包；表；元表；`pcall`；不跨文件的模块；`string` / `math` / `table`；待办小项目。
+
+### 17.4 实现顺序
+
+1. 只提交本节。
+2. 按 Ruby、SQL、C、C++、PHP、Lua 的顺序各写一本。每本：生成器、`docs/<book>/*.md`、把 id 加入 `SHIPPED_BOOKS`、`tests/docs-smoke.mjs` 的书单、长度测试。该运行时的 docs-smoke 通过后再提交这一本。
+3. `tests/learn.spec.mjs` 里「Ruby 即将推出」在 Ruby 成书后改成打开 Ruby 概览。后面还没写的书继续抽一本做「即将推出」。六本都写完后，这条断言删掉，改为打开一本新书的章节。
+4. 全部完成后更新 §15 和本节勾选，跑 `./build.sh build` 与 `./build.sh test`。截图：两种新语言各一章（抽屉打开），以及 Lua 示例运行成功（终端里有期望输出）。
+
+### 17.5 验收
+
+- [ ] 六本书都是概览 + 至少 10 章，达到 17.1 的绝对下限，正文为原创中文。
+- [ ] 侧栏打开这六种语言时不再显示「即将推出」。
+- [ ] 每个可运行块通过 docs-smoke。`norun` 与 `smoke=skip` 不被执行。
+- [ ] `./build.sh build` 与 `./build.sh test` 通过。单色检查仍然通过。
+- [ ] §15 把六种语言标成已交付，并附上章节截图与 Lua 运行截图。
