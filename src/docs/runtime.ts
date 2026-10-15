@@ -1,4 +1,4 @@
-export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go";
+export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell";
 
 export type DocLang =
   | "python"
@@ -16,7 +16,10 @@ export type DocLang =
   | "c++"
   | "php"
   | "lua"
-  | "go";
+  | "go"
+  | "sh"
+  | "shell"
+  | "bash";
 
 export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   python: "python",
@@ -35,9 +38,12 @@ export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   php: "php-cgi",
   lua: "lua",
   go: "go",
+  sh: "shell",
+  shell: "shell",
+  bash: "shell",
 };
 
-export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go"] as const;
+export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell"] as const;
 export type BookId = (typeof BOOKS)[number];
 
 /** Books with a full curriculum in this release. Other ids stay in the map and show “即将推出”. */
@@ -53,6 +59,7 @@ export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   "php-cgi": "php",
   lua: "lua",
   go: "go",
+  shell: "shell",
 };
 
 export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
@@ -65,6 +72,7 @@ export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
   php: "php-cgi",
   lua: "lua",
   go: "go",
+  shell: "shell",
 };
 
 export const BOOK_LABEL: Record<BookId, string> = {
@@ -77,6 +85,7 @@ export const BOOK_LABEL: Record<BookId, string> = {
   php: "PHP",
   lua: "Lua",
   go: "Go",
+  shell: "Shell",
 };
 
 export const LEVEL_LABEL = {
@@ -95,6 +104,7 @@ const RUNTIME_LABEL: Record<RuntimeId, string> = {
   "php-cgi": "PHP",
   lua: "Lua",
   go: "Go",
+  shell: "Shell",
 };
 
 export function resolveRuntime(lang: string): RuntimeId | undefined {

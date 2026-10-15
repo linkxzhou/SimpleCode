@@ -29,11 +29,11 @@ const mod = isMac ? "⌘" : "Ctrl";
         @click="docs.toggle()"
       >
         <BookOpen />
-        <span class="max-md:sr-only">{{ label }} 101</span>
+        <span class="max-md:sr-only">{{ label }} 快速入门</span>
       </Button>
     </TooltipTrigger>
     <TooltipContent side="bottom">
-      打开 {{ label }} 101
+      打开 {{ label }} 快速入门
       <kbd class="ml-1 font-mono text-[10px] opacity-70">{{ mod }}+J</kbd>
     </TooltipContent>
   </Tooltip>
