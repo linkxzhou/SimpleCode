@@ -10,7 +10,7 @@ const BASE: Record<string, number> = {
 const ABSOLUTE = ["lua"];
 
 /** plan/LEARN.md §18. Hand-written essays, not the shared heading stamp. */
-const ESSAY = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua"];
+const ESSAY = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");
