@@ -1,54 +1,44 @@
 ---
 language: sqlite
-chapter: 21
-title: "SQLite 索引"
-level: beginner
+chapter: 0
+title: "SQLite 教程"
 minutes: 8
 goals:
-  - "用 CREATE INDEX 建索引"
-  - "知道索引不改变查询结果"
-  - "按索引列过滤仍得到同一行"
+  - "用 SELECT 打出结果"
+  - "知道每次运行都是一张空的内存库"
+  - "不依赖点命令的表头"
 sources:
   - sqlite-lang
 updated: "2026-10-15"
 ---
 
-索引加快查找。同一份数据，有没有索引，答案应该一样。
+这一本在内存里的 SQLite 上运行。脚本结束，库就消失。结果用竖线隔开各列。
 
-### 建索引
+### 没有表也能查询
 
-索引建在已经有数据的列上。
+字面量可以直接投影出来。
 
-```sql run expect="18" title="仍能查到"
-CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
-CREATE INDEX item_name ON item(name);
-SELECT price FROM item WHERE name = '茶';
+```sql run expect="茶|18" title="一行字面量"
+SELECT '茶', 18;
 ```
 
-输出里能看到 `18`。
+输出里能看到 `茶|18`。
 
-### 结果不变
+### 每次都是新库
 
-没有索引时同一句查询得到同一个数。
+上一份脚本建的表，下一份脚本看不见。
 
-```sql run expect="2" title="两行"
-CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-SELECT COUNT(*) FROM item;
+```sql run expect="1" title="只有这一次"
+SELECT 1;
 ```
 
-输出里能看到 `2`。
+输出里能看到 `1`。
 
-### 唯一索引
+### 点命令不是 SQL
 
-唯一索引拒绝重复的键。先插入一个不重复的值。
+`.headers` 和 `.tables` 是 sqlite3 外壳的命令。课程按钮只执行 SQL。
 
-```sql run expect="茶" title="唯一的名字"
-CREATE TABLE item (name TEXT);
-CREATE UNIQUE INDEX item_name ON item(name);
-INSERT INTO item VALUES ('茶');
-SELECT name FROM item;
+```sql norun title="外壳命令"
+.headers on
+.tables
 ```
-
-输出里能看到 `茶`。
