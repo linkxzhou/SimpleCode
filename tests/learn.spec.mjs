@@ -184,11 +184,17 @@ try {
   await openLearn(page);
   const rubyTitle = await page.textContent('[data-testid="docs-title"]');
   check(rubyTitle?.includes("Ruby 101") && !(await page.$('[data-testid="docs-soon"]')), `ruby book opens ${rubyTitle}`);
+  await page.click('[data-testid="chapter-link"][data-chapter="1"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-ruby-chapter.png", page.locator('[data-testid="docs-drawer"]'));
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-sqlite"]');
   await openLearn(page);
   const sqlTitle = await page.textContent('[data-testid="docs-title"]');
   check(sqlTitle?.includes("SQL 101") && !(await page.$('[data-testid="docs-soon"]')), `sql book opens ${sqlTitle}`);
+  await page.click('[data-testid="chapter-link"][data-chapter="1"]');
+  await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-sql-chapter.png", page.locator('[data-testid="docs-drawer"]'));
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-clang"]');
   await openLearn(page);
@@ -211,6 +217,14 @@ try {
   check(luaTitle?.includes("Lua 101") && !(await page.$('[data-testid="docs-soon"]')), `lua book opens ${luaTitle}`);
   await page.click('[data-testid="chapter-link"][data-chapter="1"]');
   await page.waitForSelector('[data-testid="docs-chapter"]');
+  await saveShot(page, "learn-lua-chapter.png", page.locator('[data-testid="docs-drawer"]'));
+  const luaBlock = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"][data-runnable="1"]').first();
+  const luaExpect = await luaBlock.getAttribute("data-expect");
+  await luaBlock.locator('[data-testid="doc-run"]').click();
+  await waitForBlock(page, luaBlock);
+  const luaOut = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
+  check(luaOut.includes(luaExpect), `lua chapter run ${luaExpect}`);
+  await saveShot(page, "learn-lua-run.png");
   await page.click('[data-testid="docs-close"]');
 
   await page.click('[data-testid="lang-python"]');
