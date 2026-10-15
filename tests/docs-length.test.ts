@@ -69,7 +69,7 @@ function runnableCount(body: string) {
 }
 
 /** Books from plan/LEARN.md §17. Absolute floors, not the 3× table above. */
-const ABSOLUTE = ["ruby"];
+const ABSOLUTE = ["ruby", "sqlite"];
 
 describe("chapter length", () => {
   for (const [file, before] of Object.entries(BASE)) {
