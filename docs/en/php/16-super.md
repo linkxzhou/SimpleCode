@@ -28,22 +28,22 @@ echo $_GET["item"], "\n";
 
 The query values live in an array the script builds itself.
 
-```php run expect="笔" title="Prepared locally"
+```php run expect="pen" title="Prepared locally"
 <?php
-$query = ["item" => "笔"];
+$query = ["item" => "pen"];
 echo $query["item"], "\n";
 ```
 
-The local item is `笔`.
+The local item is `pen`.
 
 ### A key that is absent
 
-If `item` is missing, `??` supplies `无`.
+If `item` is missing, `??` supplies `none`.
 
-```php run expect="无" title="The item is missing"
+```php run expect="none" title="The item is missing"
 <?php
 $query = [];
-echo $query["item"] ?? "无", "\n";
+echo $query["item"] ?? "none", "\n";
 ```
 
-The missing key prints `无`.
+The missing key prints `none`.

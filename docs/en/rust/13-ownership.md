@@ -19,15 +19,15 @@ A `String` moves by default. After the move, the old name cannot be read. Intege
 
 `clone` allocates another heap copy of the text.
 
-```rust run expect="船票船票" title="Two tickets"
+```rust run expect="passpass" title="Two tickets"
 fn main() {
-    let ticket = String::from("船票");
+    let ticket = String::from("pass");
     let copy = ticket.clone();
     println!("{ticket}{copy}");
 }
 ```
 
-Original and copy are both still valid, so the line is `船票船票`.
+Original and copy are both still valid, so the line is `passpass`.
 
 ### An integer stays usable
 
@@ -51,16 +51,16 @@ Both copies print, which shows as `4242`.
 
 Once the parameter owns the string, the caller must not use that name again.
 
-```rust run expect="周票" title="Move ownership"
+```rust run expect="weekly" title="Move ownership"
 fn hold(ticket: String) -> String {
     ticket
 }
 
 fn main() {
-    let ticket = String::from("周票");
+    let ticket = String::from("weekly");
     let kept = hold(ticket);
     println!("{kept}");
 }
 ```
 
-The print uses the string the function returned: `周票`.
+The print uses the string the function returned: `weekly`.

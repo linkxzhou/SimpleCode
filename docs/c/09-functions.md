@@ -34,16 +34,16 @@ int main(void) {
 
 `void` 函数自己打印。
 
-```c run expect="好" title="无返回值"
+```c run expect="ok" title="无返回值"
 #include <stdio.h>
-void show(void) { printf("好\n"); }
+void show(void) { printf("ok\n"); }
 int main(void) {
   show();
   return 0;
 }
 ```
 
-输出里能看到 `好`。
+输出里能看到 `ok`。
 
 ### 数组要另传长度
 

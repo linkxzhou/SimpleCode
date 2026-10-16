@@ -40,8 +40,8 @@ select 3;
 
 In SQLite a double quote usually names an identifier. Put text in single quotes.
 
-```sql run expect="水" title="Text"
-SELECT '水';
+```sql run expect="water" title="Text"
+SELECT 'water';
 ```
 
-The quoted text comes back as `水`.
+The quoted text comes back as `water`.

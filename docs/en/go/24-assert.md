@@ -19,18 +19,18 @@ A type assertion recovers the concrete type of a value stored in `any`.
 
 `v.(string)` returns the string when that is what `v` holds. A different dynamic type panics.
 
-```go run expect="茶" title="Assertion succeeds"
+```go run expect="tea" title="Assertion succeeds"
 package main
 
 import "fmt"
 
 func main() {
-	var v any = "茶"
+	var v any = "tea"
 	fmt.Println(v.(string))
 }
 ```
 
-The asserted text is `茶`.
+The asserted text is `tea`.
 
 ### The comma-ok form
 
@@ -54,7 +54,7 @@ An integer is not a string, so the flag is `false`.
 
 `switch v.(type)` selects a case from the dynamic type. Each case names one type.
 
-```go run expect="整数" title="Branch by type"
+```go run expect="whole" title="Branch by type"
 package main
 
 import "fmt"
@@ -63,22 +63,22 @@ func main() {
 	var v any = 3
 	switch v.(type) {
 	case string:
-		fmt.Println("字符串")
+		fmt.Println("word")
 	case int:
-		fmt.Println("整数")
+		fmt.Println("whole")
 	default:
-		fmt.Println("其他")
+		fmt.Println("other")
 	}
 }
 ```
 
-The integer case prints `整数`.
+The integer case prints `whole`.
 
 ### Test the type before you use it
 
 Use the single-result form only when the dynamic type is already known. Otherwise prefer comma-ok or a type switch.
 
-```go run expect="不是字符串" title="The other branch on failure"
+```go run expect="not a string" title="The other branch on failure"
 package main
 
 import "fmt"
@@ -86,11 +86,11 @@ import "fmt"
 func main() {
 	var v any = 3
 	if _, ok := v.(string); ok {
-		fmt.Println("字符串")
+		fmt.Println("word")
 	} else {
-		fmt.Println("不是字符串")
+		fmt.Println("not a string")
 	}
 }
 ```
 
-The else branch prints `不是字符串`.
+The else branch prints `not a string`.

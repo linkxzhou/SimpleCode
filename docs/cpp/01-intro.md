@@ -19,17 +19,17 @@ C++ 在这一本里多出来的是标准库类型，不是另一套编译器。
 
 `std::string` 记住字符，并知道自己的长度。
 
-```cpp run expect="笔" title="一件物品"
+```cpp run expect="pen" title="一件物品"
 #include <iostream>
 #include <string>
 int main() {
-  std::string item = "笔";
+  std::string item = "pen";
   std::cout << item << "\n";
   return 0;
 }
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。
 
 ### 一列整数
 

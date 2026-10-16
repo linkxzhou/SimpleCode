@@ -19,29 +19,29 @@ updated: "2026-10-16"
 
 One space is inserted between the arguments. A newline follows the last word.
 
-```sh run expect="甲 乙" title="A space in the middle"
-echo 甲 乙
+```sh run expect="first second" title="A space in the middle"
+echo first second
 ```
 
-The line shows `甲 乙`.
+The line shows `first second`.
 
 ### Suppress the newline
 
 `-n` removes the newline at the end of `echo`. The next `echo` supplies a newline, so the join is easy to see.
 
-```sh run expect="甲乙" title="Joined before the next line"
-echo -n 甲
-echo 乙
+```sh run expect="firstsecond" title="Joined before the next line"
+echo -n first
+echo second
 ```
 
-The line shows `甲乙`.
+The line shows `firstsecond`.
 
 ### A single word
 
 One argument does not pick up an extra space. The word stands alone.
 
-```sh run expect="茶" title="One word"
-echo 茶
+```sh run expect="tea" title="One word"
+echo tea
 ```
 
-The line shows `茶`.
+The line shows `tea`.

@@ -17,12 +17,12 @@ updated: "2026-10-15"
 
 ### 计数
 
-茶出现两次。
+tea 出现两次。
 
 ```sql run expect="2" title="茶的行数"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('茶'), ('水');
-SELECT COUNT(*) FROM item WHERE name = '茶';
+INSERT INTO item VALUES ('tea'), ('tea'), ('water');
+SELECT COUNT(*) FROM item WHERE name = 'tea';
 ```
 
 输出里能看到 `2`。
@@ -31,13 +31,13 @@ SELECT COUNT(*) FROM item WHERE name = '茶';
 
 每个名字一行，后面是这个名字的行数。
 
-```sql run expect="水|1" title="水只有一行"
+```sql run expect="water|1" title="水只有一行"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('tea'), ('water');
 SELECT name, COUNT(*) FROM item GROUP BY name ORDER BY name;
 ```
 
-输出里能看到 `水|1`。
+输出里能看到 `water|1`。
 
 ### 求和
 
@@ -45,7 +45,7 @@ SELECT name, COUNT(*) FROM item GROUP BY name ORDER BY name;
 
 ```sql run expect="18" title="十加八"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 10), ('茶', 8);
+INSERT INTO item VALUES ('tea', 10), ('tea', 8);
 SELECT SUM(price) FROM item GROUP BY name;
 ```
 

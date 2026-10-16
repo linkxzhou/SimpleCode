@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```sql run expect="1" title="一行主键"
 CREATE TABLE item (id INT PRIMARY KEY, name TEXT);
-INSERT INTO item VALUES (1, '茶');
+INSERT INTO item VALUES (1, 'tea');
 SELECT COUNT(*) FROM item;
 ```
 
@@ -31,13 +31,13 @@ SELECT COUNT(*) FROM item;
 
 声明了 `NOT NULL` 的列，插入时给它一个值。
 
-```sql run expect="茶" title="有名字"
+```sql run expect="tea" title="有名字"
 CREATE TABLE item (name TEXT NOT NULL);
-INSERT INTO item VALUES ('茶');
+INSERT INTO item VALUES ('tea');
 SELECT name FROM item;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 检查
 

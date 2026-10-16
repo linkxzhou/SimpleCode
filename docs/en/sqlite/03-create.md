@@ -21,7 +21,7 @@ Column names and declared types go inside the parentheses.
 
 ```sql run expect="18" title="Unit price"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 SELECT price FROM item;
 ```
 
@@ -31,13 +31,13 @@ The stored price reads back as `18`.
 
 List every column you want in the `SELECT` list. The runner places a vertical bar between those cells.
 
-```sql run expect="茶|18" title="Two columns"
+```sql run expect="tea|18" title="Two columns"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 SELECT name, price FROM item;
 ```
 
-Name and price share the row `茶|18`.
+Name and price share the row `tea|18`.
 
 ### Drop the table and create it again
 

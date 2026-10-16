@@ -19,26 +19,26 @@ A block is code you hand to a method. Inside that method, `yield` runs the block
 
 Block parameters sit between vertical bars. `each` invokes the block once per element. `last` is replaced every time, so it finishes as the final name.
 
-```ruby run expect="茶" title="Last item"
+```ruby run expect="tea" title="Last item"
 last = ""
-["水", "茶"].each { |name| last = name }
+["water", "tea"].each { |name| last = name }
 puts last
 ```
 
-The printed line is `茶`.
+The printed line is `tea`.
 
 ### Call yield yourself
 
 One `yield` runs the attached block once. `once` does nothing except that call. The block prints at the moment `yield` reaches it.
 
-```ruby run expect="进了" title="Call the block"
+```ruby run expect="inward" title="Call the block"
 def once
   yield
 end
-once { puts "进了" }
+once { puts "inward" }
 ```
 
-The printed line is `进了`.
+The printed line is `inward`.
 
 ### do and end for several lines
 

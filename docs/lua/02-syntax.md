@@ -19,23 +19,23 @@ Lua 用换行分开语句。分号可以写，但不是必须的。
 
 两条 `print` 各占一行。
 
-```lua run expect="甲" title="第一行"
-print("甲")
-print("乙")
+```lua run expect="first" title="第一行"
+print("first")
+print("second")
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 注释
 
 双减号后面的输出不会执行。
 
-```lua run expect="留下" title="跳过注释"
+```lua run expect="kept" title="跳过注释"
 -- print("隐藏")
-print("留下")
+print("kept")
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 块
 

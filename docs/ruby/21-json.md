@@ -42,14 +42,14 @@ puts JSON.parse(text)["n"]
 
 少一个括号时解析失败。
 
-```ruby run expect="坏了" title="解析失败"
+```ruby run expect="broken" title="解析失败"
 require "json"
 begin
   JSON.parse("{")
-  puts "过了"
+  puts "passed"
 rescue JSON::ParserError
-  puts "坏了"
+  puts "broken"
 end
 ```
 
-输出里能看到 `坏了`。
+输出里能看到 `broken`。

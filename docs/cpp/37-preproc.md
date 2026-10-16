@@ -34,18 +34,18 @@ int main() {
 
 `#if 0` 里的输出不会出现。
 
-```cpp run expect="留下" title="条件编译"
+```cpp run expect="kept" title="条件编译"
 #include <iostream>
 int main() {
 #if 0
-  std::cout << "隐藏\n";
+  std::cout << "hidden\n";
 #endif
-  std::cout << "留下\n";
+  std::cout << "kept\n";
   return 0;
 }
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 只定义一次
 

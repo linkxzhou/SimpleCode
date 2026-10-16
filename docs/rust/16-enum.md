@@ -18,7 +18,7 @@ updated: "2026-10-16"
 
 两个不带数据的变体就够描述开关。
 
-```rust run expect="开着" title="匹配开"
+```rust run expect="open" title="匹配开"
 enum Gate {
     Open,
     Shut,
@@ -27,8 +27,8 @@ enum Gate {
 fn main() {
     let gate = Gate::Open;
     let word = match gate {
-        Gate::Open => "开着",
-        Gate::Shut => "关着",
+        Gate::Open => "open",
+        Gate::Shut => "shut",
     };
     println!("{word}");
 }

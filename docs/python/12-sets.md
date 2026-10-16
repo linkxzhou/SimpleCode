@@ -41,7 +41,7 @@ print(len({1, 2} & {2, 3}))
 `in` 用来问这个值在不在集合里。
 
 ```python run expect="True" title="在不在"
-print("茶" in {"茶", "水"})
+print("tea" in {"tea", "water"})
 ```
 
 输出里能看到 `True`。

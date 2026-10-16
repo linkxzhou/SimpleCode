@@ -17,14 +17,14 @@ updated: "2026-10-15"
 
 ### 字符串标注
 
-第一个 TypeScript 例子打印「买笔」。类型只在源码里，输出仍是这个词。
+第一个 TypeScript 例子打印 buypen。类型只在源码里，输出仍是这个词。
 
-```ts run expect="买笔" title="一条标题"
-const item: string = "买笔";
+```ts run expect="buypen" title="一条标题"
+const item: string = "buypen";
 console.log(item);
 ```
 
-输出里能看到 `买笔`。
+输出里能看到 `buypen`。
 
 ### 数字标注
 

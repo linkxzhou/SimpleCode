@@ -28,13 +28,13 @@ echo file_get_contents("note.txt");
 
 `explode` separates the label from the price at the space.
 
-```php run expect="茶 18" title="Two fields"
+```php run expect="tea 18" title="Two fields"
 <?php
-$parts = explode(" ", "茶 18");
+$parts = explode(" ", "tea 18");
 echo $parts[0], " ", $parts[1], "\n";
 ```
 
-The two parts are `茶 18`.
+The two parts are `tea 18`.
 
 ### Split on newlines
 
@@ -42,7 +42,7 @@ A newline divides the text into two lines, so the count is 2.
 
 ```php run expect="2" title="Two lines"
 <?php
-$lines = explode("\n", "茶\n笔");
+$lines = explode("\n", "tea\npen");
 echo count($lines), "\n";
 ```
 

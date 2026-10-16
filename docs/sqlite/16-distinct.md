@@ -17,11 +17,11 @@ updated: "2026-10-15"
 
 ### 一列去重
 
-茶写了两次，结果里只剩一个。
+tea 写了两次，结果里只剩一个。
 
 ```sql run expect="2" title="两个名字"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('tea'), ('water');
 SELECT COUNT(*) FROM (SELECT DISTINCT name FROM item);
 ```
 
@@ -31,13 +31,13 @@ SELECT COUNT(*) FROM (SELECT DISTINCT name FROM item);
 
 排序后第一行是确定的。
 
-```sql run expect="水" title="字典序第一个"
+```sql run expect="water" title="字典序第一个"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水'), ('茶');
+INSERT INTO item VALUES ('tea'), ('water'), ('tea');
 SELECT name FROM (SELECT DISTINCT name FROM item) ORDER BY name LIMIT 1;
 ```
 
-输出里能看到 `水`。
+输出里能看到 `water`。
 
 ### 多列
 
@@ -45,7 +45,7 @@ SELECT name FROM (SELECT DISTINCT name FROM item) ORDER BY name LIMIT 1;
 
 ```sql run expect="2" title="两种组合"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('茶', 18), ('茶', 6);
+INSERT INTO item VALUES ('tea', 18), ('tea', 18), ('tea', 6);
 SELECT COUNT(*) FROM (SELECT DISTINCT name, price FROM item);
 ```
 

@@ -19,25 +19,25 @@ A module resembles a class, but you cannot call `new` on it. It holds a group of
 
 `def self.` defines a method that belongs to the module. Call it as `Shop.label`, not through an instance. The module is never constructed.
 
-```ruby run expect="店" title="Module method"
+```ruby run expect="shop" title="Module method"
 module Shop
   def self.label
-    "店"
+    "shop"
   end
 end
 puts Shop.label
 ```
 
-The printed line is `店`.
+The printed line is `shop`.
 
 ### Mix in
 
 `include` copies the module's instance methods into the class. `Cup` does not define `label` itself. After the mix-in, a new cup can call that method.
 
-```ruby run expect="杯子" title="Mix in"
+```ruby run expect="mug" title="Mix in"
 module Label
   def label
-    "杯子"
+    "mug"
   end
 end
 class Cup
@@ -46,7 +46,7 @@ end
 puts Cup.new.label
 ```
 
-The printed line is `杯子`.
+The printed line is `mug`.
 
 ### Another file is not here
 

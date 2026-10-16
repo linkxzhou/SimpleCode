@@ -19,12 +19,12 @@ updated: "2026-10-15"
 
 脚本从上到下执行，打出结果后就结束。
 
-```php run expect="开始" title="开始"
+```php run expect="start" title="开始"
 <?php
-echo "开始\n";
+echo "start\n";
 ```
 
-输出里能看到 `开始`。
+输出里能看到 `start`。
 
 ### 单价
 
@@ -42,10 +42,10 @@ echo $price, "\n";
 
 数组用方括号按下标取。下标从 0 开始。
 
-```php run expect="笔" title="第二项"
+```php run expect="pen" title="第二项"
 <?php
-$names = ["茶", "笔"];
+$names = ["tea", "pen"];
 echo $names[1], "\n";
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。

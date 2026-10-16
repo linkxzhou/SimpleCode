@@ -18,15 +18,15 @@ updated: "2026-10-15"
 
 `std::cout` 不会自己换行，换行写在字符串里。
 
-```cpp run expect="你好" title="打招呼"
+```cpp run expect="Hi" title="打招呼"
 #include <iostream>
 int main() {
-  std::cout << "你好\n";
+  std::cout << "Hi\n";
   return 0;
 }
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 返回零
 

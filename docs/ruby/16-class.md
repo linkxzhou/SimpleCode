@@ -37,10 +37,10 @@ puts Cup.new(8).sip
 
 子类不重写时用父类的方法。
 
-```ruby run expect="杯子" title="沿用"
+```ruby run expect="mug" title="沿用"
 class Cup
   def label
-    "杯子"
+    "mug"
   end
 end
 class Mug < Cup
@@ -48,24 +48,24 @@ end
 puts Mug.new.label
 ```
 
-输出里能看到 `杯子`。
+输出里能看到 `mug`。
 
 ### 重写
 
 子类同名方法会盖住父类。
 
-```ruby run expect="马克杯" title="覆盖"
+```ruby run expect="stein" title="覆盖"
 class Cup
   def label
-    "杯子"
+    "mug"
   end
 end
 class Mug < Cup
   def label
-    "马克杯"
+    "stein"
   end
 end
 puts Mug.new.label
 ```
 
-输出里能看到 `马克杯`。
+输出里能看到 `stein`。

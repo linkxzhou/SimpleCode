@@ -18,11 +18,11 @@ updated: "2026-10-16"
 
 条件为假时，花括号里的语句跳过。
 
-```rust run expect="付清" title="刚好付清"
+```rust run expect="paid" title="刚好付清"
 fn main() {
     let paid = 42;
     if paid == 42 {
-        println!("付清");
+        println!("paid");
     }
 }
 ```
@@ -32,13 +32,13 @@ fn main() {
 
 `else` 接住剩下的情况。
 
-```rust run expect="还差" title="钱不够"
+```rust run expect="short" title="钱不够"
 fn main() {
     let paid = 10;
     if paid == 42 {
-        println!("付清");
+        println!("paid");
     } else {
-        println!("还差");
+        println!("short");
     }
 }
 ```
@@ -48,10 +48,10 @@ fn main() {
 
 两个分支的类型要一致，结果可以绑到名字上。
 
-```rust run expect="夜班" title="按钟点选班"
+```rust run expect="night" title="按钟点选班"
 fn main() {
     let hour = 23;
-    let shift = if hour >= 18 { "夜班" } else { "日班" };
+    let shift = if hour >= 18 { "night" } else { "day" };
     println!("{shift}");
 }
 ```

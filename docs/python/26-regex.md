@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```python run expect="18" title="一处"
 import re
-print(re.search(r"\d+", "房号 18").group())
+print(re.search(r"\d+", "room 18").group())
 ```
 
 输出里能看到 `18`。
@@ -32,7 +32,7 @@ print(re.search(r"\d+", "房号 18").group())
 
 ```python run expect="2" title="两段"
 import re
-print(len(re.findall(r"\d+", "房号 18 室 2")))
+print(len(re.findall(r"\d+", "room 18 slot 2")))
 ```
 
 输出里能看到 `2`。

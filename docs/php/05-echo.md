@@ -19,31 +19,31 @@ updated: "2026-10-15"
 
 三段连着写，中间没有自动空格。
 
-```php run expect="甲乙" title="两段"
+```php run expect="firstsecond" title="两段"
 <?php
-echo "甲", "乙", "\n";
+echo "first", "second", "\n";
 ```
 
-输出里能看到 `甲乙`。
+输出里能看到 `firstsecond`。
 
 ### print
 
 `print` 只接受一段，这里打出一行。
 
-```php run expect="留下" title="一行"
+```php run expect="kept" title="一行"
 <?php
-print "留下\n";
+print "kept\n";
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 返回值
 
 `print` 先打出文字，再把 1 交给外面的 `echo`。
 
-```php run expect="茶1" title="文字和 1"
+```php run expect="tea1" title="文字和 1"
 <?php
-echo print("茶");
+echo print("tea");
 ```
 
-输出里能看到 `茶1`。
+输出里能看到 `tea1`。

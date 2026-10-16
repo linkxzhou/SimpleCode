@@ -20,8 +20,8 @@ updated: "2026-10-15"
 方括号里写键。键不存在时会抛出 `KeyError`。
 
 ```python run expect="18" title="单价"
-price = {"茶": 18}
-print(price["茶"])
+price = {"tea": 18}
+print(price["tea"])
 ```
 
 输出里能看到 `18`。
@@ -31,8 +31,8 @@ print(price["茶"])
 没有这个键时，`get` 返回你准备的默认值，而不是中断。
 
 ```python run expect="0" title="缺键"
-price = {"茶": 18}
-print(price.get("水", 0))
+price = {"tea": 18}
+print(price.get("water", 0))
 ```
 
 输出里能看到 `0`。
@@ -41,12 +41,12 @@ print(price.get("水", 0))
 
 列表不能当键。字符串和整数可以。
 
-```python run expect="不能当键" title="列表做键"
+```python run expect="not a key" title="列表做键"
 try:
-    {["茶"]: 18}
-    print("过了")
+    {["tea"]: 18}
+    print("passed")
 except TypeError:
-    print("不能当键")
+    print("not a key")
 ```
 
-输出里能看到 `不能当键`。
+输出里能看到 `not a key`。

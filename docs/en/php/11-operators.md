@@ -42,10 +42,10 @@ The `%` operator prints `1`.
 
 When the left operand is null, `??` selects the right operand.
 
-```php run expect="匿名" title="No name"
+```php run expect="anon" title="No name"
 <?php
 $name = null;
-echo $name ?? "匿名", "\n";
+echo $name ?? "anon", "\n";
 ```
 
-The fallback text is `匿名`.
+The fallback text is `anon`.

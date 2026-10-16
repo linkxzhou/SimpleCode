@@ -21,7 +21,7 @@ A second row that repeats the primary key is rejected. This script inserts one l
 
 ```sql run expect="1" title="One primary key"
 CREATE TABLE item (id INT PRIMARY KEY, name TEXT);
-INSERT INTO item VALUES (1, '茶');
+INSERT INTO item VALUES (1, 'tea');
 SELECT COUNT(*) FROM item;
 ```
 
@@ -31,13 +31,13 @@ The accepted row makes `COUNT(*)` equal `1`.
 
 A column declared `NOT NULL` receives a concrete value in the `INSERT`.
 
-```sql run expect="茶" title="A name is present"
+```sql run expect="tea" title="A name is present"
 CREATE TABLE item (name TEXT NOT NULL);
-INSERT INTO item VALUES ('茶');
+INSERT INTO item VALUES ('tea');
 SELECT name FROM item;
 ```
 
-The required name is stored as `茶`.
+The required name is stored as `tea`.
 
 ### CHECK accepts a legal number
 

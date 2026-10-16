@@ -42,10 +42,10 @@ fn main() {
 
 把说明放进双引号，它就会被打印。注释则不会。
 
-```rust run expect="这句执行" title="只有一句生效"
+```rust run expect="this runs" title="只有一句生效"
 fn main() {
     // println!("这句不执行");
-    println!("这句执行");
+    println!("this runs");
 }
 ```
 被注释的宏没有运行。

@@ -25,12 +25,12 @@ package main
 import "fmt"
 
 func main() {
-	price := map[string]int{"茶": 18}
-	fmt.Println(price["茶"])
+	price := map[string]int{"tea": 18}
+	fmt.Println(price["tea"])
 }
 ```
 
-The price of 茶 is `18`.
+The price of tea is `18`.
 
 ### The comma-ok lookup
 
@@ -43,7 +43,7 @@ import "fmt"
 
 func main() {
 	price := map[string]int{}
-	_, ok := price["水"]
+	_, ok := price["water"]
 	fmt.Println(ok)
 }
 ```
@@ -60,9 +60,9 @@ package main
 import "fmt"
 
 func main() {
-	price := map[string]int{"茶": 18}
-	delete(price, "茶")
-	_, ok := price["茶"]
+	price := map[string]int{"tea": 18}
+	delete(price, "tea")
+	_, ok := price["tea"]
 	fmt.Println(ok)
 }
 ```
@@ -73,7 +73,7 @@ After the removal the lookup is `false`.
 
 A map variable with no `make` and no literal is `nil`. Reading it returns the zero value. Writing it panics.
 
-```go run expect="不能写" title="Create before you write"
+```go run expect="nowrite" title="Create before you write"
 package main
 
 import "fmt"
@@ -81,12 +81,12 @@ import "fmt"
 func main() {
 	defer func() {
 		if recover() != nil {
-			fmt.Println("不能写")
+			fmt.Println("nowrite")
 		}
 	}()
 	var price map[string]int
-	price["茶"] = 18
+	price["tea"] = 18
 }
 ```
 
-The panic is reported as `不能写`.
+The panic is reported as `nowrite`.

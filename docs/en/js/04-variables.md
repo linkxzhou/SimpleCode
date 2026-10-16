@@ -19,13 +19,13 @@ updated: "2026-10-16"
 
 The opening line creates `item` without a value. The next line stores a string in that name.
 
-```js run expect="茶" title="Assign a string"
+```js run expect="tea" title="Assign a string"
 let item;
-item = "茶";
+item = "tea";
 console.log(item);
 ```
 
-Printing `item` shows `茶`.
+Printing `item` shows `tea`.
 
 ### Reading too early
 

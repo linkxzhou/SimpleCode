@@ -19,13 +19,13 @@ updated: "2026-10-16"
 
 The column list and the `VALUES` list line up position by position.
 
-```sql run expect="水" title="Swapped column order"
+```sql run expect="water" title="Swapped column order"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item (price, name) VALUES (6, '水');
+INSERT INTO item (price, name) VALUES (6, 'water');
 SELECT name FROM item;
 ```
 
-The name supplied in `VALUES` is stored as `水`.
+The name supplied in `VALUES` is stored as `water`.
 
 ### Several rows in one statement
 
@@ -33,7 +33,7 @@ Each parenthesized group is one row. `COUNT(*)` reports how many rows the table 
 
 ```sql run expect="2" title="Two rows"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('water');
 SELECT COUNT(*) FROM item;
 ```
 
@@ -45,7 +45,7 @@ A column left out of the insert is NULL. `IS NULL` returns 1 for that cell.
 
 ```sql run expect="1" title="No unit price"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item (name) VALUES ('茶');
+INSERT INTO item (name) VALUES ('tea');
 SELECT price IS NULL FROM item;
 ```
 

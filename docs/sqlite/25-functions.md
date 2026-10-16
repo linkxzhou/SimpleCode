@@ -29,10 +29,10 @@ SELECT COUNT(*), SUM(price) FROM item;
 
 ### 长度
 
-`length` 对文本按字符计。两个汉字是 2。
+`length` 对文本按字符计。`Hi` 的长度是 2。
 
 ```sql run expect="2" title="两个字"
-SELECT length('你好');
+SELECT length('Hi');
 ```
 
 输出里能看到 `2`。

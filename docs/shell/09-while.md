@@ -19,31 +19,31 @@ updated: "2026-10-15"
 
 条件先成立，循环体里把 `n` 改成 0，于是只打出一次。
 
-```sh run expect="一次" title="只一次"
+```sh run expect="once" title="只一次"
 n=1
 while [ "$n" = 1 ]
 do
-  printf '%s\n' 一次
+  printf '%s\n' once
   n=0
 done
 ```
 
-输出里能看到 `一次`。
+输出里能看到 `once`。
 
 ### 一开始就不进
 
 条件一开始就是失败，循环体不执行。
 
-```sh run expect="跳过" title="没有进入"
+```sh run expect="skip" title="没有进入"
 n=0
 while [ "$n" = 1 ]
 do
-  printf '%s\n' 不该出现
+  printf '%s\n' absent
 done
-printf '%s\n' 跳过
+printf '%s\n' skip
 ```
 
-输出里能看到 `跳过`。
+输出里能看到 `skip`。
 
 ### 算术展开不运行
 

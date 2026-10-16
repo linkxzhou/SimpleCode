@@ -19,7 +19,7 @@ updated: "2026-10-15"
 
 `type` 给结构体起名字。每个字段一行，先名字后类型。
 
-```go run expect="茶" title="读取字段"
+```go run expect="tea" title="读取字段"
 package main
 
 import "fmt"
@@ -31,12 +31,12 @@ type Item struct {
 
 func main() {
 	var it Item
-	it.Name = "茶"
+	it.Name = "tea"
 	fmt.Println(it.Name)
 }
 ```
 
-输出是 `茶`。未设置的 `Price` 是 0。
+输出是 `tea`。未设置的 `Price` 是 0。
 
 ### 字面量
 
@@ -53,7 +53,7 @@ type Item struct {
 }
 
 func main() {
-	it := Item{Name: "茶", Price: 18}
+	it := Item{Name: "tea", Price: 18}
 	fmt.Println(it.Price)
 }
 ```
@@ -64,7 +64,7 @@ func main() {
 
 方法写在函数名前面的接收者上。值接收者拿到的是副本。
 
-```go run expect="茶 18" title="方法"
+```go run expect="tea 18" title="方法"
 package main
 
 import "fmt"
@@ -79,12 +79,12 @@ func (it Item) Label() string {
 }
 
 func main() {
-	it := Item{Name: "茶", Price: 18}
+	it := Item{Name: "tea", Price: 18}
 	fmt.Println(it.Label(), it.Price)
 }
 ```
 
-输出是 `茶 18`。
+输出是 `tea 18`。
 
 ### 指针接收者
 

@@ -19,12 +19,12 @@ updated: "2026-10-15"
 
 第一个元素的下标是 0。负数下标从末尾数。
 
-```python run expect="茶" title="第二项"
-items = ["水", "茶"]
+```python run expect="tea" title="第二项"
+items = ["water", "tea"]
 print(items[1])
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 追加
 

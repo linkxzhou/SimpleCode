@@ -19,43 +19,43 @@ updated: "2026-10-15"
 
 只走一个分支。
 
-```ruby run expect="正数" title="正数分支"
+```ruby run expect="plus" title="正数分支"
 n = 4
 if n > 0
-  puts "正数"
+  puts "plus"
 else
-  puts "非正"
+  puts "badnum"
 end
 ```
 
-输出里能看到 `正数`。
+输出里能看到 `plus`。
 
 ### elsif
 
 从上往下试。
 
-```ruby run expect="中" title="分数档"
+```ruby run expect="mid" title="分数档"
 score = 70
 if score >= 90
-  puts "高"
+  puts "high"
 elsif score >= 60
-  puts "中"
+  puts "mid"
 else
-  puts "低"
+  puts "low"
 end
 ```
 
-输出里能看到 `中`。
+输出里能看到 `mid`。
 
 ### unless
 
 `unless` 在条件为假时执行。
 
-```ruby run expect="关着" title="反条件"
+```ruby run expect="shut" title="反条件"
 open = false
 unless open
-  puts "关着"
+  puts "shut"
 end
 ```
 
-输出里能看到 `关着`。
+输出里能看到 `shut`。

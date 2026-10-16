@@ -19,31 +19,31 @@ There is no `$((...))` here, so a counter cannot be increased by one. Change the
 
 The test passes on entry. The body stores 0 in `n`, and the loop stops after that pass.
 
-```sh run expect="一次" title="Only once"
+```sh run expect="once" title="Only once"
 n=1
 while [ "$n" = 1 ]
 do
-  printf '%s\n' 一次
+  printf '%s\n' once
   n=0
 done
 ```
 
-The line shows `一次`.
+The line shows `once`.
 
 ### The body never runs
 
 The test is already false, so control never enters the loop. The print after `done` is what appears.
 
-```sh run expect="跳过" title="The body is skipped"
+```sh run expect="skip" title="The body is skipped"
 n=0
 while [ "$n" = 1 ]
 do
-  printf '%s\n' 不该出现
+  printf '%s\n' absent
 done
-printf '%s\n' 跳过
+printf '%s\n' skip
 ```
 
-The line shows `跳过`.
+The line shows `skip`.
 
 ### Arithmetic expansion is unread
 

@@ -21,7 +21,7 @@ Text after `//` on that line is ignored.
 
 ```rust run expect="42" title="Comment at the line end"
 fn main() {
-    let fare = 42; // 单位是分
+    let fare = 42; // unit is cents
     println!("{fare}");
 }
 ```
@@ -34,7 +34,7 @@ From `/*` to `*/` the compiler skips the text, and the span may cross lines. Avo
 
 ```rust run expect="42" title="Middle commented out"
 fn main() {
-    let fare = 40 + /* 纸袋 */ 2;
+    let fare = 40 + /* paper */ 2;
     println!("{fare}");
 }
 ```
@@ -45,11 +45,11 @@ The addition sees 40 and 2, then prints 42.
 
 Quoted text is printed. Commented text is not.
 
-```rust run expect="这句执行" title="Only one line runs"
+```rust run expect="this runs" title="Only one line runs"
 fn main() {
-    // println!("这句不执行");
-    println!("这句执行");
+    // println!("this line does not run");
+    println!("this runs");
 }
 ```
 
-The commented macro never runs. The line is `这句执行`.
+The commented macro never runs. The line is `this runs`.

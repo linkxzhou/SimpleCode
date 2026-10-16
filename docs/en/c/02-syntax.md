@@ -19,16 +19,16 @@ Each statement in a C function ends with a semicolon. Braces mark where a block 
 
 The two `printf` calls are separate statements. Each one sits on its own line and ends with a semicolon.
 
-```c run expect="甲" title="First line"
+```c run expect="first" title="First line"
 #include <stdio.h>
 int main(void) {
-  printf("甲\n");
-  printf("乙\n");
+  printf("first\n");
+  printf("second\n");
   return 0;
 }
 ```
 
-The output contains `甲`.
+The output contains `first`.
 
 ### A block
 
@@ -53,13 +53,13 @@ The output contains `2`.
 
 Text between `/*` and `*/` is ignored by the compiler. The `printf` inside that comment never runs, and the later call does.
 
-```c run expect="留下" title="Skip the comment"
+```c run expect="kept" title="Skip the comment"
 #include <stdio.h>
 int main(void) {
-  /* printf("隐藏\n"); */
-  printf("留下\n");
+  /* printf("hidden\n"); */
+  printf("kept\n");
   return 0;
 }
 ```
 
-The output contains `留下`.
+The output contains `kept`.

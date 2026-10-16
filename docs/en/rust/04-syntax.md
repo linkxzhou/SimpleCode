@@ -46,12 +46,12 @@ fn main() {
 
 A second `let` on the same name hides the earlier value from later code.
 
-```rust run expect="新窗" title="The later name"
+```rust run expect="newwin" title="The later name"
 fn main() {
-    let label = "旧窗";
-    let label = "新窗";
+    let label = "oldwin";
+    let label = "newwin";
     println!("{label}");
 }
 ```
 
-`旧窗` never reaches the terminal. The line is `新窗`.
+`oldwin` never reaches the terminal. The line is `newwin`.

@@ -29,7 +29,7 @@ import (
 
 func div(a, b int) (int, error) {
 	if b == 0 {
-		return 0, errors.New("除数为 0")
+		return 0, errors.New("divisor  0")
 	}
 	return a / b, nil
 }
@@ -46,7 +46,7 @@ Dividing by zero reports a failure, so the flag is `true`.
 
 `errors.New` builds an error from a piece of text. Printing the error shows that text.
 
-```go run expect="缺货" title="Error text"
+```go run expect="soldout" title="Error text"
 package main
 
 import (
@@ -55,12 +55,12 @@ import (
 )
 
 func main() {
-	err := errors.New("缺货")
+	err := errors.New("soldout")
 	fmt.Println(err)
 }
 ```
 
-The error text is `缺货`.
+The error text is `soldout`.
 
 ### Wrapping and errors.Is
 
@@ -74,10 +74,10 @@ import (
 	"fmt"
 )
 
-var errSoldOut = errors.New("缺货")
+var errSoldOut = errors.New("soldout")
 
 func main() {
-	err := fmt.Errorf("订单: %w", errSoldOut)
+	err := fmt.Errorf("order: %w", errSoldOut)
 	fmt.Println(errors.Is(err, errSoldOut))
 }
 ```
@@ -93,6 +93,6 @@ type myErr struct{ msg string }
 
 func (e myErr) Error() string { return e.msg }
 
-var err error = myErr{msg: "坏了"}
+var err error = myErr{msg: "broken"}
 err.Error()
 ```

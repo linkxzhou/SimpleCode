@@ -17,41 +17,41 @@ updated: "2026-10-15"
 
 ### 两个词
 
-先打出茶，再打出笔。
+先打出 tea，再打出 pen。
 
-```sh run expect="茶" title="第一项"
-for item in 茶 笔
+```sh run expect="tea" title="第一项"
+for item in tea pen
 do
   printf '%s\n' "$item"
 done
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 一个词
 
-清单里只有钥匙时，循环只走一次。
+清单里只有 key 时，循环只走一次。
 
-```sh run expect="钥匙" title="只有一项"
-for item in 钥匙
+```sh run expect="key" title="只有一项"
+for item in key
 do
   printf '%s\n' "$item"
 done
 ```
 
-输出里能看到 `钥匙`。
+输出里能看到 `key`。
 
 ### 三个词的最后一个
 
-最后一次循环留下车票。
+最后一次循环留下 ticket。
 
-```sh run expect="车票" title="最后一项"
-last=无
-for item in 笔 水杯 车票
+```sh run expect="ticket" title="最后一项"
+last=none
+for item in pen cup ticket
 do
   last=$item
 done
 printf '%s\n' "$last"
 ```
 
-输出里能看到 `车票`。
+输出里能看到 `ticket`。

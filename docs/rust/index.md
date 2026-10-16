@@ -13,16 +13,16 @@ updated: "2026-10-16"
 ---
 这一本只编译一个 main.rs。编译器是浏览器里的 weblings rustc，目标是 wasm32-wasip1。
 
-### 先打出船票
+### 先打出一行
 
 `println!` 在末尾加换行。花括号里的数会按顺序填进去。
 
-```rust run expect="船票" title="窗口那一行"
+```rust run expect="pass" title="窗口那一行"
 fn main() {
-    println!("窗口打出{}", "船票");
+    println!("say {}", "pass");
 }
 ```
-终端里会出现船票。
+终端里会出现 `pass`。
 
 ### 三个数相加
 
@@ -43,6 +43,6 @@ fn main() {
 
 ```rust norun title="没有 cargo"
 fn main() {
-    println!("cargo new 不会在这里跑");
+    println!("cargo new will not run here");
 }
 ```

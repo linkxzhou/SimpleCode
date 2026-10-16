@@ -30,24 +30,24 @@ The first entry is `8`.
 
 Assigning through an index on a tuple fails. Switch to a list when the contents must change.
 
-```python run expect="不能改" title="Read only"
+```python run expect="noedit" title="Read only"
 pair = (8, 9)
 try:
     pair[0] = 1
-    print("改了")
+    print("changed")
 except TypeError:
-    print("不能改")
+    print("noedit")
 ```
 
-The error path prints `不能改`.
+The error path prints `noedit`.
 
 ### Unpack
 
 Put the same number of names on the left. The tuple on the right is assigned by position.
 
-```python run expect="茶 18" title="Two names"
-name, price = ("茶", 18)
+```python run expect="tea 18" title="Two names"
+name, price = ("tea", 18)
 print(name, price)
 ```
 
-The two values are `茶 18`.
+The two values are `tea 18`.

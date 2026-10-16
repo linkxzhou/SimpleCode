@@ -35,11 +35,11 @@ fn main() {
 
 子模块继续用 `pub` 把更里面的函数放出来。
 
-```rust run expect="铜钥匙" title="两层路径"
+```rust run expect="copperkey" title="两层路径"
 mod desk {
     pub mod drawer {
         pub fn key() -> &'static str {
-            "铜钥匙"
+            "copperkey"
         }
     }
 }
@@ -54,7 +54,7 @@ fn main() {
 
 字段也要 `pub`，外面才能读写。
 
-```rust run expect="夜班" title="公开字段"
+```rust run expect="night" title="公开字段"
 mod counter {
     pub struct Shift {
         pub name: &'static str,
@@ -62,7 +62,7 @@ mod counter {
 }
 
 fn main() {
-    let shift = counter::Shift { name: "夜班" };
+    let shift = counter::Shift { name: "night" };
     println!("{}", shift.name);
 }
 ```

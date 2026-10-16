@@ -17,10 +17,10 @@ grep 把匹配的行打到标准输出。图案先用这颗镜像上试过的编
 
 ### 打印匹配的行
 
-printf 造出两行，grep 只留下含乙的那一行。中文图案可以过，因为串口按 UTF-8 解码。
+printf 造出两行，grep 只留下含 second 的那一行。
 
-```linux run expect="乙" title="留下乙"
-printf '甲\n乙\n' | grep 乙
+```linux run expect="second" title="留下乙"
+printf 'first\nsecond\n' | grep second
 ```
 
 ### -n 带行号

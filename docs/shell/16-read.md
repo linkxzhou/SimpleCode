@@ -28,22 +28,22 @@ printf '%s\n' "$name"
 
 ### 再打出前缀
 
-读到的词可以接在别的字后面。
+读到的词可以接在 Hello, 后面。
 
-```sh run stdin="Ada\n" expect="你好，Ada" title="接上前缀"
+```sh run stdin="Ada\n" expect="Hello, Ada" title="接上前缀"
 read name
-printf '%s\n' "你好，$name"
+printf '%s\n' "Hello, $name"
 ```
 
-输出里能看到 `你好，Ada`。
+输出里能看到 `Hello, Ada`。
 
 ### 从管道读
 
 没有键盘时，也可以从左边的 `printf` 读。
 
-```sh run expect="笔" title="来自管道"
-printf '%s\n' 笔 | read item
+```sh run expect="pen" title="来自管道"
+printf '%s\n' pen | read item
 printf '%s\n' "$item"
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。

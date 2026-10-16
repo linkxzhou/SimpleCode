@@ -19,26 +19,26 @@ updated: "2026-10-15"
 
 参数之间会插入空格。
 
-```js run expect="茶 18" title="两项"
-console.log("茶", 18);
+```js run expect="tea 18" title="两项"
+console.log("tea", 18);
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 拼成一个字符串
 
 `join` 用你给的分隔符，不会多出一个空格。
 
-```js run expect="茶-水" title="连接"
-console.log(["茶", "水"].join("-"));
+```js run expect="tea-water" title="连接"
+console.log(["tea", "water"].join("-"));
 ```
 
-输出里能看到 `茶-水`。
+输出里能看到 `tea-water`。
 
 ### alert 不存在
 
 弹窗是浏览器 API。这里改用终端。
 
 ```js norun title="没有弹窗"
-alert("你好");
+alert("Hi");
 ```

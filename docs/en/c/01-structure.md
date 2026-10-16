@@ -19,15 +19,15 @@ A program that runs must define `main`. Include the matching header before you c
 
 An interpreted script can start without `main`. A C program always begins at `main`.
 
-```c run expect="进入" title="Entry"
+```c run expect="enter" title="Entry"
 #include <stdio.h>
 int main(void) {
-  printf("进入\n");
+  printf("enter\n");
   return 0;
 }
 ```
 
-The output contains `进入`.
+The output contains `enter`.
 
 ### A helper function
 

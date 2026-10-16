@@ -31,15 +31,15 @@ SELECT price FROM item WHERE price = (SELECT MAX(price) FROM item);
 
 名字在另一张表里才留下。
 
-```sql run expect="茶" title="要留下的"
+```sql run expect="tea" title="要留下的"
 CREATE TABLE item (name TEXT);
 CREATE TABLE keep (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-INSERT INTO keep VALUES ('茶');
+INSERT INTO item VALUES ('tea'), ('water');
+INSERT INTO keep VALUES ('tea');
 SELECT name FROM item WHERE name IN (SELECT name FROM keep);
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### FROM 里的子查询
 

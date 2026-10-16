@@ -33,8 +33,8 @@ console.log(sum);
 
 循环变量是元素本身，不是下标。
 
-```js run expect="茶" title="最后一项"
-const items = ["水", "茶"];
+```js run expect="tea" title="最后一项"
+const items = ["water", "tea"];
 let last = "";
 for (const name of items) {
   last = name;
@@ -42,15 +42,15 @@ for (const name of items) {
 console.log(last);
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 下标仍可用普通 for
 
 需要位置时，用长度和方括号。
 
-```js run expect="茶" title="下标 1"
-const items = ["水", "茶"];
+```js run expect="tea" title="下标 1"
+const items = ["water", "tea"];
 console.log(items[1]);
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

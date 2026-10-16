@@ -13,14 +13,14 @@ sources:
 updated: "2026-10-16"
 ---
 
-`length` counts UTF-16 code units. Each everyday Chinese character occupies one unit.
+`length` counts UTF-16 code units.
 
 ### Two units
 
-The string of two hanzi therefore reports a length of two.
+`Hi` reports a length of 2.
 
 ```js run expect="2" title="Two characters"
-console.log("你好".length);
+console.log("Hi".length);
 ```
 
 The reported length is `2`.
@@ -29,18 +29,18 @@ The reported length is `2`.
 
 `slice` keeps the start index and drops the end index.
 
-```js run expect="红" title="First character"
-console.log("红茶".slice(0, 1));
+```js run expect="r" title="First character"
+console.log("redtea".slice(0, 1));
 ```
 
-The kept character is `红`.
+The kept character is `r`.
 
 ### The first match only
 
 `replace` changes the first match and leaves any later match alone. A global regular expression, covered elsewhere, is what changes every match.
 
-```js run expect="绿茶" title="Swap one character"
-console.log("红茶".replace("红", "绿"));
+```js run expect="greentea" title="Swap one character"
+console.log("redtea".replace("red", "green"));
 ```
 
-The swapped word is `绿茶`.
+The swapped word is `greentea`.

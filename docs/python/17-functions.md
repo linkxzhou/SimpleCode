@@ -31,13 +31,13 @@ print(area(3, 4))
 
 调用时可以省略已经有默认值的参数。
 
-```python run expect="你好，客人" title="省略名字"
-def greet(name="客人"):
-    return "你好，" + name
+```python run expect="Hello, guest" title="省略名字"
+def greet(name="guest"):
+    return "Hello, " + name
 print(greet())
 ```
 
-输出里能看到 `你好，客人`。
+输出里能看到 `Hello, guest`。
 
 ### 默认可变参数会记住上次
 
@@ -47,7 +47,7 @@ print(greet())
 def push(item, box=[]):
     box.append(item)
     return len(box)
-print(push("茶"), push("水"))
+print(push("tea"), push("water"))
 ```
 
 输出里能看到 `1 2`。

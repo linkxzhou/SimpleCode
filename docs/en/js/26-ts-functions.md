@@ -30,23 +30,23 @@ console.log(twice(4));
 
 The question mark after the parameter name means the caller may omit it.
 
-```ts run expect="你好" title="Omit the argument"
+```ts run expect="Hi" title="Omit the argument"
 function greet(name?: string): string {
-  return name ? "你好，" + name : "你好";
+  return name ? "Hello, " + name : "Hi";
 }
 console.log(greet());
 ```
 
-Omitting the argument logs `你好`.
+Omitting the argument logs `Hi`.
 
 ### A variable with a function type
 
 A variable can be declared with a function shape, then assigned a function that matches that shape.
 
-```ts run expect="房号18" title="Function variable"
+```ts run expect="room18" title="Function variable"
 let read: (n: number) => string;
-read = (n) => "房号" + n;
+read = (n) => "room" + n;
 console.log(read(18));
 ```
 
-Calling that function logs `房号18`.
+Calling that function logs `room18`.

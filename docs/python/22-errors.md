@@ -19,39 +19,39 @@ updated: "2026-10-15"
 
 整数除以零会抛出 `ZeroDivisionError`。
 
-```python run expect="除零" title="接住"
+```python run expect="divzero" title="接住"
 try:
     print(1 // 0)
 except ZeroDivisionError:
-    print("除零")
+    print("divzero")
 ```
 
-输出里能看到 `除零`。
+输出里能看到 `divzero`。
 
 ### 类型要对上
 
 接 `ValueError` 接不住除零。要接的类型和实际抛出的一致。
 
-```python run expect="除零" title="第二个分支"
+```python run expect="divzero" title="第二个分支"
 try:
     1 // 0
-    print("过了")
+    print("passed")
 except ValueError:
-    print("值错误")
+    print("bad value")
 except ZeroDivisionError:
-    print("除零")
+    print("divzero")
 ```
 
-输出里能看到 `除零`。
+输出里能看到 `divzero`。
 
 ### 主动抛出
 
 `raise` 让调用方必须处理，或者让程序停在这里。
 
-```python run expect="数量不够" title="自己抛出"
+```python run expect="not enough" title="自己抛出"
 def sell(n):
     if n < 1:
-        raise ValueError("数量不够")
+        raise ValueError("not enough")
     return n
 try:
     sell(0)
@@ -59,4 +59,4 @@ except ValueError as err:
     print(err)
 ```
 
-输出里能看到 `数量不够`。
+输出里能看到 `not enough`。

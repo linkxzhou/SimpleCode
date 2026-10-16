@@ -19,44 +19,44 @@ An `if` condition is a boolean. Each branch has its own braces.
 
 A false condition skips the statements inside the braces.
 
-```rust run expect="付清" title="Paid in full"
+```rust run expect="paid" title="Paid in full"
 fn main() {
     let paid = 42;
     if paid == 42 {
-        println!("付清");
+        println!("paid");
     }
 }
 ```
 
-`付清` appears only because the amounts are equal.
+`paid` appears only because the amounts are equal.
 
 ### else covers the remaining case
 
 `else` receives every case the `if` did not take.
 
-```rust run expect="还差" title="Not enough money"
+```rust run expect="short" title="Not enough money"
 fn main() {
     let paid = 10;
     if paid == 42 {
-        println!("付清");
+        println!("paid");
     } else {
-        println!("还差");
+        println!("short");
     }
 }
 ```
 
-10 is not 42, so control enters `else` and prints `还差`.
+10 is not 42, so control enters `else` and prints `short`.
 
 ### A branch produces a value
 
 Both branches must share one type. The result can be bound to a name.
 
-```rust run expect="夜班" title="Pick a shift by the hour"
+```rust run expect="night" title="Pick a shift by the hour"
 fn main() {
     let hour = 23;
-    let shift = if hour >= 18 { "夜班" } else { "日班" };
+    let shift = if hour >= 18 { "night" } else { "day" };
     println!("{shift}");
 }
 ```
 
-Hour 23 falls in `夜班`.
+Hour 23 falls in `night`.

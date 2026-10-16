@@ -31,21 +31,21 @@ print(add(2, 5))
 
 `if` 和 `for` 的下一行必须缩进，否则解释器认为块是空的。
 
-```python run expect="正" title="条件块"
+```python run expect="pos" title="条件块"
 n = 2
 if n > 0:
-    print("正")
+    print("pos")
 ```
 
-输出里能看到 `正`。
+输出里能看到 `pos`。
 
 ### 一行一条简单语句
 
 分号可以把两句挤在一行，但课程里仍一行写一句，方便对照输出。
 
-```python run expect="甲" title="两行输出"
-print("甲")
-print("乙")
+```python run expect="first" title="两行输出"
+print("first")
+print("second")
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。

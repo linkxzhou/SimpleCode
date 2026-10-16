@@ -29,13 +29,13 @@ SELECT COUNT(*), SUM(price) FROM item;
 
 ### Length in characters
 
-`length` counts characters in a text value. The two characters in 你好 have length 2.
+`length` counts characters in a text value. `Hi` has length 2.
 
 ```sql run expect="2" title="Two characters"
-SELECT length('你好');
+SELECT length('Hi');
 ```
 
-`length('你好')` returns `2`.
+`length('Hi')` returns `2`.
 
 ### Round to a whole number
 

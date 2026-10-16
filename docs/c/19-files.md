@@ -32,17 +32,17 @@ int main(void) {
 
 `sprintf` 把格式化结果放进数组。
 
-```c run expect="茶 18" title="一行文本"
+```c run expect="tea 18" title="一行文本"
 #include <stdio.h>
 int main(void) {
   char buf[32];
-  sprintf(buf, "茶 %d", 18);
+  sprintf(buf, "tea %d", 18);
   printf("%s\n", buf);
   return 0;
 }
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 再读出来
 

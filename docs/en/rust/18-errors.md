@@ -54,9 +54,9 @@ Do not call `unwrap` on a parse that is certain to fail. The process would abort
 
 ```rust run expect="0" title="Zero when parsing fails"
 fn main() {
-    let bad = "票".parse::<i32>().unwrap_or(0);
+    let bad = "stub".parse::<i32>().unwrap_or(0);
     println!("{bad}");
 }
 ```
 
-The character `票` is not an integer, so the fallback is 0.
+The character `stub` is not an integer, so the fallback is 0.

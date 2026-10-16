@@ -29,12 +29,12 @@ print(type(3).__name__, type(1.5).__name__, type(True).__name__)
 
 单引号和双引号都可以。引号里面的字是文本，不是变量名。
 
-```python run expect="茶" title="文本"
-item = "茶"
+```python run expect="tea" title="文本"
+item = "tea"
 print(item)
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 空值在条件里为假
 

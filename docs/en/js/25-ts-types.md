@@ -19,12 +19,12 @@ A type annotation sits beside a name. Before the program runs, Sucrase removes t
 
 The first TypeScript sample logs the characters for buying a pen. The annotation exists only in the source. The output is still that word.
 
-```ts run expect="买笔" title="One title"
-const item: string = "买笔";
+```ts run expect="buypen" title="One title"
+const item: string = "buypen";
 console.log(item);
 ```
 
-The logged word is `买笔`.
+The logged word is `buypen`.
 
 ### Annotate numbers
 

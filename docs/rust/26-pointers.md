@@ -30,16 +30,16 @@ fn main() {
 
 `Rc::clone` 只增加计数，不复制字符串的内容。
 
-```rust run expect="船票2" title="两个所有者"
+```rust run expect="pass2" title="两个所有者"
 use std::rc::Rc;
 
 fn main() {
-    let ticket = Rc::new(String::from("船票"));
+    let ticket = Rc::new(String::from("pass"));
     let again = Rc::clone(&ticket);
     println!("{}{}", ticket, Rc::strong_count(&again));
 }
 ```
-文本还是船票，强引用数是 2。
+文本还是 `pass`，强引用数是 2。
 
 ### RefCell 允许稍后修改
 

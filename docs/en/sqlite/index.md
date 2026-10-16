@@ -18,11 +18,11 @@ This tutorial runs each script on an in-memory SQLite database. When the script 
 
 A query can project literals on their own. The string and the number share one result row.
 
-```sql run expect="茶|18" title="One row of literals"
-SELECT '茶', 18;
+```sql run expect="tea|18" title="One row of literals"
+SELECT 'tea', 18;
 ```
 
-The projected row is `茶|18`.
+The projected row is `tea|18`.
 
 ### A fresh database each time
 

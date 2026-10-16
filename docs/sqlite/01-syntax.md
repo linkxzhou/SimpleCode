@@ -40,8 +40,8 @@ select 3;
 
 双引号在 SQLite 里通常是标识符。文本请用单引号。
 
-```sql run expect="水" title="文本"
-SELECT '水';
+```sql run expect="water" title="文本"
+SELECT 'water';
 ```
 
-输出里能看到 `水`。
+输出里能看到 `water`。

@@ -21,13 +21,13 @@ The second argument of `error` is 0, so the message has no line number. `pcall` 
 
 ```lua run expect="false" title="Failure first"
 local ok, err = pcall(function()
-  error("拒绝", 0)
+  error("denied", 0)
 end)
 print(ok)
 print(err)
 ```
 
-The output shows `false`, followed by `拒绝`.
+The output shows `false`, followed by `denied`.
 
 ### Success
 
@@ -48,7 +48,7 @@ The output shows `true`.
 `os.execute` would start a program outside this interpreter.
 
 ```lua norun title="Do not run an external command"
-os.execute("echo 你好")
+os.execute("echo Hi")
 ```
 
 This block is not run.

@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 名字指向一个值，之后可以再指到别的值。
 
-```ruby run expect="水" title="改绑定"
-item = "茶"
-item = "水"
+```ruby run expect="water" title="改绑定"
+item = "tea"
+item = "water"
 puts item
 ```
 
-输出里能看到 `水`。
+输出里能看到 `water`。
 
 ### 常量以大写开头
 

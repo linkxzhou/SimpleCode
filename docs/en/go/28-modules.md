@@ -28,17 +28,17 @@ go get rsc.io/quote
 
 Yaegi executes the text in the editor. A second `.go` file is absent, and so is `go.mod`.
 
-```go run expect="单文件" title="The current file"
+```go run expect="one file" title="The current file"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("单文件")
+	fmt.Println("one file")
 }
 ```
 
-The label printed is `单文件`.
+The label printed is `one file`.
 
 ### Standard-library import paths
 

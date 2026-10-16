@@ -20,28 +20,28 @@ updated: "2026-10-15"
 真实路径在这里没有保证。不要在可运行例子里创建文件。
 
 ```python norun title="不写磁盘"
-open("note.txt", "w").write("茶\n")
+open("note.txt", "w").write("tea\n")
 ```
 
 ### 内存里的文件
 
 `io.StringIO` 有 `write` 和 `getvalue`，形状接近文件，但不碰路径。
 
-```python run expect="茶" title="写入内存"
+```python run expect="tea" title="写入内存"
 import io
 buf = io.StringIO()
-buf.write("茶\n")
+buf.write("tea\n")
 print(buf.getvalue().strip())
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 按行切开
 
 内容已经在字符串里时，`splitlines` 按换行切开，并丢掉换行符本身。
 
 ```python run expect="2" title="两行"
-text = "茶\n水\n"
+text = "tea\nwater\n"
 print(len(text.splitlines()))
 ```
 

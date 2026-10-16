@@ -18,9 +18,9 @@ updated: "2026-10-16"
 
 `clone` 做出另一份堆上的文本。
 
-```rust run expect="船票船票" title="两份船票"
+```rust run expect="passpass" title="两份船票"
 fn main() {
-    let ticket = String::from("船票");
+    let ticket = String::from("pass");
     let copy = ticket.clone();
     println!("{ticket}{copy}");
 }
@@ -48,13 +48,13 @@ fn main() {
 
 函数参数获得所有权后，调用方就不要再碰那个名字。
 
-```rust run expect="周票" title="所有权移交"
+```rust run expect="weekly" title="所有权移交"
 fn hold(ticket: String) -> String {
     ticket
 }
 
 fn main() {
-    let ticket = String::from("周票");
+    let ticket = String::from("weekly");
     let kept = hold(ticket);
     println!("{kept}");
 }

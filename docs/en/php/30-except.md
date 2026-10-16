@@ -17,25 +17,25 @@ Throwing stops the current call. The caller chooses the text that reaches the ou
 
 ### A rejected price
 
-Calling `require_price(0)` throws `BadPrice`. The `catch` block writes `拒绝`.
+Calling `require_price(0)` throws `BadPrice`. The `catch` block writes `denied`.
 
-```php run expect="拒绝" title="Catch the exception"
+```php run expect="denied" title="Catch the exception"
 <?php
 class BadPrice extends Exception {}
 function require_price($n) {
     if ($n <= 0) {
-        throw new BadPrice("拒绝");
+        throw new BadPrice("denied");
     }
     return $n;
 }
 try {
     echo require_price(0), "\n";
 } catch (BadPrice $e) {
-    echo "拒绝\n";
+    echo "denied\n";
 }
 ```
 
-The caught result is `拒绝`.
+The caught result is `denied`.
 
 ### An accepted price
 
@@ -46,14 +46,14 @@ A positive argument returns from the `try` block, so `catch` is skipped.
 class LowPrice extends Exception {}
 function keep_price($n) {
     if ($n <= 0) {
-        throw new LowPrice("拒绝");
+        throw new LowPrice("denied");
     }
     return $n;
 }
 try {
     echo keep_price(18), "\n";
 } catch (LowPrice $e) {
-    echo "拒绝\n";
+    echo "denied\n";
 }
 ```
 
@@ -63,14 +63,14 @@ The returned price is `18`.
 
 `getMessage` returns the text stored on the exception object.
 
-```php run expect="停下" title="The message"
+```php run expect="stop" title="The message"
 <?php
 class StopHere extends Exception {}
 try {
-    throw new StopHere("停下");
+    throw new StopHere("stop");
 } catch (StopHere $e) {
     echo $e->getMessage(), "\n";
 }
 ```
 
-The message text is `停下`.
+The message text is `stop`.

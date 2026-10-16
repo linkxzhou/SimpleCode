@@ -19,29 +19,29 @@ updated: "2026-10-16"
 
 `true` exits 0. The `printf` on the right therefore runs.
 
-```sh run expect="是" title="The left side succeeds"
-true && printf '%s\n' 是
+```sh run expect="yes" title="The left side succeeds"
+true && printf '%s\n' yes
 ```
 
-The line shows `是`.
+The line shows `yes`.
 
 ### Or
 
 `false` exits non-zero. The `printf` on the right supplies the other word.
 
-```sh run expect="否" title="The left side fails"
-false || printf '%s\n' 否
+```sh run expect="no" title="The left side fails"
+false || printf '%s\n' no
 ```
 
-The line shows `否`.
+The line shows `no`.
 
 ### The right side is skipped
 
 `true` has already succeeded, so the command after `||` does not run. The following `printf` still runs.
 
-```sh run expect="结束" title="Only the ending is printed"
-true || printf '%s\n' 不该出现
-printf '%s\n' 结束
+```sh run expect="done" title="Only the ending is printed"
+true || printf '%s\n' absent
+printf '%s\n' done
 ```
 
-The line shows `结束`. The text 不该出现 is absent.
+The line shows `done`. The text absent is not printed.

@@ -6,25 +6,25 @@ level: beginner
 minutes: 8
 goals:
   - "Encode an object with json_encode"
-  - "Keep Chinese characters unescaped"
+  - "Keep encoded characters readable"
   - "Read a field back with json_decode"
 sources:
   - php-manual
 updated: "2026-10-16"
 ---
 
-Default JSON encoding escapes Chinese characters. `JSON_UNESCAPED_UNICODE` leaves those characters visible.
+Default JSON encoding escapes non-ASCII characters. `JSON_UNESCAPED_UNICODE` leaves them visible. The key and value below are ASCII.
 
 ### Encode one field
 
 The key and the value sit inside one pair of braces.
 
-```php run expect="{\"物\":\"茶\"}" title="One field pair"
+```php run expect="{\"thing\":\"tea\"}" title="One field pair"
 <?php
-echo json_encode(["物" => "茶"], JSON_UNESCAPED_UNICODE), "\n";
+echo json_encode(["thing" => "tea"], JSON_UNESCAPED_UNICODE), "\n";
 ```
 
-The encoded text is `{"物":"茶"}`.
+The encoded text is `{"thing":"tea"}`.
 
 ### A numeric value
 

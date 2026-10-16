@@ -19,7 +19,7 @@ A structure collects fields into one type. A field whose name starts with a capi
 
 `type` gives the structure a name. Each field occupies one line, name first and type after.
 
-```go run expect="茶" title="Read a field"
+```go run expect="tea" title="Read a field"
 package main
 
 import "fmt"
@@ -31,12 +31,12 @@ type Item struct {
 
 func main() {
 	var it Item
-	it.Name = "茶"
+	it.Name = "tea"
 	fmt.Println(it.Name)
 }
 ```
 
-The name field is `茶`. `Price` was never set, so it stays 0.
+The name field is `tea`. `Price` was never set, so it stays 0.
 
 ### Composite literals
 
@@ -53,7 +53,7 @@ type Item struct {
 }
 
 func main() {
-	it := Item{Name: "茶", Price: 18}
+	it := Item{Name: "tea", Price: 18}
 	fmt.Println(it.Price)
 }
 ```
@@ -64,7 +64,7 @@ The price field is `18`.
 
 The receiver appears before the method name. A value receiver works on a copy of the structure.
 
-```go run expect="茶 18" title="A method"
+```go run expect="tea 18" title="A method"
 package main
 
 import "fmt"
@@ -79,12 +79,12 @@ func (it Item) Label() string {
 }
 
 func main() {
-	it := Item{Name: "茶", Price: 18}
+	it := Item{Name: "tea", Price: 18}
 	fmt.Println(it.Label(), it.Price)
 }
 ```
 
-The label and the price print `茶 18`.
+The label and the price print `tea 18`.
 
 ### Pointer receivers
 

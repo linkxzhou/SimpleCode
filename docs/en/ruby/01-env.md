@@ -19,11 +19,11 @@ A local install looks different on Linux and on Windows. Here the interpreter is
 
 Press Run and the editor text executes at once. No package is downloaded first. The string in the program is the line you will see.
 
-```ruby run expect="已就绪" title="No install"
-puts "已就绪"
+```ruby run expect="ready" title="No install"
+puts "ready"
 ```
 
-The printed line is `已就绪`.
+The printed line is `ready`.
 
 ### Command-line flags are not source
 
@@ -37,11 +37,11 @@ ruby -v
 
 `stringio` ships with Ruby, so there is nothing to download. `StringIO` keeps text in memory. `write` stores the characters, and `string` reads them back.
 
-```ruby run expect="茶" title="In-memory buffer"
+```ruby run expect="tea" title="In-memory buffer"
 require "stringio"
 b = StringIO.new
-b.write("茶")
+b.write("tea")
 puts b.string
 ```
 
-The printed line is `茶`.
+The printed line is `tea`.

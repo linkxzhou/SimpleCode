@@ -33,26 +33,26 @@ fn main() {
 
 The condition of `if` must be a `bool`. An integer cannot stand in for it.
 
-```rust run expect="开" title="Window is open"
+```rust run expect="on" title="Window is open"
 fn main() {
     let open: bool = true;
-    let word = if open { "开" } else { "关" };
+    let word = if open { "on" } else { "off" };
     println!("{word}");
 }
 ```
 
-`true` selects `开`.
+`true` selects `on`.
 
 ### A character and a string slice
 
 A `char` uses single quotes and stores one Unicode scalar value. A `&str` uses double quotes.
 
-```rust run expect="窗口" title="Join into a window"
+```rust run expect="window" title="Join into a window"
 fn main() {
-    let mark: char = '窗';
-    let name: &str = "口";
+    let mark: char = 'pane';
+    let name: &str = "slot";
     println!("{mark}{name}");
 }
 ```
 
-The character and the slice print side by side as `窗口`.
+The character and the slice print side by side as `window`.

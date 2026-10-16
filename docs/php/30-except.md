@@ -17,25 +17,25 @@ updated: "2026-10-15"
 
 ### 拒绝
 
-非正数抛出异常，捕获后打出「拒绝」。
+非正数抛出异常，捕获后打出 denied。
 
-```php run expect="拒绝" title="接住异常"
+```php run expect="denied" title="接住异常"
 <?php
 class BadPrice extends Exception {}
 function require_price($n) {
     if ($n <= 0) {
-        throw new BadPrice("拒绝");
+        throw new BadPrice("denied");
     }
     return $n;
 }
 try {
     echo require_price(0), "\n";
 } catch (BadPrice $e) {
-    echo "拒绝\n";
+    echo "denied\n";
 }
 ```
 
-输出里能看到 `拒绝`。
+输出里能看到 `denied`。
 
 ### 通过
 
@@ -46,14 +46,14 @@ try {
 class LowPrice extends Exception {}
 function keep_price($n) {
     if ($n <= 0) {
-        throw new LowPrice("拒绝");
+        throw new LowPrice("denied");
     }
     return $n;
 }
 try {
     echo keep_price(18), "\n";
 } catch (LowPrice $e) {
-    echo "拒绝\n";
+    echo "denied\n";
 }
 ```
 
@@ -63,14 +63,14 @@ try {
 
 捕获后可以读异常自己的消息。
 
-```php run expect="停下" title="消息"
+```php run expect="stop" title="消息"
 <?php
 class StopHere extends Exception {}
 try {
-    throw new StopHere("停下");
+    throw new StopHere("stop");
 } catch (StopHere $e) {
     echo $e->getMessage(), "\n";
 }
 ```
 
-输出里能看到 `停下`。
+输出里能看到 `stop`。

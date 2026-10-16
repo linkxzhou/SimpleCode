@@ -19,28 +19,28 @@ Only the terminal is visible in this runtime. Popups have no window to use, and 
 
 A space is inserted between arguments. Text and a number therefore share one line.
 
-```js run expect="茶 18" title="Two items"
-console.log("茶", 18);
+```js run expect="tea 18" title="Two items"
+console.log("tea", 18);
 ```
 
-You should see `茶 18`.
+You should see `tea 18`.
 
 ### Build one string
 
 `join` uses exactly the separator you supply. It does not add the extra space that separate log arguments receive.
 
-```js run expect="茶-水" title="Join"
-console.log(["茶", "水"].join("-"));
+```js run expect="tea-water" title="Join"
+console.log(["tea", "water"].join("-"));
 ```
 
-The joined result is `茶-水`.
+The joined result is `tea-water`.
 
 ### alert is unavailable
 
 `alert` belongs to the browser. This page has a terminal instead of a dialog.
 
 ```js norun title="No dialog"
-alert("你好");
+alert("Hi");
 ```
 
 Read the call, but do not expect a popup.

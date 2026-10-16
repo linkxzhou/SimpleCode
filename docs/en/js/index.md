@@ -18,18 +18,18 @@ Samples in this book execute inside QuickJS. No browser document is attached, an
 
 `console.log` writes every argument and then finishes the line.
 
-```js run expect="你好" title="First line"
-console.log("你好");
+```js run expect="Hi" title="First line"
+console.log("Hi");
 ```
 
-The characters on that line are `你好`.
+The characters on that line are `Hi`.
 
 ### No document object
 
 Page objects such as `document` are missing here. The assignment below is shown so you can recognize it, and Run will not execute it.
 
 ```js norun title="No page"
-document.body.textContent = "你好";
+document.body.textContent = "Hi";
 ```
 
 ### End each statement with a semicolon

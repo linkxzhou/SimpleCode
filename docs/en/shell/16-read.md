@@ -28,22 +28,22 @@ The line shows `Ada`.
 
 ### A prefix in front
 
-The format can place characters ahead of the stored word. Here the prefix is 你好， and the name follows it.
+The format can place characters ahead of the stored word. Here the prefix is Hello, and the name follows it.
 
-```sh run stdin="Ada\n" expect="你好，Ada" title="With a prefix"
+```sh run stdin="Ada\n" expect="Hello, Ada" title="With a prefix"
 read name
-printf '%s\n' "你好，$name"
+printf '%s\n' "Hello, $name"
 ```
 
-The line shows `你好，Ada`.
+The line shows `Hello, Ada`.
 
 ### From a pipe
 
 `printf` on the left writes the line into the pipe. `read` stores it, and the next command prints it.
 
-```sh run expect="笔" title="From the pipe"
-printf '%s\n' 笔 | read item
+```sh run expect="pen" title="From the pipe"
+printf '%s\n' pen | read item
 printf '%s\n' "$item"
 ```
 
-The line shows `笔`.
+The line shows `pen`.

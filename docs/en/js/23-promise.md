@@ -19,13 +19,13 @@ There is no network in these samples. `Promise.resolve` means the value is alrea
 
 The array stores the synchronous word before the microtask appends the resolved name. One log prints both, in that order.
 
-```js run expect="先-茶" title="Synchronous word first"
+```js run expect="early-tea" title="Synchronous word first"
 function run() {
   const log = [];
-  const chain = Promise.resolve("茶").then(function (name) {
+  const chain = Promise.resolve("tea").then(function (name) {
     log.push(name);
   });
-  log.push("先");
+  log.push("early");
   return chain.then(function () {
     console.log(log.join("-"));
   });
@@ -33,7 +33,7 @@ function run() {
 run();
 ```
 
-The joined log is `先-茶`.
+The joined log is `early-tea`.
 
 ### A returned value feeds the next then
 
@@ -56,15 +56,15 @@ The following callback logs `3`.
 
 A `throw` inside `then` is delivered to a later `catch`.
 
-```js run expect="接住" title="Failure path"
+```js run expect="caught" title="Failure path"
 function run() {
   return Promise.resolve(1).then(function () {
-    throw new Error("缺");
+    throw new Error("lack");
   }).catch(function () {
-    console.log("接住");
+    console.log("caught");
   });
 }
 run();
 ```
 
-The catch callback logs `接住`.
+The catch callback logs `caught`.

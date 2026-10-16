@@ -34,16 +34,16 @@ The output contains `5`.
 
 A `void` function returns nothing. `show` prints its own message, and `main` only calls it.
 
-```c run expect="好" title="No return value"
+```c run expect="ok" title="No return value"
 #include <stdio.h>
-void show(void) { printf("好\n"); }
+void show(void) { printf("ok\n"); }
 int main(void) {
   show();
   return 0;
 }
 ```
 
-The output contains `好`.
+The output contains `ok`.
 
 ### Pass the length beside the array
 

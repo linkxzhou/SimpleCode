@@ -18,11 +18,11 @@ This book runs the current file with Ruby 3.2. There is no page to fetch and no 
 
 `puts` writes its argument and then adds a newline. The argument here is a quoted string. Those characters stay as written in the program.
 
-```ruby run expect="你好" title="Say hello"
-puts "你好"
+```ruby run expect="Hi" title="Say hello"
+puts "Hi"
 ```
 
-The printed line is `你好`.
+The printed line is `Hi`.
 
 ### gem install is unavailable
 
@@ -36,8 +36,8 @@ gem install rails
 
 Text after `#` on the same line is skipped. It never shows up in the output. The `puts` before the hash still runs.
 
-```ruby run expect="留下" title="Skip the comment"
-puts "留下" # 隐藏
+```ruby run expect="kept" title="Skip the comment"
+puts "kept" # hidden
 ```
 
-The printed line is `留下`.
+The printed line is `kept`.

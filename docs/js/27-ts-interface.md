@@ -24,7 +24,7 @@ interface Item {
   name: string;
   price: number;
 }
-const item: Item = { name: "茶", price: 18 };
+const item: Item = { name: "tea", price: 18 };
 console.log(item.price);
 ```
 
@@ -34,15 +34,15 @@ console.log(item.price);
 
 `readonly` 阻止再赋值。读取不受影响。
 
-```ts run expect="茶" title="读名称"
+```ts run expect="tea" title="读名称"
 interface Item {
   readonly name: string;
 }
-const item: Item = { name: "茶" };
+const item: Item = { name: "tea" };
 console.log(item.name);
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 可选字段
 
@@ -53,7 +53,7 @@ interface Item {
   name: string;
   note?: string;
 }
-const item: Item = { name: "茶" };
+const item: Item = { name: "tea" };
 console.log(item.note);
 ```
 

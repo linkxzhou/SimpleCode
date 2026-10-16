@@ -17,55 +17,55 @@ updated: "2026-10-16"
 
 ### The second case
 
-A code of 2 selects the branch that writes `乙`.
+A code of 2 selects the branch that writes `second`.
 
-```php run expect="乙" title="The second branch"
+```php run expect="second" title="The second branch"
 <?php
 $code = 2;
 switch ($code) {
     case 1:
-        echo "甲\n";
+        echo "first\n";
         break;
     case 2:
-        echo "乙\n";
+        echo "second\n";
         break;
     default:
-        echo "其他\n";
+        echo "other\n";
 }
 ```
 
-That case prints `乙`.
+That case prints `second`.
 
 ### The default branch
 
 A code with no matching `case` selects `default`.
 
-```php run expect="其他" title="No match"
+```php run expect="other" title="No match"
 <?php
 $code = 9;
 switch ($code) {
     case 1:
-        echo "甲\n";
+        echo "first\n";
         break;
     default:
-        echo "其他\n";
+        echo "other\n";
 }
 ```
 
-The default text is `其他`.
+The default text is `other`.
 
 ### A string case
 
-The value `"笔"` selects the case that holds the same characters.
+The value `"pen"` selects the case that holds the same characters.
 
 ```php run expect="3" title="The pen's unit price"
 <?php
-$item = "笔";
+$item = "pen";
 switch ($item) {
-    case "茶":
+    case "tea":
         echo "18\n";
         break;
-    case "笔":
+    case "pen":
         echo "3\n";
         break;
     default:

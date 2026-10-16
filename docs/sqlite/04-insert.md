@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 列的顺序跟 `VALUES` 对应。
 
-```sql run expect="水" title="换了顺序"
+```sql run expect="water" title="换了顺序"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item (price, name) VALUES (6, '水');
+INSERT INTO item (price, name) VALUES (6, 'water');
 SELECT name FROM item;
 ```
 
-输出里能看到 `水`。
+输出里能看到 `water`。
 
 ### 多行
 
@@ -33,7 +33,7 @@ SELECT name FROM item;
 
 ```sql run expect="2" title="两行"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('water');
 SELECT COUNT(*) FROM item;
 ```
 
@@ -45,7 +45,7 @@ SELECT COUNT(*) FROM item;
 
 ```sql run expect="1" title="没有单价"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item (name) VALUES ('茶');
+INSERT INTO item (name) VALUES ('tea');
 SELECT price IS NULL FROM item;
 ```
 

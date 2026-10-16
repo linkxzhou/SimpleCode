@@ -19,15 +19,15 @@ Whether top-level `await` works depends on the script being a module. These less
 
 `await` on an already fulfilled promise yields the value inside it.
 
-```js run expect="茶" title="Wait for the name"
+```js run expect="tea" title="Wait for the name"
 async function run() {
-  const name = await Promise.resolve("茶");
+  const name = await Promise.resolve("tea");
   console.log(name);
 }
 run();
 ```
 
-The awaited text is `茶`.
+The awaited text is `tea`.
 
 ### One await after another
 
@@ -48,16 +48,16 @@ The second step logs `5`.
 
 `await` on a rejected promise throws into the surrounding `try`.
 
-```js run expect="接住" title="Rejected"
+```js run expect="caught" title="Rejected"
 async function run() {
   try {
-    await Promise.reject(new Error("缺"));
-    console.log("过了");
+    await Promise.reject(new Error("lack"));
+    console.log("passed");
   } catch (err) {
-    console.log("接住");
+    console.log("caught");
   }
 }
 run();
 ```
 
-The catch clause logs `接住`.
+The catch clause logs `caught`.

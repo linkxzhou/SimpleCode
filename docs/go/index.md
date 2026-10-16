@@ -19,17 +19,17 @@ Go 是一门静态类型的编译型语言。这个抽屉不调用 `go build`，
 
 源文件以 `package main` 开头。解释器只把名为 `main` 的函数当作入口。
 
-```go run expect="你好" title="第一份程序"
+```go run expect="Hi" title="第一份程序"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("你好")
+	fmt.Println("Hi")
 }
 ```
 
-输出是 `你好`。`Println` 会在末尾加上换行。
+输出是 `Hi`。`Println` 会在末尾加上换行。
 
 ### 结果必须打印出来
 

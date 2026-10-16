@@ -19,28 +19,28 @@ The first assignment to a name inside a function binds that name to the function
 
 Giving `city` a value inside the function leaves the outer `city` unchanged.
 
-```python run expect="苏州 杭州" title="Neither side changes the other"
-city = "杭州"
+```python run expect="suzhou hangzhou" title="Neither side changes the other"
+city = "hangzhou"
 def show():
-    city = "苏州"
+    city = "suzhou"
     return city
 print(show(), city)
 ```
 
-The two cities are `苏州 杭州`.
+The two cities are `suzhou hangzhou`.
 
 ### Read the outer name only
 
 When the function never assigns to the name, the name it uses is the one from outside.
 
-```python run expect="克" title="Read the outer name"
-unit = "克"
+```python run expect="gram" title="Read the outer name"
+unit = "gram"
 def show():
     return unit
 print(show())
 ```
 
-The unit it reads is `克`.
+The unit it reads is `gram`.
 
 ### global writes the outer binding
 

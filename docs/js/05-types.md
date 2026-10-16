@@ -20,7 +20,7 @@ updated: "2026-10-15"
 数字、字符串和布尔各有自己的名字。
 
 ```js run expect="number string boolean" title="三种"
-console.log(typeof 3, typeof "茶", typeof true);
+console.log(typeof 3, typeof "tea", typeof true);
 ```
 
 输出里能看到 `number string boolean`。

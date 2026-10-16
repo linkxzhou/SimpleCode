@@ -22,29 +22,29 @@ The database extension is not part of this build. An array stands in for a resul
 ```php norun title="No extension"
 <?php
 $link = mysqli_connect("localhost", "root", "", "shop");
-echo $link ? "通\n" : "断\n";
+echo $link ? "link\n" : "off\n";
 ```
 
 ### Both functions are absent
 
 `function_exists` answers no for `mysqli_connect` and for `curl_init`.
 
-```php run expect="没有 mysqli" title="Both are missing"
+```php run expect="gone mysqli" title="Both are missing"
 <?php
-echo function_exists("mysqli_connect") ? "有\n" : "没有 mysqli\n";
-echo function_exists("curl_init") ? "有\n" : "没有 curl\n";
+echo function_exists("mysqli_connect") ? "has\n" : "gone mysqli\n";
+echo function_exists("curl_init") ? "has\n" : "gone curl\n";
 ```
 
-The checks print `没有 mysqli` and `没有 curl`.
+The checks print `gone mysqli` and `gone curl`.
 
 ### A row kept in an array
 
 With no database, one result row is an ordinary array of fields.
 
-```php run expect="茶 18" title="One row"
+```php run expect="tea 18" title="One row"
 <?php
-$row = ["name" => "茶", "price" => 18];
+$row = ["name" => "tea", "price" => 18];
 echo $row["name"], " ", $row["price"], "\n";
 ```
 
-The stand-in row prints `茶 18`.
+The stand-in row prints `tea 18`.

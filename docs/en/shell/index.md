@@ -18,21 +18,21 @@ This book runs on wasi-sh. Builtin commands share one process. No external progr
 
 The format string decides where the newline goes. `%s` copies the following word as it is written.
 
-```sh run expect="你好" title="Say hello"
-printf '%s\n' 你好
+```sh run expect="Hi" title="Say hello"
+printf '%s\n' Hi
 ```
 
-The line shows `你好`.
+The line shows `Hi`.
 
 ### echo adds a newline
 
 `echo` places a newline after its last argument. A single space separates one argument from the next.
 
-```sh run expect="茶 18" title="Separated by a space"
-echo 茶 18
+```sh run expect="tea 18" title="Separated by a space"
+echo tea 18
 ```
 
-The line shows `茶 18`.
+The line shows `tea 18`.
 
 ### An external command stops
 

@@ -19,40 +19,40 @@ updated: "2026-10-15"
 
 抛出的字符串可以直接打印。
 
-```js run expect="缺货" title="接住文本"
+```js run expect="soldout" title="接住文本"
 try {
-  throw "缺货";
+  throw "soldout";
 } catch (err) {
   console.log(err);
 }
 ```
 
-输出里能看到 `缺货`。
+输出里能看到 `soldout`。
 
 ### Error 的 message
 
 抛出 `Error` 时，说明在 `message` 上。
 
-```js run expect="缺货" title="消息"
+```js run expect="soldout" title="消息"
 try {
-  throw new Error("缺货");
+  throw new Error("soldout");
 } catch (err) {
   console.log(err.message);
 }
 ```
 
-输出里能看到 `缺货`。
+输出里能看到 `soldout`。
 
 ### 成功不进 catch
 
 没有抛出时，`catch` 不会执行。
 
-```js run expect="好" title="没有失败"
+```js run expect="ok" title="没有失败"
 try {
-  console.log("好");
+  console.log("ok");
 } catch (err) {
-  console.log("坏");
+  console.log("broke");
 }
 ```
 
-输出里能看到 `好`。
+输出里能看到 `ok`。

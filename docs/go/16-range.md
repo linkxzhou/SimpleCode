@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 第一个变量是下标，第二个是元素的副本。
 
-```go run expect="1:茶" title="下标和元素"
+```go run expect="1:tea" title="下标和元素"
 package main
 
 import "fmt"
 
 func main() {
-	items := []string{"水", "茶"}
+	items := []string{"water", "tea"}
 	for i, name := range items {
 		if i == 1 {
 			fmt.Printf("%d:%s\n", i, name)
@@ -34,7 +34,7 @@ func main() {
 }
 ```
 
-输出是 `1:茶`。
+输出是 `1:tea`。
 
 ### 只要元素
 
@@ -47,7 +47,7 @@ import "fmt"
 
 func main() {
 	n := 0
-	for _, name := range []string{"茶", "水"} {
+	for _, name := range []string{"tea", "water"} {
 		if name != "" {
 			n++
 		}
@@ -69,14 +69,14 @@ import "fmt"
 
 func main() {
 	n := 0
-	for range "你好" {
+	for range "Hi" {
 		n++
 	}
 	fmt.Println(n)
 }
 ```
 
-输出是 `2`。`len("你好")` 仍是 6。
+输出是 `2`。这段 ASCII 里每个字符一个字节，`len` 也是 2。
 
 ### 遍历 map 不保证次序
 
@@ -88,7 +88,7 @@ package main
 import "fmt"
 
 func main() {
-	price := map[string]int{"茶": 18}
+	price := map[string]int{"tea": 18}
 	for _, v := range price {
 		fmt.Println(v)
 	}

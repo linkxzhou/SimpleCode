@@ -19,14 +19,14 @@ updated: "2026-10-15"
 
 视图选出单价大于 10 的名字。
 
-```sql run expect="茶" title="贵的视图"
+```sql run expect="tea" title="贵的视图"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 CREATE VIEW dear AS SELECT name FROM item WHERE price > 10;
 SELECT name FROM dear;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 基表增加一行
 
@@ -34,9 +34,9 @@ SELECT name FROM dear;
 
 ```sql run expect="2" title="两行"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 CREATE VIEW dear AS SELECT name FROM item WHERE price > 10;
-INSERT INTO item VALUES ('壶', 30);
+INSERT INTO item VALUES ('pot', 30);
 SELECT COUNT(*) FROM dear;
 ```
 

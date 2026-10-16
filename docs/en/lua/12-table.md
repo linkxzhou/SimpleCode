@@ -19,33 +19,33 @@ A table can work as an array or as a map. A key may be a string.
 
 `item.name` and `item["name"]` read the same field. This table stores a name and a price.
 
-```lua run expect="茶 18" title="Two fields"
-local item = { name = "茶", price = 18 }
+```lua run expect="tea 18" title="Two fields"
+local item = { name = "tea", price = 18 }
 print(item.name .. " " .. item.price)
 ```
 
-The output shows `茶 18`.
+The output shows `tea 18`.
 
 ### Brackets
 
 Use brackets when the key is held in a variable.
 
-```lua run expect="笔" title="A variable as the key"
-local item = { name = "笔" }
+```lua run expect="pen" title="A variable as the key"
+local item = { name = "pen" }
 local key = "name"
 print(item[key])
 ```
 
-The output shows `笔`.
+The output shows `pen`.
 
 ### Remove one entry
 
-Assign `nil` to a field. That removes the key, and the test prints `无`.
+Assign `nil` to a field. That removes the key, and the test prints `none`.
 
-```lua run expect="无" title="Already removed"
-local item = { name = "茶", price = 18 }
+```lua run expect="none" title="Already removed"
+local item = { name = "tea", price = 18 }
 item.price = nil
-print(item.price == nil and "无" or "有")
+print(item.price == nil and "none" or "has")
 ```
 
-The output shows `无`.
+The output shows `none`.

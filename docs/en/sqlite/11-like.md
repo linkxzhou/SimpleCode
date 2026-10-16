@@ -17,27 +17,27 @@ updated: "2026-10-16"
 
 ### A prefix pattern
 
-The pattern `'茶%'` matches text that begins with 茶.
+The pattern `'tea%'` matches text that begins with tea.
 
 ```sql run expect="1" title="Starts with tea"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('红茶');
-SELECT COUNT(*) FROM item WHERE name LIKE '茶%';
+INSERT INTO item VALUES ('tea'), ('redtea');
+SELECT COUNT(*) FROM item WHERE name LIKE 'tea%';
 ```
 
-红茶 begins with a different character, so the prefix match count is `1`.
+redtea begins with a different character, so the prefix match count is `1`.
 
 ### A match anywhere in the text
 
-`'%茶%'` matches a name that contains 茶 in any position.
+`'%tea%'` matches a name that contains tea in any position.
 
-```sql run expect="红茶" title="Contains tea"
+```sql run expect="redtea" title="Contains tea"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('红茶'), ('水');
-SELECT name FROM item WHERE name LIKE '%茶%';
+INSERT INTO item VALUES ('redtea'), ('water');
+SELECT name FROM item WHERE name LIKE '%tea%';
 ```
 
-The name that contains 茶 is `红茶`.
+The name that contains tea is `redtea`.
 
 ### A single-character wildcard
 

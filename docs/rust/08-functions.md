@@ -33,12 +33,12 @@ fn main() {
 
 `return` 可以在中间离开函数。
 
-```rust run expect="开窗" title="提前返回"
+```rust run expect="openwin" title="提前返回"
 fn label(open: bool) -> &'static str {
     if open {
-        return "开窗";
+        return "openwin";
     }
-    "关窗"
+    "shutwin"
 }
 
 fn main() {
@@ -51,13 +51,13 @@ fn main() {
 
 省略返回类型时，函数结果是单元值，通常只做打印。
 
-```rust run expect="叫号甲" title="只打印"
+```rust run expect="callfirst" title="只打印"
 fn shout(name: &str) {
-    println!("叫号{name}");
+    println!("call{name}");
 }
 
 fn main() {
-    shout("甲");
+    shout("first");
 }
 ```
 `shout` 自己负责输出。

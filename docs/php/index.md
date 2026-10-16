@@ -18,23 +18,23 @@ updated: "2026-10-15"
 
 `echo` 把字符串送到输出，换行自己写。
 
-```php run expect="你好" title="打招呼"
+```php run expect="Hi" title="打招呼"
 <?php
-echo "你好\n";
+echo "Hi\n";
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 逗号不加空格
 
 `echo` 可以接好几段，段与段之间不会自动插入空格。
 
-```php run expect="茶18" title="连在一起"
+```php run expect="tea18" title="连在一起"
 <?php
-echo "茶", 18, "\n";
+echo "tea", 18, "\n";
 ```
 
-输出里能看到 `茶18`。
+输出里能看到 `tea18`。
 
 ### 读键盘留在阅读里
 

@@ -19,7 +19,7 @@ updated: "2026-10-15"
 
 方括号里的 `T` 是类型参数。`any` 表示调用时可以是任意类型。
 
-```go run expect="水" title="取第二个"
+```go run expect="water" title="取第二个"
 package main
 
 import "fmt"
@@ -29,11 +29,11 @@ func second[T any](a, b T) T {
 }
 
 func main() {
-	fmt.Println(second("茶", "水"))
+	fmt.Println(second("tea", "water"))
 }
 ```
 
-输出是 `水`。
+输出是 `water`。
 
 ### 约束
 
@@ -83,7 +83,7 @@ func main() {
 同一次调用里，`T` 只有一个。字符串和整数不能一起传给 `second`。
 
 ```go norun title="类型参数不一致"
-second("茶", 1)
+second("tea", 1)
 ```
 
 注意：更复杂的约束和类型集合以本机 `go build` 为准。这里只演示解释器能执行的形式。

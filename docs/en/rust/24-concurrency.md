@@ -55,6 +55,6 @@ The program below does not compile here. If it did compile, the calls would not 
 
 ```rust norun title="Do not spawn"
 fn main() {
-    println!("不要 spawn");
+    println!("nope spawn");
 }
 ```

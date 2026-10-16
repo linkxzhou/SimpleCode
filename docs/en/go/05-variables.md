@@ -19,19 +19,19 @@ A variable stores a value that later statements may replace. The function that d
 
 After `var` come the name and the type. The first value may be set on that line, or on a later assignment.
 
-```go run expect="茶" title="A stated type"
+```go run expect="tea" title="A stated type"
 package main
 
 import "fmt"
 
 func main() {
 	var item string
-	item = "茶"
+	item = "tea"
 	fmt.Println(item)
 }
 ```
 
-The item name is `茶`.
+The item name is `tea`.
 
 ### Zero values
 
@@ -55,18 +55,18 @@ The integer and the flag print `0 false`.
 
 Inside a function, `:=` declares a name and assigns it. The right-hand side supplies the type. Package scope has no `:=`.
 
-```go run expect="杭州" title="Short declaration"
+```go run expect="hangzhou" title="Short declaration"
 package main
 
 import "fmt"
 
 func main() {
-	city := "杭州"
+	city := "hangzhou"
 	fmt.Println(city)
 }
 ```
 
-The city name is `杭州`.
+The city name is `hangzhou`.
 
 Writing `:=` again for names that already exist in the same block, with no new name on the left, reports *no new variables*.
 

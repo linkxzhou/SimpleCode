@@ -19,7 +19,7 @@ Rust has no class inheritance. Shared behavior lives in a trait. Data lives in a
 
 The `impl` block supplies the body of that method.
 
-```rust run expect="船票" title="Label on the gate"
+```rust run expect="pass" title="Label on the gate"
 trait Tag {
     fn label(&self) -> &'static str;
 }
@@ -28,7 +28,7 @@ struct Gate;
 
 impl Tag for Gate {
     fn label(&self) -> &'static str {
-        "船票"
+        "pass"
     }
 }
 
@@ -37,13 +37,13 @@ fn main() {
 }
 ```
 
-The label on `Gate` is `船票`.
+The label on `Gate` is `pass`.
 
 ### A second implementation
 
 The same trait can be attached to another struct, with a method body of its own.
 
-```rust run expect="钢笔" title="Label on the pen"
+```rust run expect="fountain" title="Label on the pen"
 trait Tag {
     fn label(&self) -> &'static str;
 }
@@ -52,7 +52,7 @@ struct Pen;
 
 impl Tag for Pen {
     fn label(&self) -> &'static str {
-        "钢笔"
+        "fountain"
     }
 }
 
@@ -61,13 +61,13 @@ fn main() {
 }
 ```
 
-This run prints `钢笔`.
+This run prints `fountain`.
 
 ### A generic function accepts the trait
 
 `impl Tag` means any type that implements `Tag`.
 
-```rust run expect="窗口" title="Function takes a trait"
+```rust run expect="window" title="Function takes a trait"
 trait Tag {
     fn label(&self) -> &'static str;
 }
@@ -76,7 +76,7 @@ struct Gate;
 
 impl Tag for Gate {
     fn label(&self) -> &'static str {
-        "窗口"
+        "window"
     }
 }
 
@@ -89,4 +89,4 @@ fn main() {
 }
 ```
 
-`show` does not name a concrete struct. It only requires `label`, and the line is `窗口`.
+`show` does not name a concrete struct. It only requires `label`, and the line is `window`.

@@ -20,28 +20,28 @@ updated: "2026-10-15"
 真实路径这里没有保证。
 
 ```ruby norun title="不写磁盘"
-File.write("note.txt", "茶")
+File.write("note.txt", "tea")
 ```
 
 ### 内存缓冲
 
 `StringIO` 有 `write` 和 `string`。
 
-```ruby run expect="茶" title="写入内存"
+```ruby run expect="tea" title="写入内存"
 require "stringio"
 b = StringIO.new
-b.write("茶")
+b.write("tea")
 puts b.string
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 按行切开
 
 内容已经在字符串里时，`lines` 按换行切开。
 
 ```ruby run expect="2" title="两行"
-puts "茶\n水\n".lines.map(&:chomp).length
+puts "tea\nwater\n".lines.map(&:chomp).length
 ```
 
 输出里能看到 `2`。

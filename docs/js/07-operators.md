@@ -39,8 +39,8 @@ console.log(20 + 1);
 
 数字会先变成文本，再接在后面。
 
-```js run expect="房号18" title="拼接"
-console.log("房号" + 18);
+```js run expect="room18" title="拼接"
+console.log("room" + 18);
 ```
 
-输出里能看到 `房号18`。
+输出里能看到 `room18`。

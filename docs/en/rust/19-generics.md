@@ -35,17 +35,17 @@ At the call, `T` is fixed as `i32`, and 42 comes back.
 
 The bound goes in the angle brackets. The body may use `{}` only after that bound is present.
 
-```rust run expect="夜窗" title="Printable generic"
+```rust run expect="nightwin" title="Printable generic"
 fn show<T: std::fmt::Display>(value: T) -> String {
     format!("{value}")
 }
 
 fn main() {
-    println!("{}", show("夜窗"));
+    println!("{}", show("nightwin"));
 }
 ```
 
-`&str` implements `Display`, so the formatted line is `夜窗`.
+`&str` implements `Display`, so the formatted line is `nightwin`.
 
 ### Implement a trait on your own type
 

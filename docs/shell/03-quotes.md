@@ -20,7 +20,7 @@ updated: "2026-10-15"
 单引号里的 `$item` 不会去查变量表。
 
 ```sh run expect="$item" title="留下写法"
-item=钥匙
+item=key
 printf '%s\n' '$item'
 ```
 
@@ -28,21 +28,21 @@ printf '%s\n' '$item'
 
 ### 双引号
 
-双引号先把 `$item` 换成钥匙，再交给 `printf`。
+双引号先把 `$item` 换成 key，再交给 `printf`。
 
-```sh run expect="钥匙" title="展开成钥匙"
-item=钥匙
+```sh run expect="key" title="展开成钥匙"
+item=key
 printf '%s\n' "$item"
 ```
 
-输出里能看到 `钥匙`。
+输出里能看到 `key`。
 
 ### 格式串
 
 换行写在 `printf` 的格式里，不靠变量展开。
 
-```sh run expect="留下" title="格式换行"
-printf '%s\n' 留下
+```sh run expect="kept" title="格式换行"
+printf '%s\n' kept
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。

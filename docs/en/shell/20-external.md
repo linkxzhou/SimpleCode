@@ -31,7 +31,7 @@ The block stays unread. The error text says there is no fork.
 Backticks and `$()` do not launch another program. The sample shows that spelling for reading only.
 
 ```sh norun title="No command substitution"
-item=$(echo 茶)
+item=$(echo tea)
 printf '%s\n' "$item"
 ```
 
@@ -41,19 +41,19 @@ Run skips the sample. Nothing inside `$()` is started.
 
 The line you need can come from `printf` alone. No external program has to be named.
 
-```sh run expect="茶" title="Builtin output"
-printf '%s\n' 茶
+```sh run expect="tea" title="Builtin output"
+printf '%s\n' tea
 ```
 
-The line shows `茶`.
+The line shows `tea`.
 
 ### The colon is a builtin too
 
 `:` succeeds and writes nothing. The line after it is what shows up.
 
-```sh run expect="就绪" title="Ready"
+```sh run expect="ready" title="Ready"
 :
-printf '%s\n' 就绪
+printf '%s\n' ready
 ```
 
-The line shows `就绪`.
+The line shows `ready`.

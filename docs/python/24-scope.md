@@ -19,28 +19,28 @@ updated: "2026-10-15"
 
 函数里给 `city` 赋值，外面的 `city` 还是原来的。
 
-```python run expect="苏州 杭州" title="互不影响"
-city = "杭州"
+```python run expect="suzhou hangzhou" title="互不影响"
+city = "hangzhou"
 def show():
-    city = "苏州"
+    city = "suzhou"
     return city
 print(show(), city)
 ```
 
-输出里能看到 `苏州 杭州`。
+输出里能看到 `suzhou hangzhou`。
 
 ### 只读外层
 
 函数里不赋值，用到的就是外面的那个名字。
 
-```python run expect="克" title="读到外层"
-unit = "克"
+```python run expect="gram" title="读到外层"
+unit = "gram"
 def show():
     return unit
 print(show())
 ```
 
-输出里能看到 `克`。
+输出里能看到 `gram`。
 
 ### global 会改外层
 

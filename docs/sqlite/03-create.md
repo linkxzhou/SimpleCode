@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```sql run expect="18" title="单价"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 SELECT price FROM item;
 ```
 
@@ -31,13 +31,13 @@ SELECT price FROM item;
 
 SELECT 列出的列用竖线隔开。
 
-```sql run expect="茶|18" title="两列"
+```sql run expect="tea|18" title="两列"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 SELECT name, price FROM item;
 ```
 
-输出里能看到 `茶|18`。
+输出里能看到 `tea|18`。
 
 ### 删掉再查
 

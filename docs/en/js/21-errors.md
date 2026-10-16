@@ -19,40 +19,40 @@ updated: "2026-10-16"
 
 A string thrown directly can be logged as it is.
 
-```js run expect="缺货" title="Catch the text"
+```js run expect="soldout" title="Catch the text"
 try {
-  throw "缺货";
+  throw "soldout";
 } catch (err) {
   console.log(err);
 }
 ```
 
-The caught text is `缺货`.
+The caught text is `soldout`.
 
 ### message on an Error object
 
 When the thrown value is an `Error`, the explanation lives on `message`.
 
-```js run expect="缺货" title="Read message"
+```js run expect="soldout" title="Read message"
 try {
-  throw new Error("缺货");
+  throw new Error("soldout");
 } catch (err) {
   console.log(err.message);
 }
 ```
 
-The message text is `缺货`.
+The message text is `soldout`.
 
 ### No throw, no catch
 
 If nothing is thrown, `catch` does not run.
 
-```js run expect="好" title="Nothing failed"
+```js run expect="ok" title="Nothing failed"
 try {
-  console.log("好");
+  console.log("ok");
 } catch (err) {
-  console.log("坏");
+  console.log("broke");
 }
 ```
 
-The success log is `好`.
+The success log is `ok`.

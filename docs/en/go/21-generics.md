@@ -19,7 +19,7 @@ A type parameter lets one function body work for several types. Yaegi runs the s
 
 `T` inside square brackets is the type parameter. A constraint of `any` allows whatever type the caller passes.
 
-```go run expect="水" title="Take the second"
+```go run expect="water" title="Take the second"
 package main
 
 import "fmt"
@@ -29,11 +29,11 @@ func second[T any](a, b T) T {
 }
 
 func main() {
-	fmt.Println(second("茶", "水"))
+	fmt.Println(second("tea", "water"))
 }
 ```
 
-The second string is `水`.
+The second string is `water`.
 
 ### Constraints
 
@@ -83,7 +83,7 @@ Inference selects `4`.
 A single call has one `T`. `second` cannot accept a string and an integer together.
 
 ```go norun title="Type parameter mismatch"
-second("茶", 1)
+second("tea", 1)
 ```
 
 Check richer constraints and type sets with `go build` on your machine. These samples stay inside what Yaegi executes.

@@ -19,11 +19,11 @@ updated: "2026-10-15"
 
 `%s` 把下一个词原样放进去。
 
-```sh run expect="笔" title="一个词"
-printf '%s\n' 笔
+```sh run expect="pen" title="一个词"
+printf '%s\n' pen
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。
 
 ### 整数
 

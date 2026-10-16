@@ -19,29 +19,29 @@ A pipe is a buffer in memory. The right side starts reading only after the left 
 
 `echo` writes one line into the pipe. `cat` prints that same line.
 
-```sh run expect="茶" title="After the pipe"
-echo 茶 | cat
+```sh run expect="tea" title="After the pipe"
+echo tea | cat
 ```
 
-The line shows `茶`.
+The line shows `tea`.
 
 ### Two cat stages
 
-Each `cat` copies the buffer it receives. The text is still 笔 after both copies.
+Each `cat` copies the buffer it receives. The text is still pen after both copies.
 
-```sh run expect="笔" title="Still the pen"
-printf '%s\n' 笔 | cat | cat
+```sh run expect="pen" title="Still the pen"
+printf '%s\n' pen | cat | cat
 ```
 
-The line shows `笔`.
+The line shows `pen`.
 
 ### Into a variable
 
 `read` on the right runs in this same process. The command after the pipe still sees `item`.
 
-```sh run expect="钥匙" title="Kept in the variable"
-printf '%s\n' 钥匙 | read item
+```sh run expect="key" title="Kept in the variable"
+printf '%s\n' key | read item
 printf '%s\n' "$item"
 ```
 
-The line shows `钥匙`.
+The line shows `key`.

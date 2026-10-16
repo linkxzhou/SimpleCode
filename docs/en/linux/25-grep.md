@@ -17,13 +17,13 @@ grep writes matching lines to standard output. Use a pattern whose encoding you 
 
 ### Print the lines that match
 
-printf builds two lines, and grep keeps only the line containing 乙. A Chinese pattern is fine, because the serial port decodes UTF-8.
+printf builds two lines, and grep keeps only the line that contains second.
 
-```linux run expect="乙" title="Keep the matching line"
-printf '甲\n乙\n' | grep 乙
+```linux run expect="second" title="Keep the matching line"
+printf 'first\nsecond\n' | grep second
 ```
 
-The kept line is `乙`.
+The kept line is `second`.
 
 ### -n prints a line number
 

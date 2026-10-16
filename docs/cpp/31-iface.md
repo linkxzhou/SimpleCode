@@ -19,7 +19,7 @@ updated: "2026-10-15"
 
 `Pen` 同时给出名字和单价。
 
-```cpp run expect="笔 18" title="两项都有"
+```cpp run expect="pen 18" title="两项都有"
 #include <iostream>
 #include <string>
 struct Goods {
@@ -28,7 +28,7 @@ struct Goods {
   virtual ~Goods() {}
 };
 struct Pen : Goods {
-  std::string name() const override { return "笔"; }
+  std::string name() const override { return "pen"; }
   int price() const override { return 18; }
 };
 int main() {
@@ -38,7 +38,7 @@ int main() {
 }
 ```
 
-输出里能看到 `笔 18`。
+输出里能看到 `pen 18`。
 
 ### 通过接口调用
 
@@ -53,7 +53,7 @@ struct Goods {
   virtual ~Goods() {}
 };
 struct Pen : Goods {
-  std::string name() const override { return "笔"; }
+  std::string name() const override { return "pen"; }
   int price() const override { return 18; }
 };
 int ask(const Goods &goods) { return goods.price(); }
@@ -70,7 +70,7 @@ int main() {
 
 `Ink` 也是 `Goods`，单价不同。
 
-```cpp run expect="墨" title="另一种商品"
+```cpp run expect="ink" title="另一种商品"
 #include <iostream>
 #include <string>
 struct Goods {
@@ -79,7 +79,7 @@ struct Goods {
   virtual ~Goods() {}
 };
 struct Ink : Goods {
-  std::string name() const override { return "墨"; }
+  std::string name() const override { return "ink"; }
   int price() const override { return 7; }
 };
 int main() {
@@ -89,4 +89,4 @@ int main() {
 }
 ```
 
-输出里能看到 `墨`。
+输出里能看到 `ink`。

@@ -73,7 +73,7 @@ The flag prints `true`.
 
 ### How long a string is
 
-`len` counts bytes. One Chinese character is usually three UTF-8 bytes.
+`len` counts bytes. `Hello!` is 6 bytes long.
 
 ```go run expect="6" title="Byte count"
 package main
@@ -81,8 +81,8 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(len("你好"))
+	fmt.Println(len("Hello!"))
 }
 ```
 
-The two characters occupy `6` bytes.
+`Hello!` occupies `6` bytes.

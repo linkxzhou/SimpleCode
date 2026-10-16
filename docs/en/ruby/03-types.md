@@ -39,8 +39,8 @@ The printed line is `Integer`.
 
 Only `nil` and `false` count as false in a condition. The number `0` counts as true. The ternary therefore takes the first branch.
 
-```ruby run expect="真" title="Zero is truthy"
-puts 0 ? "真" : "假"
+```ruby run expect="real" title="Zero is truthy"
+puts 0 ? "real" : "fake"
 ```
 
-The printed line is `真`.
+The printed line is `real`.

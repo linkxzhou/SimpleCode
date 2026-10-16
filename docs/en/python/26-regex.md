@@ -21,7 +21,7 @@ updated: "2026-10-16"
 
 ```python run expect="18" title="One match"
 import re
-print(re.search(r"\d+", "房号 18").group())
+print(re.search(r"\d+", "room 18").group())
 ```
 
 The matched digits are `18`.
@@ -32,7 +32,7 @@ The matched digits are `18`.
 
 ```python run expect="2" title="Two spans"
 import re
-print(len(re.findall(r"\d+", "房号 18 室 2")))
+print(len(re.findall(r"\d+", "room 18 slot 2")))
 ```
 
 The count of those runs is `2`.

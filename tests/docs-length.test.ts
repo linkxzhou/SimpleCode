@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
+import { codeOutsideComments, isProgrammingLang } from "../src/docs/code-text.ts";
 
 /** Body character counts before the essay rewrite. Acceptance stays 3× until that book moves to ESSAY. */
 const BASE: Record<string, number> = {
@@ -36,8 +37,10 @@ function fenceKey(text: string) {
   const keys: string[] = [];
   let match: RegExpExecArray | null;
   while ((match = re.exec(body))) {
+    const lang = match[1].trim().split(/\s+/)[0]?.toLowerCase() ?? "";
+    if (!isProgrammingLang(lang)) continue;
     const info = match[1].replace(/\s+title="(?:\\.|[^"\\])*"/g, "");
-    keys.push(`${info}\n${match[2]}`);
+    keys.push(`${info}\n${codeOutsideComments(lang, match[2])}`);
   }
   return keys;
 }

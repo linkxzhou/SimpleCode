@@ -19,31 +19,31 @@ updated: "2026-10-16"
 
 The arguments are written in order. No automatic space appears between them.
 
-```php run expect="甲乙" title="Two pieces"
+```php run expect="firstsecond" title="Two pieces"
 <?php
-echo "甲", "乙", "\n";
+echo "first", "second", "\n";
 ```
 
-Side by side they show `甲乙`.
+Side by side they show `firstsecond`.
 
 ### One print argument
 
 `print` accepts a single argument. This call writes one line.
 
-```php run expect="留下" title="One line"
+```php run expect="kept" title="One line"
 <?php
-print "留下\n";
+print "kept\n";
 ```
 
-That line shows `留下`.
+That line shows `kept`.
 
 ### The value print returns
 
 `print` writes its argument first. The surrounding `echo` then writes the returned 1.
 
-```php run expect="茶1" title="Text and 1"
+```php run expect="tea1" title="Text and 1"
 <?php
-echo print("茶");
+echo print("tea");
 ```
 
-Text and return value show `茶1`.
+Text and return value show `tea1`.

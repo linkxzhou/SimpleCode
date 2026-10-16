@@ -18,11 +18,11 @@ This book splits the language into short chapters. Press Run and the interpreter
 
 A program has to hand its result back. `print` adds a newline at the end.
 
-```python run expect="你好" title="Say hello"
-print("你好")
+```python run expect="Hi" title="Say hello"
+print("Hi")
 ```
 
-The line you get is `你好`.
+The line you get is `Hi`.
 
 ### The network library stays unread
 
@@ -38,15 +38,15 @@ urllib.request.urlopen("https://example.com")
 A fence with no language tag is there for people to read. The drawer will not treat it as Python.
 
 ```text run title="Explanatory text"
-这一段只是说明，不是源码。
+This paragraph is a note, not source code.
 ```
 
 ### A Ruby block can sit in the page
 
 A few fences name another language. At run time the page switches to that language instead of forcing Python to read the text.
 
-```ruby run expect="来自 Ruby 的 42" title="One line in another language"
-puts "来自 Ruby 的 42"
+```ruby run expect="42 from Ruby" title="One line in another language"
+puts "42 from Ruby"
 ```
 
-The Ruby line prints `来自 Ruby 的 42`.
+The Ruby line prints `42 from Ruby`.

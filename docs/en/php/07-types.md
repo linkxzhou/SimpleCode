@@ -44,7 +44,7 @@ An array has the type name `array`.
 
 ```php run expect="array" title="The array type"
 <?php
-echo gettype(["茶"]), "\n";
+echo gettype(["tea"]), "\n";
 ```
 
 `gettype` answers `array`.

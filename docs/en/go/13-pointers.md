@@ -78,7 +78,7 @@ Ten plus one prints `11`.
 
 A pointer declared with no target is `nil`. Dereferencing it panics.
 
-```go run expect="空指针" title="Check before use"
+```go run expect="null pointer" title="Check before use"
 package main
 
 import "fmt"
@@ -86,7 +86,7 @@ import "fmt"
 func main() {
 	defer func() {
 		if recover() != nil {
-			fmt.Println("空指针")
+			fmt.Println("null pointer")
 		}
 	}()
 	var p *int
@@ -94,4 +94,4 @@ func main() {
 }
 ```
 
-The recovered message is `空指针`. Test `p != nil` before the dereference.
+The recovered message is `null pointer`. Test `p != nil` before the dereference.

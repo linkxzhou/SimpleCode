@@ -19,7 +19,7 @@ Each enum variant is one possibility. `match` must cover every variant, or the p
 
 Two variants with no data are enough to describe a switch.
 
-```rust run expect="开着" title="Match open"
+```rust run expect="open" title="Match open"
 enum Gate {
     Open,
     Shut,
@@ -28,14 +28,14 @@ enum Gate {
 fn main() {
     let gate = Gate::Open;
     let word = match gate {
-        Gate::Open => "开着",
-        Gate::Shut => "关着",
+        Gate::Open => "open",
+        Gate::Shut => "shut",
     };
     println!("{word}");
 }
 ```
 
-The active variant is `Open`, so the line is `开着`.
+The active variant is `Open`, so the line is `open`.
 
 ### A number inside Option
 

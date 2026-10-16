@@ -19,13 +19,13 @@ A semicolon finishes a statement. Braces gather statements into a block.
 
 Each `echo` is its own statement, so each one ends with a semicolon.
 
-```php run expect="甲" title="The first line"
+```php run expect="first" title="The first line"
 <?php
-echo "甲\n";
-echo "乙\n";
+echo "first\n";
+echo "second\n";
 ```
 
-The first statement prints `甲`.
+The first statement prints `first`.
 
 ### A brace block
 
@@ -46,10 +46,10 @@ After the braces, the value is `2`.
 
 A `//` comment runs to the end of its line, so the `echo` on that line is skipped.
 
-```php run expect="留下" title="Skip the comment"
+```php run expect="kept" title="Skip the comment"
 <?php
-// echo "隐藏\n";
-echo "留下\n";
+// echo "hidden\n";
+echo "kept\n";
 ```
 
-The active statement prints `留下`.
+The active statement prints `kept`.

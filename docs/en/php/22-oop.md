@@ -36,7 +36,7 @@ The price method returns `18`.
 
 `PenItem` inherits `price` from `Item` and adds its own label.
 
-```php run expect="笔 18" title="Two parts"
+```php run expect="pen 18" title="Two parts"
 <?php
 class Item {
     public function __construct(protected int $price) {}
@@ -46,14 +46,14 @@ class Item {
 }
 class PenItem extends Item {
     public function label(): string {
-        return "笔";
+        return "pen";
     }
 }
 $pen = new PenItem(18);
 echo $pen->label(), " ", $pen->price(), "\n";
 ```
 
-Label and price print `笔 18`.
+Label and price print `pen 18`.
 
 ### Two separate objects
 

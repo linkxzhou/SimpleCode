@@ -19,17 +19,17 @@ A program you can run is a package clause, one or more imports, and `func main`.
 
 `package` must be the first line that is not a comment. For a program, that name is `main`.
 
-```go run expect="main 包" title="Package clause"
+```go run expect="main bag" title="Package clause"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("main 包")
+	fmt.Println("main bag")
 }
 ```
 
-The printed words are `main 包`.
+The printed words are `main bag`.
 
 ### Import lists
 
@@ -54,17 +54,17 @@ func main() {
 
 `func main()` has no parameters and no result. Execution starts in that function.
 
-```go run expect="进入" title="Entry point"
+```go run expect="enter" title="Entry point"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("进入")
+	fmt.Println("enter")
 }
 ```
 
-The word printed is `进入`.
+The word printed is `enter`.
 
 ### Every import is used
 

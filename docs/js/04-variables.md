@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 先给出名字，下一行再放值。
 
-```js run expect="茶" title="赋值"
+```js run expect="tea" title="赋值"
 let item;
-item = "茶";
+item = "tea";
 console.log(item);
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 未赋值
 

@@ -31,8 +31,8 @@ One true side is enough for `OR`.
 
 ```sql run expect="2" title="Either name"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水'), ('杯');
-SELECT COUNT(*) FROM item WHERE name = '茶' OR name = '水';
+INSERT INTO item VALUES ('tea'), ('water'), ('cup');
+SELECT COUNT(*) FROM item WHERE name = 'tea' OR name = 'water';
 ```
 
 Tea and water each satisfy one side, so the count is `2`. The cup matches neither name.

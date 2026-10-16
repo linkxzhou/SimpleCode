@@ -19,31 +19,31 @@ An assignment is one word, with no space on either side of `=`. Quotes on the ri
 
 The value is one word with no spaces. Write it on the right-hand side of the equals sign.
 
-```sh run expect="钥匙" title="Read the key"
-item=钥匙
+```sh run expect="key" title="Read the key"
+item=key
 printf '%s\n' "$item"
 ```
 
-The line shows `钥匙`.
+The line shows `key`.
 
 ### Replace the stored word
 
 A second assignment overwrites the word already stored. Only the newer word remains.
 
-```sh run expect="车票" title="The later value"
-item=水杯
-item=车票
+```sh run expect="ticket" title="The later value"
+item=cup
+item=ticket
 printf '%s\n' "$item"
 ```
 
-The line shows `车票`.
+The line shows `ticket`.
 
 ### Quotes do not assign
 
-`item="钥匙"` is not an assignment. The shell looks for an external command.
+`item="key"` is not an assignment. The shell looks for an external command.
 
 ```sh norun title="Quotes are not an assignment"
-item="钥匙"
+item="key"
 printf '%s\n' "$item"
 ```
 

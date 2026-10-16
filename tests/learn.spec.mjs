@@ -182,7 +182,7 @@ try {
     const block = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"]').first();
     const code = await block.getAttribute("data-code");
     const expectText = await block.getAttribute("data-expect");
-    return !!(code?.includes('input("名字？")') && expectText === "你好，Ada！");
+    return !!(code?.includes('input("Name?")') && expectText === "Hello, Ada!");
   });
   check(foundGreeting, "greeting chapter opens on input");
   await saveShot(page, "learn-chapter.png", page.locator('[data-testid="docs-drawer"]'));

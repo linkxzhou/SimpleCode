@@ -43,11 +43,11 @@ The printed line is `8`.
 
 ### A semicolon is optional
 
-One statement per line is easier to read. A semicolon can join two statements, but these calls each occupy a line. Both run, and the checked text is `甲`.
+One statement per line is easier to read. A semicolon can join two statements, but these calls each occupy a line. Both run, and the checked text is `first`.
 
-```ruby run expect="甲" title="First line"
-puts "甲"
-puts "乙"
+```ruby run expect="first" title="First line"
+puts "first"
+puts "second"
 ```
 
-The printed line is `甲`.
+The printed line is `first`.

@@ -19,7 +19,7 @@ An interface names methods and nothing else. A type that has those methods satis
 
 Each method in the interface lists a name, parameters, and results.
 
-```go run expect="喵" title="An interface variable"
+```go run expect="meow" title="An interface variable"
 package main
 
 import "fmt"
@@ -31,7 +31,7 @@ type Speaker interface {
 type Cat struct{}
 
 func (Cat) Speak() string {
-	return "喵"
+	return "meow"
 }
 
 func main() {
@@ -40,13 +40,13 @@ func main() {
 }
 ```
 
-The cat says `喵`.
+The cat says `meow`.
 
 ### Implicit satisfaction
 
 Assignment to the interface succeeds when the methods line up. Leave one method out and compilation fails.
 
-```go run expect="汪" title="Another implementation"
+```go run expect="woof" title="Another implementation"
 package main
 
 import "fmt"
@@ -58,7 +58,7 @@ type Speaker interface {
 type Dog struct{}
 
 func (Dog) Speak() string {
-	return "汪"
+	return "woof"
 }
 
 func main() {
@@ -69,13 +69,13 @@ func main() {
 }
 ```
 
-The dog says `汪`.
+The dog says `woof`.
 
 ### Data stored in the interface
 
 An interface value holds a concrete type together with concrete data. The method call uses that concrete type.
 
-```go run expect="林" title="Carrying data"
+```go run expect="lin" title="Carrying data"
 package main
 
 import "fmt"
@@ -93,12 +93,12 @@ func (u User) Name() string {
 }
 
 func main() {
-	var n Named = User{name: "林"}
+	var n Named = User{name: "lin"}
 	fmt.Println(n.Name())
 }
 ```
 
-The stored name is `林`.
+The stored name is `lin`.
 
 ### any
 

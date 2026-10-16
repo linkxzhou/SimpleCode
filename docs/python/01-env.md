@@ -19,11 +19,11 @@ updated: "2026-10-15"
 
 点 Run 就把当前文本交给已经准备好的解释器。没有 `python.org` 的安装向导。
 
-```python run expect="已就绪" title="直接运行"
-print("已就绪")
+```python run expect="ready" title="直接运行"
+print("ready")
 ```
 
-输出里能看到 `已就绪`。
+输出里能看到 `ready`。
 
 ### pip 不在按钮里
 

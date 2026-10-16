@@ -19,32 +19,32 @@ updated: "2026-10-15"
 
 双斜线后面的输出不会执行。
 
-```cpp run expect="留下" title="行注释"
+```cpp run expect="kept" title="行注释"
 #include <iostream>
 int main() {
   // std::cout << "隐藏\n";
-  std::cout << "留下\n";
+  std::cout << "kept\n";
   return 0;
 }
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 块注释
 
 `/*` 到 `*/` 之间整段都不参加编译。
 
-```cpp run expect="丙" title="块注释"
+```cpp run expect="third" title="块注释"
 #include <iostream>
 int main() {
   /* std::cout << "甲\n";
      std::cout << "乙\n"; */
-  std::cout << "丙\n";
+  std::cout << "third\n";
   return 0;
 }
 ```
 
-输出里能看到 `丙`。
+输出里能看到 `third`。
 
 ### 注释不能嵌套块
 

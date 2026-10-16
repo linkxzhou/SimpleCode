@@ -41,11 +41,11 @@ SELECT n FROM item ORDER BY n DESC LIMIT 1;
 
 ### 文本
 
-默认按二进制顺序比较。这里两个汉字，用 `LIMIT` 取第一行核对。
+默认按二进制顺序比较。这里有两行名字，用计数核对两行都在。
 
 ```sql run expect="2" title="两行都在"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('水'), ('茶');
+INSERT INTO item VALUES ('water'), ('tea');
 SELECT COUNT(*) FROM item ORDER BY name;
 ```
 

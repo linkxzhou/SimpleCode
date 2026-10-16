@@ -23,27 +23,27 @@ No real path is guaranteed in this environment. The listing shows the shape of a
 #include <fstream>
 int main() {
   std::ofstream out("note.txt");
-  out << "茶\n";
+  out << "tea\n";
   return 0;
 }
 ```
 
 ### Write into a string stream
 
-`ostringstream` builds the line in memory. The characters are `茶`, a space, and 18.
+`ostringstream` builds the line in memory. The characters are `tea`, a space, and 18.
 
-```cpp run expect="茶 18" title="One line of text"
+```cpp run expect="tea 18" title="One line of text"
 #include <iostream>
 #include <sstream>
 int main() {
   std::ostringstream out;
-  out << "茶 " << 18;
+  out << "tea " << 18;
   std::cout << out.str() << "\n";
   return 0;
 }
 ```
 
-The in-memory line is `茶 18`.
+The in-memory line is `tea 18`.
 
 ### Read it back
 

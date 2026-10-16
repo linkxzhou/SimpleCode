@@ -18,11 +18,11 @@ updated: "2026-10-15"
 
 字面量可以直接投影出来。
 
-```sql run expect="茶|18" title="一行字面量"
-SELECT '茶', 18;
+```sql run expect="tea|18" title="一行字面量"
+SELECT 'tea', 18;
 ```
 
-输出里能看到 `茶|18`。
+输出里能看到 `tea|18`。
 
 ### 每次都是新库
 

@@ -39,8 +39,8 @@ The second line is `two`.
 
 The fence stdin value is stored as /mnt/stdin.txt and then fed to cat. Chinese text is decoded from the serial bytes as UTF-8.
 
-```linux run stdin="林夏\n" expect="林夏" title="The name that was read"
+```linux run stdin="linxia\n" expect="linxia" title="The name that was read"
 cat
 ```
 
-The output is `林夏`.
+The output is `linxia`.

@@ -20,7 +20,7 @@ Values carry types, while variables do not stay fixed to one type. `typeof` answ
 Numbers, strings, and booleans each report a different name.
 
 ```js run expect="number string boolean" title="Three kinds"
-console.log(typeof 3, typeof "茶", typeof true);
+console.log(typeof 3, typeof "tea", typeof true);
 ```
 
 The names logged are `number string boolean`.

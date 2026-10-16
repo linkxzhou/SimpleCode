@@ -17,16 +17,16 @@ A slice borrows a contiguous span and does not own that memory. Indexes count by
 
 ### The second half of a string
 
-Each Chinese character in this literal is three UTF-8 bytes. Skipping the first two characters starts at byte 6.
+Byte 6 of `night pass` is where `pass` begins.
 
-```rust run expect="船票" title="Last two characters"
+```rust run expect="pass" title="Last two characters"
 fn main() {
-    let word = String::from("夜班船票");
+    let word = String::from("night pass");
     println!("{}", &word[6..]);
 }
 ```
 
-`夜班` is cut away. The remainder is `船票`.
+The first half is cut away. The remainder is `pass`.
 
 ### The tail of an array
 

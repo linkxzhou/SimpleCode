@@ -20,28 +20,28 @@ On your own machine, `File` can write a path. This page does not depend on that 
 A real path is not guaranteed here. `File.write` would try to create a file beside the program. The call is shown for reading and is not run.
 
 ```ruby norun title="Do not write the disk"
-File.write("note.txt", "茶")
+File.write("note.txt", "tea")
 ```
 
 ### An in-memory buffer
 
 `StringIO` offers `write` and `string`. `write` stores characters in the buffer. `string` returns what was stored, and `puts` prints those characters.
 
-```ruby run expect="茶" title="Write into memory"
+```ruby run expect="tea" title="Write into memory"
 require "stringio"
 b = StringIO.new
-b.write("茶")
+b.write("tea")
 puts b.string
 ```
 
-The printed line is `茶`.
+The printed line is `tea`.
 
 ### Split into lines
 
 When the text is already a string, `lines` splits it on newlines. `chomp` drops the newline from each piece. Two pieces remain, so the length is 2.
 
 ```ruby run expect="2" title="Two lines"
-puts "茶\n水\n".lines.map(&:chomp).length
+puts "tea\nwater\n".lines.map(&:chomp).length
 ```
 
 The printed line is `2`.

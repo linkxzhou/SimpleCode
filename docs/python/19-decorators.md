@@ -19,34 +19,34 @@ updated: "2026-10-15"
 
 先定义内部函数，再返回它。调用结果时才会进到原来的函数。
 
-```python run expect="你好!" title="手动包装"
+```python run expect="Hi!" title="手动包装"
 def shout(fn):
     def wrap():
         return fn() + "!"
     return wrap
 def hi():
-    return "你好"
+    return "Hi"
 print(shout(hi)())
 ```
 
-输出里能看到 `你好!`。
+输出里能看到 `Hi!`。
 
 ### 用 @ 写在定义上方
 
 `@shout` 等价于定义完再赋值 `hi = shout(hi)`。
 
-```python run expect="你好!" title="语法糖"
+```python run expect="Hi!" title="语法糖"
 def shout(fn):
     def wrap():
         return fn() + "!"
     return wrap
 @shout
 def hi():
-    return "你好"
+    return "Hi"
 print(hi())
 ```
 
-输出里能看到 `你好!`。
+输出里能看到 `Hi!`。
 
 ### 名字变成内部函数
 
@@ -59,7 +59,7 @@ def shout(fn):
     return wrap
 @shout
 def hi():
-    return "你好"
+    return "Hi"
 print(hi.__name__)
 ```
 

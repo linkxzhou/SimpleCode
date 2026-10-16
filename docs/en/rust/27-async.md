@@ -64,6 +64,6 @@ Without an executor, the future from an `async` block never advances on its own.
 
 ```rust norun title="No async"
 fn main() {
-    println!("没有执行器");
+    println!("no executor");
 }
 ```

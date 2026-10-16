@@ -28,17 +28,17 @@ go get rsc.io/quote
 
 解释器执行编辑器里的那一段文本。没有第二个 `.go`，也没有 `go.mod`。
 
-```go run expect="单文件" title="当前文件"
+```go run expect="one file" title="当前文件"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("单文件")
+	fmt.Println("one file")
 }
 ```
 
-输出是 `单文件`。
+输出是 `one file`。
 
 ### 标准库不需要模块路径
 

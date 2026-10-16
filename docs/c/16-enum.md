@@ -49,17 +49,17 @@ int main(void) {
 
 枚举值可以当 `switch` 的条件。
 
-```c run expect="二" title="第二天"
+```c run expect="two" title="第二天"
 #include <stdio.h>
 enum Day { MON = 1, TUE = 2 };
 int main(void) {
   enum Day d = TUE;
   switch (d) {
-    case MON: printf("一\n"); break;
-    case TUE: printf("二\n"); break;
+    case MON: printf("one\n"); break;
+    case TUE: printf("two\n"); break;
   }
   return 0;
 }
 ```
 
-输出里能看到 `二`。
+输出里能看到 `two`。

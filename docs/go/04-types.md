@@ -71,7 +71,7 @@ func main() {
 
 ### 字符串的长度
 
-`len` 返回字节数。一个汉字在 UTF-8 里通常是 3 个字节。
+`len` 返回字节数。`Hello!` 有 6 个字节。
 
 ```go run expect="6" title="字节数"
 package main
@@ -79,7 +79,7 @@ package main
 import "fmt"
 
 func main() {
-	fmt.Println(len("你好"))
+	fmt.Println(len("Hello!"))
 }
 ```
 

@@ -17,9 +17,9 @@ A structure gathers several fields into one type. You reach a field with `.` on 
 
 ### The dot
 
-After the variable name, `.` selects a field. `item` carries the name `茶` and the price 18.
+After the variable name, `.` selects a field. `item` carries the name `tea` and the price 18.
 
-```cpp run expect="茶 18" title="Two fields"
+```cpp run expect="tea 18" title="Two fields"
 #include <iostream>
 #include <string>
 struct Item {
@@ -27,13 +27,13 @@ struct Item {
   int price;
 };
 int main() {
-  Item item{"茶", 18};
+  Item item{"tea", 18};
   std::cout << item.name << " " << item.price << "\n";
   return 0;
 }
 ```
 
-The field line is `茶 18`.
+The field line is `tea 18`.
 
 ### Change a field
 

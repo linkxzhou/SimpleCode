@@ -19,19 +19,19 @@ updated: "2026-10-15"
 
 `var` 后面是名字和类型。可以在声明时赋初值，也可以稍后再赋。
 
-```go run expect="茶" title="指定类型"
+```go run expect="tea" title="指定类型"
 package main
 
 import "fmt"
 
 func main() {
 	var item string
-	item = "茶"
+	item = "tea"
 	fmt.Println(item)
 }
 ```
 
-输出是 `茶`。
+输出是 `tea`。
 
 ### 零值
 
@@ -55,18 +55,18 @@ func main() {
 
 函数内部可以用 `:=` 声明并赋值，类型由右边推断。包一级不能使用 `:=`。
 
-```go run expect="杭州" title="短声明"
+```go run expect="hangzhou" title="短声明"
 package main
 
 import "fmt"
 
 func main() {
-	city := "杭州"
+	city := "hangzhou"
 	fmt.Println(city)
 }
 ```
 
-输出是 `杭州`。
+输出是 `hangzhou`。
 
 注意：同一个块里对已有名字再写 `:=`，且左边没有新名字，会报 *no new variables*。
 

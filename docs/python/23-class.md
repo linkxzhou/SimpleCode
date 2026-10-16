@@ -34,29 +34,29 @@ print(Cup(8).sip())
 
 子类不重写时，用的是父类的方法。
 
-```python run expect="杯子" title="沿用父类"
+```python run expect="mug" title="沿用父类"
 class Cup:
     def label(self):
-        return "杯子"
+        return "mug"
 class Mug(Cup):
     pass
 print(Mug().label())
 ```
 
-输出里能看到 `杯子`。
+输出里能看到 `mug`。
 
 ### 子类重写
 
 子类定义同名方法后，调用子类对象会走到新的方法。
 
-```python run expect="马克杯" title="覆盖"
+```python run expect="stein" title="覆盖"
 class Cup:
     def label(self):
-        return "杯子"
+        return "mug"
 class Mug(Cup):
     def label(self):
-        return "马克杯"
+        return "stein"
 print(Mug().label())
 ```
 
-输出里能看到 `马克杯`。
+输出里能看到 `stein`。

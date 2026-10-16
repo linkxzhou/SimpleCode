@@ -19,36 +19,36 @@ Output macros write values to standard output. Leave a placeholder if you want a
 
 Braces line up with arguments, one pair per value.
 
-```rust run expect="票价42" title="Fare"
+```rust run expect="fare42" title="Fare"
 fn main() {
-    println!("票价{}", 42);
+    println!("fare{}", 42);
 }
 ```
 
-The finished line is `票价42`, and it already ends with a newline.
+The finished line is `fare42`, and it already ends with a newline.
 
 ### Continue on the same line
 
 `print!` does not break the line. The next `println!` closes it.
 
-```rust run expect="铜钥匙" title="Join into one key"
+```rust run expect="copperkey" title="Join into one key"
 fn main() {
-    print!("铜");
-    println!("钥匙");
+    print!("copper");
+    println!("key");
 }
 ```
 
-The two macros together produce `铜钥匙`.
+The two macros together produce `copperkey`.
 
 ### Format before printing
 
 `format!` returns a `String`. It does not write to the terminal by itself.
 
-```rust run expect="7号窗口" title="Build a string first"
+```rust run expect="7 window" title="Build a string first"
 fn main() {
-    let line = format!("{}号窗口", 7);
+    let line = format!("{} window", 7);
     println!("{line}");
 }
 ```
 
-What appears is the assembled string `7号窗口`.
+What appears is the assembled string `7 window`.

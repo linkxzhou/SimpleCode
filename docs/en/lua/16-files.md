@@ -21,7 +21,7 @@ The lesson has no file named `note.txt`.
 
 ```lua norun title="Do not write to disk"
 local f = io.open("note.txt", "w")
-f:write("茶\n")
+f:write("tea\n")
 f:close()
 ```
 
@@ -31,19 +31,19 @@ This block is not run.
 
 The name and the price are already stored in the string.
 
-```lua run expect="茶 18" title="One line"
-local line = "茶 18"
+```lua run expect="tea 18" title="One line"
+local line = "tea 18"
 print(line)
 ```
 
-The output shows `茶 18`.
+The output shows `tea 18`.
 
 ### Take the number
 
 `string.match` with the pattern `%d+` captures the integer at the end of the line.
 
 ```lua run expect="18" title="The number"
-local line = "茶 18"
+local line = "tea 18"
 print(string.match(line, "%d+"))
 ```
 

@@ -41,7 +41,7 @@ The overlap has length `1`.
 `in` asks whether this value sits in the set.
 
 ```python run expect="True" title="Present or not"
-print("茶" in {"茶", "水"})
+print("tea" in {"tea", "water"})
 ```
 
 The membership test prints `True`.

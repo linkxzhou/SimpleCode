@@ -19,29 +19,29 @@ updated: "2026-10-15"
 
 参数之间会插入一个空格。
 
-```sh run expect="甲 乙" title="中间有空格"
-echo 甲 乙
+```sh run expect="first second" title="中间有空格"
+echo first second
 ```
 
-输出里能看到 `甲 乙`。
+输出里能看到 `first second`。
 
 ### 不换行
 
 `-n` 去掉末尾的换行。后面再补一个换行，方便看清。
 
-```sh run expect="甲乙" title="接在下一行前"
-echo -n 甲
-echo 乙
+```sh run expect="firstsecond" title="接在下一行前"
+echo -n first
+echo second
 ```
 
-输出里能看到 `甲乙`。
+输出里能看到 `firstsecond`。
 
 ### 一个词
 
 只有一个参数时，不会多出空格。
 
-```sh run expect="茶" title="一个词"
-echo 茶
+```sh run expect="tea" title="一个词"
+echo tea
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

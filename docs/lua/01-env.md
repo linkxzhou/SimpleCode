@@ -19,11 +19,11 @@ updated: "2026-10-15"
 
 这一行不依赖安装路径。
 
-```lua run expect="已就绪" title="就绪"
-print("已就绪")
+```lua run expect="ready" title="就绪"
+print("ready")
 ```
 
-输出里能看到 `已就绪`。
+输出里能看到 `ready`。
 
 ### 版本号不写死
 

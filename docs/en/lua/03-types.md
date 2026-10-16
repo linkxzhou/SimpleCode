@@ -21,7 +21,7 @@ Common values are numbers, strings, booleans, nil, and tables. `type` returns th
 
 ```lua run expect="number" title="The number comes first"
 print(type(18))
-print(type("茶"))
+print(type("tea"))
 ```
 
 The output shows `number`.

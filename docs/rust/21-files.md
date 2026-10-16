@@ -18,12 +18,12 @@ updated: "2026-10-16"
 
 路径用绝对形式，落在预打开的 `/` 上。
 
-```rust run expect="已写下" title="写入备忘"
+```rust run expect="wrote" title="写入备忘"
 use std::fs;
 
 fn main() {
-    fs::write("/memo.txt", "船票").unwrap();
-    println!("已写下");
+    fs::write("/memo.txt", "pass").unwrap();
+    println!("wrote");
 }
 ```
 成功时打印已写下。文件在这次运行的虚拟目录里。
@@ -32,11 +32,11 @@ fn main() {
 
 `read_to_string` 把整个文件收成 `String`。
 
-```rust run expect="船票" title="读回备忘"
+```rust run expect="pass" title="读回备忘"
 use std::fs;
 
 fn main() {
-    fs::write("/memo.txt", "船票").unwrap();
+    fs::write("/memo.txt", "pass").unwrap();
     let text = fs::read_to_string("/memo.txt").unwrap();
     println!("{text}");
 }
@@ -47,13 +47,13 @@ fn main() {
 
 终端里提交一行之后，`read_line` 才返回。
 
-```rust run expect="旅客Ada" stdin="Ada" title="读旅客名"
+```rust run expect="riderAda" stdin="Ada" title="读旅客名"
 use std::io::{self, BufRead};
 
 fn main() {
     let mut line = String::new();
     io::stdin().lock().read_line(&mut line).unwrap();
-    println!("旅客{}", line.trim());
+    println!("rider{}", line.trim());
 }
 ```
 示例输入是 Ada，输出把名字接在旅客后面。
@@ -64,6 +64,6 @@ fn main() {
 
 ```rust norun title="不连接网络"
 fn main() {
-    println!("没有网络");
+    println!("no network");
 }
 ```

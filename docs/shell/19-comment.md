@@ -19,30 +19,30 @@ updated: "2026-10-15"
 
 注释里的 `printf` 不会执行。
 
-```sh run expect="留下" title="跳过注释"
+```sh run expect="kept" title="跳过注释"
 # printf '%s\n' 隐藏
-printf '%s\n' 留下
+printf '%s\n' kept
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 分号
 
 分号把两条输出隔开，仍按顺序打出。
 
-```sh run expect="甲" title="第一段"
-printf '%s\n' 甲; printf '%s\n' 乙
+```sh run expect="first" title="第一段"
+printf '%s\n' first; printf '%s\n' second
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 空命令
 
 冒号是成功的空命令，适合占住一个分支。
 
-```sh run expect="之后" title="空命令之后"
+```sh run expect="later" title="空命令之后"
 :
-printf '%s\n' 之后
+printf '%s\n' later
 ```
 
-输出里能看到 `之后`。
+输出里能看到 `later`。

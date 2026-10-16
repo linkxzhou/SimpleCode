@@ -30,21 +30,21 @@ print(add(2, 3))
 
 `sorted` 的 `key` 决定比较时看哪一项。
 
-```python run expect="水" title="按数量排序"
-rows = [("水", 2), ("茶", 9)]
+```python run expect="water" title="按数量排序"
+rows = [("water", 2), ("tea", 9)]
 rows = sorted(rows, key=lambda row: row[1])
 print(rows[0][0])
 ```
 
-输出里能看到 `水`。
+输出里能看到 `water`。
 
 ### 不能写多条语句
 
 需要 `if` 块或循环时，改用 `def`。下面只演示条件表达式仍能放进 lambda。
 
-```python run expect="正" title="条件表达式"
-label = lambda n: "正" if n > 0 else "非正"
+```python run expect="pos" title="条件表达式"
+label = lambda n: "pos" if n > 0 else "badnum"
 print(label(3))
 ```
 
-输出里能看到 `正`。
+输出里能看到 `pos`。

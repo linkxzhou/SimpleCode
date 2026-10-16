@@ -19,31 +19,31 @@ updated: "2026-10-15"
 
 两行文字都留在字符串里。
 
-```php run expect="甲" title="第一行还在"
+```php run expect="first" title="第一行还在"
 <?php
 $text = <<<TXT
-甲
-乙
+first
+second
 TXT;
 echo $text, "\n";
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 展开变量
 
 没有引号的结束标记会把 `$name` 换成值。
 
-```php run expect="名称：茶" title="换成茶"
+```php run expect="name: tea" title="换成茶"
 <?php
-$name = "茶";
+$name = "tea";
 $text = <<<TXT
-名称：$name
+name: $name
 TXT;
 echo $text, "\n";
 ```
 
-输出里能看到 `名称：茶`。
+输出里能看到 `name: tea`。
 
 ### nowdoc
 
@@ -51,7 +51,7 @@ echo $text, "\n";
 
 ```php run expect="$name" title="不展开"
 <?php
-$name = "茶";
+$name = "tea";
 $text = <<<'TXT'
 $name
 TXT;

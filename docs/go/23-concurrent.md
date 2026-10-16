@@ -69,7 +69,7 @@ func main() {
 
 `select` 可以同时等多个通道。没有任何 case 能进行时，`default` 立刻执行。
 
-```go run expect="空" title="没有数据"
+```go run expect="empty" title="没有数据"
 package main
 
 import "fmt"
@@ -80,9 +80,9 @@ func main() {
 	case v := <-ch:
 		fmt.Println(v)
 	default:
-		fmt.Println("空")
+		fmt.Println("empty")
 	}
 }
 ```
 
-输出是 `空`。
+输出是 `empty`。

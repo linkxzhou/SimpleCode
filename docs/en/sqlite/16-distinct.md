@@ -17,11 +17,11 @@ updated: "2026-10-16"
 
 ### Drop duplicates in one column
 
-茶 was inserted twice. The distinct list keeps that name once.
+tea was inserted twice. The distinct list keeps that name once.
 
 ```sql run expect="2" title="Two names"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('tea'), ('water');
 SELECT COUNT(*) FROM (SELECT DISTINCT name FROM item);
 ```
 
@@ -31,13 +31,13 @@ Tea and water are the two remaining names, so the outer count is `2`.
 
 Sorting the distinct names makes the first row fixed.
 
-```sql run expect="水" title="First in binary order"
+```sql run expect="water" title="First in binary order"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水'), ('茶');
+INSERT INTO item VALUES ('tea'), ('water'), ('tea');
 SELECT name FROM (SELECT DISTINCT name FROM item) ORDER BY name LIMIT 1;
 ```
 
-Binary order places `水` ahead of 茶, and `LIMIT 1` returns that name.
+Binary order places `water` ahead of tea, and `LIMIT 1` returns that name.
 
 ### Deduplicate across two columns
 
@@ -45,7 +45,7 @@ A row counts as a duplicate only when the name and the price both match another 
 
 ```sql run expect="2" title="Two combinations"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('茶', 18), ('茶', 6);
+INSERT INTO item VALUES ('tea', 18), ('tea', 18), ('tea', 6);
 SELECT COUNT(*) FROM (SELECT DISTINCT name, price FROM item);
 ```
 

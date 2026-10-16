@@ -19,50 +19,50 @@ The condition must sit inside parentheses. Any non-zero value counts as true, an
 
 `n` is 4, so `n > 0` succeeds. The first `printf` writes its label, and the `else` call is not reached.
 
-```c run expect="正数" title="Positive branch"
+```c run expect="plus" title="Positive branch"
 #include <stdio.h>
 int main(void) {
   int n = 4;
-  if (n > 0) printf("正数\n");
-  else printf("非正\n");
+  if (n > 0) printf("plus\n");
+  else printf("badnum\n");
   return 0;
 }
 ```
 
-The output contains `正数`.
+The output contains `plus`.
 
 ### else if
 
 `score` is 70, so `score >= 90` fails. The following `else if` succeeds because 70 is at least 60, and that arm prints.
 
-```c run expect="中" title="Score band"
+```c run expect="mid" title="Score band"
 #include <stdio.h>
 int main(void) {
   int score = 70;
-  if (score >= 90) printf("高\n");
-  else if (score >= 60) printf("中\n");
-  else printf("低\n");
+  if (score >= 90) printf("high\n");
+  else if (score >= 60) printf("mid\n");
+  else printf("low\n");
   return 0;
 }
 ```
 
-The output contains `中`.
+The output contains `mid`.
 
 ### switch
 
 `day` is 3, so `case 3` runs. `break` then leaves the `switch` instead of falling into `default`.
 
-```c run expect="三" title="Third day"
+```c run expect="three" title="Third day"
 #include <stdio.h>
 int main(void) {
   int day = 3;
   switch (day) {
-    case 1: printf("一\n"); break;
-    case 3: printf("三\n"); break;
-    default: printf("其他\n"); break;
+    case 1: printf("one\n"); break;
+    case 3: printf("three\n"); break;
+    default: printf("other\n"); break;
   }
   return 0;
 }
 ```
 
-The output contains `三`.
+The output contains `three`.

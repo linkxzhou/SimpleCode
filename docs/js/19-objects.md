@@ -19,12 +19,12 @@ updated: "2026-10-15"
 
 点号和方括号读到的是同一个值。
 
-```js run expect="茶 18" title="两个字段"
-const item = { name: "茶", price: 18 };
+```js run expect="tea 18" title="两个字段"
+const item = { name: "tea", price: 18 };
 console.log(item.name, item["price"]);
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 展开
 

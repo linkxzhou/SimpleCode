@@ -19,38 +19,38 @@ A union type means the value is one of the listed alternatives. Narrow it before
 
 `typeof` decides which return text to build.
 
-```ts run expect="数字3" title="The number arm"
+```ts run expect="num3" title="The number arm"
 function show(value: string | number): string {
-  if (typeof value === "number") return "数字" + value;
+  if (typeof value === "number") return "num" + value;
   return value;
 }
 console.log(show(3));
 ```
 
-Passing 3 logs `数字3`.
+Passing 3 logs `num3`.
 
 ### The other arm
 
 A string argument takes the remaining return.
 
-```ts run expect="文本茶" title="The text arm"
+```ts run expect="texttea" title="The text arm"
 function show(value: string | number): string {
-  if (typeof value === "number") return "数字";
-  return "文本" + value;
+  if (typeof value === "number") return "num";
+  return "text" + value;
 }
-console.log(show("茶"));
+console.log(show("tea"));
 ```
 
-Passing the string logs `文本茶`.
+Passing the string logs `texttea`.
 
 ### A union of string literals
 
 Only the listed strings are allowed.
 
-```ts run expect="小" title="Literal size"
-type Size = "小" | "大";
-const size: Size = "小";
+```ts run expect="small" title="Literal size"
+type Size = "small" | "big";
+const size: Size = "small";
 console.log(size);
 ```
 
-The chosen literal logs `小`.
+The chosen literal logs `small`.
