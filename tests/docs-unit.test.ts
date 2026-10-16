@@ -58,11 +58,12 @@ describe("resolveRuntime", () => {
       ["sh", "shell"],
       ["shell", "shell"],
       ["bash", "shell"],
+      ["rust", "rust"],
+      ["rs", "rust"],
       ["linux", "linux"],
     ];
     for (const [alias, runtime] of cases) assert.equal(resolveRuntime(alias), runtime);
     assert.equal(resolveRuntime("Py"), "python");
-    assert.equal(resolveRuntime("rust"), undefined);
     assert.equal(resolveRuntime("zig"), undefined);
     assert.equal(resolveRuntime(""), undefined);
     assert.equal(Object.keys(DOC_LANG_TO_RUNTIME).length, cases.length);

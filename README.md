@@ -1,6 +1,6 @@
 # SimpleCode
 
-纯浏览器内运行代码：Python · Ruby · JS/TS · SQLite · C · C++ · PHP · Lua · Go · Shell（WebAssembly / WASI，基于 [Runno](https://github.com/taybenlor/runno) 的 `@runno/wasi`）。
+纯浏览器内运行代码：Python · Ruby · JS/TS · SQLite · C · C++ · PHP · Lua · Go · Shell · Rust · Linux。前十门是 WebAssembly / WASI（基于 [Runno](https://github.com/taybenlor/runno) 的 `@runno/wasi`）。Rust 的编译器是 [weblings](https://github.com/AngelOnFira/weblings) 的 Cranelift rustc，不在默认 `./build.sh vendor` 里；选中 Rust 时再下载约 152 MB，或事先运行 `./build.sh vendor --rust`。Linux 是 v86 里的 BusyBox 客户机，随默认 vendor 下载。
 
 ## 快速开始
 
@@ -10,11 +10,11 @@
 git clone https://github.com/linkxzhou/SimpleCode && cd SimpleCode
 git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提供 langs/*.wasm
 ./build.sh install   # yarn install
-./build.sh vendor    # Runno langs + 构建 Lua/Go/Shell → wasm/，并按磁盘上的文件写 manifest.json
+./build.sh vendor    # Runno langs + Lua/Go/Shell + Linux 客户机 → wasm/，并按磁盘上的文件写 manifest.json
 ./build.sh dev       # http://localhost:5173
 ./build.sh build     # dist/
 ./build.sh preview   # http://localhost:4173（带 COOP/COEP）
-./build.sh test      # 无头冒烟测试（10 种运行时；JS 与 TS 各一例）
+./build.sh test      # 无头冒烟测试（含 Linux；JS 与 TS 各一例；Rust 需 wasm/rust 或可访问的演示地址）
 ```
 
 部署时服务器必须返回 `Cross-Origin-Opener-Policy: same-origin` 与 `Cross-Origin-Embedder-Policy: require-corp`，并以 `application/wasm` 提供 `.wasm`。设计文档见 [plan/DESIGN.md](plan/DESIGN.md)，语言方案见 [plan/LANGUAGES.md](plan/LANGUAGES.md)。

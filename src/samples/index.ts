@@ -103,6 +103,12 @@ func main() {
 	fmt.Println(squares)
 }
 `,
+  rust: `fn main() {
+    let values = vec![1, 2, 39];
+    let sum: i32 = values.iter().sum();
+    println!("Hello from Rust {sum}");
+}
+`,
   shell: `printf "What's your name? "
 read name
 printf "Hello, %s!\\n" "$name"

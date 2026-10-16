@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import { formatMB, languageAssetIds, languageSize, loadManifest, type LanguageSpec, type Manifest } from "@/core/manifest";
 import { LinuxKilled, bootLinux, linuxMachine } from "@/core/linux";
+import { clearRustCache, ensureRustToolchain, rustCacheBytes, rustDownloadBytes, rustIsCached, rustReady } from "@/rustc/toolchain";
 import { cacheUsage, clearCache as clearWasmCache, ensureAsset, getLoaded, isCached, pruneCache } from "@/core/wasmLoader";
 import { terminal } from "@/core/terminal";
 
@@ -33,11 +34,12 @@ export const useLanguageStore = defineStore("language", () => {
   const selectedState = computed(() => (selectedId.value ? states[selectedId.value] : undefined));
 
   function sizeOf(lang: LanguageSpec) {
+    if (lang.compiler === "weblings") return rustDownloadBytes();
     return manifest.value ? languageSize(manifest.value, lang) : 0;
   }
 
   async function refreshUsage() {
-    usage.value = await cacheUsage();
+    usage.value = (await cacheUsage()) + (await rustCacheBytes());
   }
 
   async function refreshStatuses() {
@@ -47,6 +49,12 @@ export const useLanguageStore = defineStore("language", () => {
       if (!states[lang.id]) states[lang.id] = { status: "idle", loaded: 0, total: sizeOf(lang) };
       const st = states[lang.id]; // re-read through the reactive proxy
       if (st.status === "downloading") continue;
+      if (lang.compiler === "weblings") {
+        if (rustReady()) st.status = "ready";
+        else if (await rustIsCached()) st.status = "cached";
+        else if (st.status !== "error") st.status = "idle";
+        continue;
+      }
       const ids = languageAssetIds(lang);
       if (ids.every((id) => getLoaded(id))) st.status = "ready";
       else if ((await Promise.all(ids.map((id) => isCached(m.assets[id])))).every(Boolean)) st.status = "cached";
@@ -101,6 +109,36 @@ export const useLanguageStore = defineStore("language", () => {
     if (!states[id]) states[id] = { status: "idle", loaded: 0, total: sizeOf(lang) };
     const st = states[id];
     if (st.status === "ready") return true;
+    if (lang.compiler === "weblings") {
+      const fromNetwork = st.status !== "cached" && !rustReady();
+      st.status = "downloading";
+      st.error = undefined;
+      st.total = rustDownloadBytes();
+      st.loaded = 0;
+      const ctrl = new AbortController();
+      controllers.set(id, ctrl);
+      if (fromNetwork) terminal.system(`正在下载 ${lang.label} 工具链（${formatMB(st.total)}）…`);
+      try {
+        await ensureRustToolchain((loaded, total) => {
+          st.loaded = loaded;
+          st.total = total;
+        }, ctrl.signal);
+        st.status = "ready";
+        st.loaded = st.total;
+        if (fromNetwork) terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
+        await refreshStatuses();
+        void refreshUsage();
+        return true;
+      } catch (e) {
+        const aborted = (e as Error).name === "AbortError";
+        st.status = aborted ? "idle" : "error";
+        st.error = aborted ? undefined : (e as Error).message;
+        terminal.system(aborted ? `已取消下载 ${lang.label}` : `下载 ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
+        return false;
+      } finally {
+        controllers.delete(id);
+      }
+    }
     const ids = languageAssetIds(lang);
     const fromNetwork = st.status !== "cached";
     const progress: Record<string, number> = {};
@@ -167,6 +205,7 @@ export const useLanguageStore = defineStore("language", () => {
     linuxMachine.shutdown();
     terminal.setPassthrough(undefined);
     await clearWasmCache();
+    await clearRustCache();
     for (const s of Object.values(states)) if (s.status !== "downloading") s.status = "idle";
     await refreshUsage();
   }

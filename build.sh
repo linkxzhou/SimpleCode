@@ -37,6 +37,11 @@ cmd_install() {
 }
 
 cmd_vendor() {
+  if [ "${1:-}" = "--rust" ]; then
+    info "Vendoring the weblings Rust toolchain → wasm/rust/ (not the default manifest)"
+    node scripts/vendor-rust.mjs
+    return
+  fi
   info "Vendoring wasm binaries → wasm/"
   node scripts/vendor-wasm.mjs "$@"
 }
@@ -114,7 +119,9 @@ ${c_bold}SimpleCode build helper${c_off}
 Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
-  vendor [--link]    Copy wasm runtimes from thirdparty/runno/langs into wasm/,
+  vendor [--link|--rust]  Copy wasm runtimes from thirdparty/runno/langs into wasm/,
+                     --rust downloads the pinned weblings toolchain into wasm/rust/
+                     and does not add it to the default manifest.
                      build Lua and Go (scripts/builders; Linux or macOS, x86_64 or arm64), and
                      write wasm/manifest.json from those files (--link: symlink Runno files,
                      --source <dir>: alternative Runno directory).

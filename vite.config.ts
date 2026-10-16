@@ -3,7 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import { docsPlugin } from "./scripts/vite-plugin-docs";
 import { refreshManifest } from "./scripts/write-manifest.mjs";
 import { createReadStream, cpSync, existsSync, rmSync, statSync } from "node:fs";
-import { join, normalize, resolve } from "node:path";
+import { join, normalize, resolve, sep } from "node:path";
 
 const isolationHeaders = {
   "Cross-Origin-Opener-Policy": "same-origin",
@@ -61,7 +61,11 @@ function wasmAssets(): Plugin {
       }
       const dest = join(outDir, "wasm");
       rmSync(dest, { recursive: true, force: true });
-      cpSync(wasmDir, dest, { recursive: true, dereference: true });
+      cpSync(wasmDir, dest, {
+        recursive: true,
+        dereference: true,
+        filter: (src) => !src.split(sep).includes(".rust-tmp"),
+      });
     },
   };
 }

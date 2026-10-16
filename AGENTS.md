@@ -4,9 +4,9 @@
 
 ## 项目是什么
 
-浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。十门语言是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。第十一门 Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
+浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell 的运行时是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。Rust 的编译器是 weblings 的 Cranelift rustc，在另一个 Worker 里编译；编出来的 wasm 再交给同一个 `WASIWorkerHost`。Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
 
-教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十一本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，细节见 `plan/LANGUAGES.md` §10 和 `plan/LEARN.md` §20。
+教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十二本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`。细节见 `plan/LANGUAGES.md` §10 和 §11，以及 `plan/LEARN.md` §20。
 
 ## 架构
 
@@ -18,7 +18,8 @@
 工具栏 RunButton
   → stores/run.ts
   → src/core/runner.ts  RunSession
-       ├─ WASIWorkerHost（十门 WASI 语言，Web Worker）
+       ├─ WASIWorkerHost（WASI 语言，Web Worker；Rust 的产物也走这里）
+       ├─ weblings rustc（rust，单独 Worker，只编译）
        └─ LinuxMachine（linux，主线程 v86，src/core/linux.ts）
 终端 src/core/terminal.ts（xterm；Linux 期间按键原样送进串口）
 文档 DocsDrawer
@@ -28,7 +29,7 @@
 
 资源在 `wasm/`。`scripts/languages.config.mjs` 列出资产和语言。`scripts/write-manifest.mjs` 按磁盘文件生成 `wasm/manifest.json`（`size`、`sha256`）。该文件 gitignore，不提交。`src/core/wasmLoader.ts` 用 Cache API（`simplecode-wasm-v1`）缓存，并用清单里的 `size` 核对。
 
-语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`linux`（界面文案 Linux，短标签 `Lx`）。
+语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`rust`、`linux`（界面文案 Linux，短标签 `Lx`）。Rust 不进默认 `./build.sh vendor`，也不写进 `wasm/manifest.json`。`./build.sh vendor --rust` 校验 pin 后把 `rustc.wasm` 和 `sysroot-wasip1.bundle` 放到 `wasm/rust/`。没跑这条命令时，页面从 pin 住的演示地址下载同一对文件，并用 Cache API（`simplecode-rustc-v1`）缓存。GitHub Release 资产在 COEP 页面里没有 CORS，不能当浏览器下载地址。
 
 ## 技术栈和命令
 
@@ -39,7 +40,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | 子命令 | 作用 |
 |---|---|
 | `install` | `yarn install` |
-| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单 |
+| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单。`--rust` 另下 weblings 工具链，不进这份清单 |
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
@@ -77,10 +78,10 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 每章至少两个可运行块：info 里有 `run`，并有 `expect="子串"`。
 - `norun` 只供阅读，旁边写原因。`smoke=skip` 仍算结构测试里的可运行块，`docs-smoke` 不执行它（Python 的 `while True` 用了这个）。
 - 不要再写固定的「常见错误 / 最佳实践 / 小结 / 练习」四节。
-- 十本书一起检查连续 60 个汉字不重复。
+- 十二本书一起检查连续 60 个汉字不重复。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30。合计 307 章，887 个可运行块。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。
+现在的书（章数）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28。合计 335 章，966 个可运行块。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件。Linux 的文档冒烟会启动客户机。
 
 ### 运行时限制（可运行块里避开）
 
@@ -90,6 +91,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - **Shell（wasi-sh）**：只有内建 `echo`、`printf`、`read`、`cat`、`true` / `false` / `:`、`exit`、`test` / `[ ]`，赋值、`$VAR`、`if` / `while` / `for`、内建之间的管道和重定向。没有 `cd`、`$(…)`、`$((…))`、函数、`source`、通配、here-doc、后台和外部命令（退出 127）。`$$` 固定打印 `1`。赋值里不能加引号：`item=钥匙` 可以，`item="钥匙"` 会被当成命令。
 - **Go（Yaegi 0.16.1）**：没有网络，不能 import 第三方。`time.Sleep` 在 `poll_oneoff` 上等不回来。自定义 `error` 放进接口再调用 `Error()` 会 panic。
 - **Lua 5.4.9**：`pcall` 依赖 wasi-sdk 的 `-mllvm -wasm-enable-sjlj` 和 `-lsetjmp`。不要定义 `LUA_USE_POSIX`，否则 `pcall` 坏掉。`#` 和 `string.len` 按字节。`print` 多个参数之间是制表符。没有 `os.execute`、`io.popen`，也不能 `require` 别的文件。
+- **Rust（weblings，`artifacts-test-7`）**：单个 `main.rs`，edition 2024，`-O`，`panic=abort`。没有 Cargo、crates.io、过程宏、`std::thread` 和 `std::thread::sleep`（宿主的 `poll_oneoff` 时钟会空转）。编译器本身要虚拟 sysroot 和 `CLIF2WASM_OBJECT=1`，所以不作为 preview1 命令注册。产物只导入 `wasi_snapshot_preview1` 并导出 `_start`。Safari 没有测过。细节在 `plan/LANGUAGES.md` §11.10。
 - **Linux（v86 0.5.471）**：客户机是 i686、内核 6.8.12、Buildroot 2024.05.2、BusyBox 1.36.1，家目录 `/root`，提示符 `~% `。没有网络、包管理器、ssh、vim。`apt`、`yum`、`ssh`、`vim`、`passwd`、`fdisk`、`reboot`、`useradd` 标 `norun`。每次 Run 从快照恢复，围栏之间不共享 `/tmp`。`ls` 要加 `--color=never`。`chmod u+x` 在 644 文件上是 `-rwxr--r--`。9p 在 `/mnt`，脚本是 `/mnt/main.sh`。退出码来自串口上最后一次 `__SC_EXIT:` 后的数字。
 
 ## 工作顺序
@@ -144,4 +146,4 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 | `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书在 §20 |
 | `plan/learn-research.md` | 教程取材笔记 |
 
-当前 `main` 在十本书改成短节、并写完 Linux 方案之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案）。Linux 运行时和 `docs/linux/` 在 #12 之后的实现分支上。
+当前书在短节改写之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案，#13 Rust 调研，#14 Linux 运行时）。Rust 的实现记录在 `plan/LANGUAGES.md` §11.10。Linux 的落地记录在 §10。

@@ -28,6 +28,8 @@ export interface LanguageSpec {
   fileName: string;
   license?: string;
   homepage?: string;
+  /** External compiler. `weblings` compiles in its own worker, then `run` executes the wasm. */
+  compiler?: "weblings";
   prepare?: CommandSpec[];
   run: CommandSpec;
   autoEOF?: boolean;

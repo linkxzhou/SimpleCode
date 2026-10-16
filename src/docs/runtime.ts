@@ -1,4 +1,4 @@
-export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "linux";
+export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "rust" | "linux";
 
 export type DocLang =
   | "python"
@@ -20,6 +20,8 @@ export type DocLang =
   | "sh"
   | "shell"
   | "bash"
+  | "rust"
+  | "rs"
   | "linux";
 
 export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
@@ -42,14 +44,16 @@ export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   sh: "shell",
   shell: "shell",
   bash: "shell",
+  rust: "rust",
+  rs: "rust",
   linux: "linux",
 };
 
-export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "linux"] as const;
+export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "linux"] as const;
 export type BookId = (typeof BOOKS)[number];
 
 /** Books with a full curriculum in this release. Other ids stay in the map and show “即将推出”. */
-export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "linux"] as const;
+export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "rust", "linux"] as const;
 
 export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   python: "python",
@@ -62,6 +66,7 @@ export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   lua: "lua",
   go: "go",
   shell: "shell",
+  rust: "rust",
   linux: "linux",
 };
 
@@ -76,6 +81,7 @@ export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
   lua: "lua",
   go: "go",
   shell: "shell",
+  rust: "rust",
   linux: "linux",
 };
 
@@ -90,6 +96,7 @@ export const BOOK_LABEL: Record<BookId, string> = {
   lua: "Lua",
   go: "Go",
   shell: "Shell",
+  rust: "Rust",
   linux: "Linux",
 };
 
@@ -110,6 +117,7 @@ const RUNTIME_LABEL: Record<RuntimeId, string> = {
   lua: "Lua",
   go: "Go",
   shell: "Shell",
+  rust: "Rust",
   linux: "Linux",
 };
 

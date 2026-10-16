@@ -1524,6 +1524,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fzstd@npm:^0.1.1":
+  version: 0.1.1
+  resolution: "fzstd@npm:0.1.1"
+  checksum: 10c0/c4ae25a4b9e7ac58e9716fcb0c4ec19f3e678d90a67a59e97ce361beb27e4aa4b8666b58b4dc2d715e92db4b65b189c978186a5fedba6fccb5ec9765717dd1cd
+  languageName: node
+  linkType: hard
+
 "glob-parent@npm:^5.1.2, glob-parent@npm:~5.1.2":
   version: 5.1.2
   resolution: "glob-parent@npm:5.1.2"
@@ -2443,6 +2450,7 @@ __metadata:
     autoprefixer: "npm:^10.4.20"
     class-variance-authority: "npm:^0.7.1"
     clsx: "npm:^2.1.1"
+    fzstd: "npm:^0.1.1"
     gray-matter: "npm:^4.0.3"
     lucide-vue-next: "npm:^0.460.0"
     markdown-it: "npm:^15.0.2"
