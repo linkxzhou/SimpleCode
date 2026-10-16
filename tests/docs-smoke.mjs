@@ -14,7 +14,23 @@ const BASE = `http://127.0.0.1:${PORT}`;
 // same snapshot inside the guest instead of cold-booting again.
 // Rust docs-smoke is opt-in: each block compiles in the ~152 MB weblings toolchain.
 // SIMPLECODE_RUST_DOCS=1 runs those blocks. The hello-world smoke still covers Rust.
-const BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "linux", ...(process.env.SIMPLECODE_RUST_DOCS === "1" ? ["rust"] : [])];
+// Java docs-smoke is opt-in for the same reason: every block compiles to Wasm GC.
+// SIMPLECODE_JAVA_DOCS=1 runs those blocks. tests/smoke.mjs still covers Java.
+const BOOKS = [
+  "python",
+  "js",
+  "go",
+  "ruby",
+  "sqlite",
+  "c",
+  "cpp",
+  "php",
+  "lua",
+  "shell",
+  "linux",
+  ...(process.env.SIMPLECODE_RUST_DOCS === "1" ? ["rust"] : []),
+  ...(process.env.SIMPLECODE_JAVA_DOCS === "1" ? ["java"] : []),
+];
 
 function stripAnsi(text) {
   return text.replace(/\x1b\[[0-9;]*m/g, "");

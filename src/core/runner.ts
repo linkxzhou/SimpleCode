@@ -3,6 +3,7 @@
 import { WASIWorkerHost, WASIWorkerHostKilledError, type WASIFS } from "@runno/wasi";
 import { LinuxKilled, linuxMachine } from "./linux";
 import { cancelRustCompile, compileRust } from "@/rustc/compile";
+import { cancelJavaRun, pushJavaEOF, pushJavaStdin, runJava } from "@/teavm/run";
 import type { CommandSpec, LanguageSpec } from "./manifest";
 import { getLoaded } from "./wasmLoader";
 import { t } from "@/i18n";
@@ -50,6 +51,10 @@ export class RunSession {
   }
 
   async pushStdin(data: string) {
+    if (this.lang.compiler === "teavm") {
+      pushJavaStdin(data);
+      return;
+    }
     if (!this.host) return;
     // WASIWorkerHost uses an 8KB SharedArrayBuffer; push in small chunks
     const enc = new TextEncoder();
@@ -65,12 +70,17 @@ export class RunSession {
   }
 
   async pushEOF() {
+    if (this.lang.compiler === "teavm") {
+      pushJavaEOF();
+      return;
+    }
     await this.host?.pushEOF();
   }
 
   kill() {
     this.killed = true;
     cancelRustCompile();
+    cancelJavaRun();
     if (this.lang.runtime === "v86") {
       linuxMachine.shutdown();
       return;
@@ -147,6 +157,7 @@ export class RunSession {
 
   async run(code: string): Promise<RunOutcome> {
     if (this.lang.runtime === "v86") return this.runV86(code);
+    if (this.lang.compiler === "teavm") return this.runTeaVM(code);
     let fs: WASIFS = {
       [ENTRY]: {
         path: "program",
@@ -189,6 +200,31 @@ export class RunSession {
         message: err?.message ?? String(e),
         errorType: err?.type ?? (e instanceof Error ? e.constructor.name : "Error"),
       };
+    }
+  }
+
+  private async runTeaVM(code: string): Promise<RunOutcome> {
+    this.cb.phase("compile");
+    try {
+      const result = await runJava(code, {
+        stdin: this.opts.stdin,
+        stdinEOF: this.opts.stdinEOF,
+        stdout: (text) => {
+          if (!this.killed) this.cb.stdout(text);
+        },
+        stderr: (text) => {
+          if (!this.killed) this.cb.stderr(text);
+        },
+        onRunning: () => {
+          if (!this.killed) this.cb.phase("run");
+        },
+      });
+      if (this.killed) return { type: "terminated" };
+      return { type: "complete", exitCode: result.exit, phase: result.phase };
+    } catch (e) {
+      if (this.killed || (e as Error).name === "AbortError") return { type: "terminated" };
+      const err = e as Error;
+      return { type: "crash", message: err.message ?? String(e), errorType: err.name || "Error" };
     }
   }
 

@@ -73,6 +73,7 @@ describe("resolveRuntime", () => {
       ["bash", "shell"],
       ["rust", "rust"],
       ["rs", "rust"],
+      ["java", "java"],
       ["linux", "linux"],
     ];
     for (const [alias, runtime] of cases) assert.equal(resolveRuntime(alias), runtime);

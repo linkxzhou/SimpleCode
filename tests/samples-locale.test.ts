@@ -15,6 +15,7 @@ const LANG: Record<string, string> = {
   lua: "lua",
   go: "go",
   rust: "rust",
+  java: "java",
   shell: "sh",
   linux: "linux",
 };

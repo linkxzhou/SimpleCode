@@ -30,8 +30,8 @@ export interface LanguageSpec {
   fileName: string;
   license?: string;
   homepage?: string;
-  /** External compiler. `weblings` compiles in its own worker, then `run` executes the wasm. */
-  compiler?: "weblings";
+  /** External compiler. `weblings` compiles then runs via WASI. `teavm` compiles and runs in its own worker. */
+  compiler?: "weblings" | "teavm";
   prepare?: CommandSpec[];
   run: CommandSpec;
   autoEOF?: boolean;

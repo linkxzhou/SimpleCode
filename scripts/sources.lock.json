@@ -61,6 +61,37 @@
       }
     }
   },
+  "java": {
+    "note": "TeaVM 0.16.0 playground /3/. The browser fetches only the same-origin copies under wasm/java/. teavm.org sends neither ACAO nor CORP, so a COEP page cannot read the upstream URLs. vendor --java checks those URLs and writes the four pinned files. They are not part of wasm/manifest.json.",
+    "version": "0.16.0",
+    "cache": "simplecode-teavm-v1",
+    "files": {
+      "compiler.wasm": {
+        "bytes": 4294850,
+        "sha256": "7f3828e4b7bddf5504dadebfc4016e40f4441e15ee0519071781813ba2ed3a4c",
+        "sameOrigin": "wasm/java/compiler.wasm",
+        "upstream": "https://teavm.org/playground/3/compiler.wasm"
+      },
+      "compiler.wasm-runtime.js": {
+        "bytes": 13573,
+        "sha256": "9ff6a6771f698be00ab9d5c7b46d904350a8d4115dc0b409553f31ed66688a55",
+        "sameOrigin": "wasm/java/compiler.wasm-runtime.js",
+        "upstream": "https://teavm.org/playground/3/compiler.wasm-runtime.js"
+      },
+      "compile-classlib-teavm.bin": {
+        "bytes": 200623,
+        "sha256": "e80ae10423a39290c5f20b6bb6da34d21c3ad0a75cd8dbdda4998d2813045e15",
+        "sameOrigin": "wasm/java/compile-classlib-teavm.bin",
+        "upstream": "https://teavm.org/playground/3/compile-classlib-teavm.bin"
+      },
+      "runtime-classlib-teavm.bin": {
+        "bytes": 2387011,
+        "sha256": "ea670e71967eda93828cb894c1741a8ed2e94b3422eb99cb9eccec0de67daaa8",
+        "sameOrigin": "wasm/java/runtime-classlib-teavm.bin",
+        "upstream": "https://teavm.org/playground/3/runtime-classlib-teavm.bin"
+      }
+    }
+  },
   "linux": {
     "v86": "0.5.471",
     "note": "Guest is the pinned copy/v86 Buildroot Linux 6.8 image (kernel 6.8.12, Buildroot 2024.05.2, BusyBox 1.36.1), not a from-scratch Buildroot 2026.08 tree. macOS and Linux both download these bytes. linux-state.zst is a zstd frame of save_state() produced by snapshot.mjs and is not byte-pinned. v86 decompresses that frame. BIOS files are not in the npm tarball; their sha256 is the pin, so a drifting master URL fails the check. SIMPLECODE_LINUX_BUILD is not the vendor path; see scripts/builders/linux/rebuild.sh.",

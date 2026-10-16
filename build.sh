@@ -42,6 +42,11 @@ cmd_vendor() {
     node scripts/vendor-rust.mjs
     return
   fi
+  if [ "${1:-}" = "--java" ]; then
+    info "Vendoring the TeaVM Java toolchain → wasm/java/ (not the default manifest)"
+    node scripts/vendor-java.mjs
+    return
+  fi
   info "Vendoring wasm binaries → wasm/"
   node scripts/vendor-wasm.mjs "$@"
 }
@@ -121,9 +126,10 @@ ${c_bold}SimpleCode build helper${c_off}
 Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
-  vendor [--link|--rust]  Copy wasm runtimes from thirdparty/runno/langs into wasm/,
-                     --rust downloads the pinned weblings toolchain into wasm/rust/
-                     and does not add it to the default manifest.
+  vendor [--link|--rust|--java]  Copy wasm runtimes from thirdparty/runno/langs into wasm/,
+                     --rust downloads the pinned weblings toolchain into wasm/rust/.
+                     --java downloads the pinned TeaVM files into wasm/java/.
+                     Neither flag adds those files to the default manifest.
                      build Lua and Go (scripts/builders; Linux or macOS, x86_64 or arm64), and
                      write wasm/manifest.json from those files (--link: symlink Runno files,
                      --source <dir>: alternative Runno directory).

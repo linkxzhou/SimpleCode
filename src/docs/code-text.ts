@@ -23,7 +23,8 @@ function styleOf(lang: string): Style {
     key === "c++" ||
     key === "go" ||
     key === "rust" ||
-    key === "rs"
+    key === "rs" ||
+    key === "java"
   ) {
     return "slash";
   }

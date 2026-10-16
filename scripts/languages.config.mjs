@@ -113,6 +113,19 @@ export const languages = [
     run: { fsPath: "/program.wasm", binaryName: "program", args: [] },
   },
   {
+    id: "java",
+    label: "Java",
+    short: "Jv",
+    version: "TeaVM",
+    syntax: "java",
+    fileName: "Main.java",
+    license: "Apache-2.0",
+    homepage: "https://github.com/konsoletyper/teavm",
+    compiler: "teavm",
+    // Not a WASI command. RunSession compiles and runs inside the TeaVM worker.
+    run: { binaryName: "java", args: [] },
+  },
+  {
     id: "linux",
     label: "Linux",
     short: "Lx",

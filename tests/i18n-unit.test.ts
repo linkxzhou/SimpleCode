@@ -21,7 +21,7 @@ Object.defineProperty(globalThis, "localStorage", {
   },
 });
 
-const NAMES = ["Python", "Ruby", "JS/TS", "SQLite", "C++", "PHP", "Lua", "Go", "Shell", "Rust", "Linux"];
+const NAMES = ["Python", "Ruby", "JS/TS", "SQLite", "C++", "PHP", "Lua", "Go", "Shell", "Rust", "Java", "Linux"];
 
 describe("i18n catalog", () => {
   beforeEach(() => {
@@ -58,7 +58,7 @@ describe("i18n catalog", () => {
     assert.equal(locale.value, "zh");
   });
 
-  it("lists all twelve languages in the about copy", () => {
+  it("lists all thirteen languages in the about copy", () => {
     for (const name of NAMES) {
       assert.ok(zh.aboutLanguages.includes(name), name);
       assert.ok(en.aboutLanguages.includes(name), name);

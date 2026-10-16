@@ -124,6 +124,16 @@ Not part of the default `./build.sh vendor`. `./build.sh vendor --rust` checks t
 - [browser_wasi_shim](https://github.com/bjorn3/browser_wasi_shim) — Apache-2.0 OR MIT. The copies under `src/rustc/shim/` come from the weblings `app/public/vendor/browser_wasi_shim` tree and are used only to host rustc, not the user's program.
 - [fzstd](https://github.com/101arrowz/fzstd) — MIT. Used by `scripts/vendor-rust.mjs` to decompress the archives. It is not loaded in the browser.
 
+## Java (TeaVM)
+
+Not part of the default `./build.sh vendor`. `./build.sh vendor --java` downloads four files from `https://teavm.org/playground/3/` into `wasm/java/`. Digests are in `scripts/sources.lock.json`. The page loads those same-origin copies only. `teavm.org` does not send CORS headers, so a COEP page cannot fetch the upstream URLs.
+
+- [TeaVM](https://github.com/konsoletyper/teavm) 0.16.0 — Apache-2.0. Copyright Alexey Andreev and contributors. `compiler.wasm-runtime.js` is the playground runtime and carries that Apache-2.0 header.
+- [teavm-javac](https://github.com/konsoletyper/teavm-javac) — the README states Apache-2.0. The GitHub license field for that repository is empty.
+- `compiler.wasm` contains OpenJDK `javac`. That compiler is GPL-2.0 with the Classpath Exception.
+- The TeaVM class library includes portions of Apache Harmony (Apache-2.0), Joda-Time (Apache-2.0), and jzlib (BSD-style).
+- `src/teavm/bridge/` is source written for this repository: a replacement `TConsoleInputStream`, a small `TScanner`, and a `TInputStreamReader` that does not touch `java.nio`. The `Scanner` stub appended to the SDK archive in memory is the same small class, compiled with `--patch-module java.base`. `org.teavm.interop.Import` is used only when rebuilding that bridge with a host `javac`. It is not a separate download.
+
 ## Linux guest (v86 + Buildroot image)
 
 The sidebar language Linux is not a WASI module. `./build.sh vendor` downloads pinned files and writes `wasm/linux-state.zst`, a zstd frame of the v86 snapshot. The browser stores that frame in the Cache API and hands it to v86, which decompresses it with the zstd already linked into `v86.wasm`. The `zstd` CLI used at vendor time is build-only (BSD-3-Clause or GPL-2.0, https://github.com/facebook/zstd); it is not shipped to the page.

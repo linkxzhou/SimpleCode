@@ -1,6 +1,6 @@
 # SimpleCode
 
-纯浏览器内运行代码：Python · Ruby · JS/TS · SQLite · C · C++ · PHP · Lua · Go · Shell · Rust · Linux。前十门是 WebAssembly / WASI（基于 [Runno](https://github.com/taybenlor/runno) 的 `@runno/wasi`）。Rust 的编译器是 [weblings](https://github.com/AngelOnFira/weblings) 的 Cranelift rustc，不在默认 `./build.sh vendor` 里；选中 Rust 时再下载约 152 MB，或事先运行 `./build.sh vendor --rust`。Linux 是 v86 里的 BusyBox 客户机，随默认 vendor 下载。
+纯浏览器内运行代码：Python · Ruby · JS/TS · SQLite · C · C++ · PHP · Lua · Go · Shell · Rust · Java · Linux。前十门是 WebAssembly / WASI（基于 [Runno](https://github.com/taybenlor/runno) 的 `@runno/wasi`）。Rust 的编译器是 [weblings](https://github.com/AngelOnFira/weblings) 的 Cranelift rustc，不在默认 `./build.sh vendor` 里；选中 Rust 时再下载约 152 MB，或事先运行 `./build.sh vendor --rust`。Java 是 [TeaVM](https://github.com/konsoletyper/teavm) 的浏览器 javac，同样不在默认 vendor 里；选中 Java 时从同源 `wasm/java/` 下载约 6.6 MB，事先运行 `./build.sh vendor --java`。Linux 是 v86 里的 BusyBox 客户机，随默认 vendor 下载。
 
 ## 快速开始
 
@@ -14,7 +14,8 @@ git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提�
 ./build.sh dev       # http://localhost:5173
 ./build.sh build     # dist/
 ./build.sh preview   # http://localhost:4173（带 COOP/COEP）
-./build.sh test      # 无头冒烟测试（含 Linux；JS 与 TS 各一例；Rust 需 wasm/rust 或可访问的演示地址）
+./build.sh vendor --java   # 可选：把钉住的 TeaVM 文件放到 wasm/java/（teavm.org 没有 CORS）
+./build.sh test      # 无头冒烟测试（含 Linux；JS 与 TS 各一例；Rust 需 wasm/rust 或可访问的演示地址；Java 需 wasm/java）
 ```
 
 部署时服务器必须返回 `Cross-Origin-Opener-Policy: same-origin` 与 `Cross-Origin-Embedder-Policy: require-corp`，并以 `application/wasm` 提供 `.wasm`。设计文档见 [plan/DESIGN.md](plan/DESIGN.md)，语言方案见 [plan/LANGUAGES.md](plan/LANGUAGES.md)。
@@ -23,4 +24,4 @@ git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提�
 
 Lua 5.4.9 用 wasi-sdk 33 从源码编译，`pcall` / `error` 可用（依赖浏览器的 Wasm 异常处理）。Go 是 Yaegi 0.16.1 解释器（`GOOS=wasip1`），只解释标准库，不能 `go get` 第三方模块。Shell 是同一套工具链编出的 `wasi-sh`（MIT）：`echo` / `printf` / `read` / `cat` / `test`、`if` / `while` / `for`，以及内建命令之间的管道和重定向。没有 `fork`，所以 `ls` 这类外部命令会失败。限制见 plan/LANGUAGES.md §8。
 
-第三方许可证：Runno（MIT）；Sucrase（MIT，仅浏览器内 TypeScript 去类型）；Lua（MIT）；wasi-sh（MIT）；Yaegi（Apache-2.0）与 Go 标准库（BSD-3-Clause）；以及 CPython PSF、Ruby、PHP License、LLVM Apache-2.0、SQLite Public Domain、wasmedge-quickjs Apache-2.0。汇总在 [LICENSES/THIRD_PARTY.md](LICENSES/THIRD_PARTY.md)。
+第三方许可证：Runno（MIT）；Sucrase（MIT，仅浏览器内 TypeScript 去类型）；Lua（MIT）；wasi-sh（MIT）；Yaegi（Apache-2.0）与 Go 标准库（BSD-3-Clause）；TeaVM（Apache-2.0），其中 `compiler.wasm` 里的 javac 是 GPLv2 + Classpath Exception；以及 CPython PSF、Ruby、PHP License、LLVM Apache-2.0、SQLite Public Domain、wasmedge-quickjs Apache-2.0。汇总在 [LICENSES/THIRD_PARTY.md](LICENSES/THIRD_PARTY.md)。
