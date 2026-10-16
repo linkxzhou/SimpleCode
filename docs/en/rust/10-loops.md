@@ -38,17 +38,17 @@ Repeated addition of 7 stops when `n` reaches 42.
 
 The loop stops once the condition is false.
 
-```rust run expect="剩余0" title="Down to zero"
+```rust run expect="left0" title="Down to zero"
 fn main() {
     let mut left = 3;
     while left > 0 {
         left -= 1;
     }
-    println!("剩余{left}");
+    println!("left{left}");
 }
 ```
 
-After three decrements the line is `剩余0`.
+After three decrements the line is `left0`.
 
 ### for walks a closed range
 

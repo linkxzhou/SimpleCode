@@ -17,9 +17,9 @@ The abstract class in this chapter has two pure virtual functions. A derived cla
 
 ### Two methods
 
-`Pen` supplies both `name` and `price`. The printed pair is the word `笔` and the number 18.
+`Pen` supplies both `name` and `price`. The printed pair is the word `pen` and the number 18.
 
-```cpp run expect="笔 18" title="Both members"
+```cpp run expect="pen 18" title="Both members"
 #include <iostream>
 #include <string>
 struct Goods {
@@ -28,7 +28,7 @@ struct Goods {
   virtual ~Goods() {}
 };
 struct Pen : Goods {
-  std::string name() const override { return "笔"; }
+  std::string name() const override { return "pen"; }
   int price() const override { return 18; }
 };
 int main() {
@@ -38,7 +38,7 @@ int main() {
 }
 ```
 
-The goods line is `笔 18`.
+The goods line is `pen 18`.
 
 ### Call through the interface
 
@@ -53,7 +53,7 @@ struct Goods {
   virtual ~Goods() {}
 };
 struct Pen : Goods {
-  std::string name() const override { return "笔"; }
+  std::string name() const override { return "pen"; }
   int price() const override { return 18; }
 };
 int ask(const Goods &goods) { return goods.price(); }
@@ -68,9 +68,9 @@ The goods line is `18`.
 
 ### Another implementation
 
-`Ink` is also a `Goods`, with a different price. This sample prints only the name, which is `墨`.
+`Ink` is also a `Goods`, with a different price. This sample prints only the name, which is `ink`.
 
-```cpp run expect="墨" title="Another product"
+```cpp run expect="ink" title="Another product"
 #include <iostream>
 #include <string>
 struct Goods {
@@ -79,7 +79,7 @@ struct Goods {
   virtual ~Goods() {}
 };
 struct Ink : Goods {
-  std::string name() const override { return "墨"; }
+  std::string name() const override { return "ink"; }
   int price() const override { return 7; }
 };
 int main() {
@@ -89,4 +89,4 @@ int main() {
 }
 ```
 
-The goods line is `墨`.
+The goods line is `ink`.

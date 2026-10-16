@@ -19,19 +19,19 @@ updated: "2026-10-15"
 
 写在花括号里的第一段，下标是 1。
 
-```lua run expect="茶" title="第一项"
-local items = {"茶", "笔"}
+```lua run expect="tea" title="第一项"
+local items = {"tea", "pen"}
 print(items[1])
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 长度
 
 `#` 对这种序列给出项数。
 
 ```lua run expect="3" title="三项"
-local items = {"茶", "笔", "墨"}
+local items = {"tea", "pen", "ink"}
 print(#items)
 ```
 
@@ -39,12 +39,12 @@ print(#items)
 
 ### 改一项
 
-把下标 2 从「笔」改成「墨」。
+把下标 2 从 pen 改成 ink。
 
-```lua run expect="墨" title="改掉第二项"
-local items = {"茶", "笔"}
-items[2] = "墨"
+```lua run expect="ink" title="改掉第二项"
+local items = {"tea", "pen"}
+items[2] = "ink"
 print(items[2])
 ```
 
-输出里能看到 `墨`。
+输出里能看到 `ink`。

@@ -19,16 +19,16 @@ Thrown errors are handled with `try`. A parse that fails returns null, and the c
 
 `intdiv(1, 0)` throws `DivisionByZeroError`. The `catch` block writes the failure text.
 
-```php run expect="失败" title="Caught"
+```php run expect="failed" title="Caught"
 <?php
 try {
     echo intdiv(1, 0), "\n";
 } catch (DivisionByZeroError $e) {
-    echo "失败\n";
+    echo "failed\n";
 }
 ```
 
-The handler prints `失败`.
+The handler prints `failed`.
 
 ### Digits become an integer
 
@@ -49,9 +49,9 @@ The parsed price is `18`.
 
 ### Letters stay rejected
 
-A letter makes `ctype_digit` return false, so the function returns null. The caller writes `失败`.
+A letter makes `ctype_digit` return false, so the function returns null. The caller writes `failed`.
 
-```php run expect="失败" title="Not a number"
+```php run expect="failed" title="Not a number"
 <?php
 function read_text_price($text) {
     if (!ctype_digit($text)) {
@@ -59,7 +59,7 @@ function read_text_price($text) {
     }
     return (int) $text;
 }
-echo read_text_price("no") === null ? "失败\n" : "成功\n";
+echo read_text_price("no") === null ? "failed\n" : "success\n";
 ```
 
-The rejected parse prints `失败`.
+The rejected parse prints `failed`.

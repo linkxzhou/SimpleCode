@@ -19,19 +19,19 @@ Consecutive integer keys let a table act as an array. The first item is stored a
 
 The first value written inside the braces receives index 1.
 
-```lua run expect="茶" title="The first item"
-local items = {"茶", "笔"}
+```lua run expect="tea" title="The first item"
+local items = {"tea", "pen"}
 print(items[1])
 ```
 
-The output shows `茶`.
+The output shows `tea`.
 
 ### Length
 
 On a sequence with no gaps, `#` returns the number of items.
 
 ```lua run expect="3" title="Three items"
-local items = {"茶", "笔", "墨"}
+local items = {"tea", "pen", "ink"}
 print(#items)
 ```
 
@@ -39,12 +39,12 @@ The output shows `3`.
 
 ### Change one item
 
-An assignment to index 2 replaces `笔` with `墨`.
+An assignment to index 2 replaces `pen` with `ink`.
 
-```lua run expect="墨" title="Replace the second item"
-local items = {"茶", "笔"}
-items[2] = "墨"
+```lua run expect="ink" title="Replace the second item"
+local items = {"tea", "pen"}
+items[2] = "ink"
 print(items[2])
 ```
 
-The output shows `墨`.
+The output shows `ink`.

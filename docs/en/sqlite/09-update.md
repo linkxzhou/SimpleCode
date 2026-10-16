@@ -21,8 +21,8 @@ Set the tea price to 20.
 
 ```sql run expect="20" title="New price"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
-UPDATE item SET price = 20 WHERE name = '茶';
+INSERT INTO item VALUES ('tea', 18);
+UPDATE item SET price = 20 WHERE name = 'tea';
 SELECT price FROM item;
 ```
 
@@ -34,9 +34,9 @@ The water price is outside this assignment.
 
 ```sql run expect="6" title="Water stays"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
-UPDATE item SET price = 20 WHERE name = '茶';
-SELECT price FROM item WHERE name = '水';
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
+UPDATE item SET price = 20 WHERE name = 'tea';
+SELECT price FROM item WHERE name = 'water';
 ```
 
 The `WHERE` clause names only tea, so the water price is still `6`.

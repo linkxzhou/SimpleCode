@@ -18,23 +18,23 @@ This book runs one file with `php -q`. The file begins at `<?php`. `STDIN` is un
 
 `echo` sends a string to the output. You put the newline in that string yourself.
 
-```php run expect="你好" title="A greeting"
+```php run expect="Hi" title="A greeting"
 <?php
-echo "你好\n";
+echo "Hi\n";
 ```
 
-The greeting on screen is `你好`.
+The greeting on screen is `Hi`.
 
 ### Commas add no space
 
 `echo` can take several arguments in one call. Those arguments are written one after another, with nothing inserted.
 
-```php run expect="茶18" title="Joined"
+```php run expect="tea18" title="Joined"
 <?php
-echo "茶", 18, "\n";
+echo "tea", 18, "\n";
 ```
 
-The joined arguments appear as `茶18`.
+The joined arguments appear as `tea18`.
 
 ### Keep input in the source
 

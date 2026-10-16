@@ -43,11 +43,11 @@ Four plus one through that arrow logs `5`.
 
 If the caller omits the argument, the value after the equals sign is used.
 
-```js run expect="你好，客人" title="Caller omits the name"
-function greet(name = "客人") {
-  return "你好，" + name;
+```js run expect="Hello, guest" title="Caller omits the name"
+function greet(name = "guest") {
+  return "Hello, " + name;
 }
 console.log(greet());
 ```
 
-The call with no argument logs `你好，客人`.
+The call with no argument logs `Hello, guest`.

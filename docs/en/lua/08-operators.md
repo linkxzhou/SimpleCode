@@ -40,13 +40,13 @@ The output shows `1`.
 
 `==` asks whether the two sides are equal. When `price` is 18, the first branch runs.
 
-```lua run expect="是" title="Equal"
+```lua run expect="yes" title="Equal"
 local price = 18
 if price == 18 then
-  print("是")
+  print("yes")
 else
-  print("否")
+  print("no")
 end
 ```
 
-The output shows `是`.
+The output shows `yes`.

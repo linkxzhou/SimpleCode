@@ -19,30 +19,30 @@ updated: "2026-10-15"
 
 值是一个没有空格的词，直接写在等号右边。
 
-```sh run expect="钥匙" title="读出钥匙"
-item=钥匙
+```sh run expect="key" title="读出钥匙"
+item=key
 printf '%s\n' "$item"
 ```
 
-输出里能看到 `钥匙`。
+输出里能看到 `key`。
 
 ### 换一个值
 
 再次赋值会盖掉原来的词。
 
-```sh run expect="车票" title="后来的值"
-item=水杯
-item=车票
+```sh run expect="ticket" title="后来的值"
+item=cup
+item=ticket
 printf '%s\n' "$item"
 ```
 
-输出里能看到 `车票`。
+输出里能看到 `ticket`。
 
 ### 引号赋值不运行
 
-`item="钥匙"` 不是赋值，会去找外部命令。
+`item="key"` 不是赋值，会去找外部命令。
 
 ```sh norun title="引号不是赋值"
-item="钥匙"
+item="key"
 printf '%s\n' "$item"
 ```

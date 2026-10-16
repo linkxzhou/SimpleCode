@@ -61,6 +61,6 @@ fn main() {
 
 ```rust norun title="不写 async"
 fn main() {
-    println!("没有执行器");
+    println!("no executor");
 }
 ```

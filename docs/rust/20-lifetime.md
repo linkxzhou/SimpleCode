@@ -18,14 +18,14 @@ updated: "2026-10-16"
 
 两个参数共用 `'a`，返回值也不能比它们活得更久。
 
-```rust run expect="船票" title="返回左边"
+```rust run expect="pass" title="返回左边"
 fn earlier<'a>(left: &'a str, _right: &'a str) -> &'a str {
     left
 }
 
 fn main() {
-    let ticket = String::from("船票");
-    let pen = String::from("钢笔");
+    let ticket = String::from("pass");
+    let pen = String::from("fountain");
     println!("{}", earlier(&ticket, &pen));
 }
 ```
@@ -35,14 +35,14 @@ fn main() {
 
 调用发生在两个 `String` 都还在的时候，所以借用有效。
 
-```rust run expect="开窗" title="按标志挑选"
+```rust run expect="openwin" title="按标志挑选"
 fn pick<'a>(open: bool, yes: &'a str, no: &'a str) -> &'a str {
     if open { yes } else { no }
 }
 
 fn main() {
-    let yes = String::from("开窗");
-    let no = String::from("关窗");
+    let yes = String::from("openwin");
+    let no = String::from("shutwin");
     println!("{}", pick(true, &yes, &no));
 }
 ```
@@ -52,9 +52,9 @@ fn main() {
 
 字面量存在整个程序期间，可以标成 `'static`。
 
-```rust run expect="窗口" title="静态窗口"
+```rust run expect="window" title="静态窗口"
 fn label() -> &'static str {
-    "窗口"
+    "window"
 }
 
 fn main() {

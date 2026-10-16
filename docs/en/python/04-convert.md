@@ -39,12 +39,12 @@ Truncating 3.9 prints `3`.
 
 Illegal text raises `ValueError`. After you catch it, the program can still print.
 
-```python run expect="失败" title="Invalid text"
+```python run expect="failed" title="Invalid text"
 try:
     int("no")
-    print("过了")
+    print("passed")
 except ValueError:
-    print("失败")
+    print("failed")
 ```
 
-The handler prints `失败`.
+The handler prints `failed`.

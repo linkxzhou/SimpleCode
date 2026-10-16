@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```lua norun title="不写磁盘"
 local f = io.open("note.txt", "w")
-f:write("茶\n")
+f:write("tea\n")
 f:close()
 ```
 
@@ -29,19 +29,19 @@ f:close()
 
 名字和单价已经在字符串里。
 
-```lua run expect="茶 18" title="一行"
-local line = "茶 18"
+```lua run expect="tea 18" title="一行"
+local line = "tea 18"
 print(line)
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 取出数字
 
 `string.match` 抓出末尾的整数。
 
 ```lua run expect="18" title="数字"
-local line = "茶 18"
+local line = "tea 18"
 print(string.match(line, "%d+"))
 ```
 

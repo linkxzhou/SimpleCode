@@ -30,23 +30,23 @@ console.log(twice(4));
 
 参数名后的问号表示可以不传。
 
-```ts run expect="你好" title="省略"
+```ts run expect="Hi" title="省略"
 function greet(name?: string): string {
-  return name ? "你好，" + name : "你好";
+  return name ? "Hello, " + name : "Hi";
 }
 console.log(greet());
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 函数类型变量
 
 变量可以声明成某种函数形状，再放进一个符合形状的函数。
 
-```ts run expect="房号18" title="函数变量"
+```ts run expect="room18" title="函数变量"
 let read: (n: number) => string;
-read = (n) => "房号" + n;
+read = (n) => "room" + n;
 console.log(read(18));
 ```
 
-输出里能看到 `房号18`。
+输出里能看到 `room18`。

@@ -37,9 +37,9 @@ use std::collections::HashMap;
 
 fn main() {
     let mut bag = HashMap::new();
-    bag.insert("茶", 18);
-    bag.insert("笔", 24);
-    println!("{}", bag["茶"] + bag["笔"]);
+    bag.insert("tea", 18);
+    bag.insert("pen", 24);
+    println!("{}", bag["tea"] + bag["pen"]);
 }
 ```
 18 与 24 相加。
@@ -48,10 +48,10 @@ fn main() {
 
 `push_str` 把切片接到 `String` 尾部。
 
-```rust run expect="夜班" title="接上一个字"
+```rust run expect="night" title="接上一个字"
 fn main() {
-    let mut line = String::from("夜");
-    line.push_str("班");
+    let mut line = String::from("nite");
+    line.push_str("shift");
     println!("{line}");
 }
 ```

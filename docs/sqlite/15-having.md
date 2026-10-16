@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 只留下出现次数大于 1 的名字。
 
-```sql run expect="茶" title="重复的名字"
+```sql run expect="tea" title="重复的名字"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('tea'), ('water');
 SELECT name FROM item GROUP BY name HAVING COUNT(*) > 1;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### WHERE 先去掉行
 
@@ -33,8 +33,8 @@ SELECT name FROM item GROUP BY name HAVING COUNT(*) > 1;
 
 ```sql run expect="1" title="先过滤"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-SELECT COUNT(*) FROM item WHERE name <> '水';
+INSERT INTO item VALUES ('tea'), ('water');
+SELECT COUNT(*) FROM item WHERE name <> 'water';
 ```
 
 输出里能看到 `1`。
@@ -43,10 +43,10 @@ SELECT COUNT(*) FROM item WHERE name <> '水';
 
 一组的单价和不超过 10 时不出现。
 
-```sql run expect="茶" title="合计超过十"
+```sql run expect="tea" title="合计超过十"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 8), ('茶', 8), ('水', 3);
+INSERT INTO item VALUES ('tea', 8), ('tea', 8), ('water', 3);
 SELECT name FROM item GROUP BY name HAVING SUM(price) > 10;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

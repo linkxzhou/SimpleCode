@@ -44,7 +44,7 @@ echo true, "\n";
 
 ```php run expect="array" title="数组类型"
 <?php
-echo gettype(["茶"]), "\n";
+echo gettype(["tea"]), "\n";
 ```
 
 输出里能看到 `array`。

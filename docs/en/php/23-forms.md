@@ -28,34 +28,34 @@ echo $_POST["name"], "\n";
 
 `trim` removes whitespace at both ends. The name `Ada` is still present afterward.
 
-```php run expect="收到Ada" title="Trim the spaces"
+```php run expect="gotAda" title="Trim the spaces"
 <?php
 function accept_name($name) {
     $name = trim($name);
     if ($name === "") {
-        return "缺少";
+        return "missing";
     }
-    return "收到" . $name;
+    return "got" . $name;
 }
 echo accept_name("  Ada"), "\n";
 ```
 
-The accepted text is `收到Ada`.
+The accepted text is `gotAda`.
 
 ### A blank field
 
-A string of spaces becomes empty after `trim`. The function then returns `缺少`.
+A string of spaces becomes empty after `trim`. The function then returns `missing`.
 
-```php run expect="缺少" title="Only spaces"
+```php run expect="missing" title="Only spaces"
 <?php
 function accept_blank($name) {
     $name = trim($name);
     if ($name === "") {
-        return "缺少";
+        return "missing";
     }
-    return "收到" . $name;
+    return "got" . $name;
 }
 echo accept_blank("   "), "\n";
 ```
 
-The blank input returns `缺少`.
+The blank input returns `missing`.

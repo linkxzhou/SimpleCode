@@ -31,8 +31,8 @@ SELECT 1 AND 1;
 
 ```sql run expect="2" title="两样"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水'), ('杯');
-SELECT COUNT(*) FROM item WHERE name = '茶' OR name = '水';
+INSERT INTO item VALUES ('tea'), ('water'), ('cup');
+SELECT COUNT(*) FROM item WHERE name = 'tea' OR name = 'water';
 ```
 
 输出里能看到 `2`。

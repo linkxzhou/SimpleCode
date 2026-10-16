@@ -19,25 +19,25 @@ updated: "2026-10-15"
 
 只留下单价大于 10 的名字。
 
-```sql run expect="茶" title="大于十"
+```sql run expect="tea" title="大于十"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 SELECT name FROM item WHERE price > 10;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 文本条件
 
 等号可以比较文本。
 
-```sql run expect="水" title="等于水"
+```sql run expect="water" title="等于水"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-SELECT name FROM item WHERE name = '水';
+INSERT INTO item VALUES ('tea'), ('water');
+SELECT name FROM item WHERE name = 'water';
 ```
 
-输出里能看到 `水`。
+输出里能看到 `water`。
 
 ### 两个条件
 
@@ -45,8 +45,8 @@ SELECT name FROM item WHERE name = '水';
 
 ```sql run expect="18" title="又贵又是茶"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('茶', 6);
-SELECT price FROM item WHERE name = '茶' AND price > 10;
+INSERT INTO item VALUES ('tea', 18), ('tea', 6);
+SELECT price FROM item WHERE name = 'tea' AND price > 10;
 ```
 
 输出里能看到 `18`。

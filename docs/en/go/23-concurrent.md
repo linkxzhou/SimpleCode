@@ -69,7 +69,7 @@ No second goroutine is required here, because the buffer accepts 7 first. The ta
 
 `select` can wait on several channel operations at once. `default` runs immediately when every other case is blocked.
 
-```go run expect="空" title="Nothing waiting"
+```go run expect="empty" title="Nothing waiting"
 package main
 
 import "fmt"
@@ -80,9 +80,9 @@ func main() {
 	case v := <-ch:
 		fmt.Println(v)
 	default:
-		fmt.Println("空")
+		fmt.Println("empty")
 	}
 }
 ```
 
-With an empty buffer the chosen word is `空`.
+With an empty buffer the chosen word is `empty`.

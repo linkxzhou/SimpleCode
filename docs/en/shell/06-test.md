@@ -17,38 +17,38 @@ updated: "2026-10-16"
 
 ### Equal strings
 
-Both sides are 钥匙, so the comparison holds. The branch then prints 是.
+Both sides are key, so the comparison holds. The branch then prints yes.
 
-```sh run expect="是" title="Equal strings"
-item=钥匙
-if [ "$item" = 钥匙 ]; then
-  printf '%s\n' 是
+```sh run expect="yes" title="Equal strings"
+item=key
+if [ "$item" = key ]; then
+  printf '%s\n' yes
 fi
 ```
 
-The line shows `是`.
+The line shows `yes`.
 
 ### An empty string
 
 `-z` holds when the value has no characters. The bare `name=` leaves that value empty.
 
-```sh run expect="空" title="It is empty"
+```sh run expect="empty" title="It is empty"
 name=
 if [ -z "$name" ]; then
-  printf '%s\n' 空
+  printf '%s\n' empty
 fi
 ```
 
-The line shows `空`.
+The line shows `empty`.
 
 ### Integers
 
-`-gt` compares the two sides as integers. Here 3 is greater than 2, so the branch prints 大.
+`-gt` compares the two sides as integers. Here 3 is greater than 2, so the branch prints big.
 
-```sh run expect="大" title="3 is greater than 2"
+```sh run expect="big" title="3 is greater than 2"
 if [ 3 -gt 2 ]; then
-  printf '%s\n' 大
+  printf '%s\n' big
 fi
 ```
 
-The line shows `大`.
+The line shows `big`.

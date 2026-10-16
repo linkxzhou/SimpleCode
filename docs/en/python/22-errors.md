@@ -19,39 +19,39 @@ An exception means this step cannot be completed. Catch it and the program can t
 
 Integer division by zero raises `ZeroDivisionError`.
 
-```python run expect="除零" title="Catch it"
+```python run expect="divzero" title="Catch it"
 try:
     print(1 // 0)
 except ZeroDivisionError:
-    print("除零")
+    print("divzero")
 ```
 
-The handler prints `除零`.
+The handler prints `divzero`.
 
 ### The caught type must match
 
 A `ValueError` handler does not receive a division-by-zero error. Catch the class that was actually raised.
 
-```python run expect="除零" title="The second branch"
+```python run expect="divzero" title="The second branch"
 try:
     1 // 0
-    print("过了")
+    print("passed")
 except ValueError:
-    print("值错误")
+    print("bad value")
 except ZeroDivisionError:
-    print("除零")
+    print("divzero")
 ```
 
-The matching branch prints `除零`.
+The matching branch prints `divzero`.
 
 ### Raise on purpose
 
 `raise` makes the caller handle the failure, or it stops the program at this point.
 
-```python run expect="数量不够" title="Raise it yourself"
+```python run expect="not enough" title="Raise it yourself"
 def sell(n):
     if n < 1:
-        raise ValueError("数量不够")
+        raise ValueError("not enough")
     return n
 try:
     sell(0)
@@ -59,4 +59,4 @@ except ValueError as err:
     print(err)
 ```
 
-The message carried by the error is `数量不够`.
+The message carried by the error is `not enough`.

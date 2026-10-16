@@ -19,12 +19,12 @@ An object literal is written with braces. Each field name is a string.
 
 Both forms read the same stored value.
 
-```js run expect="茶 18" title="Two fields"
-const item = { name: "茶", price: 18 };
+```js run expect="tea 18" title="Two fields"
+const item = { name: "tea", price: 18 };
 console.log(item.name, item["price"]);
 ```
 
-The pair of fields logs `茶 18`.
+The pair of fields logs `tea 18`.
 
 ### Later fields overwrite
 

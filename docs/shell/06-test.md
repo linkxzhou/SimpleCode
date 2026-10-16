@@ -17,38 +17,38 @@ updated: "2026-10-15"
 
 ### 字符串相等
 
-两边都是钥匙时，条件成立。
+两边都是 key 时，条件成立。
 
-```sh run expect="是" title="相等"
-item=钥匙
-if [ "$item" = 钥匙 ]; then
-  printf '%s\n' 是
+```sh run expect="yes" title="相等"
+item=key
+if [ "$item" = key ]; then
+  printf '%s\n' yes
 fi
 ```
 
-输出里能看到 `是`。
+输出里能看到 `yes`。
 
 ### 空字符串
 
 `-z` 在值为空时成立。
 
-```sh run expect="空" title="是空的"
+```sh run expect="empty" title="是空的"
 name=
 if [ -z "$name" ]; then
-  printf '%s\n' 空
+  printf '%s\n' empty
 fi
 ```
 
-输出里能看到 `空`。
+输出里能看到 `empty`。
 
 ### 整数
 
 `-gt` 比较的是整数，不是字典序。
 
-```sh run expect="大" title="3 比 2 大"
+```sh run expect="big" title="3 比 2 大"
 if [ 3 -gt 2 ]; then
-  printf '%s\n' 大
+  printf '%s\n' big
 fi
 ```
 
-输出里能看到 `大`。
+输出里能看到 `big`。

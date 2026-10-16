@@ -28,34 +28,34 @@ echo $_POST["name"], "\n";
 
 去掉两端空白后，名字还在。
 
-```php run expect="收到Ada" title="去掉空白"
+```php run expect="gotAda" title="去掉空白"
 <?php
 function accept_name($name) {
     $name = trim($name);
     if ($name === "") {
-        return "缺少";
+        return "missing";
     }
-    return "收到" . $name;
+    return "got" . $name;
 }
 echo accept_name("  Ada"), "\n";
 ```
 
-输出里能看到 `收到Ada`。
+输出里能看到 `gotAda`。
 
 ### 空的提交
 
-只剩空白时，返回「缺少」。
+只剩空白时，返回 missing。
 
-```php run expect="缺少" title="全是空白"
+```php run expect="missing" title="全是空白"
 <?php
 function accept_blank($name) {
     $name = trim($name);
     if ($name === "") {
-        return "缺少";
+        return "missing";
     }
-    return "收到" . $name;
+    return "got" . $name;
 }
 echo accept_blank("   "), "\n";
 ```
 
-输出里能看到 `缺少`。
+输出里能看到 `missing`。

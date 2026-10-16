@@ -35,12 +35,12 @@ fn main() {
 
 `return` can leave the function in the middle of the body.
 
-```rust run expect="开窗" title="Return early"
+```rust run expect="openwin" title="Return early"
 fn label(open: bool) -> &'static str {
     if open {
-        return "开窗";
+        return "openwin";
     }
-    "关窗"
+    "shutwin"
 }
 
 fn main() {
@@ -48,20 +48,20 @@ fn main() {
 }
 ```
 
-When `open` is true, that `return` runs and the line is `开窗`.
+When `open` is true, that `return` runs and the line is `openwin`.
 
 ### No return value
 
 Omitting the return type makes the result the unit value. Functions like this usually print.
 
-```rust run expect="叫号甲" title="Print only"
+```rust run expect="callfirst" title="Print only"
 fn shout(name: &str) {
-    println!("叫号{name}");
+    println!("call{name}");
 }
 
 fn main() {
-    shout("甲");
+    shout("first");
 }
 ```
 
-`shout` writes the line itself: `叫号甲`.
+`shout` writes the line itself: `callfirst`.

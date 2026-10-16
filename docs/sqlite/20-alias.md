@@ -29,13 +29,13 @@ SELECT 2 + 3 AS total;
 
 短名可以写在列前面。
 
-```sql run expect="茶" title="短名"
+```sql run expect="tea" title="短名"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶');
+INSERT INTO item VALUES ('tea');
 SELECT i.name FROM item AS i;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 排序用别名
 

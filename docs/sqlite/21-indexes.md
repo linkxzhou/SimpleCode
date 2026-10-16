@@ -21,9 +21,9 @@ updated: "2026-10-15"
 
 ```sql run expect="18" title="仍能查到"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 CREATE INDEX item_name ON item(name);
-SELECT price FROM item WHERE name = '茶';
+SELECT price FROM item WHERE name = 'tea';
 ```
 
 输出里能看到 `18`。
@@ -34,7 +34,7 @@ SELECT price FROM item WHERE name = '茶';
 
 ```sql run expect="2" title="两行"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
+INSERT INTO item VALUES ('tea'), ('water');
 SELECT COUNT(*) FROM item;
 ```
 
@@ -44,11 +44,11 @@ SELECT COUNT(*) FROM item;
 
 唯一索引拒绝重复的键。先插入一个不重复的值。
 
-```sql run expect="茶" title="唯一的名字"
+```sql run expect="tea" title="唯一的名字"
 CREATE TABLE item (name TEXT);
 CREATE UNIQUE INDEX item_name ON item(name);
-INSERT INTO item VALUES ('茶');
+INSERT INTO item VALUES ('tea');
 SELECT name FROM item;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

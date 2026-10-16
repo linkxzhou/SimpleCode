@@ -37,12 +37,12 @@ printf '%s\n' "x${1}y"
 
 ### 脚本名不是空的
 
-`$0` 是这次脚本的路径。只要它非空，就打出「有」。
+`$0` 是这次脚本的路径。只要它非空，就打出 has。
 
-```sh run expect="有" title="有脚本名"
+```sh run expect="has" title="有脚本名"
 if [ -n "$0" ]; then
-  printf '%s\n' 有
+  printf '%s\n' has
 fi
 ```
 
-输出里能看到 `有`。
+输出里能看到 `has`。

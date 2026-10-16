@@ -19,29 +19,29 @@ updated: "2026-10-15"
 
 `true` 成功，所以右边的 `printf` 会执行。
 
-```sh run expect="是" title="左边成功"
-true && printf '%s\n' 是
+```sh run expect="yes" title="左边成功"
+true && printf '%s\n' yes
 ```
 
-输出里能看到 `是`。
+输出里能看到 `yes`。
 
 ### 或者
 
 `false` 失败，所以右边用来补一句。
 
-```sh run expect="否" title="左边失败"
-false || printf '%s\n' 否
+```sh run expect="no" title="左边失败"
+false || printf '%s\n' no
 ```
 
-输出里能看到 `否`。
+输出里能看到 `no`。
 
 ### 右边不跑
 
 `true` 已经成功，`||` 右边不再执行。
 
-```sh run expect="结束" title="只看到结束"
-true || printf '%s\n' 不该出现
-printf '%s\n' 结束
+```sh run expect="done" title="只看到结束"
+true || printf '%s\n' absent
+printf '%s\n' done
 ```
 
-输出里能看到 `结束`。
+输出里能看到 `done`。

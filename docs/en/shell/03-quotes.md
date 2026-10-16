@@ -20,7 +20,7 @@ Single quotes copy characters literally. Double quotes expand `$`. The assignmen
 `$item` inside single quotes is not looked up. The characters stay as written.
 
 ```sh run expect="$item" title="Keep the spelling"
-item=钥匙
+item=key
 printf '%s\n' '$item'
 ```
 
@@ -28,21 +28,21 @@ The line shows `$item`.
 
 ### Double quotes
 
-Double quotes replace `$item` with 钥匙. `printf` then receives that word.
+Double quotes replace `$item` with key. `printf` then receives that word.
 
-```sh run expect="钥匙" title="Expand to the key"
-item=钥匙
+```sh run expect="key" title="Expand to the key"
+item=key
 printf '%s\n' "$item"
 ```
 
-The line shows `钥匙`.
+The line shows `key`.
 
 ### The format string
 
 The newline belongs in the `printf` format. It does not depend on expanding a variable.
 
-```sh run expect="留下" title="Newline from the format"
-printf '%s\n' 留下
+```sh run expect="kept" title="Newline from the format"
+printf '%s\n' kept
 ```
 
-The line shows `留下`.
+The line shows `kept`.

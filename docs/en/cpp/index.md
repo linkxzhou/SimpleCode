@@ -18,15 +18,15 @@ Every listing in this book is compiled as C++ and linked with libc++. Each sampl
 
 `std::cout` does not start a new line by itself. The `\n` has to sit inside the string you send.
 
-```cpp run expect="你好" title="Say hello"
+```cpp run expect="Hi" title="Say hello"
 #include <iostream>
 int main() {
-  std::cout << "你好\n";
+  std::cout << "Hi\n";
   return 0;
 }
 ```
 
-The printed text is `你好`.
+The printed text is `Hi`.
 
 ### Return zero
 

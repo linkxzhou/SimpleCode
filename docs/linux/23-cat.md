@@ -35,6 +35,6 @@ echo one > /tmp/p && echo two > /tmp/q && cat /tmp/p /tmp/q
 
 围栏的 stdin 被写成 /mnt/stdin.txt，再重定向给 cat。中文按 UTF-8 从串口字节解出来。
 
-```linux run stdin="林夏\n" expect="林夏" title="读入的名字"
+```linux run stdin="linxia\n" expect="linxia" title="读入的名字"
 cat
 ```

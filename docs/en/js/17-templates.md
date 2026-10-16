@@ -19,29 +19,29 @@ Backtick strings evaluate expressions written inside `${}`. Ordinary quotation m
 
 The braces contain an expression. Its result is converted to text and spliced in.
 
-```js run expect="你好，林" title="Insert the name"
-const name = "林";
-console.log(`你好，${name}`);
+```js run expect="Hello, lin" title="Insert the name"
+const name = "lin";
+console.log(`Hello, ${name}`);
 ```
 
-The spliced greeting is `你好，林`.
+The spliced greeting is `Hello, lin`.
 
 ### Arithmetic inside the braces
 
 A plus expression is legal between the braces.
 
-```js run expect="合计5" title="Add inside"
-console.log(`合计${2 + 3}`);
+```js run expect="total5" title="Add inside"
+console.log(`total${2 + 3}`);
 ```
 
-The filled template logs `合计5`.
+The filled template logs `total5`.
 
 ### Double quotes stay literal
 
 Inside double quotes, the characters `${name}` are not looked up as a variable.
 
 ```js run expect="false" title="Quotes are not a template"
-const name = "林";
+const name = "lin";
 console.log("${name}" === name);
 ```
 

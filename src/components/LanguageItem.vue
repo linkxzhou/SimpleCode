@@ -62,13 +62,13 @@ const tip = computed(() => {
             <Download class="size-3.5" />{{ sizeLabel }}
           </span>
           <Check v-else class="sidebar-expanded-only size-3.5 shrink-0 text-foreground" />
-          <Progress
-            v-if="status === 'downloading'"
-            data-testid="wasm-progress"
-            :model-value="pct"
-            class="sidebar-expanded-only pointer-events-none absolute inset-x-2 bottom-1 my-[8px] h-0.5"
-          />
         </template>
+        <Progress
+          v-if="status === 'downloading'"
+          data-testid="wasm-progress"
+          :model-value="pct"
+          class="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-0.5 rounded-none"
+        />
       </button>
     </TooltipTrigger>
     <TooltipContent side="right">{{ tip }}</TooltipContent>

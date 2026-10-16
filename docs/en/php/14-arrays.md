@@ -19,25 +19,25 @@ One PHP array can be ordered by numeric index. The same array can map string key
 
 The second element is stored at index 1.
 
-```php run expect="笔" title="The second item"
+```php run expect="pen" title="The second item"
 <?php
-$items = ["茶", "笔", "墨"];
+$items = ["tea", "pen", "ink"];
 echo $items[1], "\n";
 ```
 
-Index 1 reads `笔`.
+Index 1 reads `pen`.
 
 ### A string key
 
 The key `name` stores a label. The key `price` stores the unit price.
 
-```php run expect="茶 18" title="Two fields"
+```php run expect="tea 18" title="Two fields"
 <?php
-$item = ["name" => "茶", "price" => 18];
+$item = ["name" => "tea", "price" => 18];
 echo $item["name"], " ", $item["price"], "\n";
 ```
 
-The two fields print `茶 18`.
+The two fields print `tea 18`.
 
 ### How many elements
 
@@ -45,7 +45,7 @@ The two fields print `茶 18`.
 
 ```php run expect="2" title="Two items"
 <?php
-$items = ["茶", "笔"];
+$items = ["tea", "pen"];
 echo count($items), "\n";
 ```
 

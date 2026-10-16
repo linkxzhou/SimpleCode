@@ -25,8 +25,8 @@ package main
 import "fmt"
 
 func main() {
-	price := map[string]int{"茶": 18}
-	fmt.Println(price["茶"])
+	price := map[string]int{"tea": 18}
+	fmt.Println(price["tea"])
 }
 ```
 
@@ -43,7 +43,7 @@ import "fmt"
 
 func main() {
 	price := map[string]int{}
-	_, ok := price["水"]
+	_, ok := price["water"]
 	fmt.Println(ok)
 }
 ```
@@ -60,9 +60,9 @@ package main
 import "fmt"
 
 func main() {
-	price := map[string]int{"茶": 18}
-	delete(price, "茶")
-	_, ok := price["茶"]
+	price := map[string]int{"tea": 18}
+	delete(price, "tea")
+	_, ok := price["tea"]
 	fmt.Println(ok)
 }
 ```
@@ -73,7 +73,7 @@ func main() {
 
 只声明、不 `make` 的 map 是 `nil`。读取得到零值，写入会 panic。
 
-```go run expect="不能写" title="先创建再写入"
+```go run expect="nowrite" title="先创建再写入"
 package main
 
 import "fmt"
@@ -81,12 +81,12 @@ import "fmt"
 func main() {
 	defer func() {
 		if recover() != nil {
-			fmt.Println("不能写")
+			fmt.Println("nowrite")
 		}
 	}()
 	var price map[string]int
-	price["茶"] = 18
+	price["tea"] = 18
 }
 ```
 
-输出是 `不能写`。
+输出是 `nowrite`。

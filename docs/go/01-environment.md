@@ -19,17 +19,17 @@ updated: "2026-10-15"
 
 点 Run 时，当前编辑器里的文本被交给 Yaegi 0.16。不需要 `go install`，也没有 `GOROOT` 可改。
 
-```go run expect="已就绪" title="不安装也能运行"
+```go run expect="ready" title="不安装也能运行"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("已就绪")
+	fmt.Println("ready")
 }
 ```
 
-输出是 `已就绪`。
+输出是 `ready`。
 
 ### 命令行工具在这里不存在
 

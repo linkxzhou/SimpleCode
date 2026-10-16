@@ -39,8 +39,8 @@ puts 3.class
 
 只有 `nil` 和 `false` 在条件里为假。`0` 是真。
 
-```ruby run expect="真" title="零也是真"
-puts 0 ? "真" : "假"
+```ruby run expect="real" title="零也是真"
+puts 0 ? "real" : "fake"
 ```
 
-输出里能看到 `真`。
+输出里能看到 `real`。

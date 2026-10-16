@@ -29,12 +29,12 @@ The names on that line are `int float bool`.
 
 Single quotes and double quotes both work. Characters inside the quotes are text, not a variable name.
 
-```python run expect="茶" title="Text"
-item = "茶"
+```python run expect="tea" title="Text"
+item = "tea"
 print(item)
 ```
 
-The variable prints `茶`.
+The variable prints `tea`.
 
 ### Empty values are false in a condition
 

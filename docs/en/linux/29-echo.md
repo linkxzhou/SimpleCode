@@ -19,21 +19,21 @@ The echo on this guest is /bin/echo from BusyBox. The Shell book documents a was
 
 BusyBox puts one blank between the words and finishes the line. Chinese text and a number can share that one call.
 
-```linux run expect="茶 18" title="A blank between the words"
-echo 茶 18
+```linux run expect="tea 18" title="A blank between the words"
+echo tea 18
 ```
 
-The printed line is `茶 18`.
+The printed line is `tea 18`.
 
 ### -n leaves out the newline
 
-The following echo continues on that same line. The characters 茶 and 叶 therefore sit together, with no line break between them.
+The following echo continues on that same line. tea and leaf therefore sit together, with no line break between them.
 
-```linux run expect="茶叶" title="Two characters on one line"
-echo -n 茶; echo 叶
+```linux run expect="tealeaf" title="Two characters on one line"
+echo -n tea; echo leaf
 ```
 
-The printed line is `茶叶`.
+The printed line is `tealeaf`.
 
 ### This binary is /bin/echo, not the Shell book's builtin
 

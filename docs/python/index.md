@@ -18,11 +18,11 @@ updated: "2026-10-15"
 
 程序要自己把结果交出来。`print` 会在末尾补一个换行。
 
-```python run expect="你好" title="打个招呼"
-print("你好")
+```python run expect="Hi" title="打个招呼"
+print("Hi")
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 网络库不在这一次运行里
 
@@ -45,8 +45,8 @@ urllib.request.urlopen("https://example.com")
 
 个别围栏标明了另一种语言。运行时会换成那一门，而不是硬拿 Python 去读。
 
-```ruby run expect="来自 Ruby 的 42" title="另一门语言的一行"
-puts "来自 Ruby 的 42"
+```ruby run expect="42 from Ruby" title="另一门语言的一行"
+puts "42 from Ruby"
 ```
 
-输出里能看到 `来自 Ruby 的 42`。
+输出里能看到 `42 from Ruby`。

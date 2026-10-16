@@ -78,7 +78,7 @@ func main() {
 
 声明了但没有指向任何变量的指针是 `nil`。对它解引用会 panic。
 
-```go run expect="空指针" title="先判断再使用"
+```go run expect="null pointer" title="先判断再使用"
 package main
 
 import "fmt"
@@ -86,7 +86,7 @@ import "fmt"
 func main() {
 	defer func() {
 		if recover() != nil {
-			fmt.Println("空指针")
+			fmt.Println("null pointer")
 		}
 	}()
 	var p *int
@@ -94,4 +94,4 @@ func main() {
 }
 ```
 
-输出是 `空指针`。使用前应判断 `p != nil`。
+输出是 `null pointer`。使用前应判断 `p != nil`。

@@ -19,11 +19,11 @@ updated: "2026-10-16"
 
 `%s` drops the next word into the output unchanged. `\n` in the format ends the line.
 
-```sh run expect="笔" title="One word"
-printf '%s\n' 笔
+```sh run expect="pen" title="One word"
+printf '%s\n' pen
 ```
 
-The line shows `笔`.
+The line shows `pen`.
 
 ### An integer
 

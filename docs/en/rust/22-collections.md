@@ -39,9 +39,9 @@ use std::collections::HashMap;
 
 fn main() {
     let mut bag = HashMap::new();
-    bag.insert("茶", 18);
-    bag.insert("笔", 24);
-    println!("{}", bag["茶"] + bag["笔"]);
+    bag.insert("tea", 18);
+    bag.insert("pen", 24);
+    println!("{}", bag["tea"] + bag["pen"]);
 }
 ```
 
@@ -51,12 +51,12 @@ fn main() {
 
 `push_str` attaches a slice to the end of a `String`.
 
-```rust run expect="夜班" title="Append one character"
+```rust run expect="night" title="Append one character"
 fn main() {
-    let mut line = String::from("夜");
-    line.push_str("班");
+    let mut line = String::from("nite");
+    line.push_str("shift");
     println!("{line}");
 }
 ```
 
-The two characters form `夜班`.
+The two characters form `night`.

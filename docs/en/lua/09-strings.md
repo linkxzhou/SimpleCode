@@ -13,14 +13,14 @@ sources:
 updated: "2026-10-16"
 ---
 
-Both `#` and `string.len` count bytes. The string `你好` has length 6.
+Both `#` and `string.len` count bytes. The string `Hello!` has length 6.
 
 ### Byte length
 
-Each of those characters occupies three bytes in UTF-8. The length operator therefore reports 6.
+`Hello!` is six bytes long, so the length operator reports 6.
 
 ```lua run expect="6" title="Six bytes"
-print(#"你好")
+print(#"Hello!")
 ```
 
 The output shows `6`.
@@ -39,8 +39,8 @@ The output shows `pen`.
 
 `string.format` replaces `%d` with an integer. The rest of the format string stays in place.
 
-```lua run expect="单价 18" title="Fill the format"
-print(string.format("单价 %d", 18))
+```lua run expect="price 18" title="Fill the format"
+print(string.format("price %d", 18))
 ```
 
-The output shows `单价 18`.
+The output shows `price 18`.

@@ -46,11 +46,11 @@ The printed line is `2 1`.
 
 A parameter may carry a default. That default is used when the caller omits the argument. Calling `greet` with no argument uses the string written in the definition.
 
-```ruby run expect="你好，客人" title="Omit the name"
-def greet(name = "客人")
-  "你好，" + name
+```ruby run expect="Hello, guest" title="Omit the name"
+def greet(name = "guest")
+  "Hello, " + name
 end
 puts greet
 ```
 
-The printed line is `你好，客人`.
+The printed line is `Hello, guest`.

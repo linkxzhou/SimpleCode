@@ -19,17 +19,17 @@ Go is a statically typed compiled language. This drawer does not call `go build`
 
 The file opens with `package main`. Only the function named `main` is the entry point.
 
-```go run expect="你好" title="First program"
+```go run expect="Hi" title="First program"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("你好")
+	fmt.Println("Hi")
 }
 ```
 
-`Println` appends a newline. The line on the terminal is `你好`.
+`Println` appends a newline. The line on the terminal is `Hi`.
 
 ### Print every result
 

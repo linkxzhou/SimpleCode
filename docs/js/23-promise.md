@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 数组先记下同步的字，微任务再补上结果，最后一次打印。
 
-```js run expect="先-茶" title="先同步"
+```js run expect="early-tea" title="先同步"
 function run() {
   const log = [];
-  const chain = Promise.resolve("茶").then(function (name) {
+  const chain = Promise.resolve("tea").then(function (name) {
     log.push(name);
   });
-  log.push("先");
+  log.push("early");
   return chain.then(function () {
     console.log(log.join("-"));
   });
@@ -33,7 +33,7 @@ function run() {
 run();
 ```
 
-输出里能看到 `先-茶`。
+输出里能看到 `early-tea`。
 
 ### then 传递返回值
 
@@ -56,15 +56,15 @@ run();
 
 在 `then` 里抛出，后面的 `catch` 会接到。
 
-```js run expect="接住" title="失败分支"
+```js run expect="caught" title="失败分支"
 function run() {
   return Promise.resolve(1).then(function () {
-    throw new Error("缺");
+    throw new Error("lack");
   }).catch(function () {
-    console.log("接住");
+    console.log("caught");
   });
 }
 run();
 ```
 
-输出里能看到 `接住`。
+输出里能看到 `caught`。

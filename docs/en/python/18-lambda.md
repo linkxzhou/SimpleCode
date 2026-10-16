@@ -30,21 +30,21 @@ The anonymous call prints `5`.
 
 `sorted` consults `key` to decide which field to compare.
 
-```python run expect="水" title="Sort by quantity"
-rows = [("水", 2), ("茶", 9)]
+```python run expect="water" title="Sort by quantity"
+rows = [("water", 2), ("tea", 9)]
 rows = sorted(rows, key=lambda row: row[1])
 print(rows[0][0])
 ```
 
-The smaller quantity comes first, so the label is `水`.
+The smaller quantity comes first, so the label is `water`.
 
 ### Several statements do not fit
 
 An `if` block or a loop needs `def` instead. The sample only shows that a conditional expression can still live inside a lambda.
 
-```python run expect="正" title="Conditional expression"
-label = lambda n: "正" if n > 0 else "非正"
+```python run expect="pos" title="Conditional expression"
+label = lambda n: "pos" if n > 0 else "badnum"
 print(label(3))
 ```
 
-The label for 3 is `正`.
+The label for 3 is `pos`.

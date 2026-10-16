@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```php norun title="没有响应"
 <?php
-setcookie("item", "笔");
+setcookie("item", "pen");
 echo "sent\n";
 ```
 
@@ -29,22 +29,22 @@ echo "sent\n";
 
 把要记住的名字放进数组。
 
-```php run expect="笔" title="记住笔"
+```php run expect="pen" title="记住笔"
 <?php
-$cookie = ["item" => "笔"];
+$cookie = ["item" => "pen"];
 echo $cookie["item"], "\n";
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。
 
 ### 没有这项
 
-键不存在时打印「无」，而不是去读浏览器。
+键不存在时打印 none，而不是去读浏览器。
 
-```php run expect="无" title="没有记下"
+```php run expect="none" title="没有记下"
 <?php
 $cookie = [];
-echo $cookie["item"] ?? "无", "\n";
+echo $cookie["item"] ?? "none", "\n";
 ```
 
-输出里能看到 `无`。
+输出里能看到 `none`。

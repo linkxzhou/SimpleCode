@@ -29,13 +29,13 @@ SELECT 2 + 3 AS total;
 
 The short name can stand in front of a column.
 
-```sql run expect="茶" title="Short table name"
+```sql run expect="tea" title="Short table name"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶');
+INSERT INTO item VALUES ('tea');
 SELECT i.name FROM item AS i;
 ```
 
-`i.name` reads the stored name `茶`.
+`i.name` reads the stored name `tea`.
 
 ### ORDER BY can use the alias
 

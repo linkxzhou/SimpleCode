@@ -19,34 +19,34 @@ A decorator receives a function and returns another function. The `@` line is a 
 
 Define an inner function, then return it. The original body runs only when that returned function is called.
 
-```python run expect="你好!" title="Wrap by hand"
+```python run expect="Hi!" title="Wrap by hand"
 def shout(fn):
     def wrap():
         return fn() + "!"
     return wrap
 def hi():
-    return "你好"
+    return "Hi"
 print(shout(hi)())
 ```
 
-The wrapped call prints `你好!`.
+The wrapped call prints `Hi!`.
 
 ### Write @ above the definition
 
 `@shout` has the same effect as the later assignment `hi = shout(hi)`.
 
-```python run expect="你好!" title="Syntactic sugar"
+```python run expect="Hi!" title="Syntactic sugar"
 def shout(fn):
     def wrap():
         return fn() + "!"
     return wrap
 @shout
 def hi():
-    return "你好"
+    return "Hi"
 print(hi())
 ```
 
-Calling `hi` prints `你好!`.
+Calling `hi` prints `Hi!`.
 
 ### The name becomes the inner function
 
@@ -59,7 +59,7 @@ def shout(fn):
     return wrap
 @shout
 def hi():
-    return "你好"
+    return "Hi"
 print(hi.__name__)
 ```
 

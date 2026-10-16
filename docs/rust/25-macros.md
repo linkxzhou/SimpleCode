@@ -35,7 +35,7 @@ fn main() {
 
 展开结果必须是合法的 Rust。
 
-```rust run expect="铜钥匙" title="宏里打印"
+```rust run expect="copperkey" title="宏里打印"
 macro_rules! say {
     ($word:expr) => {
         println!("{}", $word);
@@ -43,10 +43,10 @@ macro_rules! say {
 }
 
 fn main() {
-    say!("铜钥匙");
+    say!("copperkey");
 }
 ```
-终端看到铜钥匙。
+终端看到 `copperkey`。
 
 ### 派生过程宏不加载
 
@@ -54,6 +54,6 @@ fn main() {
 
 ```rust norun title="不写过程宏"
 fn main() {
-    println!("过程宏不在这里");
+    println!("no proc macros here");
 }
 ```

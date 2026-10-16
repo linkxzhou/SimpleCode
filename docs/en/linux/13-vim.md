@@ -19,21 +19,21 @@ A full-screen editor holds the terminal until you leave it. A docs Run has to fi
 
 It changes modes and redraws the whole screen. A serial docs run cannot wait for a normal exit status, so BusyBox vi is not offered as a runnable sample.
 
-```linux run expect="便签" title="Write one line by redirection"
-echo 便签 > /tmp/note && cat /tmp/note
+```linux run expect="note" title="Write one line by redirection"
+echo note > /tmp/note && cat /tmp/note
 ```
 
-The file contains `便签`.
+The file contains `note`.
 
 ### This image does not include vim
 
 A complete vim binary is large, and this Buildroot config does not contain it. To look at a file, use cat or head.
 
-```linux run expect="便签" title="Read that file back"
-echo 便签 > /tmp/note && cat /tmp/note
+```linux run expect="note" title="Read that file back"
+echo note > /tmp/note && cat /tmp/note
 ```
 
-`cat` prints `便签` again.
+`cat` prints `note` again.
 
 ### Chapters edit files with redirection, not a full-screen editor
 

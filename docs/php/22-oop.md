@@ -36,7 +36,7 @@ echo (new Pen(18))->price(), "\n";
 
 派生类沿用基类的单价，再加自己的名字。
 
-```php run expect="笔 18" title="两项"
+```php run expect="pen 18" title="两项"
 <?php
 class Item {
     public function __construct(protected int $price) {}
@@ -46,14 +46,14 @@ class Item {
 }
 class PenItem extends Item {
     public function label(): string {
-        return "笔";
+        return "pen";
     }
 }
 $pen = new PenItem(18);
 echo $pen->label(), " ", $pen->price(), "\n";
 ```
 
-输出里能看到 `笔 18`。
+输出里能看到 `pen 18`。
 
 ### 两支笔
 

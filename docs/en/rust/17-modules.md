@@ -37,11 +37,11 @@ The path uses `::`, and `fare` returns 42.
 
 The child module also needs `pub` if a function deeper inside should be reachable.
 
-```rust run expect="铜钥匙" title="Two-level path"
+```rust run expect="copperkey" title="Two-level path"
 mod desk {
     pub mod drawer {
         pub fn key() -> &'static str {
-            "铜钥匙"
+            "copperkey"
         }
     }
 }
@@ -51,13 +51,13 @@ fn main() {
 }
 ```
 
-The path runs from the crate root to `key` and prints `铜钥匙`.
+The path runs from the crate root to `key` and prints `copperkey`.
 
 ### A public struct
 
 Fields need `pub` too, or code outside the module cannot read or write them.
 
-```rust run expect="夜班" title="Public field"
+```rust run expect="night" title="Public field"
 mod counter {
     pub struct Shift {
         pub name: &'static str,
@@ -65,9 +65,9 @@ mod counter {
 }
 
 fn main() {
-    let shift = counter::Shift { name: "夜班" };
+    let shift = counter::Shift { name: "night" };
     println!("{}", shift.name);
 }
 ```
 
-Both the struct and the field are public. The name prints as `夜班`.
+Both the struct and the field are public. The name prints as `night`.

@@ -29,20 +29,20 @@ Run skips the sample. Keep the commands you need in the script that is already o
 
 These two `printf` commands are the whole script. Both of them live in this file.
 
-```sh run expect="甲" title="The first line"
-printf '%s\n' 甲
-printf '%s\n' 乙
+```sh run expect="first" title="The first line"
+printf '%s\n' first
+printf '%s\n' second
 ```
 
-The earlier line is `甲`. The later line is `乙`.
+The earlier line is `first`. The later line is `second`.
 
 ### Skip the dot as well
 
-A dot on its own searches for an external command. This sample calls `true`, then prints 继续.
+A dot on its own searches for an external command. This sample calls `true`, then prints next.
 
-```sh run expect="继续" title="Continue in this file"
+```sh run expect="next" title="Continue in this file"
 true
-printf '%s\n' 继续
+printf '%s\n' next
 ```
 
-The line shows `继续`.
+The line shows `next`.

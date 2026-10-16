@@ -18,28 +18,28 @@ This tutorial runs one file at a time under Lua 5.4. `print` places a tab betwee
 
 `print` writes its argument and then a newline.
 
-```lua run expect="你好" title="Say hello"
-print("你好")
+```lua run expect="Hi" title="Say hello"
+print("Hi")
 ```
 
-The output shows `你好`.
+The output shows `Hi`.
 
 ### A tab between items
 
 Two arguments stay separate. A tab stands between them.
 
-```lua run expect="茶	18" title="A tab in the middle"
-print("茶", 18)
+```lua run expect="tea\t18" title="A tab in the middle"
+print("tea", 18)
 ```
 
-The output shows `茶	18`.
+The output shows `tea	18`.
 
 ### Concatenation
 
 `..` builds one string, and that string is what `print` receives. The number is placed directly after the characters.
 
-```lua run expect="茶18" title="Joined together"
-print("茶" .. 18)
+```lua run expect="tea18" title="Joined together"
+print("tea" .. 18)
 ```
 
-The output shows `茶18`.
+The output shows `tea18`.

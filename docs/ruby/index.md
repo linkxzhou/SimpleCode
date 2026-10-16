@@ -18,11 +18,11 @@ updated: "2026-10-15"
 
 `puts` 在末尾补换行。
 
-```ruby run expect="你好" title="打招呼"
-puts "你好"
+```ruby run expect="Hi" title="打招呼"
+puts "Hi"
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 不能安装 gem
 
@@ -36,8 +36,8 @@ gem install rails
 
 注释不会出现在输出里。
 
-```ruby run expect="留下" title="跳过注释"
-puts "留下" # 隐藏
+```ruby run expect="kept" title="跳过注释"
+puts "kept" # 隐藏
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。

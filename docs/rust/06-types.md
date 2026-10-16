@@ -31,10 +31,10 @@ fn main() {
 
 `if` 的条件必须是 `bool`，不能拿整数充数。
 
-```rust run expect="开" title="窗口开着"
+```rust run expect="on" title="窗口开着"
 fn main() {
     let open: bool = true;
-    let word = if open { "开" } else { "关" };
+    let word = if open { "on" } else { "off" };
     println!("{word}");
 }
 ```
@@ -44,10 +44,10 @@ fn main() {
 
 `char` 用单引号，里面是一个 Unicode 标量。`&str` 用双引号。
 
-```rust run expect="窗口" title="拼成窗口"
+```rust run expect="window" title="拼成窗口"
 fn main() {
-    let mark: char = '窗';
-    let name: &str = "口";
+    let mark: char = 'pane';
+    let name: &str = "slot";
     println!("{mark}{name}");
 }
 ```

@@ -19,14 +19,14 @@ updated: "2026-10-15"
 
 删掉单价小于 10 的行。
 
-```sql run expect="茶" title="只剩茶"
+```sql run expect="tea" title="只剩茶"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 DELETE FROM item WHERE price < 10;
 SELECT name FROM item;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 数剩下的行
 
@@ -34,8 +34,8 @@ SELECT name FROM item;
 
 ```sql run expect="1" title="剩一行"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-DELETE FROM item WHERE name = '水';
+INSERT INTO item VALUES ('tea'), ('water');
+DELETE FROM item WHERE name = 'water';
 SELECT COUNT(*) FROM item;
 ```
 

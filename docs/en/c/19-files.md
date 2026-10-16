@@ -34,17 +34,17 @@ This environment does not provide that file, so the sample is not run.
 
 `sprintf` places formatted characters into an array. `printf` then writes the contents of `buf`.
 
-```c run expect="茶 18" title="One line of text"
+```c run expect="tea 18" title="One line of text"
 #include <stdio.h>
 int main(void) {
   char buf[32];
-  sprintf(buf, "茶 %d", 18);
+  sprintf(buf, "tea %d", 18);
   printf("%s\n", buf);
   return 0;
 }
 ```
 
-The output contains `茶 18`.
+The output contains `tea 18`.
 
 ### Read it back
 

@@ -19,7 +19,7 @@ updated: "2026-10-15"
 
 接口里的每个方法都要写出名字、参数和返回值。
 
-```go run expect="喵" title="接口变量"
+```go run expect="meow" title="接口变量"
 package main
 
 import "fmt"
@@ -31,7 +31,7 @@ type Speaker interface {
 type Cat struct{}
 
 func (Cat) Speak() string {
-	return "喵"
+	return "meow"
 }
 
 func main() {
@@ -40,13 +40,13 @@ func main() {
 }
 ```
 
-输出是 `喵`。
+输出是 `meow`。
 
 ### 隐式实现
 
 只要方法对得上，赋值给接口变量就能通过。少一个方法则会编译失败。
 
-```go run expect="汪" title="另一种实现"
+```go run expect="woof" title="另一种实现"
 package main
 
 import "fmt"
@@ -58,7 +58,7 @@ type Speaker interface {
 type Dog struct{}
 
 func (Dog) Speak() string {
-	return "汪"
+	return "woof"
 }
 
 func main() {
@@ -69,13 +69,13 @@ func main() {
 }
 ```
 
-输出是 `汪`。
+输出是 `woof`。
 
 ### 接口里保存具体值
 
 接口值同时带着具体类型和具体数据。方法调用会落到那个具体类型上。
 
-```go run expect="林" title="带着数据"
+```go run expect="lin" title="带着数据"
 package main
 
 import "fmt"
@@ -93,12 +93,12 @@ func (u User) Name() string {
 }
 
 func main() {
-	var n Named = User{name: "林"}
+	var n Named = User{name: "lin"}
 	fmt.Println(n.Name())
 }
 ```
 
-输出是 `林`。
+输出是 `lin`。
 
 ### any
 

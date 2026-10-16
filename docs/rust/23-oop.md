@@ -18,7 +18,7 @@ Rust 没有类继承。共享行为靠特性，数据放在结构体里。
 
 实现块给出这个方法的函数体。
 
-```rust run expect="船票" title="门上的标签"
+```rust run expect="pass" title="门上的标签"
 trait Tag {
     fn label(&self) -> &'static str;
 }
@@ -27,7 +27,7 @@ struct Gate;
 
 impl Tag for Gate {
     fn label(&self) -> &'static str {
-        "船票"
+        "pass"
     }
 }
 
@@ -35,13 +35,13 @@ fn main() {
     println!("{}", Gate.label());
 }
 ```
-`Gate` 的标签是船票。
+`Gate` 的标签是 `pass`。
 
 ### 另一个实现
 
 同一特性可以挂到不同结构体上，方法体各写各的。
 
-```rust run expect="钢笔" title="笔的标签"
+```rust run expect="fountain" title="笔的标签"
 trait Tag {
     fn label(&self) -> &'static str;
 }
@@ -50,7 +50,7 @@ struct Pen;
 
 impl Tag for Pen {
     fn label(&self) -> &'static str {
-        "钢笔"
+        "fountain"
     }
 }
 
@@ -58,13 +58,13 @@ fn main() {
     println!("{}", Pen.label());
 }
 ```
-这次打出钢笔。
+这次打出 fountain。
 
 ### 泛型函数接收特性
 
 `impl Tag` 表示任何实现了 Tag 的类型。
 
-```rust run expect="窗口" title="函数接收特性"
+```rust run expect="window" title="函数接收特性"
 trait Tag {
     fn label(&self) -> &'static str;
 }
@@ -73,7 +73,7 @@ struct Gate;
 
 impl Tag for Gate {
     fn label(&self) -> &'static str {
-        "窗口"
+        "window"
     }
 }
 

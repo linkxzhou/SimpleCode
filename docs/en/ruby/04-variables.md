@@ -19,13 +19,13 @@ A local variable starts with a lowercase letter or an underscore. The first assi
 
 A name points at a value, and a later assignment can point it elsewhere. `item` starts as one string and then becomes another. `puts` prints the later binding.
 
-```ruby run expect="水" title="Rebind"
-item = "茶"
-item = "水"
+```ruby run expect="water" title="Rebind"
+item = "tea"
+item = "water"
 puts item
 ```
 
-The printed line is `水`.
+The printed line is `water`.
 
 ### Constants start with a capital
 

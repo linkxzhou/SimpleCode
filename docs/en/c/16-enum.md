@@ -49,17 +49,17 @@ The output contains `200`.
 
 An enumerator can be the controlling expression of a `switch`. `d` holds `TUE`, so the matching case prints.
 
-```c run expect="二" title="Second day"
+```c run expect="two" title="Second day"
 #include <stdio.h>
 enum Day { MON = 1, TUE = 2 };
 int main(void) {
   enum Day d = TUE;
   switch (d) {
-    case MON: printf("一\n"); break;
-    case TUE: printf("二\n"); break;
+    case MON: printf("one\n"); break;
+    case TUE: printf("two\n"); break;
   }
   return 0;
 }
 ```
 
-The output contains `二`.
+The output contains `two`.

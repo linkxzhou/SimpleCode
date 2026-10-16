@@ -19,18 +19,18 @@ updated: "2026-10-15"
 
 `//` 注释到行尾。`/* */` 可以跨行。注释不产生输出。
 
-```go run expect="可见" title="注释被跳过"
+```go run expect="shown" title="注释被跳过"
 package main
 
 import "fmt"
 
 func main() {
 	// 这一行不执行
-	fmt.Println("可见")
+	fmt.Println("shown")
 }
 ```
 
-输出是 `可见`。
+输出是 `shown`。
 
 ### 标识符
 
@@ -53,29 +53,29 @@ func main() {
 
 编译器在行尾自动补上分号。因此 `{` 要留在语句同一行，不能单独换到下一行。
 
-```go run expect="同一行" title="左花括号的位置"
+```go run expect="same line" title="左花括号的位置"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("同一行")
+	fmt.Println("same line")
 }
 ```
 
-输出是 `同一行`。
+输出是 `same line`。
 
 ### 大小写决定能否对外
 
 包外只能看见大写开头的名字。本教程只有一个文件，但库代码仍遵守这条规则。
 
-```go run expect="内部" title="小写名字留在包内"
+```go run expect="inner" title="小写名字留在包内"
 package main
 
 import "fmt"
 
 func hidden() string {
-	return "内部"
+	return "inner"
 }
 
 func main() {
@@ -83,4 +83,4 @@ func main() {
 }
 ```
 
-输出是 `内部`。
+输出是 `inner`。

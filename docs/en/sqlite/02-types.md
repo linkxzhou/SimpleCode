@@ -20,7 +20,7 @@ SQLite types behave more like storage classes than fixed column types. A column 
 An integer is stored with class integer. A quoted string is stored with class text.
 
 ```sql run expect="integer|text" title="Two classes"
-SELECT typeof(3), typeof('茶');
+SELECT typeof(3), typeof('tea');
 ```
 
 `typeof` reports the pair `integer|text`.

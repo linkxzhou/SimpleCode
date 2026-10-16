@@ -21,7 +21,7 @@ This run has no response headers that could carry a cookie.
 
 ```php norun title="No response"
 <?php
-setcookie("item", "笔");
+setcookie("item", "pen");
 echo "sent\n";
 ```
 
@@ -29,22 +29,22 @@ echo "sent\n";
 
 The name to remember is stored under the key `item`.
 
-```php run expect="笔" title="Remember the pen"
+```php run expect="pen" title="Remember the pen"
 <?php
-$cookie = ["item" => "笔"];
+$cookie = ["item" => "pen"];
 echo $cookie["item"], "\n";
 ```
 
-The stored name is `笔`.
+The stored name is `pen`.
 
 ### A missing cookie entry
 
-A missing key selects `无` through `??`. The value comes from that expression.
+A missing key selects `none` through `??`. The value comes from that expression.
 
-```php run expect="无" title="Nothing stored"
+```php run expect="none" title="Nothing stored"
 <?php
 $cookie = [];
-echo $cookie["item"] ?? "无", "\n";
+echo $cookie["item"] ?? "none", "\n";
 ```
 
-The absent entry prints `无`.
+The absent entry prints `none`.

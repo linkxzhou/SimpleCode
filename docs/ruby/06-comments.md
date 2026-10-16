@@ -19,32 +19,32 @@ updated: "2026-10-15"
 
 `#` 到行尾被跳过。
 
-```ruby run expect="可见" title="留下"
-puts "可见" # 隐藏
+```ruby run expect="shown" title="留下"
+puts "shown" # 隐藏
 ```
 
-输出里能看到 `可见`。
+输出里能看到 `shown`。
 
 ### 整行
 
 单独一行的注释可以记下暂时不跑的式子。
 
-```ruby run expect="留下" title="整行跳过"
+```ruby run expect="kept" title="整行跳过"
 # puts "隐藏"
-puts "留下"
+puts "kept"
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 多行注释
 
 `=begin` 必须顶格，到 `=end` 为止都不执行。
 
-```ruby run expect="留下" title="成块跳过"
+```ruby run expect="kept" title="成块跳过"
 =begin
 puts "隐藏"
 =end
-puts "留下"
+puts "kept"
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。

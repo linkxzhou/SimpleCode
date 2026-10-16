@@ -39,8 +39,8 @@ The sum prints as `21`.
 
 The number is coerced to text and then attached. No space is inserted between the parts.
 
-```js run expect="房号18" title="Concatenate"
-console.log("房号" + 18);
+```js run expect="room18" title="Concatenate"
+console.log("room" + 18);
 ```
 
-The attached text is `房号18`.
+The attached text is `room18`.

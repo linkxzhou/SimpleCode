@@ -43,11 +43,11 @@ console.log(add(4, 1));
 
 调用时省略的参数使用默认值。
 
-```js run expect="你好，客人" title="省略"
-function greet(name = "客人") {
-  return "你好，" + name;
+```js run expect="Hello, guest" title="省略"
+function greet(name = "guest") {
+  return "Hello, " + name;
 }
 console.log(greet());
 ```
 
-输出里能看到 `你好，客人`。
+输出里能看到 `Hello, guest`。

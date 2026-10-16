@@ -51,7 +51,7 @@ fn main() {
 
 ```rust run expect="0" title="解析失败给零"
 fn main() {
-    let bad = "票".parse::<i32>().unwrap_or(0);
+    let bad = "stub".parse::<i32>().unwrap_or(0);
     println!("{bad}");
 }
 ```

@@ -18,21 +18,21 @@ updated: "2026-10-15"
 
 `printf` 的格式串决定换行。`%s` 原样打出后面的词。
 
-```sh run expect="你好" title="打招呼"
-printf '%s\n' 你好
+```sh run expect="Hi" title="打招呼"
+printf '%s\n' Hi
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### echo 也会换行
 
 `echo` 在末尾加换行，参数之间加空格。
 
-```sh run expect="茶 18" title="空格分开"
-echo 茶 18
+```sh run expect="tea 18" title="空格分开"
+echo tea 18
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 外部命令不运行
 

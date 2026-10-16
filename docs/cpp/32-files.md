@@ -23,7 +23,7 @@ updated: "2026-10-15"
 #include <fstream>
 int main() {
   std::ofstream out("note.txt");
-  out << "茶\n";
+  out << "tea\n";
   return 0;
 }
 ```
@@ -32,18 +32,18 @@ int main() {
 
 `ostringstream` 先把一行放在内存里。
 
-```cpp run expect="茶 18" title="一行文本"
+```cpp run expect="tea 18" title="一行文本"
 #include <iostream>
 #include <sstream>
 int main() {
   std::ostringstream out;
-  out << "茶 " << 18;
+  out << "tea " << 18;
   std::cout << out.str() << "\n";
   return 0;
 }
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 再读出来
 

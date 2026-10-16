@@ -19,8 +19,8 @@ updated: "2026-10-15"
 
 按 1、2 的顺序打出名字。
 
-```lua run expect="茶笔" title="按顺序"
-local items = {"茶", "笔"}
+```lua run expect="teapen" title="按顺序"
+local items = {"tea", "pen"}
 local out = ""
 for _, name in ipairs(items) do
   out = out .. name
@@ -28,31 +28,31 @@ end
 print(out)
 ```
 
-输出里能看到 `茶笔`。
+输出里能看到 `teapen`。
 
 ### pairs
 
 键是名字时，`pairs` 能把它交出来。这里只有一个键。
 
-```lua run expect="name=茶" title="一个键"
-local item = { name = "茶" }
+```lua run expect="name=tea" title="一个键"
+local item = { name = "tea" }
 for key, value in pairs(item) do
   print(key .. "=" .. value)
 end
 ```
 
-输出里能看到 `name=茶`。
+输出里能看到 `name=tea`。
 
 ### 手写迭代器
 
 闭包记住已经交到哪一次，第三次就结束。
 
-```lua run expect="茶" title="只交一次"
+```lua run expect="tea" title="只交一次"
 local function once()
   local i = 0
   return function()
     i = i + 1
-    if i == 1 then return "茶" end
+    if i == 1 then return "tea" end
   end
 end
 local out = ""
@@ -62,4 +62,4 @@ end
 print(out)
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

@@ -17,20 +17,20 @@ The default encoding is UTF-8. `length` counts characters. `bytesize` counts byt
 
 ### Character count
 
-Two Chinese characters have a `length` of 2. The count follows characters, not the bytes under them. `你好` is therefore two units long.
+`Hi` has a `length` of 2. The count follows characters.
 
 ```ruby run expect="2" title="Two characters"
-puts "你好".length
+puts "Hi".length
 ```
 
 The printed line is `2`.
 
 ### Byte count
 
-That same string has a `bytesize` of 6. Each character takes three UTF-8 bytes. `length` and `bytesize` answer different questions.
+`Hello!` has a `bytesize` of 6. `length` and `bytesize` answer different questions, and each of these ASCII characters is one byte.
 
 ```ruby run expect="6" title="Six bytes"
-puts "你好".bytesize
+puts "Hello!".bytesize
 ```
 
 The printed line is `6`.
@@ -39,20 +39,20 @@ The printed line is `6`.
 
 An expression inside `#{}` is turned into text. `name` holds a short string, and the surrounding quotes build a greeting around it. The hash and braces themselves are not printed.
 
-```ruby run expect="你好，林" title="Embed a name"
-name = "林"
-puts "你好，#{name}"
+```ruby run expect="Hello, lin" title="Embed a name"
+name = "lin"
+puts "Hello, #{name}"
 ```
 
-The printed line is `你好，林`.
+The printed line is `Hello, lin`.
 
 ### Read one line
 
 `gets` reads a line and keeps the newline. `chomp` removes that trailing newline before you use the text. The sample input is a name followed by a line break.
 
-```ruby run stdin="林\n" expect="你好，林" title="Read one line"
+```ruby run stdin="lin\n" expect="Hello, lin" title="Read one line"
 name = gets.chomp
-puts "你好，#{name}"
+puts "Hello, #{name}"
 ```
 
-The printed line is `你好，林`.
+The printed line is `Hello, lin`.

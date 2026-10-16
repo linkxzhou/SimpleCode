@@ -18,15 +18,15 @@ updated: "2026-10-15"
 
 `printf` 不会自动换行，格式串里自己写 `\n`。
 
-```c run expect="你好" title="打招呼"
+```c run expect="Hi" title="打招呼"
 #include <stdio.h>
 int main(void) {
-  printf("你好\n");
+  printf("Hi\n");
   return 0;
 }
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 返回零
 

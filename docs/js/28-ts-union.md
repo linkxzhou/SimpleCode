@@ -19,38 +19,38 @@ updated: "2026-10-15"
 
 先看 `typeof`，再决定怎么打印。
 
-```ts run expect="数字3" title="数字一支"
+```ts run expect="num3" title="数字一支"
 function show(value: string | number): string {
-  if (typeof value === "number") return "数字" + value;
+  if (typeof value === "number") return "num" + value;
   return value;
 }
 console.log(show(3));
 ```
 
-输出里能看到 `数字3`。
+输出里能看到 `num3`。
 
 ### 另一支
 
 传入字符串时走另一支。
 
-```ts run expect="文本茶" title="文本一支"
+```ts run expect="texttea" title="文本一支"
 function show(value: string | number): string {
-  if (typeof value === "number") return "数字";
-  return "文本" + value;
+  if (typeof value === "number") return "num";
+  return "text" + value;
 }
-console.log(show("茶"));
+console.log(show("tea"));
 ```
 
-输出里能看到 `文本茶`。
+输出里能看到 `texttea`。
 
 ### 字面量联合
 
 只允许列出的几个字符串。
 
-```ts run expect="小" title="字面量"
-type Size = "小" | "大";
-const size: Size = "小";
+```ts run expect="small" title="字面量"
+type Size = "small" | "big";
+const size: Size = "small";
 console.log(size);
 ```
 
-输出里能看到 `小`。
+输出里能看到 `small`。

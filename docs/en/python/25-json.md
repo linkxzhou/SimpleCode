@@ -28,26 +28,26 @@ The number stored under `n` is `3`.
 
 ### Serialize
 
-`dumps` returns text. By default, Chinese characters become `\u` escapes. Pass `ensure_ascii=False` when those characters should stay as written.
+`dumps` returns text. `ensure_ascii=False` keeps non-ASCII as written. The key and value below are ASCII, so they appear as themselves.
 
-```python run expect="{\"物\": \"茶\"}" title="Write as text"
+```python run expect="{\"thing\": \"tea\"}" title="Write as text"
 import json
-print(json.dumps({"物": "茶"}, ensure_ascii=False))
+print(json.dumps({"thing": "tea"}, ensure_ascii=False))
 ```
 
-The text is `{"物": "茶"}`.
+The text is `{"thing": "tea"}`.
 
 ### Damaged text
 
 A missing brace makes `loads` raise `JSONDecodeError`.
 
-```python run expect="坏了" title="Parse failure"
+```python run expect="broken" title="Parse failure"
 import json
 try:
     json.loads("{")
-    print("过了")
+    print("passed")
 except json.JSONDecodeError:
-    print("坏了")
+    print("broken")
 ```
 
-The failure prints `坏了`.
+The failure prints `broken`.

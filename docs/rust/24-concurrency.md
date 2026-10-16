@@ -52,6 +52,6 @@ fn main() {
 
 ```rust norun title="不起线程"
 fn main() {
-    println!("不要 spawn");
+    println!("nope spawn");
 }
 ```

@@ -32,18 +32,18 @@ echo $sum, "\n";
 
 ### 按下标走
 
-第二项仍然是「笔」。
+第二项仍然是 pen。
 
-```php run expect="茶" title="第一项"
+```php run expect="tea" title="第一项"
 <?php
-$items = ["茶", "笔", "墨"];
+$items = ["tea", "pen", "ink"];
 echo $items[0], "\n";
 for ($i = 1; $i < count($items); $i++) {
     echo $items[$i], "\n";
 }
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### continue
 

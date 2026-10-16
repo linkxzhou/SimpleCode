@@ -19,11 +19,11 @@ updated: "2026-10-15"
 
 第二项的下标是 1。
 
-```ruby run expect="茶" title="第二项"
-puts ["水", "茶"][1]
+```ruby run expect="tea" title="第二项"
+puts ["water", "tea"][1]
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### push
 

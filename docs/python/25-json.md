@@ -28,26 +28,26 @@ print(json.loads('{"n": 3}')["n"])
 
 ### 序列化
 
-`dumps` 得到文本。中文默认会被转成 `\u` 转义，`ensure_ascii=False` 才保留汉字。
+`dumps` 得到文本。`ensure_ascii=False` 会按原文写出非 ASCII；下面的键和值本身就是 ASCII。
 
-```python run expect="{\"物\": \"茶\"}" title="写成文本"
+```python run expect="{\"thing\": \"tea\"}" title="写成文本"
 import json
-print(json.dumps({"物": "茶"}, ensure_ascii=False))
+print(json.dumps({"thing": "tea"}, ensure_ascii=False))
 ```
 
-输出里能看到 `{"物": "茶"}`。
+输出里能看到 `{"thing": "tea"}`。
 
 ### 损坏的文本
 
 少一个括号时 `loads` 抛出 `JSONDecodeError`。
 
-```python run expect="坏了" title="解析失败"
+```python run expect="broken" title="解析失败"
 import json
 try:
     json.loads("{")
-    print("过了")
+    print("passed")
 except json.JSONDecodeError:
-    print("坏了")
+    print("broken")
 ```
 
-输出里能看到 `坏了`。
+输出里能看到 `broken`。

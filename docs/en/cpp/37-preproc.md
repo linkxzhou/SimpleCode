@@ -32,20 +32,20 @@ After preprocessing, the line is `18`.
 
 ### Drop a region
 
-Text inside `#if 0` is discarded. The hidden greeting never reaches the compiler, and `留下` does.
+Text inside `#if 0` is discarded. The hidden greeting never reaches the compiler, and `kept` does.
 
-```cpp run expect="留下" title="Conditional compilation"
+```cpp run expect="kept" title="Conditional compilation"
 #include <iostream>
 int main() {
 #if 0
-  std::cout << "隐藏\n";
+  std::cout << "hidden\n";
 #endif
-  std::cout << "留下\n";
+  std::cout << "kept\n";
   return 0;
 }
 ```
 
-After preprocessing, the line is `留下`.
+After preprocessing, the line is `kept`.
 
 ### Define it once
 

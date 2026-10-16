@@ -19,7 +19,7 @@ updated: "2026-10-15"
 
 条件为真时执行紧跟的块。`else` 接在 `}` 同一行。
 
-```go run expect="正数" title="if else"
+```go run expect="plus" title="if else"
 package main
 
 import "fmt"
@@ -27,38 +27,38 @@ import "fmt"
 func main() {
 	n := 4
 	if n > 0 {
-		fmt.Println("正数")
+		fmt.Println("plus")
 	} else {
-		fmt.Println("非正")
+		fmt.Println("badnum")
 	}
 }
 ```
 
-输出是 `正数`。
+输出是 `plus`。
 
 ### 带初始化的 if
 
 分号前可以声明一个只在该 `if` 里可见的名字。
 
-```go run expect="偏高" title="初始化语句"
+```go run expect="toohigh" title="初始化语句"
 package main
 
 import "fmt"
 
 func main() {
 	if temp := 36; temp > 35 {
-		fmt.Println("偏高")
+		fmt.Println("toohigh")
 	}
 }
 ```
 
-输出是 `偏高`。`temp` 出了这个 `if` 就不能再使用。
+输出是 `toohigh`。`temp` 出了这个 `if` 就不能再使用。
 
 ### switch
 
 `switch` 从上到下匹配，命中后不会掉进下一个 `case`。不需要写 `break`。
 
-```go run expect="三" title="按值分支"
+```go run expect="three" title="按值分支"
 package main
 
 import "fmt"
@@ -67,22 +67,22 @@ func main() {
 	day := 3
 	switch day {
 	case 1:
-		fmt.Println("一")
+		fmt.Println("one")
 	case 3:
-		fmt.Println("三")
+		fmt.Println("three")
 	default:
-		fmt.Println("其他")
+		fmt.Println("other")
 	}
 }
 ```
 
-输出是 `三`。
+输出是 `three`。
 
 ### 没有表达式的 switch
 
 省略被比较的值时，每个 `case` 自己写一个条件，相当于一串 `if` / `else if`。
 
-```go run expect="中等" title="条件 switch"
+```go run expect="medium" title="条件 switch"
 package main
 
 import "fmt"
@@ -91,13 +91,13 @@ func main() {
 	score := 70
 	switch {
 	case score >= 90:
-		fmt.Println("高")
+		fmt.Println("high")
 	case score >= 60:
-		fmt.Println("中等")
+		fmt.Println("medium")
 	default:
-		fmt.Println("低")
+		fmt.Println("low")
 	}
 }
 ```
 
-输出是 `中等`。
+输出是 `medium`。

@@ -13,14 +13,14 @@ sources:
 updated: "2026-10-16"
 ---
 
-The bash form `items=(茶 笔)` does not run in this shell. Visit the words with `for ... in`.
+The bash form `items=(tea pen)` does not run in this shell. Visit the words with `for ... in`.
 
 ### Parentheses do not assign
 
 Parentheses after `=` do not build an array. This shell has no subscript syntax to read one.
 
 ```sh norun title="No arrays"
-items=(茶 笔)
+items=(tea pen)
 echo "${items[0]}"
 ```
 
@@ -28,28 +28,28 @@ Keep the sample for reading. This shell has no array subscript.
 
 ### Walk the words with for
 
-The words stay in the order they are written. 茶 is visited, then 笔.
+The words stay in the order they are written. tea is visited, then pen.
 
-```sh run expect="笔" title="The second item"
-for item in 茶 笔
+```sh run expect="pen" title="The second item"
+for item in tea pen
 do
   printf '%s\n' "$item"
 done
 ```
 
-The opening line is `茶`. The following line is `笔`.
+The opening line is `tea`. The following line is `pen`.
 
 ### Keep the last word
 
-The colon is an empty command, so the body prints nothing. When the loop ends, `item` still holds 墨.
+The colon is an empty command, so the body prints nothing. When the loop ends, `item` still holds ink.
 
-```sh run expect="墨" title="What remains"
-item=无
-for item in 墨
+```sh run expect="ink" title="What remains"
+item=none
+for item in ink
 do
   :
 done
 printf '%s\n' "$item"
 ```
 
-The line shows `墨`.
+The line shows `ink`.

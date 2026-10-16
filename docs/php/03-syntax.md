@@ -19,13 +19,13 @@ updated: "2026-10-15"
 
 两条输出各写一行。
 
-```php run expect="甲" title="第一行"
+```php run expect="first" title="第一行"
 <?php
-echo "甲\n";
-echo "乙\n";
+echo "first\n";
+echo "second\n";
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 块
 
@@ -46,10 +46,10 @@ echo $n, "\n";
 
 双斜线后面的输出不会执行。
 
-```php run expect="留下" title="跳过注释"
+```php run expect="kept" title="跳过注释"
 <?php
 // echo "隐藏\n";
-echo "留下\n";
+echo "kept\n";
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。

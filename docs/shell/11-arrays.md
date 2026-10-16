@@ -13,41 +13,41 @@ sources:
 updated: "2026-10-15"
 ---
 
-bash 的 `items=(茶 笔)` 这里不能运行。一列词用 `for ... in` 走过。
+bash 的 `items=(tea pen)` 这里不能运行。一列词用 `for ... in` 走过。
 
 ### 数组语法不运行
 
 圆括号加等号不是赋值，也不是内建。
 
 ```sh norun title="没有数组"
-items=(茶 笔)
+items=(tea pen)
 echo "${items[0]}"
 ```
 
 ### 用 for 代替
 
-茶和笔仍按书写顺序出现。
+tea 和 pen 仍按书写顺序出现。
 
-```sh run expect="笔" title="第二项"
-for item in 茶 笔
+```sh run expect="pen" title="第二项"
+for item in tea pen
 do
   printf '%s\n' "$item"
 done
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。
 
 ### 记住一项
 
 循环结束时，变量里是最后一个词。
 
-```sh run expect="墨" title="留下来"
-item=无
-for item in 墨
+```sh run expect="ink" title="留下来"
+item=none
+for item in ink
 do
   :
 done
 printf '%s\n' "$item"
 ```
 
-输出里能看到 `墨`。
+输出里能看到 `ink`。

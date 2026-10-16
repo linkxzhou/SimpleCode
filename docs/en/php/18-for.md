@@ -32,18 +32,18 @@ The loop total is `6`.
 
 ### Walk by index
 
-The loop reads each later index in order. Index 1 still holds `笔`.
+The loop reads each later index in order. Index 1 still holds `pen`.
 
-```php run expect="茶" title="The first item"
+```php run expect="tea" title="The first item"
 <?php
-$items = ["茶", "笔", "墨"];
+$items = ["tea", "pen", "ink"];
 echo $items[0], "\n";
 for ($i = 1; $i < count($items); $i++) {
     echo $items[$i], "\n";
 }
 ```
 
-The printed lines are `茶`, `笔`, and `墨`.
+The printed lines are `tea`, `pen`, and `ink`.
 
 ### Skip with continue
 

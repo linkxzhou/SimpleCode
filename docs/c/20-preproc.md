@@ -19,15 +19,15 @@ updated: "2026-10-15"
 
 有了 `stdio.h`，才能调用 `printf`。
 
-```c run expect="有头文件" title="能编译"
+```c run expect="has header" title="能编译"
 #include <stdio.h>
 int main(void) {
-  printf("有头文件\n");
+  printf("has header\n");
   return 0;
 }
 ```
 
-输出里能看到 `有头文件`。
+输出里能看到 `has header`。
 
 ### define
 
@@ -48,15 +48,15 @@ int main(void) {
 
 定义了 `SHOW` 才打印那一句。
 
-```c run expect="显示" title="宏为真"
+```c run expect="show" title="宏为真"
 #include <stdio.h>
 #define SHOW 1
 int main(void) {
 #if SHOW
-  printf("显示\n");
+  printf("show\n");
 #endif
   return 0;
 }
 ```
 
-输出里能看到 `显示`。
+输出里能看到 `show`。

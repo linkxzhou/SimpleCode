@@ -72,8 +72,8 @@ const cases = [
   {
     id: "rust",
     name: "fs",
-    code: 'use std::fs;\nfn main() {\n    fs::write("/memo.txt", "船票").unwrap();\n    let text = fs::read_to_string("/memo.txt").unwrap();\n    println!("{text}");\n}\n',
-    expect: "船票",
+    code: 'use std::fs;\nfn main() {\n    fs::write("/memo.txt", "pass").unwrap();\n    let text = fs::read_to_string("/memo.txt").unwrap();\n    println!("{text}");\n}\n',
+    expect: "pass",
     fileName: "main.rs",
   },
   {

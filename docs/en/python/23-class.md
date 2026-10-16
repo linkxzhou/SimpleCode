@@ -34,29 +34,29 @@ One sip leaves `7`.
 
 If the child class does not replace a method, calls use the parent's version.
 
-```python run expect="杯子" title="Keep the parent method"
+```python run expect="mug" title="Keep the parent method"
 class Cup:
     def label(self):
-        return "杯子"
+        return "mug"
 class Mug(Cup):
     pass
 print(Mug().label())
 ```
 
-The inherited label is `杯子`.
+The inherited label is `mug`.
 
 ### The subclass replaces a method
 
 Once the child defines a method of the same name, a call on a child object reaches that new method.
 
-```python run expect="马克杯" title="Override"
+```python run expect="stein" title="Override"
 class Cup:
     def label(self):
-        return "杯子"
+        return "mug"
 class Mug(Cup):
     def label(self):
-        return "马克杯"
+        return "stein"
 print(Mug().label())
 ```
 
-The replacement label is `马克杯`.
+The replacement label is `stein`.

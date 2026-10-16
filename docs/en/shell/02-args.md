@@ -37,12 +37,12 @@ The line shows `xy`.
 
 ### The script name is set
 
-`$0` is the path of this script. When that path is non-empty, the script prints `有`.
+`$0` is the path of this script. When that path is non-empty, the script prints `has`.
 
-```sh run expect="有" title="The script name is set"
+```sh run expect="has" title="The script name is set"
 if [ -n "$0" ]; then
-  printf '%s\n' 有
+  printf '%s\n' has
 fi
 ```
 
-The line shows `有`.
+The line shows `has`.

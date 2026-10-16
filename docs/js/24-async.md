@@ -19,15 +19,15 @@ updated: "2026-10-15"
 
 `await` 一个已经成功的 Promise，得到里面的值。
 
-```js run expect="茶" title="等到茶"
+```js run expect="tea" title="等到茶"
 async function run() {
-  const name = await Promise.resolve("茶");
+  const name = await Promise.resolve("tea");
   console.log(name);
 }
 run();
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 顺序等待
 
@@ -48,16 +48,16 @@ run();
 
 `await` 一个被拒绝的 Promise，会抛进 `try`。
 
-```js run expect="接住" title="拒绝"
+```js run expect="caught" title="拒绝"
 async function run() {
   try {
-    await Promise.reject(new Error("缺"));
-    console.log("过了");
+    await Promise.reject(new Error("lack"));
+    console.log("passed");
   } catch (err) {
-    console.log("接住");
+    console.log("caught");
   }
 }
 run();
 ```
 
-输出里能看到 `接住`。
+输出里能看到 `caught`。

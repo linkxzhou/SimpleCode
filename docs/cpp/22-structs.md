@@ -19,7 +19,7 @@ updated: "2026-10-15"
 
 变量后面用 `.` 读字段。
 
-```cpp run expect="茶 18" title="两个字段"
+```cpp run expect="tea 18" title="两个字段"
 #include <iostream>
 #include <string>
 struct Item {
@@ -27,13 +27,13 @@ struct Item {
   int price;
 };
 int main() {
-  Item item{"茶", 18};
+  Item item{"tea", 18};
   std::cout << item.name << " " << item.price << "\n";
   return 0;
 }
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 改字段
 

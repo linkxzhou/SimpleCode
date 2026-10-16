@@ -33,13 +33,13 @@ fn main() {
 
 约束写在尖括号里，函数体才能用 `{}`。
 
-```rust run expect="夜窗" title="可打印的泛型"
+```rust run expect="nightwin" title="可打印的泛型"
 fn show<T: std::fmt::Display>(value: T) -> String {
     format!("{value}")
 }
 
 fn main() {
-    println!("{}", show("夜窗"));
+    println!("{}", show("nightwin"));
 }
 ```
 `&str` 实现了 Display。

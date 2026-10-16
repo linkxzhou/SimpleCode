@@ -17,15 +17,15 @@ updated: "2026-10-15"
 
 ### 某一格
 
-第二行第一列是「笔」。
+第二行第一列是 pen。
 
-```php run expect="笔" title="第二行"
+```php run expect="pen" title="第二行"
 <?php
-$rows = [["茶", 18], ["笔", 3]];
+$rows = [["tea", 18], ["pen", 3]];
 echo $rows[1][0], "\n";
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。
 
 ### 整行的单价
 
@@ -33,7 +33,7 @@ echo $rows[1][0], "\n";
 
 ```php run expect="18" title="第一行单价"
 <?php
-$rows = [["茶", 18], ["笔", 3]];
+$rows = [["tea", 18], ["pen", 3]];
 echo $rows[0][1], "\n";
 ```
 
@@ -45,7 +45,7 @@ echo $rows[0][1], "\n";
 
 ```php run expect="2" title="两行"
 <?php
-$rows = [["茶", 18], ["笔", 3]];
+$rows = [["tea", 18], ["pen", 3]];
 echo count($rows), "\n";
 ```
 

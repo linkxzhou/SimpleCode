@@ -42,9 +42,9 @@ The output shows `4`.
 
 Without `local`, the assignment writes the global table. The name can still be read on the next line.
 
-```lua run expect="笔" title="Global"
-item = "笔"
+```lua run expect="pen" title="Global"
+item = "pen"
 print(item)
 ```
 
-The output shows `笔`.
+The output shows `pen`.

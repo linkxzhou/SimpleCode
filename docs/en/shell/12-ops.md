@@ -17,27 +17,27 @@ Integer relations go into `test`. This shell has no `$((...))` form for arithmet
 
 ### Equal integers
 
-Both sides are the integer 18. A successful `-eq` prints 相等.
+Both sides are the integer 18. A successful `-eq` prints same.
 
-```sh run expect="相等" title="Two 18s"
+```sh run expect="same" title="Two 18s"
 if [ 18 -eq 18 ]; then
-  printf '%s\n' 相等
+  printf '%s\n' same
 fi
 ```
 
-The line shows `相等`.
+The line shows `same`.
 
 ### Unequal integers
 
 `-ne` holds when the two numbers differ. 18 and 3 take that branch.
 
-```sh run expect="不同" title="Price and count"
+```sh run expect="differ" title="Price and count"
 if [ 18 -ne 3 ]; then
-  printf '%s\n' 不同
+  printf '%s\n' differ
 fi
 ```
 
-The line shows `不同`.
+The line shows `differ`.
 
 ### Addition stays unread
 

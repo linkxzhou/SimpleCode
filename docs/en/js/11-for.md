@@ -33,8 +33,8 @@ Adding one, two, and three logs `6`.
 
 `for...of` binds each element in turn. The sample keeps overwriting `last` with that element.
 
-```js run expect="茶" title="Final element"
-const items = ["水", "茶"];
+```js run expect="tea" title="Final element"
+const items = ["water", "tea"];
 let last = "";
 for (const name of items) {
   last = name;
@@ -42,15 +42,15 @@ for (const name of items) {
 console.log(last);
 ```
 
-The final element saved is `茶`.
+The final element saved is `tea`.
 
 ### Brackets when the position matters
 
 Use the length and square brackets when the position matters. Slot 1 of this array contains the second string.
 
-```js run expect="茶" title="Slot 1"
-const items = ["水", "茶"];
+```js run expect="tea" title="Slot 1"
+const items = ["water", "tea"];
 console.log(items[1]);
 ```
 
-That slot prints `茶`.
+That slot prints `tea`.

@@ -19,15 +19,15 @@ updated: "2026-10-15"
 
 解释器式的语言可以没有 `main`。C 必须有。
 
-```c run expect="进入" title="入口"
+```c run expect="enter" title="入口"
 #include <stdio.h>
 int main(void) {
-  printf("进入\n");
+  printf("enter\n");
   return 0;
 }
 ```
 
-输出里能看到 `进入`。
+输出里能看到 `enter`。
 
 ### 辅助函数
 

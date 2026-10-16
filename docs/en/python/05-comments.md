@@ -19,32 +19,32 @@ Comments are for the person reading the code. The interpreter skips them.
 
 Characters after `#` do not run.
 
-```python run expect="可见" title="The comment is skipped"
-print("可见")  # 这一句才执行
+```python run expect="shown" title="The comment is skipped"
+print("shown")  # this line runs
 ```
 
-Only `可见` is printed.
+Only `shown` is printed.
 
 ### A whole-line comment
 
 A `#` on its own line can hold an expression you do not want to run yet.
 
-```python run expect="留下" title="Skip the whole line"
-# print("隐藏")
-print("留下")
+```python run expect="kept" title="Skip the whole line"
+# print("hidden")
+print("kept")
 ```
 
-The line that remains is `留下`.
+The line that remains is `kept`.
 
 ### A docstring is still a value
 
 A triple-quoted string at the start of a function does not show up in the output if nobody reads it.
 
-```python run expect="好" title="The return value is not the docstring"
+```python run expect="ok" title="The return value is not the docstring"
 def ready():
-    """准备完成"""
-    return "好"
+    """ready now"""
+    return "ok"
 print(ready())
 ```
 
-The function returns `好`.
+The function returns `ok`.

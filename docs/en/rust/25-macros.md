@@ -37,7 +37,7 @@ fn main() {
 
 The expanded tokens must be valid Rust.
 
-```rust run expect="铜钥匙" title="Print from a macro"
+```rust run expect="copperkey" title="Print from a macro"
 macro_rules! say {
     ($word:expr) => {
         println!("{}", $word);
@@ -45,11 +45,11 @@ macro_rules! say {
 }
 
 fn main() {
-    say!("铜钥匙");
+    say!("copperkey");
 }
 ```
 
-The terminal receives `铜钥匙`.
+The terminal receives `copperkey`.
 
 ### A custom derive macro is not loaded
 
@@ -57,6 +57,6 @@ A procedural macro named in `derive` needs a dynamic library. Built-in `Debug` s
 
 ```rust norun title="No proc macro"
 fn main() {
-    println!("过程宏不在这里");
+    println!("no proc macros here");
 }
 ```

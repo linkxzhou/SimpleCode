@@ -17,27 +17,27 @@ updated: "2026-10-15"
 
 ### 相等
 
-`-eq` 成立时打出「相等」。
+`-eq` 成立时打出 same。
 
-```sh run expect="相等" title="两个 18"
+```sh run expect="same" title="两个 18"
 if [ 18 -eq 18 ]; then
-  printf '%s\n' 相等
+  printf '%s\n' same
 fi
 ```
 
-输出里能看到 `相等`。
+输出里能看到 `same`。
 
 ### 不等
 
 `-ne` 在两边不同时成立。
 
-```sh run expect="不同" title="单价和数量"
+```sh run expect="differ" title="单价和数量"
 if [ 18 -ne 3 ]; then
-  printf '%s\n' 不同
+  printf '%s\n' differ
 fi
 ```
 
-输出里能看到 `不同`。
+输出里能看到 `differ`。
 
 ### 加法不运行
 

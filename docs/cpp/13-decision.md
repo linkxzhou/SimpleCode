@@ -19,48 +19,48 @@ updated: "2026-10-15"
 
 库存是 0 时走另一句。
 
-```cpp run expect="缺货" title="没有库存"
+```cpp run expect="soldout" title="没有库存"
 #include <iostream>
 int main() {
   int stock = 0;
-  if (stock == 0) std::cout << "缺货\n";
-  else std::cout << "有货\n";
+  if (stock == 0) std::cout << "soldout\n";
+  else std::cout << "instock\n";
   return 0;
 }
 ```
 
-输出里能看到 `缺货`。
+输出里能看到 `soldout`。
 
 ### switch
 
 每个分支都写 `break`，避免掉进下一支。
 
-```cpp run expect="乙" title="第二支"
+```cpp run expect="second" title="第二支"
 #include <iostream>
 int main() {
   int code = 2;
   switch (code) {
-    case 1: std::cout << "甲\n"; break;
-    case 2: std::cout << "乙\n"; break;
-    default: std::cout << "其他\n"; break;
+    case 1: std::cout << "first\n"; break;
+    case 2: std::cout << "second\n"; break;
+    default: std::cout << "other\n"; break;
   }
   return 0;
 }
 ```
 
-输出里能看到 `乙`。
+输出里能看到 `second`。
 
 ### 条件里的 0
 
 0 是假，所以三元运算符选择后面那一项。
 
-```cpp run expect="无" title="零为假"
+```cpp run expect="none" title="零为假"
 #include <iostream>
 int main() {
   int n = 0;
-  std::cout << (n ? "有" : "无") << "\n";
+  std::cout << (n ? "has" : "none") << "\n";
   return 0;
 }
 ```
 
-输出里能看到 `无`。
+输出里能看到 `none`。

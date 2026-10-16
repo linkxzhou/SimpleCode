@@ -43,14 +43,14 @@ print(next(pairs()))
 
 没有更多值时 `next` 抛出 `StopIteration`。
 
-```python run expect="没有了" title="用尽"
+```python run expect="gone" title="用尽"
 it = iter([1])
 next(it)
 try:
     next(it)
-    print("还有")
+    print("more")
 except StopIteration:
-    print("没有了")
+    print("gone")
 ```
 
-输出里能看到 `没有了`。
+输出里能看到 `gone`。

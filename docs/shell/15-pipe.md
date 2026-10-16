@@ -19,29 +19,29 @@ updated: "2026-10-15"
 
 `echo` 的一行经过管道，仍由 `cat` 打出来。
 
-```sh run expect="茶" title="管道之后"
-echo 茶 | cat
+```sh run expect="tea" title="管道之后"
+echo tea | cat
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 接两次
 
 两段 `cat` 都只是把同一块缓冲抄出去。
 
-```sh run expect="笔" title="仍是笔"
-printf '%s\n' 笔 | cat | cat
+```sh run expect="pen" title="仍是笔"
+printf '%s\n' pen | cat | cat
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。
 
 ### 读进变量
 
 右边的 `read` 和后面的命令在同一个进程，变量还在。
 
-```sh run expect="钥匙" title="留在变量里"
-printf '%s\n' 钥匙 | read item
+```sh run expect="key" title="留在变量里"
+printf '%s\n' key | read item
 printf '%s\n' "$item"
 ```
 
-输出里能看到 `钥匙`。
+输出里能看到 `key`。

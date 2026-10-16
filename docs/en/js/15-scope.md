@@ -19,14 +19,14 @@ A function can read names from the surrounding scope where it was created. An in
 
 `greet` can see `name` only while that function is running.
 
-```js run expect="林" title="Pass a name"
+```js run expect="lin" title="Pass a name"
 function greet(name) {
   return name;
 }
-console.log(greet("林"));
+console.log(greet("lin"));
 ```
 
-The returned characters are `林`.
+The returned characters are `lin`.
 
 ### The inner function keeps the counter
 
@@ -50,12 +50,12 @@ The two results are `1 2`.
 
 Once the block ends, the outer city is unchanged. The log uses the inner spelling.
 
-```js run expect="苏州" title="Inner city"
-let city = "杭州";
+```js run expect="suzhou" title="Inner city"
+let city = "hangzhou";
 {
-  let city = "苏州";
+  let city = "suzhou";
   console.log(city);
 }
 ```
 
-The inner spelling prints `苏州`.
+The inner spelling prints `suzhou`.

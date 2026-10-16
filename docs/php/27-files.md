@@ -28,13 +28,13 @@ echo file_get_contents("note.txt");
 
 空格两边是名字和单价。
 
-```php run expect="茶 18" title="两个字段"
+```php run expect="tea 18" title="两个字段"
 <?php
-$parts = explode(" ", "茶 18");
+$parts = explode(" ", "tea 18");
 echo $parts[0], " ", $parts[1], "\n";
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。
 
 ### 拆开多行
 
@@ -42,7 +42,7 @@ echo $parts[0], " ", $parts[1], "\n";
 
 ```php run expect="2" title="两行"
 <?php
-$lines = explode("\n", "茶\n笔");
+$lines = explode("\n", "tea\npen");
 echo count($lines), "\n";
 ```
 

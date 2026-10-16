@@ -43,14 +43,14 @@ The first yielded number is `1`.
 
 Once no value is left, `next` raises `StopIteration`.
 
-```python run expect="没有了" title="Exhausted"
+```python run expect="gone" title="Exhausted"
 it = iter([1])
 next(it)
 try:
     next(it)
-    print("还有")
+    print("more")
 except StopIteration:
-    print("没有了")
+    print("gone")
 ```
 
-The message then is `没有了`.
+The message then is `gone`.

@@ -19,32 +19,32 @@ A comment is for the reader. The compiler discards it before it generates code.
 
 Text after `//` is not compiled. The hidden `cout` never runs, and only the following statement does.
 
-```cpp run expect="留下" title="Line comment"
+```cpp run expect="kept" title="Line comment"
 #include <iostream>
 int main() {
-  // std::cout << "隐藏\n";
-  std::cout << "留下\n";
+  // std::cout << "hidden\n";
+  std::cout << "kept\n";
   return 0;
 }
 ```
 
-What remains visible is `留下`.
+What remains visible is `kept`.
 
 ### A block comment
 
 Everything from `/*` through `*/` drops out of the translation. The two calls inside that span are skipped together.
 
-```cpp run expect="丙" title="Block comment"
+```cpp run expect="third" title="Block comment"
 #include <iostream>
 int main() {
-  /* std::cout << "甲\n";
-     std::cout << "乙\n"; */
-  std::cout << "丙\n";
+  /* std::cout << "first\n";
+     std::cout << "second\n"; */
+  std::cout << "third\n";
   return 0;
 }
 ```
 
-What remains visible is `丙`.
+What remains visible is `third`.
 
 ### A note on the same line
 
@@ -53,7 +53,7 @@ A `//` comment may follow a statement on that same line. Here it records that 18
 ```cpp run expect="18" title="Trailing comment"
 #include <iostream>
 int main() {
-  int price = 18; // 单价
+  int price = 18; // price
   std::cout << price << "\n";
   return 0;
 }

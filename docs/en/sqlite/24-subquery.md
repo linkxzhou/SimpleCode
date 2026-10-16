@@ -31,15 +31,15 @@ SELECT price FROM item WHERE price = (SELECT MAX(price) FROM item);
 
 A name from `item` stays when that same name is listed in `keep`.
 
-```sql run expect="茶" title="The name to keep"
+```sql run expect="tea" title="The name to keep"
 CREATE TABLE item (name TEXT);
 CREATE TABLE keep (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-INSERT INTO keep VALUES ('茶');
+INSERT INTO item VALUES ('tea'), ('water');
+INSERT INTO keep VALUES ('tea');
 SELECT name FROM item WHERE name IN (SELECT name FROM keep);
 ```
 
-`keep` lists 茶, so the outer query returns `茶`.
+`keep` lists tea, so the outer query returns `tea`.
 
 ### A subquery in FROM
 

@@ -18,9 +18,9 @@ Cargo 负责建目录、拉依赖和选目标。这个练习场没有它，依�
 
 桌面项目会把名字放进 Cargo.toml。这里用一个常量表达同一个意思。
 
-```rust run expect="夜窗" title="常量包名"
+```rust run expect="nightwin" title="常量包名"
 fn main() {
-    const CRATE: &str = "夜窗";
+    const CRATE: &str = "nightwin";
     println!("{CRATE}");
 }
 ```
@@ -30,9 +30,9 @@ fn main() {
 
 没有 `src/main.rs` 的目录树。函数 `main` 就是入口。
 
-```rust run expect="入口在 main" title="入口函数"
+```rust run expect="entry at main" title="入口函数"
 fn main() {
-    println!("入口在 main");
+    println!("entry at main");
 }
 ```
 这行字就是程序开始后的第一句输出。

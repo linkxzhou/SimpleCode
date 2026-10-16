@@ -19,11 +19,11 @@ The run button already includes the interpreter. Put only Lua statements in the 
 
 This statement does not depend on an install path. It asks `print` for one line.
 
-```lua run expect="已就绪" title="Ready"
-print("已就绪")
+```lua run expect="ready" title="Ready"
+print("ready")
 ```
 
-The output shows `已就绪`.
+The output shows `ready`.
 
 ### Leave the version text alone
 

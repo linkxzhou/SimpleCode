@@ -18,28 +18,28 @@ updated: "2026-10-15"
 
 `print` 会在末尾换行。
 
-```lua run expect="你好" title="打招呼"
-print("你好")
+```lua run expect="Hi" title="打招呼"
+print("Hi")
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 多项之间有制表符
 
 两个参数不会粘成一个词。
 
-```lua run expect="茶	18" title="中间是制表符"
-print("茶", 18)
+```lua run expect="tea\t18" title="中间是制表符"
+print("tea", 18)
 ```
 
-输出里能看到 `茶	18`。
+输出里能看到 `tea	18`。
 
 ### 拼接
 
 `..` 先接成一个字符串，再交给 `print`。
 
-```lua run expect="茶18" title="接在一起"
-print("茶" .. 18)
+```lua run expect="tea18" title="接在一起"
+print("tea" .. 18)
 ```
 
-输出里能看到 `茶18`。
+输出里能看到 `tea18`。

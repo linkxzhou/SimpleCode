@@ -17,19 +17,19 @@ What this book adds is the standard library, not a different compiler. `std::str
 
 ### A string
 
-`std::string` keeps the characters and knows its own length. Here the whole value is the two-character word `笔`.
+`std::string` keeps the characters and knows its own length. Here the whole value is the two-character word `pen`.
 
-```cpp run expect="笔" title="One item"
+```cpp run expect="pen" title="One item"
 #include <iostream>
 #include <string>
 int main() {
-  std::string item = "笔";
+  std::string item = "pen";
   std::cout << item << "\n";
   return 0;
 }
 ```
 
-The program writes `笔`.
+The program writes `pen`.
 
 ### A column of integers
 

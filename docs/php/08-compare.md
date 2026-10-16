@@ -19,31 +19,31 @@ updated: "2026-10-15"
 
 数字 18 和字符串 `"18"` 用 `==` 算作相等。
 
-```php run expect="相等" title="转换后相等"
+```php run expect="same" title="转换后相等"
 <?php
-echo 18 == "18" ? "相等\n" : "不同\n";
+echo 18 == "18" ? "same\n" : "differ\n";
 ```
 
-输出里能看到 `相等`。
+输出里能看到 `same`。
 
 ### 严格相等
 
 类型不同，`===` 不成立。
 
-```php run expect="不同" title="类型不同"
+```php run expect="differ" title="类型不同"
 <?php
-echo 18 === "18" ? "相等\n" : "不同\n";
+echo 18 === "18" ? "same\n" : "differ\n";
 ```
 
-输出里能看到 `不同`。
+输出里能看到 `differ`。
 
 ### 零和空串
 
 0 和空字符串用严格比较是不同的。
 
-```php run expect="不同" title="不要混用"
+```php run expect="differ" title="不要混用"
 <?php
-echo 0 === "" ? "相等\n" : "不同\n";
+echo 0 === "" ? "same\n" : "differ\n";
 ```
 
-输出里能看到 `不同`。
+输出里能看到 `differ`。

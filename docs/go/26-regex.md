@@ -28,7 +28,7 @@ import (
 )
 
 func main() {
-	ok, err := regexp.MatchString(`\d+`, "房号 18")
+	ok, err := regexp.MatchString(`\d+`, "room 18")
 	fmt.Println(ok && err == nil)
 }
 ```
@@ -49,7 +49,7 @@ import (
 
 func main() {
 	re := regexp.MustCompile(`\d+`)
-	fmt.Println(re.FindString("房号 18 室"))
+	fmt.Println(re.FindString("room 18 slot"))
 }
 ```
 

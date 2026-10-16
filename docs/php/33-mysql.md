@@ -22,29 +22,29 @@ updated: "2026-10-15"
 ```php norun title="没有扩展"
 <?php
 $link = mysqli_connect("localhost", "root", "", "shop");
-echo $link ? "通\n" : "断\n";
+echo $link ? "link\n" : "off\n";
 ```
 
 ### 扩展不存在
 
 `function_exists` 对这两个名字都是否。
 
-```php run expect="没有 mysqli" title="两个都没有"
+```php run expect="gone mysqli" title="两个都没有"
 <?php
-echo function_exists("mysqli_connect") ? "有\n" : "没有 mysqli\n";
-echo function_exists("curl_init") ? "有\n" : "没有 curl\n";
+echo function_exists("mysqli_connect") ? "has\n" : "gone mysqli\n";
+echo function_exists("curl_init") ? "has\n" : "gone curl\n";
 ```
 
-输出里能看到 `没有 mysqli`。
+输出里能看到 `gone mysqli`。
 
 ### 内存里的一行
 
 没有数据库时，一行结果就是一个数组。
 
-```php run expect="茶 18" title="一行"
+```php run expect="tea 18" title="一行"
 <?php
-$row = ["name" => "茶", "price" => 18];
+$row = ["name" => "tea", "price" => 18];
 echo $row["name"], " ", $row["price"], "\n";
 ```
 
-输出里能看到 `茶 18`。
+输出里能看到 `tea 18`。

@@ -19,14 +19,14 @@ updated: "2026-10-16"
 
 Remove every row whose price is below 10.
 
-```sql run expect="茶" title="Tea remains"
+```sql run expect="tea" title="Tea remains"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 DELETE FROM item WHERE price < 10;
 SELECT name FROM item;
 ```
 
-Water is removed, and the surviving name is `茶`.
+Water is removed, and the surviving name is `tea`.
 
 ### Count the rows that remain
 
@@ -34,8 +34,8 @@ Deleting the water row leaves the tea row in place.
 
 ```sql run expect="1" title="One row left"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('水');
-DELETE FROM item WHERE name = '水';
+INSERT INTO item VALUES ('tea'), ('water');
+DELETE FROM item WHERE name = 'water';
 SELECT COUNT(*) FROM item;
 ```
 

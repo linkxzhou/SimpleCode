@@ -19,14 +19,14 @@ updated: "2026-10-15"
 
 参数只在函数里。
 
-```js run expect="林" title="参数"
+```js run expect="lin" title="参数"
 function greet(name) {
   return name;
 }
-console.log(greet("林"));
+console.log(greet("lin"));
 ```
 
-输出里能看到 `林`。
+输出里能看到 `lin`。
 
 ### 闭包记住计数
 
@@ -50,12 +50,12 @@ console.log(next(), next());
 
 块结束后，外面的同名名字不受影响。
 
-```js run expect="苏州" title="内层"
-let city = "杭州";
+```js run expect="suzhou" title="内层"
+let city = "hangzhou";
 {
-  let city = "苏州";
+  let city = "suzhou";
   console.log(city);
 }
 ```
 
-输出里能看到 `苏州`。
+输出里能看到 `suzhou`。

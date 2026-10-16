@@ -31,13 +31,13 @@ The area is `12`.
 
 You may omit a parameter that already carries a default.
 
-```python run expect="你好，客人" title="Omit the name"
-def greet(name="客人"):
-    return "你好，" + name
+```python run expect="Hello, guest" title="Omit the name"
+def greet(name="guest"):
+    return "Hello, " + name
 print(greet())
 ```
 
-The greeting with no argument is `你好，客人`.
+The greeting with no argument is `Hello, guest`.
 
 ### A mutable default remembers the last call
 
@@ -47,7 +47,7 @@ That default object is created once, at definition time. When it is a list, a la
 def push(item, box=[]):
     box.append(item)
     return len(box)
-print(push("茶"), push("水"))
+print(push("tea"), push("water"))
 ```
 
 The two lengths are `1 2`.

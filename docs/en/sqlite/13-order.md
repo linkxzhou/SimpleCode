@@ -45,7 +45,7 @@ The default collation compares text by binary order. Both names stay in the tabl
 
 ```sql run expect="2" title="Both rows remain"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('水'), ('茶');
+INSERT INTO item VALUES ('water'), ('tea');
 SELECT COUNT(*) FROM item ORDER BY name;
 ```
 

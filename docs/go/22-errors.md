@@ -29,7 +29,7 @@ import (
 
 func div(a, b int) (int, error) {
 	if b == 0 {
-		return 0, errors.New("除数为 0")
+		return 0, errors.New("divisor  0")
 	}
 	return a / b, nil
 }
@@ -46,7 +46,7 @@ func main() {
 
 `errors.New` 用一段文本造出一个错误。打印它会看到这段文本。
 
-```go run expect="缺货" title="错误文本"
+```go run expect="soldout" title="错误文本"
 package main
 
 import (
@@ -55,12 +55,12 @@ import (
 )
 
 func main() {
-	err := errors.New("缺货")
+	err := errors.New("soldout")
 	fmt.Println(err)
 }
 ```
 
-输出是 `缺货`。
+输出是 `soldout`。
 
 ### 包装与 errors.Is
 
@@ -74,10 +74,10 @@ import (
 	"fmt"
 )
 
-var errSoldOut = errors.New("缺货")
+var errSoldOut = errors.New("soldout")
 
 func main() {
-	err := fmt.Errorf("订单: %w", errSoldOut)
+	err := fmt.Errorf("order: %w", errSoldOut)
 	fmt.Println(errors.Is(err, errSoldOut))
 }
 ```
@@ -93,6 +93,6 @@ type myErr struct{ msg string }
 
 func (e myErr) Error() string { return e.msg }
 
-var err error = myErr{msg: "坏了"}
+var err error = myErr{msg: "broken"}
 err.Error()
 ```

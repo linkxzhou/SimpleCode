@@ -72,9 +72,11 @@ describe("i18n catalog", () => {
   });
 });
 
-describe("wasm progress spacing", () => {
-  it("adds 8px of vertical margin around the download bar", () => {
+describe("wasm progress placement", () => {
+  it("anchors the download bar to the bottom edge of the language button", () => {
     const src = readFileSync(new URL("../src/components/LanguageItem.vue", import.meta.url), "utf8");
-    assert.match(src, /data-testid="wasm-progress"[\s\S]{0,240}my-\[8px\]/);
+    assert.match(src, /data-testid="wasm-progress"[\s\S]{0,240}inset-x-0 bottom-0/);
+    assert.doesNotMatch(src, /my-\[8px\]/);
+    assert.doesNotMatch(src, /wasm-progress"[\s\S]{0,240}inset-x-2/);
   });
 });

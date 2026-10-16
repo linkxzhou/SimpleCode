@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```lua run expect="number" title="数字在前"
 print(type(18))
-print(type("茶"))
+print(type("tea"))
 ```
 
 输出里能看到 `number`。

@@ -19,16 +19,16 @@ updated: "2026-10-15"
 
 `intdiv(1, 0)` 会抛出 `DivisionByZeroError`。
 
-```php run expect="失败" title="接住"
+```php run expect="failed" title="接住"
 <?php
 try {
     echo intdiv(1, 0), "\n";
 } catch (DivisionByZeroError $e) {
-    echo "失败\n";
+    echo "failed\n";
 }
 ```
 
-输出里能看到 `失败`。
+输出里能看到 `failed`。
 
 ### 解析成功
 
@@ -49,9 +49,9 @@ echo read_price("18"), "\n";
 
 ### 解析失败
 
-含有字母时返回 null，打印「失败」。
+含有字母时返回 null，打印 failed。
 
-```php run expect="失败" title="不是数字"
+```php run expect="failed" title="不是数字"
 <?php
 function read_text_price($text) {
     if (!ctype_digit($text)) {
@@ -59,7 +59,7 @@ function read_text_price($text) {
     }
     return (int) $text;
 }
-echo read_text_price("no") === null ? "失败\n" : "成功\n";
+echo read_text_price("no") === null ? "failed\n" : "success\n";
 ```
 
-输出里能看到 `失败`。
+输出里能看到 `failed`。

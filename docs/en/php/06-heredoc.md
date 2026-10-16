@@ -19,31 +19,31 @@ The closing marker occupies a line by itself. It starts in the first column.
 
 Both lines of the heredoc stay inside the string that `echo` prints.
 
-```php run expect="甲" title="The first line remains"
+```php run expect="first" title="The first line remains"
 <?php
 $text = <<<TXT
-甲
-乙
+first
+second
 TXT;
 echo $text, "\n";
 ```
 
-The string still opens with `甲`.
+The string still opens with `first`.
 
 ### A variable inside heredoc
 
 An unquoted closing marker replaces `$name` with the value it holds.
 
-```php run expect="名称：茶" title="Replaced with 茶"
+```php run expect="name: tea" title="Replaced with tea"
 <?php
-$name = "茶";
+$name = "tea";
 $text = <<<TXT
-名称：$name
+name: $name
 TXT;
 echo $text, "\n";
 ```
 
-The expanded line is `名称：茶`.
+The expanded line is `name: tea`.
 
 ### A nowdoc
 
@@ -51,7 +51,7 @@ Quotes on the opening label make this a nowdoc, so `$name` stays as characters.
 
 ```php run expect="$name" title="Leave it unexpanded"
 <?php
-$name = "茶";
+$name = "tea";
 $text = <<<'TXT'
 $name
 TXT;

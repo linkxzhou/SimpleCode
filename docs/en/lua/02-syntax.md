@@ -19,23 +19,23 @@ Lua ends a statement at the line break. A semicolon is optional.
 
 Each `print` stands on its own line.
 
-```lua run expect="甲" title="The first line"
-print("甲")
-print("乙")
+```lua run expect="first" title="The first line"
+print("first")
+print("second")
 ```
 
-The output shows `甲`.
+The output shows `first`.
 
 ### Comments
 
 Two hyphens start a comment. The `print` on that line is skipped.
 
-```lua run expect="留下" title="Skip the comment"
--- print("隐藏")
-print("留下")
+```lua run expect="kept" title="Skip the comment"
+-- print("hidden")
+print("kept")
 ```
 
-The output shows `留下`.
+The output shows `kept`.
 
 ### A block
 

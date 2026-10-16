@@ -19,26 +19,26 @@ Cargo creates directories, fetches dependencies, and selects a target. This exer
 
 A desktop project keeps that name in `Cargo.toml`. A constant carries the same idea here.
 
-```rust run expect="夜窗" title="Crate name constant"
+```rust run expect="nightwin" title="Crate name constant"
 fn main() {
-    const CRATE: &str = "夜窗";
+    const CRATE: &str = "nightwin";
     println!("{CRATE}");
 }
 ```
 
-The printed name is `夜窗`.
+The printed name is `nightwin`.
 
 ### main is still the entry
 
 There is no `src/main.rs` tree. Execution starts at the function `main`.
 
-```rust run expect="入口在 main" title="Entry function"
+```rust run expect="entry at main" title="Entry function"
 fn main() {
-    println!("入口在 main");
+    println!("entry at main");
 }
 ```
 
-`入口在 main` is the first line after startup.
+`entry at main` is the first line after startup.
 
 ### cargo build is not executed
 

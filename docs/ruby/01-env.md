@@ -19,11 +19,11 @@ updated: "2026-10-15"
 
 点 Run 就执行当前文本。
 
-```ruby run expect="已就绪" title="无需安装"
-puts "已就绪"
+```ruby run expect="ready" title="无需安装"
+puts "ready"
 ```
 
-输出里能看到 `已就绪`。
+输出里能看到 `ready`。
 
 ### 命令行选项不在源码里
 
@@ -37,11 +37,11 @@ ruby -v
 
 `stringio` 随 Ruby 提供，不用再下载。
 
-```ruby run expect="茶" title="内存缓冲"
+```ruby run expect="tea" title="内存缓冲"
 require "stringio"
 b = StringIO.new
-b.write("茶")
+b.write("tea")
 puts b.string
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

@@ -28,15 +28,15 @@ The address comes back as `ada@shop.test`.
 
 ### An email that fails
 
-A string with no `@` makes `FILTER_VALIDATE_EMAIL` return false. The script then writes `拒绝`.
+A string with no `@` makes `FILTER_VALIDATE_EMAIL` return false. The script then writes `denied`.
 
-```php run expect="拒绝" title="Not an email"
+```php run expect="denied" title="Not an email"
 <?php
 $ok = filter_var("nope", FILTER_VALIDATE_EMAIL);
-echo $ok === false ? "拒绝\n" : "通过\n";
+echo $ok === false ? "denied\n" : "clear\n";
 ```
 
-The failed check prints `拒绝`.
+The failed check prints `denied`.
 
 ### An integer filter
 

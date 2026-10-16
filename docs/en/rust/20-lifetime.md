@@ -19,45 +19,45 @@ A borrow must not outlive the data it points at. Lifetime labels describe that r
 
 Both parameters share `'a`, so the returned borrow cannot outlive either input.
 
-```rust run expect="船票" title="Return the left side"
+```rust run expect="pass" title="Return the left side"
 fn earlier<'a>(left: &'a str, _right: &'a str) -> &'a str {
     left
 }
 
 fn main() {
-    let ticket = String::from("船票");
-    let pen = String::from("钢笔");
+    let ticket = String::from("pass");
+    let pen = String::from("fountain");
     println!("{}", earlier(&ticket, &pen));
 }
 ```
 
-The returned slice still points at `ticket`, and the line is `船票`.
+The returned slice still points at `ticket`, and the line is `pass`.
 
 ### Both local strings live through the call
 
 The call happens while both `String` values still exist, so the borrows stay valid.
 
-```rust run expect="开窗" title="Pick by a flag"
+```rust run expect="openwin" title="Pick by a flag"
 fn pick<'a>(open: bool, yes: &'a str, no: &'a str) -> &'a str {
     if open { yes } else { no }
 }
 
 fn main() {
-    let yes = String::from("开窗");
-    let no = String::from("关窗");
+    let yes = String::from("openwin");
+    let no = String::from("shutwin");
     println!("{}", pick(true, &yes, &no));
 }
 ```
 
-`true` selects the first text, `开窗`.
+`true` selects the first text, `openwin`.
 
 ### The static lifetime
 
 A string literal lasts for the whole program and may be marked `'static`.
 
-```rust run expect="窗口" title="Static window"
+```rust run expect="window" title="Static window"
 fn label() -> &'static str {
-    "窗口"
+    "window"
 }
 
 fn main() {
@@ -65,4 +65,4 @@ fn main() {
 }
 ```
 
-No local variable has to outlive this call. The line is `窗口`.
+No local variable has to outlive this call. The line is `window`.

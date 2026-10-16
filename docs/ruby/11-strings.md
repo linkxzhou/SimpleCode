@@ -17,20 +17,20 @@ updated: "2026-10-15"
 
 ### 字符数
 
-两个汉字的 `length` 是 2。
+`Hi` 的 `length` 是 2。
 
 ```ruby run expect="2" title="两个字"
-puts "你好".length
+puts "Hi".length
 ```
 
 输出里能看到 `2`。
 
 ### 字节数
 
-同一个字符串的 `bytesize` 是 6。
+`Hello!` 的 `bytesize` 是 6。
 
 ```ruby run expect="6" title="六个字节"
-puts "你好".bytesize
+puts "Hello!".bytesize
 ```
 
 输出里能看到 `6`。
@@ -39,20 +39,20 @@ puts "你好".bytesize
 
 `#{}` 里的表达式会变成文本。
 
-```ruby run expect="你好，林" title="嵌入"
-name = "林"
-puts "你好，#{name}"
+```ruby run expect="Hello, lin" title="嵌入"
+name = "lin"
+puts "Hello, #{name}"
 ```
 
-输出里能看到 `你好，林`。
+输出里能看到 `Hello, lin`。
 
 ### 读入一行
 
 `gets` 会连换行一起读入。`chomp` 去掉末尾换行。
 
-```ruby run stdin="林\n" expect="你好，林" title="读一行"
+```ruby run stdin="lin\n" expect="Hello, lin" title="读一行"
 name = gets.chomp
-puts "你好，#{name}"
+puts "Hello, #{name}"
 ```
 
-输出里能看到 `你好，林`。
+输出里能看到 `Hello, lin`。

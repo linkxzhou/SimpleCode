@@ -37,10 +37,10 @@ The printed line is `7`.
 
 A subclass uses the parent method when it does not define its own. `Mug` is a `Cup` and adds no methods. `label` therefore comes from `Cup`.
 
-```ruby run expect="杯子" title="Reuse the parent"
+```ruby run expect="mug" title="Reuse the parent"
 class Cup
   def label
-    "杯子"
+    "mug"
   end
 end
 class Mug < Cup
@@ -48,24 +48,24 @@ end
 puts Mug.new.label
 ```
 
-The printed line is `杯子`.
+The printed line is `mug`.
 
 ### Override
 
 A subclass method with the same name hides the parent method. `Mug` defines its own `label`. Calling it on a `Mug` prints the subclass text.
 
-```ruby run expect="马克杯" title="Override"
+```ruby run expect="stein" title="Override"
 class Cup
   def label
-    "杯子"
+    "mug"
   end
 end
 class Mug < Cup
   def label
-    "马克杯"
+    "stein"
   end
 end
 puts Mug.new.label
 ```
 
-The printed line is `马克杯`.
+The printed line is `stein`.

@@ -16,9 +16,9 @@ frontmatter（见 plan/LEARN.md §6）之后是一篇短文，不是固定骨架
 ## 代码块
 
 ````markdown
-```python run stdin="Ada\n" expect="你好，Ada！" title="问候"
-name = input("名字？")
-print(f"你好，{name}！")
+```python run stdin="Ada\n" expect="Hello, Ada!" title="问候"
+name = input("Name?")
+print(f"Hello, {name}!")
 ```
 ````
 

@@ -19,18 +19,18 @@ A regular expression is written between slashes. `\d` means one digit. `=~`, `ma
 
 `=~` returns an index when the pattern matches, and `nil` when it does not. An index counts as true, so the ternary takes the first branch. The pattern asks for one or more digits.
 
-```ruby run expect="有" title="Has a digit"
-puts "房号 18" =~ /\d+/ ? "有" : "无"
+```ruby run expect="has" title="Has a digit"
+puts "room 18" =~ /\d+/ ? "has" : "none"
 ```
 
-The printed line is `有`.
+The printed line is `has`.
 
 ### Take a match out
 
 `match` returns match data, and `[0]` is the entire match. The pattern stops at the first run of digits. That run is the characters `18`.
 
 ```ruby run expect="18" title="First match"
-puts "房号 18".match(/\d+/)[0]
+puts "room 18".match(/\d+/)[0]
 ```
 
 The printed line is `18`.

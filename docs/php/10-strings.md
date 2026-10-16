@@ -13,7 +13,7 @@ sources:
 updated: "2026-10-15"
 ---
 
-字符串按字节看长度。`你好` 的 `strlen` 是 6。
+字符串按字节看长度。`Hello!` 的 `strlen` 是 6。
 
 ### 拼接
 
@@ -28,22 +28,22 @@ echo "buy" . " pen", "\n";
 
 ### 字节长度
 
-两个汉字在 UTF-8 里占 6 个字节。
+`Hello!` 有 6 个字节。
 
 ```php run expect="6" title="六个字节"
 <?php
-echo strlen("你好"), "\n";
+echo strlen("Hello!"), "\n";
 ```
 
 输出里能看到 `6`。
 
 ### 替换
 
-`str_replace` 把「笔」换成「墨」。
+`str_replace` 把 pen 换成 ink。
 
-```php run expect="买墨" title="换成墨"
+```php run expect="buyink" title="换成墨"
 <?php
-echo str_replace("笔", "墨", "买笔"), "\n";
+echo str_replace("pen", "ink", "buypen"), "\n";
 ```
 
-输出里能看到 `买墨`。
+输出里能看到 `buyink`。

@@ -19,25 +19,25 @@ A name can be read only inside the block that declared it. An inner block may de
 
 A variable written outside every function is readable by the functions in this file. It does not have to be referenced on the line that declares it.
 
-```go run expect="克" title="A package-level unit"
+```go run expect="gram" title="A package-level unit"
 package main
 
 import "fmt"
 
-var unit = "克"
+var unit = "gram"
 
 func main() {
 	fmt.Println(unit)
 }
 ```
 
-The unit prints `克`.
+The unit prints `gram`.
 
 ### Locals inside a function
 
 A `:=` name begins on its line and ends when the function ends. A parameter is a local name as well.
 
-```go run expect="林" title="A parameter"
+```go run expect="lin" title="A parameter"
 package main
 
 import "fmt"
@@ -47,46 +47,46 @@ func greet(name string) {
 }
 
 func main() {
-	greet("林")
+	greet("lin")
 }
 ```
 
-The argument prints `林`.
+The argument prints `lin`.
 
 ### Shadowing
 
 An inner `:=` of the same name makes that block see the new variable. The outer variable keeps its value.
 
-```go run expect="苏州" title="An inner name"
+```go run expect="suzhou" title="An inner name"
 package main
 
 import "fmt"
 
 func main() {
-	city := "杭州"
+	city := "hangzhou"
 	{
-		city := "苏州"
+		city := "suzhou"
 		fmt.Println(city)
 	}
 }
 ```
 
-The inner city is `苏州`. After the braces, the outer `city` is still 杭州.
+The inner city is `suzhou`. After the braces, the outer `city` is still hangzhou.
 
 ### A name declared in if
 
 A variable declared before the semicolon of `if` exists only for that statement.
 
-```go run expect="通过" title="A score inside the condition"
+```go run expect="clear" title="A score inside the condition"
 package main
 
 import "fmt"
 
 func main() {
 	if score := 80; score >= 60 {
-		fmt.Println("通过")
+		fmt.Println("clear")
 	}
 }
 ```
 
-The passing grade prints `通过`.
+The passing grade prints `clear`.

@@ -46,11 +46,11 @@ puts "#{q} #{r}"
 
 省略时使用默认值。
 
-```ruby run expect="你好，客人" title="省略名字"
-def greet(name = "客人")
-  "你好，" + name
+```ruby run expect="Hello, guest" title="省略名字"
+def greet(name = "guest")
+  "Hello, " + name
 end
 puts greet
 ```
 
-输出里能看到 `你好，客人`。
+输出里能看到 `Hello, guest`。

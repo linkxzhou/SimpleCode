@@ -19,18 +19,18 @@ updated: "2026-10-15"
 
 `v.(string)` 在 `v` 里确实是字符串时得到该字符串。类型不符会 panic。
 
-```go run expect="茶" title="断言成功"
+```go run expect="tea" title="断言成功"
 package main
 
 import "fmt"
 
 func main() {
-	var v any = "茶"
+	var v any = "tea"
 	fmt.Println(v.(string))
 }
 ```
 
-输出是 `茶`。
+输出是 `tea`。
 
 ### comma-ok
 
@@ -54,7 +54,7 @@ func main() {
 
 `switch v.(type)` 按具体类型选择分支。每个 case 写一个类型。
 
-```go run expect="整数" title="按类型分支"
+```go run expect="whole" title="按类型分支"
 package main
 
 import "fmt"
@@ -63,22 +63,22 @@ func main() {
 	var v any = 3
 	switch v.(type) {
 	case string:
-		fmt.Println("字符串")
+		fmt.Println("word")
 	case int:
-		fmt.Println("整数")
+		fmt.Println("whole")
 	default:
-		fmt.Println("其他")
+		fmt.Println("other")
 	}
 }
 ```
 
-输出是 `整数`。
+输出是 `whole`。
 
 ### 先判断再使用
 
 单返回值的断言只适合你已经确定类型的时候。不确定时用 comma-ok，或 type switch。
 
-```go run expect="不是字符串" title="失败时走另一支"
+```go run expect="not a string" title="失败时走另一支"
 package main
 
 import "fmt"
@@ -86,11 +86,11 @@ import "fmt"
 func main() {
 	var v any = 3
 	if _, ok := v.(string); ok {
-		fmt.Println("字符串")
+		fmt.Println("word")
 	} else {
-		fmt.Println("不是字符串")
+		fmt.Println("not a string")
 	}
 }
 ```
 
-输出是 `不是字符串`。
+输出是 `not a string`。

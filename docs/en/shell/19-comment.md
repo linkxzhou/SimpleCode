@@ -19,30 +19,30 @@ updated: "2026-10-16"
 
 The `printf` written after `#` is ignored. Only the second line runs.
 
-```sh run expect="留下" title="Skip the comment"
-# printf '%s\n' 隐藏
-printf '%s\n' 留下
+```sh run expect="kept" title="Skip the comment"
+# printf '%s\n' hidden
+printf '%s\n' kept
 ```
 
-The line shows `留下`.
+The line shows `kept`.
 
 ### A semicolon
 
 A semicolon separates two print commands on one line. They run from left to right.
 
-```sh run expect="甲" title="The first command"
-printf '%s\n' 甲; printf '%s\n' 乙
+```sh run expect="first" title="The first command"
+printf '%s\n' first; printf '%s\n' second
 ```
 
-The upper line is `甲`. The lower line is `乙`.
+The upper line is `first`. The lower line is `second`.
 
 ### The colon command
 
 `:` is an empty command that succeeds. It writes nothing, and the next line still runs.
 
-```sh run expect="之后" title="After the empty command"
+```sh run expect="later" title="After the empty command"
 :
-printf '%s\n' 之后
+printf '%s\n' later
 ```
 
-The line shows `之后`.
+The line shows `later`.

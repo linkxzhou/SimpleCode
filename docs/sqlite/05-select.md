@@ -19,25 +19,25 @@ updated: "2026-10-15"
 
 表里有两列时，可以只投影其中一列。
 
-```sql run expect="茶" title="只要名字"
+```sql run expect="tea" title="只要名字"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 SELECT name FROM item;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 过滤
 
 `WHERE` 留在结果里的行要满足条件。
 
-```sql run expect="茶" title="贵的那行"
+```sql run expect="tea" title="贵的那行"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 SELECT name FROM item WHERE price > 10;
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 别名不影响值
 

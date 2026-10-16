@@ -18,15 +18,15 @@ clang compiles each program in this book to WebAssembly, and the page runs that 
 
 `printf` does not append a newline by itself. Put `\n` in the format string when the next output should start on a new line.
 
-```c run expect="你好" title="Say hello"
+```c run expect="Hi" title="Say hello"
 #include <stdio.h>
 int main(void) {
-  printf("你好\n");
+  printf("Hi\n");
   return 0;
 }
 ```
 
-The output contains `你好`.
+The output contains `Hi`.
 
 ### Return zero
 

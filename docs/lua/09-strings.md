@@ -13,14 +13,14 @@ sources:
 updated: "2026-10-15"
 ---
 
-`#` 和 `string.len` 都按字节计数。`你好` 的长度是 6。
+`#` 和 `string.len` 都按字节计数。`Hello!` 的长度是 6。
 
 ### 字节长度
 
-两个汉字在 UTF-8 里占 6 个字节。
+`Hello!` 有 6 个字节。
 
 ```lua run expect="6" title="六个字节"
-print(#"你好")
+print(#"Hello!")
 ```
 
 输出里能看到 `6`。
@@ -39,8 +39,8 @@ print(string.sub("buy pen", 5))
 
 `string.format` 把整数填进 `%d`。
 
-```lua run expect="单价 18" title="填进格式"
-print(string.format("单价 %d", 18))
+```lua run expect="price 18" title="填进格式"
+print(string.format("price %d", 18))
 ```
 
-输出里能看到 `单价 18`。
+输出里能看到 `price 18`。

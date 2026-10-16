@@ -19,45 +19,45 @@ updated: "2026-10-15"
 
 `Integer` 遇到非数字会抛出 `ArgumentError`。
 
-```ruby run expect="失败" title="非法文本"
+```ruby run expect="failed" title="非法文本"
 begin
   Integer("no")
-  puts "过了"
+  puts "passed"
 rescue ArgumentError
-  puts "失败"
+  puts "failed"
 end
 ```
 
-输出里能看到 `失败`。
+输出里能看到 `failed`。
 
 ### 除零
 
 整数除以零抛出 `ZeroDivisionError`。
 
-```ruby run expect="除零" title="接住"
+```ruby run expect="divzero" title="接住"
 begin
   1 / 0
 rescue ZeroDivisionError
-  puts "除零"
+  puts "divzero"
 end
 ```
 
-输出里能看到 `除零`。
+输出里能看到 `divzero`。
 
 ### 主动抛出
 
 `raise` 让调用方处理。
 
-```ruby run expect="数量不够" title="自己抛出"
+```ruby run expect="not enough" title="自己抛出"
 def sell(n)
-  raise "数量不够" if n < 1
+  raise "not enough" if n < 1
   n
 end
 begin
   sell(0)
 rescue
-  puts "数量不够"
+  puts "not enough"
 end
 ```
 
-输出里能看到 `数量不够`。
+输出里能看到 `not enough`。

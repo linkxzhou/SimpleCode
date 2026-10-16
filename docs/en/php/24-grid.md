@@ -17,15 +17,15 @@ Each row is itself an array. An outer array holds those rows in order.
 
 ### One cell
 
-Row 1, column 0 contains `笔`.
+Row 1, column 0 contains `pen`.
 
-```php run expect="笔" title="The second row"
+```php run expect="pen" title="The second row"
 <?php
-$rows = [["茶", 18], ["笔", 3]];
+$rows = [["tea", 18], ["pen", 3]];
 echo $rows[1][0], "\n";
 ```
 
-That cell prints `笔`.
+That cell prints `pen`.
 
 ### The price on a row
 
@@ -33,7 +33,7 @@ Row 0, column 1 contains the number 18.
 
 ```php run expect="18" title="Price on the first row"
 <?php
-$rows = [["茶", 18], ["笔", 3]];
+$rows = [["tea", 18], ["pen", 3]];
 echo $rows[0][1], "\n";
 ```
 
@@ -45,7 +45,7 @@ The price cell prints `18`.
 
 ```php run expect="2" title="Two rows"
 <?php
-$rows = [["茶", 18], ["笔", 3]];
+$rows = [["tea", 18], ["pen", 3]];
 echo count($rows), "\n";
 ```
 

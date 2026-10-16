@@ -20,14 +20,14 @@ updated: "2026-10-15"
 `os.WriteFile` 在这里没有可依赖的目录。下面只说明本机上的形状，不执行。
 
 ```go norun title="本页不写磁盘"
-os.WriteFile("note.txt", []byte("茶\n"), 0644)
+os.WriteFile("note.txt", []byte("tea\n"), 0644)
 ```
 
 ### 在内存里拼文本
 
 `strings.Builder` 用来累积将要写出去的字节。`String` 取出结果。
 
-```go run expect="茶" title="拼两行"
+```go run expect="tea" title="拼两行"
 package main
 
 import (
@@ -37,13 +37,13 @@ import (
 
 func main() {
 	var b strings.Builder
-	b.WriteString("茶\n")
-	b.WriteString("水\n")
+	b.WriteString("tea\n")
+	b.WriteString("water\n")
 	fmt.Println(strings.Split(b.String(), "\n")[0])
 }
 ```
 
-输出是 `茶`。
+输出是 `tea`。
 
 ### 按行切开
 
@@ -58,7 +58,7 @@ import (
 )
 
 func main() {
-	text := "茶\n水\n"
+	text := "tea\nwater\n"
 	n := 0
 	for _, line := range strings.Split(text, "\n") {
 		if line != "" {
@@ -84,8 +84,8 @@ import (
 )
 
 func main() {
-	text := "茶\n水\n"
-	fmt.Println(strings.Contains(text, "水\n"))
+	text := "tea\nwater\n"
+	fmt.Println(strings.Contains(text, "water\n"))
 }
 ```
 

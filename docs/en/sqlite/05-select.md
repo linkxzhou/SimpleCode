@@ -19,25 +19,25 @@ updated: "2026-10-16"
 
 A table with two columns can still be read one column at a time.
 
-```sql run expect="茶" title="Name only"
+```sql run expect="tea" title="Name only"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 SELECT name FROM item;
 ```
 
-The projected name is `茶`.
+The projected name is `tea`.
 
 ### Keep rows that pass
 
 `WHERE` retains a row only when its condition holds.
 
-```sql run expect="茶" title="The costly row"
+```sql run expect="tea" title="The costly row"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 SELECT name FROM item WHERE price > 10;
 ```
 
-Only the tea row costs more than 10, so the name in the result is `茶`.
+Only the tea row costs more than 10, so the name in the result is `tea`.
 
 ### An alias leaves the value unchanged
 

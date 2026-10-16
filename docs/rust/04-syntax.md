@@ -43,10 +43,10 @@ fn main() {
 
 同一名字再次 `let`，后面的代码只看见新值。
 
-```rust run expect="新窗" title="后来的名字"
+```rust run expect="newwin" title="后来的名字"
 fn main() {
-    let label = "旧窗";
-    let label = "新窗";
+    let label = "oldwin";
+    let label = "newwin";
     println!("{label}");
 }
 ```

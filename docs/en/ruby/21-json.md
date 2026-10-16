@@ -42,14 +42,14 @@ The printed line is `3`.
 
 A missing closing brace makes the parse fail. Rescue `JSON::ParserError` for that case. The success line inside `begin` does not run.
 
-```ruby run expect="坏了" title="Parse failure"
+```ruby run expect="broken" title="Parse failure"
 require "json"
 begin
   JSON.parse("{")
-  puts "过了"
+  puts "passed"
 rescue JSON::ParserError
-  puts "坏了"
+  puts "broken"
 end
 ```
 
-The printed line is `坏了`.
+The printed line is `broken`.

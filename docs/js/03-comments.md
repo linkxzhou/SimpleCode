@@ -19,30 +19,30 @@ updated: "2026-10-15"
 
 `//` 后面直到行尾都不执行。
 
-```js run expect="可见" title="留下可见"
-console.log("可见"); // 不打印隐藏
+```js run expect="shown" title="留下可见"
+console.log("shown"); // 不打印隐藏
 ```
 
-输出里能看到 `可见`。
+输出里能看到 `shown`。
 
 ### 块注释
 
 `/* */` 可以跨过一行。
 
-```js run expect="留下" title="整段跳过"
+```js run expect="kept" title="整段跳过"
 /* console.log("隐藏"); */
-console.log("留下");
+console.log("kept");
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 注释不是字符串
 
 写在注释里的字不会成为值。要输出，就把它放进引号。
 
-```js run expect="茶" title="引号里的才算"
-const word = "茶"; // 这是说明
+```js run expect="tea" title="引号里的才算"
+const word = "tea"; // 这是说明
 console.log(word);
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。

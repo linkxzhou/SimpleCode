@@ -17,42 +17,42 @@ updated: "2026-10-15"
 
 ### 第二支
 
-代码 2 打出「乙」。
+代码 2 打出 second。
 
-```php run expect="乙" title="第二支"
+```php run expect="second" title="第二支"
 <?php
 $code = 2;
 switch ($code) {
     case 1:
-        echo "甲\n";
+        echo "first\n";
         break;
     case 2:
-        echo "乙\n";
+        echo "second\n";
         break;
     default:
-        echo "其他\n";
+        echo "other\n";
 }
 ```
 
-输出里能看到 `乙`。
+输出里能看到 `second`。
 
 ### 默认
 
 没有匹配的 case 时走 default。
 
-```php run expect="其他" title="没有匹配"
+```php run expect="other" title="没有匹配"
 <?php
 $code = 9;
 switch ($code) {
     case 1:
-        echo "甲\n";
+        echo "first\n";
         break;
     default:
-        echo "其他\n";
+        echo "other\n";
 }
 ```
 
-输出里能看到 `其他`。
+输出里能看到 `other`。
 
 ### 字符串分支
 
@@ -60,12 +60,12 @@ switch ($code) {
 
 ```php run expect="3" title="笔的单价"
 <?php
-$item = "笔";
+$item = "pen";
 switch ($item) {
-    case "茶":
+    case "tea":
         echo "18\n";
         break;
-    case "笔":
+    case "pen":
         echo "3\n";
         break;
     default:

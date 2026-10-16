@@ -19,16 +19,16 @@ updated: "2026-10-15"
 
 两条输出各写一行。
 
-```cpp run expect="甲" title="第一行"
+```cpp run expect="first" title="第一行"
 #include <iostream>
 int main() {
-  std::cout << "甲\n";
-  std::cout << "乙\n";
+  std::cout << "first\n";
+  std::cout << "second\n";
   return 0;
 }
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 块
 
@@ -53,12 +53,12 @@ int main() {
 
 `<<` 可以连着写，中间不会自动加空格。
 
-```cpp run expect="茶18" title="连在一起"
+```cpp run expect="tea18" title="连在一起"
 #include <iostream>
 int main() {
-  std::cout << "茶" << 18 << "\n";
+  std::cout << "tea" << 18 << "\n";
   return 0;
 }
 ```
 
-输出里能看到 `茶18`。
+输出里能看到 `tea18`。

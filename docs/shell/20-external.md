@@ -29,7 +29,7 @@ pwd
 反引号和 `$()` 都不会去启动另一个程序。
 
 ```sh norun title="没有命令替换"
-item=$(echo 茶)
+item=$(echo tea)
 printf '%s\n' "$item"
 ```
 
@@ -37,19 +37,19 @@ printf '%s\n' "$item"
 
 需要的一行由 `printf` 自己打出。
 
-```sh run expect="茶" title="内建输出"
-printf '%s\n' 茶
+```sh run expect="tea" title="内建输出"
+printf '%s\n' tea
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 冒号也是内建
 
 `:` 成功，并且不打出文字。后面的行才出现。
 
-```sh run expect="就绪" title="准备好了"
+```sh run expect="ready" title="准备好了"
 :
-printf '%s\n' 就绪
+printf '%s\n' ready
 ```
 
-输出里能看到 `就绪`。
+输出里能看到 `ready`。

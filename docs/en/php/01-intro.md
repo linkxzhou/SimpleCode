@@ -19,12 +19,12 @@ Each sample runs one PHP file from top to bottom and then stops. There is no for
 
 The interpreter walks the statements in order. After the result is written, the process ends.
 
-```php run expect="开始" title="Start"
+```php run expect="start" title="Start"
 <?php
-echo "开始\n";
+echo "start\n";
 ```
 
-The opening word is `开始`.
+The opening word is `start`.
 
 ### A unit price
 
@@ -42,10 +42,10 @@ The stored price shows `18`.
 
 Square brackets select an element by index. The first index is zero.
 
-```php run expect="笔" title="The second item"
+```php run expect="pen" title="The second item"
 <?php
-$names = ["茶", "笔"];
+$names = ["tea", "pen"];
 echo $names[1], "\n";
 ```
 
-Index 1 holds `笔`.
+Index 1 holds `pen`.

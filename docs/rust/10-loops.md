@@ -36,13 +36,13 @@ fn main() {
 
 条件变假时循环结束。
 
-```rust run expect="剩余0" title="减到零"
+```rust run expect="left0" title="减到零"
 fn main() {
     let mut left = 3;
     while left > 0 {
         left -= 1;
     }
-    println!("剩余{left}");
+    println!("left{left}");
 }
 ```
 三次之后剩余是 0。

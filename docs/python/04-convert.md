@@ -39,12 +39,12 @@ print(int(3.9))
 
 非法文本会抛出 `ValueError`。接住之后程序还能继续打印。
 
-```python run expect="失败" title="非法文本"
+```python run expect="failed" title="非法文本"
 try:
     int("no")
-    print("过了")
+    print("passed")
 except ValueError:
-    print("失败")
+    print("failed")
 ```
 
-输出里能看到 `失败`。
+输出里能看到 `failed`。

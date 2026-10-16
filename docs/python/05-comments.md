@@ -19,32 +19,32 @@ updated: "2026-10-15"
 
 `#` 后面的字不会执行。
 
-```python run expect="可见" title="注释被跳过"
-print("可见")  # 这一句才执行
+```python run expect="shown" title="注释被跳过"
+print("shown")  # 这一句才执行
 ```
 
-输出里能看到 `可见`。
+输出里能看到 `shown`。
 
 ### 整行注释
 
 单独一行的 `#` 可以写下你暂时不想跑的式子。
 
-```python run expect="留下" title="整行跳过"
+```python run expect="kept" title="整行跳过"
 # print("隐藏")
-print("留下")
+print("kept")
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。
 
 ### 文档字符串仍是值
 
 函数开头的三引号字符串如果没人读取，就不会出现在输出里。
 
-```python run expect="好" title="返回值不是文档"
+```python run expect="ok" title="返回值不是文档"
 def ready():
-    """准备完成"""
-    return "好"
+    """ready now"""
+    return "ok"
 print(ready())
 ```
 
-输出里能看到 `好`。
+输出里能看到 `ok`。

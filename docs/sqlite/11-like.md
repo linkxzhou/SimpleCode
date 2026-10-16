@@ -17,27 +17,27 @@ updated: "2026-10-15"
 
 ### 前缀
 
-'茶%' 匹配以茶开头的文本。
+'tea%' 匹配以 tea 开头的文本。
 
 ```sql run expect="1" title="只有茶"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('茶'), ('红茶');
-SELECT COUNT(*) FROM item WHERE name LIKE '茶%';
+INSERT INTO item VALUES ('tea'), ('redtea');
+SELECT COUNT(*) FROM item WHERE name LIKE 'tea%';
 ```
 
 输出里能看到 `1`。
 
 ### 包含
 
-'%茶%' 匹配中间也有茶的名字。
+'%tea%' 匹配名字里任意位置的 tea。
 
-```sql run expect="红茶" title="含茶"
+```sql run expect="redtea" title="含茶"
 CREATE TABLE item (name TEXT);
-INSERT INTO item VALUES ('红茶'), ('水');
-SELECT name FROM item WHERE name LIKE '%茶%';
+INSERT INTO item VALUES ('redtea'), ('water');
+SELECT name FROM item WHERE name LIKE '%tea%';
 ```
 
-输出里能看到 `红茶`。
+输出里能看到 `redtea`。
 
 ### 一个字符
 

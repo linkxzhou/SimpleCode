@@ -19,11 +19,11 @@ On your own machine you install an interpreter and set up the command. In this d
 
 Press Run and the current text goes to that prepared interpreter. There is no installer from python.org.
 
-```python run expect="已就绪" title="Run directly"
-print("已就绪")
+```python run expect="ready" title="Run directly"
+print("ready")
 ```
 
-The result reads `已就绪`.
+The result reads `ready`.
 
 ### pip is not in the button
 

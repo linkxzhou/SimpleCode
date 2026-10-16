@@ -17,18 +17,18 @@ updated: "2026-10-16"
 
 ### echo 把参数打出来并换行
 
-参数之间加一个空格，末尾换行。中文和数字可以放在同一次调用里。
+参数之间加一个空格，末尾换行。词和数字可以放在同一次调用里。
 
-```linux run expect="茶 18" title="空格分开"
-echo 茶 18
+```linux run expect="tea 18" title="空格分开"
+echo tea 18
 ```
 
 ### -n 不换行
 
-下一次 echo 会接在同一行。两个汉字因此贴在一起，中间没有换行符。
+下一次 echo 会接在同一行。tea 和 leaf 因此贴在一起，中间没有换行符。
 
-```linux run expect="茶叶" title="贴在一行"
-echo -n 茶; echo 叶
+```linux run expect="tealeaf" title="贴在一行"
+echo -n tea; echo leaf
 ```
 
 ### 这是 /bin/echo，和 Shell 书里的内建不是同一个程序

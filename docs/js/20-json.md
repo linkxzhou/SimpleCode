@@ -40,13 +40,13 @@ console.log(JSON.parse(text).n);
 
 少一个括号时 `parse` 会抛错。用 `try` 接住。
 
-```js run expect="坏了" title="解析失败"
+```js run expect="broken" title="解析失败"
 try {
   JSON.parse("{");
-  console.log("过了");
+  console.log("passed");
 } catch (err) {
-  console.log("坏了");
+  console.log("broken");
 }
 ```
 
-输出里能看到 `坏了`。
+输出里能看到 `broken`。

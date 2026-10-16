@@ -19,25 +19,25 @@ updated: "2026-10-15"
 
 `def self.` 定义挂在模块上的方法。
 
-```ruby run expect="店" title="模块方法"
+```ruby run expect="shop" title="模块方法"
 module Shop
   def self.label
-    "店"
+    "shop"
   end
 end
 puts Shop.label
 ```
 
-输出里能看到 `店`。
+输出里能看到 `shop`。
 
 ### 混入
 
 `include` 把模块的实例方法放进类。
 
-```ruby run expect="杯子" title="混入"
+```ruby run expect="mug" title="混入"
 module Label
   def label
-    "杯子"
+    "mug"
   end
 end
 class Cup
@@ -46,7 +46,7 @@ end
 puts Cup.new.label
 ```
 
-输出里能看到 `杯子`。
+输出里能看到 `mug`。
 
 ### 另一个文件不在
 

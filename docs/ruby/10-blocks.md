@@ -19,26 +19,26 @@ updated: "2026-10-15"
 
 参数写在竖线里。
 
-```ruby run expect="茶" title="最后一项"
+```ruby run expect="tea" title="最后一项"
 last = ""
-["水", "茶"].each { |name| last = name }
+["water", "tea"].each { |name| last = name }
 puts last
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 自己 yield
 
 方法里 `yield` 一次，块就执行一次。
 
-```ruby run expect="进了" title="调用块"
+```ruby run expect="inward" title="调用块"
 def once
   yield
 end
-once { puts "进了" }
+once { puts "inward" }
 ```
 
-输出里能看到 `进了`。
+输出里能看到 `inward`。
 
 ### do end 适合多行
 

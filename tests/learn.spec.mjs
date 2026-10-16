@@ -182,7 +182,7 @@ try {
     const block = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"]').first();
     const code = await block.getAttribute("data-code");
     const expectText = await block.getAttribute("data-expect");
-    return !!(code?.includes('input("名字？")') && expectText === "你好，Ada！");
+    return !!(code?.includes('input("Name?")') && expectText === "Hello, Ada!");
   });
   check(foundGreeting, "greeting chapter opens on input");
   await saveShot(page, "learn-chapter.png", page.locator('[data-testid="docs-drawer"]'));
@@ -418,7 +418,7 @@ try {
   check(true, "ruby download progress shows on the doc button");
   await waitForBlock(fresh, ruby);
   const rubyOut = stripAnsi(await fresh.evaluate(() => globalThis.__simplecodeTerminal.transcript));
-  check(rubyOut.includes("来自 Ruby 的 42"), "cross-language ruby block");
+  check(rubyOut.includes("42 from Ruby"), "cross-language ruby block");
 
   const overview = page;
   await overview.click('[data-testid="docs-close"]').catch(() => {});

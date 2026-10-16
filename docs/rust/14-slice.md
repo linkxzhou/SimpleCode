@@ -16,15 +16,15 @@ updated: "2026-10-16"
 
 ### 字符串后半段
 
-每个汉字在这里占三个字节。跳过前两个字，从第六个字节看起。
+`night pass` 从第 6 个字节起是 `pass`。
 
-```rust run expect="船票" title="后两个字"
+```rust run expect="pass" title="后两个字"
 fn main() {
-    let word = String::from("夜班船票");
+    let word = String::from("night pass");
     println!("{}", &word[6..]);
 }
 ```
-夜班被切掉，剩下船票。
+前半段被切掉，剩下 `pass`。
 
 ### 数组的尾巴
 

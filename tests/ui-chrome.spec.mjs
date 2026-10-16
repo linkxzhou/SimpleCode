@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// About dialog, locale persistence, English Quick Start, progress spacing.
+// About dialog, locale persistence, English Quick Start, progress bar on the button edge.
 import { spawn } from "node:child_process";
 import { chromium } from "playwright";
 
@@ -120,11 +120,30 @@ try {
     await progressPage.goto(BASE);
     const bar = progressPage.getByTestId("wasm-progress");
     await bar.waitFor({ state: "visible", timeout: 8000 });
-    const margins = await bar.evaluate((el) => {
+    const box = await bar.evaluate((el) => {
+      const button = el.closest("button");
+      const barRect = el.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
       const style = getComputedStyle(el);
-      return { top: style.marginTop, bottom: style.marginBottom };
+      return {
+        marginTop: style.marginTop,
+        marginBottom: style.marginBottom,
+        bottomDelta: Math.abs(barRect.bottom - buttonRect.bottom),
+        leftDelta: Math.abs(barRect.left - buttonRect.left),
+        widthDelta: Math.abs(barRect.width - buttonRect.width),
+        height: barRect.height,
+      };
     });
-    check(margins.top === "8px" && margins.bottom === "8px", `progress bar vertical margin ${margins.top} / ${margins.bottom}`);
+    check(
+      box.marginTop === "0px" &&
+        box.marginBottom === "0px" &&
+        box.bottomDelta < 1 &&
+        box.leftDelta < 1 &&
+        box.widthDelta < 1 &&
+        box.height > 0 &&
+        box.height <= 4,
+      `progress bar on button bottom edge ${JSON.stringify(box)}`,
+    );
   } finally {
     release();
     await progressPage.close().catch(() => {});

@@ -31,22 +31,22 @@ The updated number is `5`.
 
 A `let` created inside braces cannot be read once the brace closes. The log sits inside, while the name still exists.
 
-```js run expect="杭州" title="Inside the block"
+```js run expect="hangzhou" title="Inside the block"
 {
-  let city = "杭州";
+  let city = "hangzhou";
   console.log(city);
 }
 ```
 
-The city logged from inside is `杭州`.
+The city logged from inside is `hangzhou`.
 
 ### A lone semicolon does nothing
 
 An isolated semicolon is an empty statement. The log that comes next produces the visible text.
 
-```js run expect="有" title="Skip the empty statement"
+```js run expect="has" title="Skip the empty statement"
 ;
-console.log("有");
+console.log("has");
 ```
 
-That log writes `有`.
+That log writes `has`.

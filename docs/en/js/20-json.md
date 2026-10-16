@@ -40,13 +40,13 @@ The retrieved number is `3`.
 
 Leaving out a brace makes `parse` throw. `try` receives that throw and logs a short note.
 
-```js run expect="坏了" title="Parsing failed"
+```js run expect="broken" title="Parsing failed"
 try {
   JSON.parse("{");
-  console.log("过了");
+  console.log("passed");
 } catch (err) {
-  console.log("坏了");
+  console.log("broken");
 }
 ```
 
-The note logged is `坏了`.
+The note logged is `broken`.

@@ -42,9 +42,9 @@ print(n)
 
 不加 `local` 时，赋值进全局表，仍能读回来。
 
-```lua run expect="笔" title="全局"
-item = "笔"
+```lua run expect="pen" title="全局"
+item = "pen"
 print(item)
 ```
 
-输出里能看到 `笔`。
+输出里能看到 `pen`。

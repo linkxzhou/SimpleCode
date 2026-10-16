@@ -19,16 +19,16 @@ updated: "2026-10-15"
 
 两条打印各写一行。
 
-```c run expect="甲" title="第一行"
+```c run expect="first" title="第一行"
 #include <stdio.h>
 int main(void) {
-  printf("甲\n");
-  printf("乙\n");
+  printf("first\n");
+  printf("second\n");
   return 0;
 }
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 块
 
@@ -53,13 +53,13 @@ int main(void) {
 
 注释里的打印不会执行。
 
-```c run expect="留下" title="跳过注释"
+```c run expect="kept" title="跳过注释"
 #include <stdio.h>
 int main(void) {
   /* printf("隐藏\n"); */
-  printf("留下\n");
+  printf("kept\n");
   return 0;
 }
 ```
 
-输出里能看到 `留下`。
+输出里能看到 `kept`。

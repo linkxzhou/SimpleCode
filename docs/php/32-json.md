@@ -6,25 +6,25 @@ level: beginner
 minutes: 8
 goals:
   - "用 json_encode 打出对象"
-  - "保留汉字"
+  - "保留编码后的原文"
   - "用 json_decode 读回字段"
 sources:
   - php-manual
 updated: "2026-10-15"
 ---
 
-默认编码会把汉字写成转义序列。加上 `JSON_UNESCAPED_UNICODE` 才能看见汉字。
+默认编码会把非 ASCII 写成转义序列。加上 `JSON_UNESCAPED_UNICODE` 才按原文写出。下面的键和值是 ASCII。
 
 ### 编码
 
 键和值都留在一对花括号里。
 
-```php run expect="{\"物\":\"茶\"}" title="一对字段"
+```php run expect="{\"thing\":\"tea\"}" title="一对字段"
 <?php
-echo json_encode(["物" => "茶"], JSON_UNESCAPED_UNICODE), "\n";
+echo json_encode(["thing" => "tea"], JSON_UNESCAPED_UNICODE), "\n";
 ```
 
-输出里能看到 `{"物":"茶"}`。
+输出里能看到 `{"thing":"tea"}`。
 
 ### 数字字段
 

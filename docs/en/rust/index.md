@@ -18,13 +18,13 @@ This book compiles a single `main.rs`. The compiler is weblings rustc in the bro
 
 `println!` appends a newline. Each `{}` takes the next argument.
 
-```rust run expect="船票" title="One printed line"
+```rust run expect="pass" title="One printed line"
 fn main() {
-    println!("窗口打出{}", "船票");
+    println!("say {}", "pass");
 }
 ```
 
-The line on the terminal is `船票`.
+The line on the terminal is `pass`.
 
 ### Add three numbers
 
@@ -46,6 +46,6 @@ No manifest is loaded, and crates.io cannot be fetched. The block below is not e
 
 ```rust norun title="No cargo"
 fn main() {
-    println!("cargo new 不会在这里跑");
+    println!("cargo new will not run here");
 }
 ```

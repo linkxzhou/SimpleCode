@@ -20,7 +20,7 @@ SQLite 的类型更接近存储类别。同一列里也可以混放，课程里�
 整数的存储类是 integer，文本是 text。
 
 ```sql run expect="integer|text" title="两类"
-SELECT typeof(3), typeof('茶');
+SELECT typeof(3), typeof('tea');
 ```
 
 输出里能看到 `integer|text`。

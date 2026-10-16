@@ -32,17 +32,17 @@ The printed value is the inner 42, not an address.
 
 `Rc::clone` increases the strong count. It does not copy the string bytes.
 
-```rust run expect="船票2" title="Two owners"
+```rust run expect="pass2" title="Two owners"
 use std::rc::Rc;
 
 fn main() {
-    let ticket = Rc::new(String::from("船票"));
+    let ticket = Rc::new(String::from("pass"));
     let again = Rc::clone(&ticket);
     println!("{}{}", ticket, Rc::strong_count(&again));
 }
 ```
 
-The text is still `船票` and the strong count is 2, so the line is `船票2`.
+The text is still `pass` and the strong count is 2, so the line is `pass2`.
 
 ### RefCell allows a later write
 

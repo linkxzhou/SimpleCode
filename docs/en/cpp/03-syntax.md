@@ -19,16 +19,16 @@ A statement ends at the semicolon. Braces mark where a block begins and where th
 
 Each output is its own statement. The two calls therefore sit on two lines, and each line closes with `;`.
 
-```cpp run expect="甲" title="First line"
+```cpp run expect="first" title="First line"
 #include <iostream>
 int main() {
-  std::cout << "甲\n";
-  std::cout << "乙\n";
+  std::cout << "first\n";
+  std::cout << "second\n";
   return 0;
 }
 ```
 
-The first line of output is `甲`.
+The first line of output is `first`.
 
 ### A block
 
@@ -53,12 +53,12 @@ The first line of output is `2`.
 
 Several `<<` operators can follow one another. Nothing inserts a space unless you write one.
 
-```cpp run expect="茶18" title="Joined together"
+```cpp run expect="tea18" title="Joined together"
 #include <iostream>
 int main() {
-  std::cout << "茶" << 18 << "\n";
+  std::cout << "tea" << 18 << "\n";
   return 0;
 }
 ```
 
-The first line of output is `茶18`.
+The first line of output is `tea18`.

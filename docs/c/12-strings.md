@@ -13,17 +13,17 @@ sources:
 updated: "2026-10-15"
 ---
 
-C 的字符串是以 `\0` 结尾的字符数组。`strlen` 数的是字节，不是汉字个数。
+C 的字符串是以 `\0` 结尾的字符数组。`strlen` 数的是字节。
 
 ### 字节长度
 
-`你好` 的 UTF-8 长度是 6。
+`Hello!` 有 6 个字节。
 
 ```c run expect="6" title="六个字节"
 #include <stdio.h>
 #include <string.h>
 int main(void) {
-  printf("%d\n", (int)strlen("你好"));
+  printf("%d\n", (int)strlen("Hello!"));
   return 0;
 }
 ```
@@ -34,18 +34,18 @@ int main(void) {
 
 `strcpy` 写进调用方准备的数组。
 
-```c run expect="茶" title="复制"
+```c run expect="tea" title="复制"
 #include <stdio.h>
 #include <string.h>
 int main(void) {
   char buf[8];
-  strcpy(buf, "茶");
+  strcpy(buf, "tea");
   printf("%s\n", buf);
   return 0;
 }
 ```
 
-输出里能看到 `茶`。
+输出里能看到 `tea`。
 
 ### 比较
 
@@ -55,7 +55,7 @@ int main(void) {
 #include <stdio.h>
 #include <string.h>
 int main(void) {
-  printf("%d\n", strcmp("茶", "茶"));
+  printf("%d\n", strcmp("tea", "tea"));
   return 0;
 }
 ```

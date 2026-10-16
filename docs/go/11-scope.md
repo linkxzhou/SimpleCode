@@ -19,25 +19,25 @@ updated: "2026-10-15"
 
 写在函数外面的变量，本文件的函数都能读。它可以声明而不在某个函数里立刻使用。
 
-```go run expect="克" title="包级单位"
+```go run expect="gram" title="包级单位"
 package main
 
 import "fmt"
 
-var unit = "克"
+var unit = "gram"
 
 func main() {
 	fmt.Println(unit)
 }
 ```
 
-输出是 `克`。
+输出是 `gram`。
 
 ### 函数内的局部变量
 
 `:=` 声明的名字从这一行开始，到函数结束。参数也是局部变量。
 
-```go run expect="林" title="参数"
+```go run expect="lin" title="参数"
 package main
 
 import "fmt"
@@ -47,46 +47,46 @@ func greet(name string) {
 }
 
 func main() {
-	greet("林")
+	greet("lin")
 }
 ```
 
-输出是 `林`。
+输出是 `lin`。
 
 ### 遮蔽
 
 内层块再 `:=` 一个同名变量时，块里看到的是新的那个，外层的值不变。
 
-```go run expect="苏州" title="内层名字"
+```go run expect="suzhou" title="内层名字"
 package main
 
 import "fmt"
 
 func main() {
-	city := "杭州"
+	city := "hangzhou"
 	{
-		city := "苏州"
+		city := "suzhou"
 		fmt.Println(city)
 	}
 }
 ```
 
-输出是 `苏州`。花括号结束后，外面的 `city` 仍是杭州。
+输出是 `suzhou`。花括号结束后，外面的 `city` 仍是 hangzhou。
 
 ### 条件里的名字
 
 `if` 分号前声明的变量只活在该条件语句里。
 
-```go run expect="通过" title="条件内的分数"
+```go run expect="clear" title="条件内的分数"
 package main
 
 import "fmt"
 
 func main() {
 	if score := 80; score >= 60 {
-		fmt.Println("通过")
+		fmt.Println("clear")
 	}
 }
 ```
 
-输出是 `通过`。
+输出是 `clear`。

@@ -21,7 +21,7 @@ updated: "2026-10-15"
 
 ```lua run expect="false" title="先是失败"
 local ok, err = pcall(function()
-  error("拒绝", 0)
+  error("denied", 0)
 end)
 print(ok)
 print(err)
@@ -48,5 +48,5 @@ print(value)
 `os.execute` 会离开这只解释器。
 
 ```lua norun title="不执行外部命令"
-os.execute("echo 你好")
+os.execute("echo Hi")
 ```

@@ -19,18 +19,18 @@ updated: "2026-10-15"
 
 `=~` 匹配时给出位置，不匹配时是 `nil`。
 
-```ruby run expect="有" title="有数字"
-puts "房号 18" =~ /\d+/ ? "有" : "无"
+```ruby run expect="has" title="有数字"
+puts "room 18" =~ /\d+/ ? "has" : "none"
 ```
 
-输出里能看到 `有`。
+输出里能看到 `has`。
 
 ### 取出
 
 `match` 的 `[0]` 是整段匹配。
 
 ```ruby run expect="18" title="第一处"
-puts "房号 18".match(/\d+/)[0]
+puts "room 18".match(/\d+/)[0]
 ```
 
 输出里能看到 `18`。

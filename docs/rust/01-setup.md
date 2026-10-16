@@ -18,9 +18,9 @@ updated: "2026-10-16"
 
 下载结束，工具栏的 Run 才会把当前编辑器里的源码送去编译。
 
-```rust run expect="夜班窗口已开" title="窗口开了"
+```rust run expect="Night window open" title="窗口开了"
 fn main() {
-    println!("夜班窗口已开");
+    println!("Night window open");
 }
 ```
 这一行说明工具链已经能编过 hello。
@@ -29,9 +29,9 @@ fn main() {
 
 编辑器标签是 main.rs。不需要在本机安装 rustup。
 
-```rust run expect="只有这一份源码" title="单文件"
+```rust run expect="only this source" title="单文件"
 fn main() {
-    println!("只有这一份源码");
+    println!("only this source");
 }
 ```
 输出确认当前缓冲就是要编译的那一份。
@@ -40,9 +40,9 @@ fn main() {
 
 侧栏版本写着桌面实验。手机内存可能装不下这只编译器。
 
-```rust run expect="桌面浏览器" title="桌面提示"
+```rust run expect="desktop browser" title="桌面提示"
 fn main() {
-    println!("请在桌面浏览器打开");
+    println!("Open this in a desktop browser");
 }
 ```
 看到这句话，就表示这条环境说明对应的程序能跑。

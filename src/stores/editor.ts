@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { reactive, ref, watch } from "vue";
-import { samples } from "@/samples";
+import { locale } from "@/i18n";
+import { isUntouchedSample, sampleFor } from "@/samples";
 
 const key = (id: string) => `simplecode:code:${id}`;
 const DIALECT_KEY = "simplecode:quickjs:dialect";
@@ -34,6 +35,18 @@ export const useEditorStore = defineStore("editor", () => {
   const stored = localStorage.getItem(DIALECT_KEY);
   const dialect = ref<JsDialect>(stored === "ts" ? "ts" : "js");
   watch(dialect, (d) => localStorage.setItem(DIALECT_KEY, d));
+  watch(locale, (next) => {
+    for (const id of Object.keys(codes)) {
+      if (!isUntouchedSample(id, codes[id])) continue;
+      const nextCode = sampleFor(id, next);
+      codes[id] = nextCode;
+      try {
+        localStorage.setItem(key(id), nextCode);
+      } catch {
+        /* private mode */
+      }
+    }
+  });
 
   function activeBuffer(langId: string) {
     return bufferId(langId, dialect.value);
@@ -50,7 +63,18 @@ export const useEditorStore = defineStore("editor", () => {
           localStorage.removeItem(LEGACY_QUICKJS);
         }
       }
-      codes[id] = saved ?? samples[id] ?? "";
+      if (saved !== null && isUntouchedSample(id, saved)) {
+        const localized = sampleFor(id, locale.value);
+        if (saved !== localized) {
+          saved = localized;
+          try {
+            localStorage.setItem(key(id), saved);
+          } catch {
+            /* private mode */
+          }
+        }
+      }
+      codes[id] = saved ?? sampleFor(id, locale.value);
     }
     return codes[id];
   }
@@ -65,7 +89,7 @@ export const useEditorStore = defineStore("editor", () => {
     localStorage.removeItem(key(id));
     origins[id] = "user";
     delete docWrites[id];
-    codes[id] = samples[id] ?? "";
+    codes[id] = sampleFor(id, locale.value);
   }
   function lastDocWrite(id: string): DocWrite | undefined {
     return docWrites[id];

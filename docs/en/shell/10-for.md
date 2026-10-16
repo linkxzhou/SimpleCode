@@ -17,41 +17,41 @@ updated: "2026-10-16"
 
 ### Two words
 
-The first pass prints 茶. The second pass prints 笔.
+The first pass prints tea. The second pass prints pen.
 
-```sh run expect="茶" title="The first item"
-for item in 茶 笔
+```sh run expect="tea" title="The first item"
+for item in tea pen
 do
   printf '%s\n' "$item"
 done
 ```
 
-The first line is `茶`. The next line is `笔`.
+The first line is `tea`. The next line is `pen`.
 
 ### One word
 
-The list contains only 钥匙, so the loop body runs a single time. `item` holds that word.
+The list contains only key, so the loop body runs a single time. `item` holds that word.
 
-```sh run expect="钥匙" title="A single item"
-for item in 钥匙
+```sh run expect="key" title="A single item"
+for item in key
 do
   printf '%s\n' "$item"
 done
 ```
 
-The line shows `钥匙`.
+The line shows `key`.
 
 ### The last of three
 
-Each pass stores the current word in `last`. After 笔 and 水杯, the variable holds 车票.
+Each pass stores the current word in `last`. After pen and cup, the variable holds ticket.
 
-```sh run expect="车票" title="The last item"
-last=无
-for item in 笔 水杯 车票
+```sh run expect="ticket" title="The last item"
+last=none
+for item in pen cup ticket
 do
   last=$item
 done
 printf '%s\n' "$last"
 ```
 
-The line shows `车票`.
+The line shows `ticket`.

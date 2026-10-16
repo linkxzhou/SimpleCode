@@ -18,18 +18,18 @@ updated: "2026-10-15"
 
 `console.log` 会在末尾补换行。
 
-```js run expect="你好" title="第一行"
-console.log("你好");
+```js run expect="Hi" title="第一行"
+console.log("Hi");
 ```
 
-输出里能看到 `你好`。
+输出里能看到 `Hi`。
 
 ### 没有 document
 
 浏览器对象不存在。读写页面的代码只作阅读。
 
 ```js norun title="没有页面"
-document.body.textContent = "你好";
+document.body.textContent = "Hi";
 ```
 
 ### 语句以分号隔开

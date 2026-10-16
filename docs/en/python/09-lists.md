@@ -19,12 +19,12 @@ A list uses square brackets, and its length can change. Indexes start at 0.
 
 The first element has index 0. A negative index counts back from the end.
 
-```python run expect="茶" title="The second item"
-items = ["水", "茶"]
+```python run expect="tea" title="The second item"
+items = ["water", "tea"]
 print(items[1])
 ```
 
-Index 1 holds `茶`.
+Index 1 holds `tea`.
 
 ### Append
 

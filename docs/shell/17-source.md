@@ -27,20 +27,20 @@ source other.sh
 
 两行 `printf` 就是这一份脚本的全部。
 
-```sh run expect="甲" title="第一行"
-printf '%s\n' 甲
-printf '%s\n' 乙
+```sh run expect="first" title="第一行"
+printf '%s\n' first
+printf '%s\n' second
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。
 
 ### 点命令也不用
 
 单独一个点会去找外部命令。这里改用 `true` 占位。
 
-```sh run expect="继续" title="同一文件继续"
+```sh run expect="next" title="同一文件继续"
 true
-printf '%s\n' 继续
+printf '%s\n' next
 ```
 
-输出里能看到 `继续`。
+输出里能看到 `next`。

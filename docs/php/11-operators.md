@@ -42,10 +42,10 @@ echo 7 % 2, "\n";
 
 `??` 在左边是 null 时改用右边。
 
-```php run expect="匿名" title="没有名字"
+```php run expect="anon" title="没有名字"
 <?php
 $name = null;
-echo $name ?? "匿名", "\n";
+echo $name ?? "anon", "\n";
 ```
 
-输出里能看到 `匿名`。
+输出里能看到 `anon`。

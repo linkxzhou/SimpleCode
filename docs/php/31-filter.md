@@ -28,15 +28,15 @@ echo filter_var("ada@shop.test", FILTER_VALIDATE_EMAIL), "\n";
 
 ### 邮箱拒绝
 
-没有 @ 的文字得到 false，这里改打「拒绝」。
+没有 @ 的文字得到 false，这里改打 denied。
 
-```php run expect="拒绝" title="不像邮箱"
+```php run expect="denied" title="不像邮箱"
 <?php
 $ok = filter_var("nope", FILTER_VALIDATE_EMAIL);
-echo $ok === false ? "拒绝\n" : "通过\n";
+echo $ok === false ? "denied\n" : "clear\n";
 ```
 
-输出里能看到 `拒绝`。
+输出里能看到 `denied`。
 
 ### 整数
 

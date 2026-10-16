@@ -31,21 +31,21 @@ The call prints `7`.
 
 The line after `if` or `for` must be indented. Otherwise the interpreter treats the block as empty.
 
-```python run expect="正" title="A conditional block"
+```python run expect="pos" title="A conditional block"
 n = 2
 if n > 0:
-    print("正")
+    print("pos")
 ```
 
-You will see `正`.
+You will see `pos`.
 
 ### One simple statement per line
 
 A semicolon can squeeze two statements onto one line. In these lessons, still write one statement per line so the printed lines stay easy to match.
 
-```python run expect="甲" title="Two lines of output"
-print("甲")
-print("乙")
+```python run expect="first" title="Two lines of output"
+print("first")
+print("second")
 ```
 
-The first printed line is `甲`.
+The first printed line is `first`.

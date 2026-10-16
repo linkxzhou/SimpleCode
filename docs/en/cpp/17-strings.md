@@ -13,7 +13,7 @@ sources:
 updated: "2026-10-16"
 ---
 
-`std::string` counts bytes, not characters. The two characters in `你好` occupy 6 bytes in UTF-8, so `size` returns 6.
+`std::string` counts bytes. `Hello!` has length 6, so `size` returns 6.
 
 ### Concatenation
 
@@ -34,13 +34,13 @@ The joined text is `buy pen`.
 
 ### Length in bytes
 
-Two Chinese characters occupy 6 bytes in UTF-8. `size` reports that byte count, not 2.
+`Hello!` occupies 6 bytes. `size` reports that byte count.
 
 ```cpp run expect="6" title="Six bytes"
 #include <iostream>
 #include <string>
 int main() {
-  std::string s = "你好";
+  std::string s = "Hello!";
   std::cout << s.size() << "\n";
   return 0;
 }

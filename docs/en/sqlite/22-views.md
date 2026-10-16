@@ -19,14 +19,14 @@ A view is a named `SELECT`. When the base table changes, a later query through t
 
 The view keeps names whose price is greater than 10.
 
-```sql run expect="茶" title="The costly view"
+```sql run expect="tea" title="The costly view"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18), ('水', 6);
+INSERT INTO item VALUES ('tea', 18), ('water', 6);
 CREATE VIEW dear AS SELECT name FROM item WHERE price > 10;
 SELECT name FROM dear;
 ```
 
-Selecting from `dear` returns `茶`.
+Selecting from `dear` returns `tea`.
 
 ### New base rows appear in the view
 
@@ -34,13 +34,13 @@ Insert another expensive item after the view exists. The view picks it up on the
 
 ```sql run expect="2" title="Two rows"
 CREATE TABLE item (name TEXT, price INT);
-INSERT INTO item VALUES ('茶', 18);
+INSERT INTO item VALUES ('tea', 18);
 CREATE VIEW dear AS SELECT name FROM item WHERE price > 10;
-INSERT INTO item VALUES ('壶', 30);
+INSERT INTO item VALUES ('pot', 30);
 SELECT COUNT(*) FROM dear;
 ```
 
-Tea and 壶 both cost more than 10, so the view's `COUNT(*)` is `2`.
+tea and pot both cost more than 10, so the view's `COUNT(*)` is `2`.
 
 ### Drop the view only
 

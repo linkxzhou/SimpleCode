@@ -19,15 +19,15 @@ The preprocessor runs before compilation. A macro substitutes text. It does not 
 
 `stdio.h` declares `printf`. The call in `main` is valid because that header was included.
 
-```c run expect="有头文件" title="It compiles"
+```c run expect="has header" title="It compiles"
 #include <stdio.h>
 int main(void) {
-  printf("有头文件\n");
+  printf("has header\n");
   return 0;
 }
 ```
 
-The output contains `有头文件`.
+The output contains `has header`.
 
 ### define
 
@@ -48,15 +48,15 @@ The output contains `5`.
 
 `SHOW` is defined as 1, so `#if SHOW` keeps the `printf`. A zero in that directive would remove the call before compilation.
 
-```c run expect="显示" title="Macro is true"
+```c run expect="show" title="Macro is true"
 #include <stdio.h>
 #define SHOW 1
 int main(void) {
 #if SHOW
-  printf("显示\n");
+  printf("show\n");
 #endif
   return 0;
 }
 ```
 
-The output contains `显示`.
+The output contains `show`.

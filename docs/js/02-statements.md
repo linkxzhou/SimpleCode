@@ -31,22 +31,22 @@ console.log(n);
 
 块里声明的 `let` 出了块就不能再用。这里只在块里打印。
 
-```js run expect="杭州" title="块内"
+```js run expect="hangzhou" title="块内"
 {
-  let city = "杭州";
+  let city = "hangzhou";
   console.log(city);
 }
 ```
 
-输出里能看到 `杭州`。
+输出里能看到 `hangzhou`。
 
 ### 空语句没有输出
 
 单独一个分号什么也不做。真正的结果来自后面的 `console.log`。
 
-```js run expect="有" title="跳过空语句"
+```js run expect="has" title="跳过空语句"
 ;
-console.log("有");
+console.log("has");
 ```
 
-输出里能看到 `有`。
+输出里能看到 `has`。

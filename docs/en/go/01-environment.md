@@ -19,17 +19,17 @@ Learning Go on a workstation means installing a toolchain and placing it on `PAT
 
 Run passes the editor text to Yaegi 0.16. Nothing here calls `go install`, and there is no `GOROOT` to edit.
 
-```go run expect="已就绪" title="Runs with no install step"
+```go run expect="ready" title="Runs with no install step"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("已就绪")
+	fmt.Println("ready")
 }
 ```
 
-The status line is `已就绪`.
+The status line is `ready`.
 
 ### Toolchain commands are not source
 

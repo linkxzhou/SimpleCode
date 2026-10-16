@@ -45,9 +45,9 @@ puts twice(4)
 
 一行写一句更清楚。下面两句各占一行。
 
-```ruby run expect="甲" title="第一行"
-puts "甲"
-puts "乙"
+```ruby run expect="first" title="第一行"
+puts "first"
+puts "second"
 ```
 
-输出里能看到 `甲`。
+输出里能看到 `first`。

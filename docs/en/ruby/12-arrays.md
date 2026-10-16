@@ -19,11 +19,11 @@ Indexes start at 0. `push` changes the array you already have. `map` returns a f
 
 The second item sits at index 1. Square brackets select that slot. The item at index 0 is not the one printed.
 
-```ruby run expect="茶" title="Second item"
-puts ["水", "茶"][1]
+```ruby run expect="tea" title="Second item"
+puts ["water", "tea"][1]
 ```
 
-The printed line is `茶`.
+The printed line is `tea`.
 
 ### push
 

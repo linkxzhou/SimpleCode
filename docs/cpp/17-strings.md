@@ -13,7 +13,7 @@ sources:
 updated: "2026-10-15"
 ---
 
-`std::string` 按字节计数。`你好` 的长度是 6，不是 2。
+`std::string` 按字节计数。`Hello!` 的长度是 6。
 
 ### 拼接
 
@@ -34,13 +34,13 @@ int main() {
 
 ### 字节长度
 
-两个汉字在 UTF-8 里占 6 个字节。
+`Hello!` 有 6 个字节。
 
 ```cpp run expect="6" title="六个字节"
 #include <iostream>
 #include <string>
 int main() {
-  std::string s = "你好";
+  std::string s = "Hello!";
   std::cout << s.size() << "\n";
   return 0;
 }

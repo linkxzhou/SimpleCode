@@ -19,17 +19,17 @@ updated: "2026-10-15"
 
 `package` 必须放在非注释代码的最前。程序的包名是 `main`。
 
-```go run expect="main 包" title="包声明"
+```go run expect="main bag" title="包声明"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("main 包")
+	fmt.Println("main bag")
 }
 ```
 
-输出是 `main 包`。
+输出是 `main bag`。
 
 ### 导入
 
@@ -54,17 +54,17 @@ func main() {
 
 `func main()` 没有参数，也没有返回值。解释器从这里开始执行。
 
-```go run expect="进入" title="入口"
+```go run expect="enter" title="入口"
 package main
 
 import "fmt"
 
 func main() {
-	fmt.Println("进入")
+	fmt.Println("enter")
 }
 ```
 
-输出是 `进入`。
+输出是 `enter`。
 
 ### 导入了就要用到
 

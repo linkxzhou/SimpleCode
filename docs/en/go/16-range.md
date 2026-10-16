@@ -19,13 +19,13 @@ updated: "2026-10-16"
 
 The first variable is the index. The second is a copy of the element.
 
-```go run expect="1:茶" title="Index and element"
+```go run expect="1:tea" title="Index and element"
 package main
 
 import "fmt"
 
 func main() {
-	items := []string{"水", "茶"}
+	items := []string{"water", "tea"}
 	for i, name := range items {
 		if i == 1 {
 			fmt.Printf("%d:%s\n", i, name)
@@ -34,7 +34,7 @@ func main() {
 }
 ```
 
-The selected pair prints `1:茶`.
+The selected pair prints `1:tea`.
 
 ### Keeping only the element
 
@@ -47,7 +47,7 @@ import "fmt"
 
 func main() {
 	n := 0
-	for _, name := range []string{"茶", "水"} {
+	for _, name := range []string{"tea", "water"} {
 		if name != "" {
 			n++
 		}
@@ -69,14 +69,14 @@ import "fmt"
 
 func main() {
 	n := 0
-	for range "你好" {
+	for range "Hi" {
 		n++
 	}
 	fmt.Println(n)
 }
 ```
 
-Two runes produce `2`. `len("你好")` is still 6.
+The loop counts `2` runes. Each ASCII character is one byte, so `len` is 2 as well.
 
 ### Map order is unspecified
 
@@ -88,7 +88,7 @@ package main
 import "fmt"
 
 func main() {
-	price := map[string]int{"茶": 18}
+	price := map[string]int{"tea": 18}
 	for _, v := range price {
 		fmt.Println(v)
 	}

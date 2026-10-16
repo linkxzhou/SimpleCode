@@ -38,15 +38,15 @@ print(7 % 2)
 
 ### 拼接和比较
 
-相等时把「是」打出来。
+相等时把 yes 打出来。
 
-```lua run expect="是" title="相等"
+```lua run expect="yes" title="相等"
 local price = 18
 if price == 18 then
-  print("是")
+  print("yes")
 else
-  print("否")
+  print("no")
 end
 ```
 
-输出里能看到 `是`。
+输出里能看到 `yes`。

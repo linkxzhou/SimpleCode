@@ -24,7 +24,7 @@ interface Item {
   name: string;
   price: number;
 }
-const item: Item = { name: "茶", price: 18 };
+const item: Item = { name: "tea", price: 18 };
 console.log(item.price);
 ```
 
@@ -34,15 +34,15 @@ The price field logs `18`.
 
 `readonly` forbids a later assignment. Reading the field is unaffected.
 
-```ts run expect="茶" title="Read the name"
+```ts run expect="tea" title="Read the name"
 interface Item {
   readonly name: string;
 }
-const item: Item = { name: "茶" };
+const item: Item = { name: "tea" };
 console.log(item.name);
 ```
 
-The name field logs `茶`.
+The name field logs `tea`.
 
 ### A field marked optional
 
@@ -53,7 +53,7 @@ interface Item {
   name: string;
   note?: string;
 }
-const item: Item = { name: "茶" };
+const item: Item = { name: "tea" };
 console.log(item.note);
 ```
 

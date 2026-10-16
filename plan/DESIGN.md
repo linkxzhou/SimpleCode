@@ -647,17 +647,15 @@ npm test                # vitest；npm run test:e2e → playwright
 
 ### 20.2 界面语言
 
-不用 vue-i18n。`src/i18n` 放 `zh` / `en` 两张表，`locale` 默认 `zh`，`localStorage` 键是 `simplecode:locale`。`t(key)` 在渲染时读 `locale`，这样切换会刷新。侧栏、工具栏、抽屉、关于弹层、终端状态，以及下载进度和失败句，都走这张表。书的正文仍是中文，不翻译。
-
-界面是 EN 时，打开快速入门先看到单色占位，标题是 “English Quick Start is under construction”。按钮 “View the Chinese version” 在这一次打开里显示现有中文书，界面语言不变。关掉抽屉再打开，占位回来。切回「中」则直接显示中文书。
+不用 vue-i18n。`src/i18n` 放 `zh` / `en` 两张表，`locale` 默认 `zh`，`localStorage` 键是 `simplecode:locale`。`t(key)` 在渲染时读 `locale`，这样切换会刷新。侧栏、工具栏、抽屉、关于弹层、终端状态，以及下载进度和失败句，都走这张表。中文书在 `docs/<book>/`，英文书在 `docs/en/<book>/`。界面是 EN 时打开已有的英文；缺的那一本或那一章仍显示 “English Quick Start is under construction”。
 
 ### 20.3 下载条
 
-侧栏语言行里的 wasm 进度条（`data-testid="wasm-progress"`）使用 `my-[8px]`，上下边距各 8px。
+侧栏语言按钮里的 wasm 进度条（`data-testid="wasm-progress"`）绝对定位在按钮底边：`inset-x-0 bottom-0 h-0.5`，与按钮同宽，下沿对齐。不要 `my-[8px]`，也不要左右留白。
 
 ### 20.4 测试
 
-`tests/i18n-unit.test.ts` 检查两种语言的键一致、关于文案列出十二种语言、进度条类名含 `my-[8px]`。`tests/ui-chrome.spec.mjs` 打开弹层、刷新后语言仍在、英文占位、以及进度条的 computed margin。`scripts/check-mono.mjs` 把新弹层算进去。
+`tests/i18n-unit.test.ts` 检查两种语言的键一致、关于文案列出十二种语言、进度条类名含 `inset-x-0 bottom-0` 且不含 `my-[8px]`。`tests/ui-chrome.spec.mjs` 打开弹层、刷新后语言仍在、英文 Python 书、以及进度条与按钮底边对齐。`scripts/check-mono.mjs` 把新弹层算进去。
 
 ### 20.5 终端跟着语言走
 
