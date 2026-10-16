@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Run every runnable docs fence in the preview app and check exit status + expect.
 import { spawn } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
 import { chromium } from "playwright";
@@ -23,30 +23,34 @@ function stripAnsi(text) {
 function collect() {
   const cases = [];
   for (const book of BOOKS) {
-    const dir = join("docs", book);
-    for (const file of readdirSync(dir).filter((name) => name.endsWith(".md")).sort()) {
-      const raw = readFileSync(join(dir, file), "utf8");
-      const body = matter(raw).content;
-      const re = /```([^\n]*)\n([\s\S]*?)```/g;
-      let match;
-      let index = 0;
-      while ((match = re.exec(body))) {
-        const parsed = parseFenceInfo(match[1]);
-        const code = match[2].replace(/\n$/, "");
-        const n = index++;
-        if (!parsed.attrs.runnable || parsed.attrs.smoke === "skip") continue;
-        const runtime = resolveRuntime(parsed.lang);
-        if (!runtime) continue;
-        cases.push({
-          id: `${book}/${file.replace(/\.md$/, "")}#${n}`,
-          runtime,
-          lang: parsed.lang,
-          code,
-          stdin: parsed.attrs.stdin,
-          stdinEOF: parsed.attrs.eof,
-          expect: parsed.attrs.expect,
-          exit: parsed.attrs.exit ?? 0,
-        });
+    for (const edition of ["zh", "en"]) {
+      const dir = edition === "en" ? join("docs", "en", book) : join("docs", book);
+      if (!existsSync(dir)) continue;
+      for (const file of readdirSync(dir).filter((name) => name.endsWith(".md")).sort()) {
+        const raw = readFileSync(join(dir, file), "utf8");
+        const body = matter(raw).content;
+        const re = /```([^\n]*)\n([\s\S]*?)```/g;
+        let match;
+        let index = 0;
+        while ((match = re.exec(body))) {
+          const parsed = parseFenceInfo(match[1]);
+          const code = match[2].replace(/\n$/, "");
+          const n = index++;
+          if (!parsed.attrs.runnable || parsed.attrs.smoke === "skip") continue;
+          const runtime = resolveRuntime(parsed.lang);
+          if (!runtime) continue;
+          const stem = file.replace(/\.md$/, "");
+          cases.push({
+            id: edition === "en" ? `en/${book}/${stem}#${n}` : `${book}/${stem}#${n}`,
+            runtime,
+            lang: parsed.lang,
+            code,
+            stdin: parsed.attrs.stdin,
+            stdinEOF: parsed.attrs.eof,
+            expect: parsed.attrs.expect,
+            exit: parsed.attrs.exit ?? 0,
+          });
+        }
       }
     }
   }

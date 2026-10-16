@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Button } from "@/components/ui/button";
 import DocsHeader from "./DocsHeader.vue";
 import ChapterList from "./ChapterList.vue";
@@ -8,7 +8,6 @@ import { useDocsStore } from "@/stores/docs";
 import { locale, t } from "@/i18n";
 
 const docs = useDocsStore();
-const englishHold = computed(() => locale.value === "en" && !docs.preferChinese);
 const mobile = ref(window.matchMedia("(max-width: 767px)").matches);
 const mq = window.matchMedia("(max-width: 767px)");
 function onMq() {
@@ -83,9 +82,9 @@ onBeforeUnmount(() => {
           @search="docs.openSearch()"
         />
         <div class="flex min-h-0 flex-1 flex-col">
-          <div v-if="englishHold" class="flex flex-1 flex-col items-start gap-3 px-5 py-8" data-testid="docs-en-placeholder">
+          <div v-if="docs.gap" class="flex flex-1 flex-col items-start gap-3 px-5 py-8" data-testid="docs-en-placeholder" :data-gap="docs.gap">
             <p class="text-sm font-medium">{{ t("enPlaceholderTitle") }}</p>
-            <p class="text-sm leading-6 text-muted-foreground">{{ t("enPlaceholderBody") }}</p>
+            <p class="text-sm leading-6 text-muted-foreground">{{ docs.gap === "chapter" ? t("enPlaceholderChapter") : t("enPlaceholderBody") }}</p>
             <Button type="button" size="sm" data-testid="docs-view-zh" @click="docs.revealChinese()">{{ t("viewChinese") }}</Button>
           </div>
           <div v-else-if="docs.pending" class="flex flex-1 flex-col gap-2 px-5 py-8" data-testid="docs-soon">

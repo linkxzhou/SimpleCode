@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { createHighlighter } from "shiki";
 import { shouldBackup } from "../src/docs/backup.ts";
+import { chapterId, chapterSlug, englishGap } from "../src/docs/edition.ts";
 import { parseFenceInfo } from "../src/docs/fence.ts";
 import { DOC_LANG_TO_RUNTIME, resolveRuntime } from "../src/docs/runtime.ts";
 import { collapseShikiLines } from "../src/docs/text.ts";
@@ -25,6 +26,7 @@ describe("parseFenceInfo", () => {
     assert.equal(parseFenceInfo("go").attrs.runnable, true);
     assert.equal(parseFenceInfo("python norun").attrs.runnable, false);
     assert.equal(parseFenceInfo("python norun").attrs.reason, "仅供阅读");
+    assert.equal(parseFenceInfo("python norun", "en").attrs.reason, "For reading only");
     assert.equal(parseFenceInfo("text").attrs.runnable, false);
     assert.equal(parseFenceInfo("").attrs.runnable, false);
     assert.equal(parseFenceInfo('c file="util.h" group="ex3"').attrs.runnable, false);
@@ -33,6 +35,17 @@ describe("parseFenceInfo", () => {
     assert.equal(parseFenceInfo("python exit=1").attrs.exit, 1);
     assert.equal(parseFenceInfo("c++").lang, "c++");
     assert.equal(parseFenceInfo("c++").attrs.runnable, true);
+  });
+});
+
+describe("english edition", () => {
+  it("shows the placeholder only when an English book or chapter is missing", () => {
+    assert.equal(englishGap({ edition: "zh", slugs: [], viewingChapter: false }), null);
+    assert.equal(englishGap({ edition: "en", slugs: [], viewingChapter: false }), "book");
+    assert.equal(englishGap({ edition: "en", slugs: ["index"], slug: "03-strings", viewingChapter: true }), "chapter");
+    assert.equal(englishGap({ edition: "en", slugs: ["index", "03-strings"], slug: "03-strings", viewingChapter: true }), null);
+    assert.equal(chapterId("python", "index", "en"), "en/python/index");
+    assert.equal(chapterSlug("en/python/01-hello"), "01-hello");
   });
 });
 

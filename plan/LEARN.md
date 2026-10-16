@@ -1671,4 +1671,24 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 
 `tests/docs-length.test.ts` 的 `TUTORIAL` 已含 `linux`。验收沿用 §19：30 章，每章至少三个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块，并和另外十本书一起做 60 字不重复。`tests/docs-smoke.mjs` 会跑这些 `linux` 块：第一块启动客户机，后面的块复用快照。
 
+---
+
+## 21. 英文快速入门（2026-10-16）
+
+中文仍在 `docs/<book>/*.md`。英文是平行的一套，目录是 `docs/en/<book>/<同一文件名>.md`。十二本书都有英文：`python`、`js`、`go`、`ruby`、`sqlite`、`c`、`cpp`、`php`、`lua`、`shell`、`linux`、`rust`。不使用 `<file>.en.md`，避免和中文文件混在同一目录里让 `readdir` 读重。
+
+`scripts/docs/render.ts` 把 `docs/en` 当成语种根，不当成书 id。英文章节 id 是 `en/<book>/<slug>`，frontmatter 的 `language` 仍是书 id（`python`，不是 `en`）。`chapter`、`level`、`minutes`、`sources` 与中文那一章相同。`title` 和 `goals` 用英文。渲染器给英文文首插入 `Goals`，不再插入「本章目标」。只读块的原因在英文渲染里是 “For reading only”。
+
+正文按 §19 的形状写，句子是英文：正式教程标题（Python Tutorial、Go Variables、C Pointers），章前几句话，然后至少三个 `###`。一个 `###` 只讲一件事。不要用 Common mistakes、Best practices、Summary、Exercises 这四节骨架。
+
+可运行围栏的程序、`expect`、`stdin`、`exit`、`smoke` 与中文那一章相同，这样 docs-smoke 对同一段程序得到同一份输出。可以改围栏的 `title`。程序打印出来的中文留在字符串里，英文讲解引用这份输出，不把 `print("你好")` 改成 `print("hello")`。注释若改写，不能改变程序行为。
+
+界面语言是 EN 且读者没有点 “View the Chinese version” 时，抽屉用英文目录和英文章节。某一本或某一章还没有英文文件时，仍显示 “English Quick Start is under construction”，按钮去看中文。中文界面继续只打开 `docs/<book>/`。
+
+验收：
+
+- `tests/docs-length.test.ts` 对 `docs/en/<book>` 检查：文件名与中文一一对应；每章至少三个 `###`；引言不超过 140 个英文词；每节 1 到 280 个英文词；至少两个可运行块；十二本英文一起做 16 个英文词不重复。
+- 同一测试核对围栏：去掉 `title` 之后，info 和代码正文与中文一致。
+- `tests/docs-smoke.mjs` 对 `docs/en` 再跑一遍可运行块（Rust 仍要 `SIMPLECODE_RUST_DOCS=1`）。用例 id 带 `en/` 前缀。
+
 

@@ -55,7 +55,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 
 - 折叠侧栏只有图标（约 56px）。缓存用量、清除、主题、展开都在**底部**。展开时一行一种语言。
 - 展开时，SimpleCode 标题右侧是 `?` 和「中 / EN」胶囊。`?` 打开关于弹层。折叠后这两项在页脚，56px 的标题行放不下胶囊。
-- 界面文案走 `src/i18n`（`zh` / `en`，默认 `zh`，`localStorage` 键 `simplecode:locale`）。书的 Markdown 不翻译。界面是 EN 时，快速入门先显示英文占位，点 “View the Chinese version” 才看中文书。
+- 界面文案走 `src/i18n`（`zh` / `en`，默认 `zh`，`localStorage` 键 `simplecode:locale`）。中文书在 `docs/<book>/`，英文书在 `docs/en/<book>/`（同一文件名）。界面是 EN 时抽屉打开英文；缺的那一本或那一章仍显示 “English Quick Start is under construction”，点 “View the Chinese version” 看中文。
 - 侧栏 wasm 进度条有 `my-[4px]`，上下比贴边时各多 4px。
 - Run 只用 `src/components/RunButton.vue`：`Button` 的 `size="xs"`（高 28px），图标 Play，文案 `Run`。工具栏和文档代码块共用它。
 - 文档抽屉的 `top` 是 `var(--editor-toolbar-h)`（`src/style.css` 里 2.5rem）。抽屉不得盖住 Run 和语言切换。
@@ -77,7 +77,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 标准在 `plan/LEARN.md` §19。对照是菜鸟教程的**目录形状**（正式章名、一节一件事）。句子和示例字符串自己写，不抄原文。
 
 - 第 0 章文件名是 `index.md`。其余章节不要用 `index` 当 slug，否则会盖住概览。
-- 每章至少三个 `###`。章前引言不超过 180 个汉字。每节去掉代码后 1 到 400 个汉字。
+- 每章至少三个 `###`。中文章前引言不超过 180 个汉字，每节去掉代码后 1 到 400 个汉字。英文在 `docs/en/<book>/`，引言不超过 140 个词，每节 1 到 280 个词。详见 `plan/LEARN.md` §21。
 - 每章至少两个可运行块：info 里有 `run`，并有 `expect="子串"`。
 - `norun` 只供阅读，旁边写原因。`smoke=skip` 仍算结构测试里的可运行块，`docs-smoke` 不执行它（Python 的 `while True` 用了这个）。
 - 不要再写固定的「常见错误 / 最佳实践 / 小结 / 练习」四节。
@@ -140,9 +140,9 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **C++ 宿主编译和聚合初始化。** 本机 g++ 的头文件路径可能和选中的编译器版本不一致。教程里的派生类在 C++14 下不是聚合，`Rect{w,h}` 需要构造函数。这些是写示例时的约束，浏览器里的运行时仍是 clang 8。
 
-**界面文案两套一起改。** 侧栏、工具栏、抽屉、关于弹层、终端状态和下载失败句都在 `src/i18n/messages.ts`。新键要同时有 `zh` 和 `en`，`en` 的类型盖住 `zh` 的键。`t()` 必须在模板或 computed 里读到 `locale`，不然切换语言不刷新。不要为这个再加 vue-i18n。书的 Markdown、围栏里的「仅供阅读」不进这张表。默认是 `zh`。`tests/learn.spec.mjs` 认「返回目录」和「Python 快速入门」，那个用例的浏览器不要预写 `simplecode:locale=en`。
+**界面文案两套一起改。** 侧栏、工具栏、抽屉、关于弹层、终端状态和下载失败句都在 `src/i18n/messages.ts`。新键要同时有 `zh` 和 `en`，`en` 的类型盖住 `zh` 的键。`t()` 必须在模板或 computed 里读到 `locale`，不然切换语言不刷新。不要为这个再加 vue-i18n。书的 Markdown 不进这张表。只读原因由渲染器写进章节：中文是「仅供阅读」，英文是 “For reading only”。默认是 `zh`。`tests/learn.spec.mjs` 认「返回目录」和「Python 快速入门」，那个用例的浏览器不要预写 `simplecode:locale=en`。
 
-**英文快速入门还没有。** 界面是 EN 时抽屉先放占位 “English Quick Start is under construction”，不直接铺开中文章节。点 “View the Chinese version” 才显示现有中文书，界面语言不变。关掉再开，占位回来。
+**英文书跟中文书平行。** 中文在 `docs/<book>/*.md`，英文在 `docs/en/<book>/<同一文件名>.md`。章节 id 中文是 `python/index`，英文是 `en/python/index`。frontmatter 的 `language` 仍是书 id。可运行围栏的程序、`expect` 和 `stdin` 与中文相同，只改讲解和围栏 `title`。界面是 EN 时读英文目录。整本或单章还没有英文文件时，抽屉显示 “English Quick Start is under construction”，点 “View the Chinese version” 回到中文，界面语言不变。关掉再开，若仍是 EN，再按有没有英文文件决定。
 
 **折叠侧栏放不下标题行控件。** `?` 和「中 / EN」在展开时位于 SimpleCode 右侧。宽度落到 5rem 以下时，标题行控件带 `sidebar-expanded-only`，避免被裁切；折叠后的同一对控件在页脚。页脚的窄栏规则会把 `button` 收成 2rem 方块，语言胶囊要单独放开宽度。
 

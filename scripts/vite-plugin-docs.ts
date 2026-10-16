@@ -13,7 +13,9 @@ function moduleSource(cache: RenderedDocs): string {
     .map((id) => `  ${JSON.stringify(id)}: () => import(${JSON.stringify(CHAPTER_ID + id)})`)
     .join(",\n");
   return `export const books = ${jsString(cache.books)};
+export const booksEn = ${jsString(cache.booksEn)};
 export const searchDocs = ${jsString(cache.searchDocs)};
+export const searchDocsEn = ${jsString(cache.searchDocsEn)};
 const loaders = {
 ${loaders}
 };

@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { computed, ref, watch } from "vue";
 import MiniSearch from "minisearch";
-import { books, loadChapter, searchDocs } from "virtual:docs-index";
+import { books, booksEn, loadChapter, searchDocs, searchDocsEn } from "virtual:docs-index";
+import { chapterSlug, englishGap } from "@/docs/edition";
 import type { ChapterDoc } from "@/docs/types";
 import { BOOK_LABEL, isBookId, RUNTIME_TO_BOOK, type BookId } from "@/docs/runtime";
-import { t } from "@/i18n";
+import { locale, t } from "@/i18n";
 import { useLanguageStore } from "./language";
 
 const PROGRESS_KEY = "simplecode:learn:progress";
@@ -36,10 +37,12 @@ export const useDocsStore = defineStore("docs", () => {
   const focusSearch = ref(false);
   const live = ref("");
   const preferChinese = ref(false);
+  const useEnglish = computed(() => locale.value === "en" && !preferChinese.value);
+  const catalog = computed(() => (useEnglish.value ? booksEn : books));
 
   const bookIds = books.map((b) => b.id);
   const pendingId = ref<BookId | undefined>();
-  const book = computed(() => books.find((b) => b.id === bookId.value));
+  const book = computed(() => catalog.value.find((b) => b.id === bookId.value));
   const chapters = computed(() => book.value?.chapters ?? []);
   const pending = computed(() => (pendingId.value ? !bookIds.includes(pendingId.value) : false));
   const title = computed(() => {
@@ -47,21 +50,30 @@ export const useDocsStore = defineStore("docs", () => {
     return id ? t("quickStartNamed", { label: BOOK_LABEL[id] }) : t("quickStart");
   });
   const current = computed(() => chapters.value.find((c) => c.id === chapterId.value));
+  const gap = computed(() =>
+    englishGap({
+      edition: useEnglish.value ? "en" : "zh",
+      slugs: booksEn.find((b) => b.id === bookId.value)?.chapters.map((c) => c.slug) ?? [],
+      slug: chapterId.value ? chapterSlug(chapterId.value) : undefined,
+      viewingChapter: view.value === "chapter",
+    }),
+  );
 
   let mini: MiniSearch<{ id: string; title: string; headings: string; text: string }> | undefined;
   function matches(id: string): boolean {
     const q = query.value.trim();
     if (!q) return true;
+    const corpus = useEnglish.value ? searchDocsEn : searchDocs;
     if (!mini) {
       mini = new MiniSearch({
         fields: ["title", "headings", "text"],
         storeFields: ["id"],
         searchOptions: { prefix: true, fuzzy: 0.2, combineWith: "OR" },
       });
-      mini.addAll(searchDocs);
+      mini.addAll(corpus);
     }
     const nq = q.toLowerCase();
-    const doc = searchDocs.find((d) => d.id === id);
+    const doc = corpus.find((d) => d.id === id);
     if (doc && `${doc.title}\n${doc.headings}\n${doc.text}`.toLowerCase().includes(nq)) return true;
     try {
       return mini.search(q).some((r) => r.id === id);
@@ -79,15 +91,19 @@ export const useDocsStore = defineStore("docs", () => {
     localStorage.setItem(POSITION_KEY, JSON.stringify(positions.value));
   }
 
-  function goBook(id: BookId, preferChapter: boolean) {
+  function goBook(id: BookId, preferChapter: boolean, slug?: string) {
     bookId.value = id;
     query.value = "";
-    const pos = positions.value[id];
-    const known = books.find((b) => b.id === id)?.chapters.some((c) => c.id === pos);
-    if (preferChapter && pos && known) {
-      chapterId.value = pos;
+    const list = catalog.value.find((b) => b.id === id)?.chapters ?? [];
+    const wanted = slug ?? (positions.value[id] ? chapterSlug(positions.value[id]) : undefined);
+    const found = wanted ? list.find((c) => c.slug === wanted) : undefined;
+    if (preferChapter && found) {
+      chapterId.value = found.id;
       view.value = "chapter";
-      void ensureChapter(pos);
+      void ensureChapter(found.id);
+    } else if (preferChapter && wanted && useEnglish.value) {
+      chapterId.value = `en/${id}/${wanted}`;
+      view.value = "chapter";
     } else {
       view.value = "toc";
     }
@@ -119,8 +135,19 @@ export const useDocsStore = defineStore("docs", () => {
     live.value = t("closedTutorial");
   }
   function revealChinese() {
+    const slug = chapterId.value ? chapterSlug(chapterId.value) : undefined;
+    const id = bookId.value;
+    const prefer = view.value === "chapter";
     preferChinese.value = true;
+    if (id) goBook(id, prefer, slug);
   }
+
+  watch(useEnglish, () => {
+    mini = undefined;
+    if (!open.value || !bookId.value) return;
+    const slug = chapterId.value ? chapterSlug(chapterId.value) : undefined;
+    goBook(bookId.value, view.value === "chapter", slug);
+  });
   function toggle() {
     if (open.value) close();
     else show();
@@ -211,6 +238,7 @@ export const useDocsStore = defineStore("docs", () => {
     bookIds,
     pending,
     preferChinese,
+    gap,
     book,
     chapters,
     visibleChapters,
