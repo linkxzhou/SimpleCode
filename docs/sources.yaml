@@ -176,3 +176,9 @@ wasi-sh:
   url: https://github.com/linkxzhou/SimpleCode/blob/main/scripts/builders/shell/wasi-sh.c
   license: MIT
   adapt: true
+
+v86-buildroot:
+  title: v86 Buildroot Linux 6.8 image
+  url: https://github.com/copy/v86
+  license: BSD-2-Clause / GPL-2.0
+  adapt: false
