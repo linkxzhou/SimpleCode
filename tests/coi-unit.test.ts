@@ -57,6 +57,9 @@ describe("coi worker source", () => {
   it("sets require-corp and does not load a remote script", () => {
     assert.match(src, /Cross-Origin-Embedder-Policy", "require-corp"/);
     assert.match(src, /Cross-Origin-Opener-Policy", "same-origin"/);
+    assert.match(src, /content-encoding/);
+    assert.match(src, /cache: "reload"/);
+    assert.match(src, /response\.body == null/);
     assert.doesNotMatch(src, /https?:\/\//);
     assert.doesNotMatch(src, /credentialless/);
   });

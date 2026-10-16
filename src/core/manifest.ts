@@ -1,4 +1,5 @@
 import { t } from "@/i18n";
+import { fetchPinned, PinnedMissing } from "./pinned-fetch";
 
 export type AssetKind = "wasm" | "fs" | "bin";
 
@@ -51,9 +52,18 @@ export interface Manifest {
 export const WASM_BASE = `${import.meta.env.BASE_URL}wasm/`;
 
 export async function loadManifest(): Promise<Manifest> {
-  const res = await fetch(`${WASM_BASE}manifest.json`, { cache: "no-cache" });
-  if (!res.ok) throw new Error(t("manifestHttp", { status: res.status }));
-  return (await res.json()) as Manifest;
+  try {
+    const bytes = await fetchPinned({ url: `${WASM_BASE}manifest.json` });
+    return JSON.parse(new TextDecoder().decode(bytes)) as Manifest;
+  } catch (e) {
+    if (e instanceof PinnedMissing) {
+      const http = /^HTTP (\d+)$/.exec(e.reason);
+      if (http) throw new Error(t("manifestHttp", { status: Number(http[1]) }));
+      throw new Error(t("manifestMissing", { detail: e.reason }));
+    }
+    if (e instanceof SyntaxError) throw new Error(t("manifestMissing", { detail: e.message }));
+    throw e;
+  }
 }
 
 /** All asset ids a language needs (deduped). */

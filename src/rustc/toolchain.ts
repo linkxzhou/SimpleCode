@@ -3,6 +3,7 @@
 // `./build.sh vendor --rust` verifies those archives and writes the unpacked
 // files under wasm/rust/. Otherwise the page fetches the same bytes from the
 // weblings demo, which does send Access-Control-Allow-Origin.
+import { fetchPinned, PinnedMismatch, sha256Hex } from "@/core/pinned-fetch";
 import { t } from "@/i18n";
 import lock from "../../scripts/sources.lock.json";
 
@@ -51,10 +52,6 @@ function cacheUrl(kind: "rustc" | "bundle") {
   return new URL(`simplecode-rustc/${kind}?v=${pins[kind].sha256.slice(0, 12)}`, location.origin).href;
 }
 
-async function sha256(bytes: Uint8Array): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 async function readCache(kind: "rustc" | "bundle"): Promise<Uint8Array | undefined> {
   if (!cacheAvailable()) return undefined;
@@ -64,7 +61,7 @@ async function readCache(kind: "rustc" | "bundle"): Promise<Uint8Array | undefin
     if (!hit) return undefined;
     const bytes = new Uint8Array(await hit.arrayBuffer());
     if (bytes.byteLength !== pins[kind].bytes) return undefined;
-    if ((await sha256(bytes)) !== pins[kind].sha256) return undefined;
+    if ((await sha256Hex(bytes)) !== pins[kind].sha256) return undefined;
     return bytes;
   } catch {
     return undefined;
@@ -89,33 +86,6 @@ async function writeCache(kind: "rustc" | "bundle", bytes: Uint8Array) {
   }
 }
 
-async function fetchCounted(url: string, onBytes: (n: number) => void, signal?: AbortSignal): Promise<Uint8Array> {
-  const res = await fetch(url, { signal, mode: "cors" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  if (!res.body) {
-    const buf = new Uint8Array(await res.arrayBuffer());
-    onBytes(buf.byteLength);
-    return buf;
-  }
-  const reader = res.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let received = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    received += value.byteLength;
-    onBytes(value.byteLength);
-  }
-  const out = new Uint8Array(received);
-  let off = 0;
-  for (const c of chunks) {
-    out.set(c, off);
-    off += c.byteLength;
-  }
-  return out;
-}
-
 async function loadOne(
   kind: "rustc" | "bundle",
   onBytes: (n: number) => void,
@@ -127,25 +97,35 @@ async function loadOne(
     return cached;
   }
   const pin = pins[kind];
-  const base = import.meta.env.BASE_URL;
-  const sameOrigin = `${base}${pin.sameOrigin}`;
+  const wasm = kind === "rustc";
+  // Upstream URLs stay unversioned. A `?v=` query can miss a CDN that does not expect it.
+  const attempts: { url: string; version?: string }[] = [
+    { url: `${import.meta.env.BASE_URL}${pin.sameOrigin}`, version: pin.sha256 },
+    { url: pin.upstream },
+  ];
   let last = "";
-  for (const url of [sameOrigin, pin.upstream]) {
-    let counted = 0;
+  for (const attempt of attempts) {
     try {
-      const bytes = await fetchCounted(url, (n) => {
-        counted += n;
-        onBytes(n);
-      }, signal);
-      if (bytes.byteLength !== pin.bytes || (await sha256(bytes)) !== pin.sha256) {
-        throw new Error(t("rustDigest", { kind }));
-      }
+      const bytes = await fetchPinned({
+        url: attempt.url,
+        version: attempt.version,
+        expectBytes: pin.bytes,
+        expectedSha256: pin.sha256,
+        wasm,
+        signal,
+        onBytes,
+      });
       await writeCache(kind, bytes);
       return bytes;
     } catch (e) {
-      if (counted) onBytes(-counted);
       if ((e as Error).name === "AbortError") throw e;
-      last = e instanceof Error ? e.message : String(e);
+      if (e instanceof PinnedMismatch) {
+        const sha = e.sha256 || "-";
+        const vars = { kind, expected: pin.bytes, got: e.got, sha };
+        last = e.got === pin.bytes ? t("rustDigest", vars) : t("rustShort", vars);
+      } else {
+        last = e instanceof Error ? e.message : String(e);
+      }
     }
   }
   throw new Error(t("rustDownload", { detail: last, upstream: pin.upstream }));
