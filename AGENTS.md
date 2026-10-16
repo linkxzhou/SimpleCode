@@ -85,7 +85,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 十三本书一起检查连续 60 个汉字不重复。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28、Java 28。中英各 363 章。渲染日志以 `./build.sh build` 打出的 `docs:` 行为准。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。Java 的 `docs-smoke` 同样默认不跑（每块都要在浏览器里编 wasm）。`SIMPLECODE_JAVA_DOCS=1` 才执行。默认文档冒烟不含 Rust 和 Java，也不跑 Python 那个 `smoke=skip`。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件；Java 同样有 hello、标准输入、编译错误和 `Thread.sleep`。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
+现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28、Java 28。中英各 363 章。`./build.sh build` 打出 `docs: 726 chapters, 2098 runnable blocks`（中英各 1049 个可运行块）。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。Java 的 `docs-smoke` 同样默认不跑（每块都要在浏览器里编 wasm）。`SIMPLECODE_JAVA_DOCS=1` 才执行。默认文档冒烟不含 Rust 和 Java，也不跑 Python 那个 `smoke=skip`。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件；Java 同样有 hello、标准输入、编译错误和 `Thread.sleep`。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
 
 ### 运行时限制（可运行块里避开）
 
