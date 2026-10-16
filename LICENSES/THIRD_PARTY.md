@@ -114,3 +114,12 @@ SOFTWARE.
 ```
 
 The binary links wasi-libc from wasi-sdk (MIT, BSD, and Apache-2.0; see the wasi-sdk sysroot). Public bash and BusyBox wasm builds were not vendored: they need host imports this runtime does not provide, and their licenses are GPL (see plan/LANGUAGES.md §9.1).
+
+## Rust (weblings)
+
+Not part of the default `./build.sh vendor`. `./build.sh vendor --rust` checks the pinned `artifacts-test-7` archives from [AngelOnFira/wasm-rustc](https://github.com/AngelOnFira/wasm-rustc/releases/tag/artifacts-test-7) and writes `wasm/rust/rustc.wasm` plus `wasm/rust/sysroot-wasip1.bundle`. The page may also fetch those two unpacked files from the weblings demo. Digests are in `scripts/sources.lock.json`.
+
+- [weblings](https://github.com/AngelOnFira/weblings) — MIT. The compiler worker in `src/rustc/worker.js` follows its `app/public/worker.js`.
+- rustc and Cranelift (`rustc_codegen_cranelift`) — MIT OR Apache-2.0. The wasm binary is the pinned artifact above.
+- [browser_wasi_shim](https://github.com/bjorn3/browser_wasi_shim) — Apache-2.0 OR MIT. The copies under `src/rustc/shim/` come from the weblings `app/public/vendor/browser_wasi_shim` tree and are used only to host rustc, not the user's program.
+- [fzstd](https://github.com/101arrowz/fzstd) — MIT. Used by `scripts/vendor-rust.mjs` to decompress the archives. It is not loaded in the browser.

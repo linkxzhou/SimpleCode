@@ -10,7 +10,9 @@ import { resolveRuntime } from "../src/docs/runtime.ts";
 
 const PORT = Number(process.env.DOCS_PORT ?? 4321);
 const BASE = `http://127.0.0.1:${PORT}`;
-const BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"];
+// Rust docs-smoke is opt-in: each block compiles in the ~152 MB weblings toolchain.
+// SIMPLECODE_RUST_DOCS=1 runs those blocks. The hello-world smoke still covers Rust.
+const BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", ...(process.env.SIMPLECODE_RUST_DOCS === "1" ? ["rust"] : [])];
 
 function stripAnsi(text) {
   return text.replace(/\x1b\[[0-9;]*m/g, "");

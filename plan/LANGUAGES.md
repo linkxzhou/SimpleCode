@@ -779,3 +779,33 @@ evcxr（https://github.com/evcxr/evcxr）是本机求值器，内部还是启动
 
 没有找到可引用的 X 帖。检索词包括 rubrc、weblings 和 in-browser rustc，结果为空或打不开。
 
+### 11.10 接入（2026-10-16，门已通过）
+
+§11.1 到 §11.9 保持调研原文。下面是按 §11.5 把 weblings 接进侧栏时的测量。WASI 宿主没有改。
+
+**压缩包。** `artifacts-test-7` 的三份 zstd 与 weblings `artifacts.lock` 的 sha256 一致：`rustc-wasm.tar.zst` 17,206,482（`a96f6d53afff3c95d6387def27f6ddb53a02575679dc6c981d60797c32dcd022`），`wasip1-sysroot.tar.zst` 43,403,178（`4eedff7b0cd4330bfe226734b67751a97fac5572ac55392e93f9d3e4886a277d`），`std-sysroot.tar.zst` 34,472,965（`28f48b7b6159ee8be2c474d420e3695ac97069c01434510a2d1bde568b2afb2b`）。第三份是 x86_64 宿主 sysroot，浏览器不用；`./build.sh vendor --rust` 只校验后丢弃。
+
+**解包后给浏览器的两份。** `rustc.wasm` 87,871,387，sha256 `41412081eefc3e08ec5664ed0748902a7e575e1f267898dcc64d412702df7e83`。导入只有 `wasi_snapshot_preview1`（27 个函数），导出 `memory` 与 `_start`。定义内存最小 158 页，无上限，非共享。Chrome 里 `WebAssembly.compile` 约 185 ms。`sysroot-wasip1.bundle` 71,313,335，sha256 `6dba13d6077cb7936ed6661cd1087bc9e92dc1d8b35903ecf22881c97ac3980b`，魔数 `RIWB1`，不是 gzip，所以不能登记成清单里的文件系统资产。两份合计 159,184,722 字节，侧栏按 1024 进制显示约 151.8 MB。§11.1 的约 96 MB 是含 `std-sysroot` 的 zstd 总和，不是这条进度条。
+
+**编译门。** 在 weblings 自己的 Worker（`browser_wasi_shim`，不是 `WASIWorkerHost`）里，参数为 `--target wasm32-wasip1 --edition 2024 -O -C panic=abort`。下列产物的导入模块都只有 `wasi_snapshot_preview1`，导出 `memory`、`_start`、`__main_void`。门通过，继续接入。
+
+| 程序 | 标准输出或失败 | wasm 字节 | compile / link / 合计（ms） |
+|---|---|---|---|
+| `println` hello | `Hello from Rust 42` | 561,001 | 479.6 / 33 / 534.7 |
+| `Vec` 求和 | `42` | 570,864 | 233.7 / 25 / 274.9 |
+| `String` | `Rust 42` | 572,503 | 170.6 / 27 / 212 |
+| `HashMap` | `42` | 621,410 | 348.3 / 23 / 388.6 |
+| trait | `42` | 560,982 | 193.2 / 22 / 228.6 |
+| 闭包 | `42` | 560,982 | 146.8 / 21 / 179.8 |
+| `panic!("boom")` | 未正常退出。运行错误 `unreachable`，标准错误含 `panicked at` 与 `boom` | — | 100.1 / 23 / 约 126 |
+
+`WASIWorkerHost` 把 `WebAssembly.RuntimeError` 记成退出码 134。panic 因此是失败，不是另写一套宿主。
+
+**下载。** 带 COEP 的页面 `fetch` GitHub Release 失败：`release-assets.githubusercontent.com` 没有 `Access-Control-Allow-Origin`。同一页面能读 `https://weblings.forest-anderson.ca/rustc/assets-meta.json`，体积与上面两份解包一致。2026-10-16 用浏览器 UA 把演示站的 `rustc.wasm` 和 `sysroot-wasip1.bundle` 下到本机，sha256 与 lock 相同。页面先找同源 `wasm/rust/`，再找这两条演示 URL，然后核对 sha256。缓存名 `simplecode-rustc-v1`，与 `simplecode-wasm-v1` 分开。Node 侧的 `vendor --rust` 仍从 GitHub 下 zstd，不受页面 COEP 限制。
+
+**运行段。** 编译器留在自己的 Worker：它要整份 sysroot 和 `CLIF2WASM_OBJECT=1`，不是一条交给现有宿主的命令。成功后的字节写到 `/program.wasm`，`RunSession` 用原来的 `fsPath` 执行。编译错误打到终端。侧栏文案是 Rust，图标是单色 `Rs`，默认文件 `main.rs`。
+
+**书。** `docs/rust/` 28 章，目录形状对照菜鸟教程，正文原创。`docs-smoke` 默认跳过 Rust，避免 CI 每次都拉这 152 MB。`SIMPLECODE_RUST_DOCS=1` 才跑书里的块。
+
+**还做不到。** 没有 Cargo、crates.io、过程宏、多文件、`std::thread`。`sleep` 会卡在宿主 `poll_oneoff` 的时钟空转上，可运行块里不写。Safari 没有测。编译器非线程，不靠 `SharedArrayBuffer`；跑用户程序的那一步和别的语言一样要 COOP/COEP。88 MB 的模块在手机上可能被拒绝。subrust 没有接进侧栏。
+

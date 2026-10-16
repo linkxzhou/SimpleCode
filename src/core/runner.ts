@@ -1,6 +1,7 @@
 // Interactive runner built on @runno/wasi WASIWorkerHost.
 // Logic ported from thirdparty/runno/packages/runtime/lib/headless.ts + elements/terminal.ts
 import { WASIWorkerHost, WASIWorkerHostKilledError, type WASIFS } from "@runno/wasi";
+import { cancelRustCompile, compileRust } from "@/rustc/compile";
 import type { CommandSpec, LanguageSpec } from "./manifest";
 import { getLoaded } from "./wasmLoader";
 
@@ -67,6 +68,7 @@ export class RunSession {
 
   kill() {
     this.killed = true;
+    cancelRustCompile();
     try {
       this.host?.kill();
     } catch {
@@ -141,6 +143,20 @@ export class RunSession {
       },
     };
     try {
+      if (this.lang.compiler === "weblings") {
+        this.cb.phase("compile");
+        const compiled = await compileRust(code);
+        if (this.killed) return { type: "terminated" };
+        if (compiled.stderr) this.cb.stderr(compiled.stderr.endsWith("\n") ? compiled.stderr : `${compiled.stderr}\n`);
+        if (!compiled.ok || !compiled.wasm) return { type: "complete", exitCode: compiled.exit || 1, phase: "compile" };
+        const stamp = now();
+        fs["/program.wasm"] = {
+          path: "/program.wasm",
+          content: compiled.wasm,
+          mode: "binary",
+          timestamps: { access: stamp, modification: stamp, change: stamp },
+        };
+      }
       for (const step of this.lang.prepare ?? []) {
         const phase = (step.step as Phase) ?? "compile";
         this.cb.phase(phase);

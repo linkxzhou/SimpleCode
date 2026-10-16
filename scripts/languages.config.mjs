@@ -97,4 +97,10 @@ export const languages = [
     license: "MIT", homepage: "https://github.com/linkxzhou/SimpleCode",
     run: { asset: "shell-wasm", binaryName: "sh", args: ["{entry}"] },
   },
+  {
+    id: "rust", label: "Rust", short: "Rs", version: "weblings · 桌面", syntax: "rust", fileName: "main.rs",
+    license: "MIT OR Apache-2.0", homepage: "https://github.com/AngelOnFira/weblings",
+    compiler: "weblings",
+    run: { fsPath: "/program.wasm", binaryName: "program", args: [] },
+  },
 ];

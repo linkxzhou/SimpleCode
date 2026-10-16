@@ -75,6 +75,8 @@ const SHIKI_LANG: Record<string, string> = {
   bash: "bash",
   sh: "bash",
   shell: "bash",
+  rust: "rust",
+  rs: "rust",
   json: "json",
   yaml: "yaml",
   yml: "yaml",
@@ -357,7 +359,7 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   const md = createMarkdown();
   const highlighter = await createHighlighter({
     themes: [lightTheme, darkTheme],
-    langs: ["python", "ruby", "javascript", "typescript", "sql", "c", "cpp", "php", "lua", "go", "bash", "json", "yaml", "markdown", "html"],
+    langs: ["python", "ruby", "javascript", "typescript", "sql", "c", "cpp", "php", "lua", "go", "bash", "rust", "json", "yaml", "markdown", "html"],
   });
 
   const books: BookIndex[] = [];

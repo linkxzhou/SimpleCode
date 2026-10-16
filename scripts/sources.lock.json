@@ -22,6 +22,45 @@
     },
     "prebuiltUrl": "https://github.com/linkxzhou/SimpleCode/releases/download/wasi-runtimes-1/yaegi-0.16.1.wasm"
   },
+  "rust": {
+    "note": "weblings artifacts-test-7. zstd sha256 matches AngelOnFira/weblings artifacts.lock. The browser worker uses the unpacked rustc.wasm and sysroot-wasip1.bundle only. std-sysroot.tar.zst is the x86_64 host sysroot; vendor verifies it and does not keep it. GitHub Release assets have no CORS under COEP, so the page loads same-origin wasm/rust/ or the upstream URLs below.",
+    "repo": "AngelOnFira/wasm-rustc",
+    "tag": "artifacts-test-7",
+    "weblings": "https://github.com/AngelOnFira/weblings",
+    "assets": {
+      "rustc-wasm.tar.zst": {
+        "url": "https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/rustc-wasm.tar.zst",
+        "sha256": "a96f6d53afff3c95d6387def27f6ddb53a02575679dc6c981d60797c32dcd022",
+        "bytes": 17206482,
+        "extract": "rustc.wasm"
+      },
+      "wasip1-sysroot.tar.zst": {
+        "url": "https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/wasip1-sysroot.tar.zst",
+        "sha256": "4eedff7b0cd4330bfe226734b67751a97fac5572ac55392e93f9d3e4886a277d",
+        "bytes": 43403178,
+        "extract": "sysroot-wasip1.bundle"
+      },
+      "std-sysroot.tar.zst": {
+        "url": "https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/std-sysroot.tar.zst",
+        "sha256": "28f48b7b6159ee8be2c474d420e3695ac97069c01434510a2d1bde568b2afb2b",
+        "bytes": 34472965
+      }
+    },
+    "unpacked": {
+      "rustc.wasm": {
+        "bytes": 87871387,
+        "sha256": "41412081eefc3e08ec5664ed0748902a7e575e1f267898dcc64d412702df7e83",
+        "sameOrigin": "wasm/rust/rustc.wasm",
+        "upstream": "https://weblings.forest-anderson.ca/rustc/rustc.wasm"
+      },
+      "sysroot-wasip1.bundle": {
+        "bytes": 71313335,
+        "sha256": "6dba13d6077cb7936ed6661cd1087bc9e92dc1d8b35903ecf22881c97ac3980b",
+        "sameOrigin": "wasm/rust/sysroot-wasip1.bundle",
+        "upstream": "https://weblings.forest-anderson.ca/rustc/sysroot-wasip1.bundle"
+      }
+    }
+  },
   "shell": {
     "version": "1",
     "output": "wasi-sh.wasm",

@@ -176,3 +176,8 @@ wasi-sh:
   url: https://github.com/linkxzhou/SimpleCode/blob/main/scripts/builders/shell/wasi-sh.c
   license: MIT
   adapt: true
+runoob-rust:
+  title: 菜鸟教程 Rust
+  url: https://www.runoob.com/rust/rust-tutorial.html
+  license: 目录形状参考，正文原创
+  adapt: false
