@@ -4,11 +4,9 @@
 
 ## 项目是什么
 
-浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。十门语言都是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。
+浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。十门语言是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。第十一门 Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
 
-教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十本书都已按菜鸟教程的短节写成，内部 id 不变。
-
-Linux（v86 + Buildroot）只写在 `plan/LANGUAGES.md` §10 和 `plan/LEARN.md` §20，还没有运行时，也没有 `docs/linux/`。
+教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十一本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，细节见 `plan/LANGUAGES.md` §10 和 `plan/LEARN.md` §20。
 
 ## 架构
 
@@ -20,8 +18,9 @@ Linux（v86 + Buildroot）只写在 `plan/LANGUAGES.md` §10 和 `plan/LEARN.md`
 工具栏 RunButton
   → stores/run.ts
   → src/core/runner.ts  RunSession
-       └─ WASIWorkerHost（今天唯一的执行器）
-终端 src/core/terminal.ts（xterm）
+       ├─ WASIWorkerHost（十门 WASI 语言，Web Worker）
+       └─ LinuxMachine（linux，主线程 v86，src/core/linux.ts）
+终端 src/core/terminal.ts（xterm；Linux 期间按键原样送进串口）
 文档 DocsDrawer
   → scripts/docs/render.ts 预渲染 docs/
   → useRunFromDoc 把示例装进编辑器再 Run
@@ -29,7 +28,7 @@ Linux（v86 + Buildroot）只写在 `plan/LANGUAGES.md` §10 和 `plan/LEARN.md`
 
 资源在 `wasm/`。`scripts/languages.config.mjs` 列出资产和语言。`scripts/write-manifest.mjs` 按磁盘文件生成 `wasm/manifest.json`（`size`、`sha256`）。该文件 gitignore，不提交。`src/core/wasmLoader.ts` 用 Cache API（`simplecode-wasm-v1`）缓存，并用清单里的 `size` 核对。
 
-语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`。
+语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`linux`（界面文案 Linux，短标签 `Lx`）。
 
 ## 技术栈和命令
 
@@ -40,7 +39,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | 子命令 | 作用 |
 |---|---|
 | `install` | `yarn install` |
-| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，并编译 Lua / Go / Shell。结束时重写清单 |
+| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单 |
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
@@ -81,7 +80,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 十本书一起检查连续 60 个汉字不重复。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21。合计 277 章。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。
+现在的书（章数）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30。合计 307 章，887 个可运行块。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。
 
 ### 运行时限制（可运行块里避开）
 
@@ -91,6 +90,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - **Shell（wasi-sh）**：只有内建 `echo`、`printf`、`read`、`cat`、`true` / `false` / `:`、`exit`、`test` / `[ ]`，赋值、`$VAR`、`if` / `while` / `for`、内建之间的管道和重定向。没有 `cd`、`$(…)`、`$((…))`、函数、`source`、通配、here-doc、后台和外部命令（退出 127）。`$$` 固定打印 `1`。赋值里不能加引号：`item=钥匙` 可以，`item="钥匙"` 会被当成命令。
 - **Go（Yaegi 0.16.1）**：没有网络，不能 import 第三方。`time.Sleep` 在 `poll_oneoff` 上等不回来。自定义 `error` 放进接口再调用 `Error()` 会 panic。
 - **Lua 5.4.9**：`pcall` 依赖 wasi-sdk 的 `-mllvm -wasm-enable-sjlj` 和 `-lsetjmp`。不要定义 `LUA_USE_POSIX`，否则 `pcall` 坏掉。`#` 和 `string.len` 按字节。`print` 多个参数之间是制表符。没有 `os.execute`、`io.popen`，也不能 `require` 别的文件。
+- **Linux（v86 0.5.471）**：客户机是 i686、内核 6.8.12、Buildroot 2024.05.2、BusyBox 1.36.1，家目录 `/root`，提示符 `~% `。没有网络、包管理器、ssh、vim。`apt`、`yum`、`ssh`、`vim`、`passwd`、`fdisk`、`reboot`、`useradd` 标 `norun`。每次 Run 从快照恢复，围栏之间不共享 `/tmp`。`ls` 要加 `--color=never`。`chmod u+x` 在 644 文件上是 `-rwxr--r--`。9p 在 `/mnt`，脚本是 `/mnt/main.sh`。退出码来自串口上最后一次 `__SC_EXIT:` 后的数字。
 
 ## 工作顺序
 
@@ -115,7 +115,19 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **COOP/COEP 和 SharedArrayBuffer。** `WASIWorkerHost` 一构造就分配 SAB。页面没有 `Cross-Origin-Opener-Policy: same-origin` 和 `Cross-Origin-Embedder-Policy: require-corp` 时，构造直接抛错，`IsolationGuard` 会挡住。Vite 的 `server.headers` 和 `preview.headers` 要带这两项。跨源字体和 CDN 脚本在 COEP 下会被拒绝，所以字体和 wasm 都同源。GitHub Pages 不能加这些头。
 
-**公开的 bash / BusyBox wasm 跑不起来。** `WASIWorkerHost` 只实现 `wasi_snapshot_preview1`。mayflower/busybox-wasm 带 JS 胶水；`@nimbus-sh/runtime-bash` 还要 `nimbus_proc`（`fork`、`execve`）和 `env`。所以 Shell 是仓库里的 `scripts/builders/shell/wasi-sh.c`。要真的 `ls` 和 `cd`，走计划中的 v86，不要再换一份 BusyBox wasm 塞进现有宿主。细节在 `plan/LANGUAGES.md` §9.1 和 §10。
+**公开的 bash / BusyBox wasm 跑不起来。** `WASIWorkerHost` 只实现 `wasi_snapshot_preview1`。mayflower/busybox-wasm 带 JS 胶水；`@nimbus-sh/runtime-bash` 还要 `nimbus_proc`（`fork`、`execve`）和 `env`。所以 Shell 是仓库里的 `scripts/builders/shell/wasi-sh.c`。要真的 `ls` 和 `cd`，用侧栏 Linux（v86），不要再换一份 BusyBox wasm 塞进现有宿主。细节在 `plan/LANGUAGES.md` §9.1 和 §10。
+
+**Linux 客户机。** 内存必须是 64 MiB。32 MiB 时内核解压停在大约 30 MB，串口不再出字。`uart1` 要打开，否则 `serial0-output-byte` 没有字节。虚拟机留在主线程：libv86 0.5.471 在浏览器里自己开 yield Worker，专用 Worker 没有 `window`。Node 里不要给 `navigator` 赋值（它是只读 getter），也不要把 `window` 设成 `globalThis`（会走到 Web Audio）。
+
+**串口和退出码。** 写串口用 `serial_send_bytes` 加 `TextEncoder`。`serial0_send` 按 `charCodeAt` 截断，汉字会坏。读出用逐字节 `TextDecoder`（`stream: true`）。回车要映射成换行，xterm 的 Enter 客户机才认。包装命令是 `stty -echo; sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?; stty echo`。只认最后一次 `__SC_EXIT:(\d+)`；命令回显里就有 `__SC_EXIT:$?`，搜子串会提前结束。哨兵到达后先留着虚拟机，`stty echo` 还要跑，交互 shell 才有回显。Stop 才 `destroy`。Ctrl+C 送 `\x03`。
+
+**9p 在 `/mnt`。** 这份镜像的 fstab 把 `host9p` 挂在 `/mnt`，不是 `/mnt/host`。`create_file("main.sh")` 出现在 `/mnt/main.sh`。教学文件放 `/tmp`，避免和脚本撞名。
+
+**快照不钉字节。** `linux-state.bin` 约 45,554,624 字节，不压缩（v86 只按文件名把 `.zst` 解开）。同一份输入再次 `save_state` 字节会变，所以 lock 里没有它的 sha256。`thirdparty/cache/linux/state.stamp` 是五个输入摘要拼出来的；stamp 不变且文件非空，vendor 就跳过。状态文件不入库。每次 Run 用 `initial_state` 新建一台，交互里的 `cd` 和 `/tmp` 不会留到下一次 Run。
+
+**镜像是钉死的上游 bzImage。** sha256 `507a759c70ab7a490a233be454d0b5b88bc667956a410b531cb4edc091e2eb1c`，Buildroot 2024.05.2 / BusyBox 1.36.1 / Linux 6.8.12。macOS 编不了 Buildroot。`./build.sh vendor` 下载这份文件。`scripts/builders/linux/rebuild.sh --fetch` 只核对 Buildroot 2026.08 源码包，不参与 vendor；从零编出来的树对不上这个摘要。BIOS 的 URL 指向 GitHub `master`，锁是 sha256，master 一变校验就失败。
+
+**Linux 下载之后还有启动。** 六份文件合计 58,157,676 字节。侧栏在下载阶段显示百分比，`detail === "boot"` 时显示「启动中」。换走语言要关掉虚拟机并把状态设回已缓存，下次再选才重新启动。启动过程中的 `LinuxKilled` 不是下载失败。
 
 **SQL 概览被章名盖住。** 生成器用 slug `index` 写文件时，非第 0 章也会写成 `index.md`。只有 `chapter == 0` 才能用这个文件名（`ca3ab0b`）。
 
@@ -128,8 +140,8 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 | 文件 | 内容 |
 |---|---|
 | `plan/DESIGN.md` | 布局、COOP/COEP、缓存、单色、侧栏 |
-| `plan/LANGUAGES.md` | 语言评估、Lua/Go/Shell 的实现记录、Linux §10 |
-| `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书的计划在 §20 |
+| `plan/LANGUAGES.md` | 语言评估、Lua/Go/Shell 的实现记录、Linux §10 的落地结果 |
+| `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书在 §20 |
 | `plan/learn-research.md` | 教程取材笔记 |
 
-当前 `main` 在十本书改成短节之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本）。
+当前 `main` 在十本书改成短节、并写完 Linux 方案之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案）。Linux 运行时和 `docs/linux/` 在 #12 之后的实现分支上。
