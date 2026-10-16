@@ -14,7 +14,7 @@ const GZIP = Buffer.from([0x1f, 0x8b, 0x08, 0x00]);
 function plant(dir, extra = 0) {
   mkdirSync(dir, { recursive: true });
   for (const spec of Object.values(assets)) {
-    const head = spec.file.endsWith(".wasm") ? WASM : GZIP;
+    const head = spec.kind === "bin" ? Buffer.from([0x7f]) : spec.file.endsWith(".wasm") ? WASM : GZIP;
     const body = Buffer.alloc(extra + spec.file.length, spec.file.charCodeAt(0));
     writeFileSync(join(dir, spec.file), Buffer.concat([head, body]));
   }
@@ -47,6 +47,14 @@ describe("manifest refresh", () => {
     assert.equal(written.assets["lua-wasm"].size, bytes.length);
     assert.equal(Object.keys(written.assets).length, Object.keys(assets).length);
     rmSync(root, { recursive: true, force: true });
+  });
+
+  it("accepts raw guest files that are neither wasm nor gzip", () => {
+    const buf = Buffer.from("bios-bytes");
+    const record = fingerprint("seabios.bin", buf, "bin");
+    assert.equal(record.kind, "bin");
+    assert.equal(record.size, buf.length);
+    assert.equal(record.sha256, createHash("sha256").update(buf).digest("hex"));
   });
 
   it("refuses to describe a file with a bad header", () => {

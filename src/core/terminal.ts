@@ -58,6 +58,7 @@ class TerminalController {
   });
   fit = new FitAddon();
   private handler?: InputHandler;
+  private passthrough?: { onData: (data: string) => void };
   private buffer = "";
   private opened = false;
   /** plain-text transcript, used by tests/debugging */
@@ -149,11 +150,23 @@ class TerminalController {
   setInputHandler(h?: InputHandler) {
     this.handler = h;
     this.buffer = "";
-    this.term.options.cursorBlink = !!h;
+    this.term.options.cursorBlink = !!h || !!this.passthrough;
+    if (h) this.focus();
+  }
+
+  /** Forward every key, including escapes, without local echo. The guest prints. */
+  setPassthrough(h?: { onData: (data: string) => void }) {
+    this.passthrough = h;
+    this.buffer = "";
+    this.term.options.cursorBlink = !!h || !!this.handler;
     if (h) this.focus();
   }
 
   private onData(data: string) {
+    if (this.passthrough) {
+      this.passthrough.onData(data);
+      return;
+    }
     const h = this.handler;
     if (!h) return;
     this.flushStderr();

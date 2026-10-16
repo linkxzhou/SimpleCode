@@ -1,6 +1,7 @@
 // Interactive runner built on @runno/wasi WASIWorkerHost.
 // Logic ported from thirdparty/runno/packages/runtime/lib/headless.ts + elements/terminal.ts
 import { WASIWorkerHost, WASIWorkerHostKilledError, type WASIFS } from "@runno/wasi";
+import { LinuxKilled, linuxMachine } from "./linux";
 import type { CommandSpec, LanguageSpec } from "./manifest";
 import { getLoaded } from "./wasmLoader";
 
@@ -67,6 +68,10 @@ export class RunSession {
 
   kill() {
     this.killed = true;
+    if (this.lang.runtime === "v86") {
+      linuxMachine.shutdown();
+      return;
+    }
     try {
       this.host?.kill();
     } catch {
@@ -132,6 +137,7 @@ export class RunSession {
   }
 
   async run(code: string): Promise<RunOutcome> {
+    if (this.lang.runtime === "v86") return this.runV86(code);
     let fs: WASIFS = {
       [ENTRY]: {
         path: "program",
@@ -159,6 +165,23 @@ export class RunSession {
         type: "crash",
         message: err?.message ?? String(e),
         errorType: err?.type ?? (e instanceof Error ? e.constructor.name : "Error"),
+      };
+    }
+  }
+
+  private async runV86(code: string): Promise<RunOutcome> {
+    this.cb.phase("run");
+    try {
+      const exitCode = await linuxMachine.runScript(code, this.opts.stdin ?? "");
+      if (this.killed) return { type: "terminated" };
+      return { type: "complete", exitCode, phase: "run" };
+    } catch (e) {
+      if (e instanceof LinuxKilled || this.killed) return { type: "terminated" };
+      const err = e as { message?: string; name?: string };
+      return {
+        type: "crash",
+        message: err?.message ?? String(e),
+        errorType: err?.name ?? "Error",
       };
     }
   }

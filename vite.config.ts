@@ -42,7 +42,11 @@ function wasmAssets(): Plugin {
           ? "application/wasm"
           : file.endsWith(".json")
             ? "application/json"
-            : "application/gzip";
+            : file.endsWith(".mjs") || file.endsWith(".js")
+              ? "text/javascript"
+              : file.endsWith(".gz")
+                ? "application/gzip"
+                : "application/octet-stream";
         res.setHeader("Content-Type", type);
         res.setHeader("Content-Length", String(statSync(file).size));
         res.setHeader("Cache-Control", file.endsWith(".json") ? "no-cache" : "public, max-age=86400");

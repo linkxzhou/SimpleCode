@@ -15,6 +15,14 @@ export const assets = {
   "lua-wasm": { file: "lua-5.4.9.wasm", build: "lua" },
   "go-wasm": { file: "yaegi-0.16.1.wasm", build: "go" },
   "shell-wasm": { file: "wasi-sh.wasm", build: "shell" },
+  // v86 0.5.471 plus a pinned Buildroot 6.8 bzImage. linux-state.bin is produced
+  // by scripts/builders/linux (not byte-stable, so it is not in sources.lock).
+  "v86-wasm": { file: "v86.wasm", build: "linux", kind: "wasm" },
+  "v86-lib": { file: "libv86.mjs", build: "linux", kind: "bin" },
+  "linux-bios": { file: "seabios.bin", build: "linux", kind: "bin" },
+  "linux-vgabios": { file: "vgabios.bin", build: "linux", kind: "bin" },
+  "linux-bzimage": { file: "linux-bzimage.bin", build: "linux", kind: "bin" },
+  "linux-state": { file: "linux-state.bin", build: "linux", kind: "bin" },
 };
 
 const clangLink = (extra) => ({
@@ -96,5 +104,19 @@ export const languages = [
     id: "shell", label: "Shell", short: "Sh", version: "wasi-sh", syntax: "shell", fileName: "main.sh",
     license: "MIT", homepage: "https://github.com/linkxzhou/SimpleCode",
     run: { asset: "shell-wasm", binaryName: "sh", args: ["{entry}"] },
+  },
+  {
+    id: "linux",
+    label: "Linux",
+    short: "Lx",
+    version: "6.8.12",
+    syntax: "shell",
+    fileName: "main.sh",
+    license: "BSD-2-Clause",
+    homepage: "https://github.com/copy/v86",
+    runtime: "v86",
+    assets: ["v86-wasm", "v86-lib", "linux-bios", "linux-vgabios", "linux-bzimage", "linux-state"],
+    // Not a WASI command. RunSession dispatches on runtime === "v86".
+    run: { binaryName: "sh", args: [] },
   },
 ];

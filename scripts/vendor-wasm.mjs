@@ -28,10 +28,16 @@ function buildAsset(builder, dest) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
+const built = new Set();
 for (const spec of Object.values(assets)) {
   const to = join(out, spec.file);
-  if (spec.build) buildAsset(spec.build, to);
-  else {
+  if (spec.build) {
+    // One builder may emit several files (Linux). Later assets only check the path.
+    if (!built.has(spec.build)) {
+      built.add(spec.build);
+      buildAsset(spec.build, to);
+    }
+  } else {
     const from = join(src, spec.file);
     if (!existsSync(from)) fail(`missing ${from}`);
     rmSync(to, { force: true });
