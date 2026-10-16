@@ -109,8 +109,14 @@ export class RunSession {
       env: cmd.env ?? {},
       fs,
       isTTY: interactive && cmd.tty !== false,
-      stdout: (t) => this.cb.stdout(t),
-      stderr: (t) => this.cb.stderr(t),
+      stdout: (text) => {
+        if (this.killed) return;
+        this.cb.stdout(text);
+      },
+      stderr: (text) => {
+        if (this.killed) return;
+        this.cb.stderr(text);
+      },
     });
     this.host = host;
     try {

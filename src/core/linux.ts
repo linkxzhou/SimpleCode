@@ -53,9 +53,14 @@ class LinuxMachine {
   private tail = "";
   private decoder = new TextDecoder("utf-8", { fatal: false });
   private waiter?: { resolve: (code: number) => void; reject: (err: Error) => void };
+  private bootWait?: { finish: (err?: Error) => void };
   private timer?: ReturnType<typeof setTimeout>;
   private closing: Promise<void> = Promise.resolve();
   private sink: (text: string) => void = (text) => terminal.write(text);
+
+  private armSink() {
+    this.sink = (text) => terminal.write(text);
+  }
 
   get booted() {
     return !!this.emu;
@@ -78,18 +83,21 @@ class LinuxMachine {
       state: toBuffer(state.bytes),
     };
     if (this.emu && !this.killed) return;
+    this.armSink();
     this.killed = false;
     const gen = ++this.gen;
     this.scriptMode = false;
     await this.spawn(gen);
-    if (gen !== this.gen) return;
+    if (gen !== this.gen || this.killed) throw new LinuxKilled();
     this.send("\n");
     await this.waitFor(gen, /~% /, 20000);
+    if (gen !== this.gen || this.killed) throw new LinuxKilled();
   }
 
   /** Fresh snapshot, 9p script, exit status from the guest sentinel. */
   async runScript(code: string, stdin: string): Promise<number> {
     if (!this.parts) throw new Error(t("linuxNotDownloaded"));
+    this.armSink();
     this.killed = false;
     const gen = ++this.gen;
     this.scriptMode = true;
@@ -127,6 +135,8 @@ class LinuxMachine {
     this.gen++;
     this.scriptMode = false;
     this.failWait(new LinuxKilled());
+    this.bootWait?.finish(new LinuxKilled());
+    this.sink = () => {};
     const emu = this.emu;
     this.emu = undefined;
     this.retire(emu);
@@ -208,15 +218,22 @@ class LinuxMachine {
     }
     this.emu = emulator;
     await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error(t("linuxBootTimeout"))), 20000);
-      const done = () => {
+      let settled = false;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const finish = (err?: Error) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timer);
-        resolve();
+        if (this.bootWait?.finish === finish) this.bootWait = undefined;
+        if (err) reject(err);
+        else resolve();
       };
-      if (loaded) done();
-      else emulator.add_listener("emulator-loaded", () => done());
+      timer = setTimeout(() => finish(new Error(t("linuxBootTimeout"))), 20000);
+      this.bootWait = { finish };
+      if (loaded || gen !== this.gen || this.killed) finish(gen !== this.gen || this.killed ? new LinuxKilled() : undefined);
+      else emulator.add_listener("emulator-loaded", () => finish());
     });
-    if (gen !== this.gen) throw new LinuxKilled();
+    if (gen !== this.gen || this.killed) throw new LinuxKilled();
   }
 
   private onSerial(chunk: string) {
@@ -245,20 +262,23 @@ class LinuxMachine {
     return new Promise<void>((resolve, reject) => {
       let settled = false;
       let timer: ReturnType<typeof setTimeout> | undefined;
-      const finish = (err?: Error) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        this.sink = prev;
-        if (err) reject(err);
-        else resolve();
-      };
-      timer = setTimeout(() => finish(new Error(t("linuxPromptTimeout", { tail: this.tail.slice(-180) }))), ms);
-      this.sink = (text) => {
+      const wrapper = (text: string) => {
         prev(text);
         if (gen !== this.gen) finish(new LinuxKilled());
         else if (re.test(this.tail)) finish();
       };
+      const finish = (err?: Error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        if (this.bootWait?.finish === finish) this.bootWait = undefined;
+        if (this.sink === wrapper) this.sink = prev;
+        if (err) reject(err);
+        else resolve();
+      };
+      this.bootWait = { finish };
+      timer = setTimeout(() => finish(new Error(t("linuxPromptTimeout", { tail: this.tail.slice(-180) }))), ms);
+      this.sink = wrapper;
     });
   }
 }

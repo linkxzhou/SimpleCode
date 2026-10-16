@@ -44,7 +44,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
-| `test` | 文档单元测试、`tests/i18n-unit.test.ts`、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/learn.spec.mjs`、`tests/ui-chrome.spec.mjs` |
+| `test` | 文档单元测试、`tests/i18n-unit.test.ts`、`tests/terminal-log.test.ts`、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/learn.spec.mjs`、`tests/ui-chrome.spec.mjs`、`tests/terminal-switch.spec.mjs` |
 | `clean` | 删 `dist/`。`--all` 再删 `node_modules/` 和 `wasm/` |
 
 缺 wasm 时，`dev` / `build` 会先尝试只重写清单；清单对不上文件才会 vendor。
@@ -147,6 +147,8 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 **折叠侧栏放不下标题行控件。** `?` 和「中 / EN」在展开时位于 SimpleCode 右侧。宽度落到 5rem 以下时，标题行控件带 `sidebar-expanded-only`，避免被裁切；折叠后的同一对控件在页脚。页脚的窄栏规则会把 `button` 收成 2rem 方块，语言胶囊要单独放开宽度。
 
 **下载进度条不要贴回去。** `LanguageItem` 里 `data-testid="wasm-progress"` 使用 `my-[4px]`。这是在原来的位置上增加的上下边距。
+
+**换语言时终端要一起换。** 侧栏从一门语言点到另一门（包括 Linux 和其他语言互切）时，先停掉 WASI、v86 和 rustc，卸掉 xterm 的串口透传和 stdin，清屏，再绑到新运行时。下载或运行途中换走，旧的完成回调不能再写屏幕，也不能把 v86 串口重新接上。界面「中 / EN」切换时，下载进度、错误和提示按新语言重画；程序打印的内容留在原处。系统句用消息键存在 `src/core/terminal.ts`，不要先 `t()` 再写进 xterm。
 
 ## 计划文件
 

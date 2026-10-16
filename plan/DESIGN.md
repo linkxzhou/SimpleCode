@@ -658,3 +658,13 @@ npm test                # vitest；npm run test:e2e → playwright
 ### 20.4 测试
 
 `tests/i18n-unit.test.ts` 检查两种语言的键一致、关于文案列出十二种语言、进度条类名含 `my-[4px]`。`tests/ui-chrome.spec.mjs` 打开弹层、刷新后语言仍在、英文占位、以及进度条的 computed margin。`scripts/check-mono.mjs` 把新弹层算进去。
+
+### 20.5 终端跟着语言走
+
+侧栏换编程语言（Python → Linux / Rust / Go，以及反过来）时，终端要换成那一个运行时：
+
+- 停掉正在跑的会话：WASI worker、v86 客户机、rustc worker
+- 卸掉 xterm 上的串口透传和 stdin 行编辑，避免 v86 的按键还送进已经离开的客户机，或 WASI 还吃着上一门语言的输入
+- `reset` 清屏，再绑到新运行时。下载或运行途中换走也一样：旧尝试作废，完成回调不再写终端、不再改状态、不再把串口接回去
+
+界面语言「中 / EN」切换时，终端里的系统句（下载进度、就绪、失败、终止、崩溃）按新文案重画。程序自己打印的 stdout / stderr 保持原样。系统句在 `src/core/terminal.ts` 里记成消息键，`TerminalPane` 在 `locale` 变化时重放。

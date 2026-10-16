@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { ChevronDown, ChevronUp, Eraser } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { terminal } from "@/core/terminal";
+import { locale, t } from "@/i18n";
 import { useRunStore } from "@/stores/run";
-import { t } from "@/i18n";
 
 defineProps<{ collapsed: boolean }>();
 defineEmits<{ toggle: [] }>();
@@ -30,7 +30,7 @@ const indicator = computed(() => {
     case "done":
       return { dot: FILLED, text: t("exitLine", { code: run.exitCode ?? 0 }) };
     case "failed":
-      return { dot: RING, text: run.message ?? `exit ${run.exitCode}` };
+      return { dot: RING, text: run.messageKey ? t(run.messageKey) : (run.message ?? `exit ${run.exitCode}`) };
     case "terminated":
       return { dot: "bg-neutral-500", text: t("terminated") };
     case "crash":
@@ -40,6 +40,8 @@ const indicator = computed(() => {
   }
 });
 const seconds = computed(() => (run.status === "idle" ? "" : `${(run.elapsed / 1000).toFixed(2)}s`));
+
+watch(locale, () => terminal.relocalize());
 
 onMounted(() => {
   terminal.attach(el.value!);

@@ -1,6 +1,9 @@
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
+import { t } from "@/i18n";
+import type { MessageKey } from "@/i18n/messages.ts";
+import { renderNote, renderNotes, type TermNote } from "./terminalLog";
 
 export interface InputHandler {
   onLine: (line: string) => void;
@@ -61,6 +64,8 @@ class TerminalController {
   private passthrough?: { onData: (data: string) => void };
   private buffer = "";
   private opened = false;
+  /** System lines keep their message key so a locale change can redraw them. */
+  private notes: TermNote[] = [];
   /** plain-text transcript, used by tests/debugging */
   transcript = "";
 
@@ -101,6 +106,11 @@ class TerminalController {
 
   write(text: string) {
     if (this.errPending && text !== this.errPending) this.flushStderr();
+    this.notes.push({ kind: "raw", text });
+    this.paint(text);
+  }
+
+  private paint(text: string) {
     this.transcript += text;
     this.term.write(text);
   }
@@ -134,13 +144,43 @@ class TerminalController {
     this.flushStderr();
   }
 
-  system(msg: string, color = "2") {
-    this.write(`\x1b[${color}m[SimpleCode] ${msg}\x1b[0m\n`);
+  system(key: MessageKey, vars?: Record<string, string | number>, color = "2") {
+    this.flushStderr();
+    const note: TermNote = { kind: "system", key, vars, color };
+    this.notes.push(note);
+    this.paint(renderNote(note, t));
+  }
+
+  /** Redraw system notes in the current locale. Program output stays as printed. */
+  relocalize() {
+    this.flushStderr();
+    const text = renderNotes(this.notes, t);
+    this.transcript = text;
+    this.term.reset();
+    if (text) this.term.write(text);
   }
 
   clear() {
+    clearTimeout(this.errTimer);
+    this.errPending = "";
+    this.buffer = "";
+    this.notes = [];
     this.transcript = "";
     this.term.reset();
+  }
+
+  /** Drop serial passthrough and stdin editing without clearing the screen. */
+  detachInput() {
+    this.handler = undefined;
+    this.passthrough = undefined;
+    this.buffer = "";
+    this.term.options.cursorBlink = false;
+  }
+
+  inputMode(): "passthrough" | "stdin" | "none" {
+    if (this.passthrough) return "passthrough";
+    if (this.handler) return "stdin";
+    return "none";
   }
 
   focus() {
@@ -149,6 +189,7 @@ class TerminalController {
 
   setInputHandler(h?: InputHandler) {
     this.handler = h;
+    if (h) this.passthrough = undefined;
     this.buffer = "";
     this.term.options.cursorBlink = !!h || !!this.passthrough;
     if (h) this.focus();
@@ -157,9 +198,27 @@ class TerminalController {
   /** Forward every key, including escapes, without local echo. The guest prints. */
   setPassthrough(h?: { onData: (data: string) => void }) {
     this.passthrough = h;
+    if (h) this.handler = undefined;
     this.buffer = "";
     this.term.options.cursorBlink = !!h || !!this.handler;
     if (h) this.focus();
+  }
+
+  private dropRawTail(text: string) {
+    let left = text;
+    while (left && this.notes.length) {
+      const last = this.notes[this.notes.length - 1];
+      if (last.kind !== "raw") break;
+      if (last.text.endsWith(left)) {
+        last.text = last.text.slice(0, -left.length);
+        if (!last.text) this.notes.pop();
+        left = "";
+      } else if (left.endsWith(last.text)) {
+        left = left.slice(0, -last.text.length);
+        this.notes.pop();
+      } else break;
+    }
+    if (this.transcript.endsWith(text)) this.transcript = this.transcript.slice(0, -text.length);
   }
 
   private onData(data: string) {
@@ -187,6 +246,7 @@ class TerminalController {
           const last = chars.pop();
           if (last !== undefined) {
             this.buffer = chars.join("");
+            this.dropRawTail(last);
             const w = charWidth(last);
             this.term.write("\b \b".repeat(w));
           }
