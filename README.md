@@ -18,6 +18,8 @@ git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提�
 ./build.sh test      # 无头冒烟测试（含 Linux；JS 与 TS 各一例；Rust 需 wasm/rust 或可访问的演示地址；Java 需 wasm/java）
 ```
 
+`./build.sh build` 在 `wasm/java/compiler.wasm` 不存在时打印警告，构建照常完成。开发服务器和 preview 对缺失的 `/wasm/**` 返回 404（`Cache-Control: no-store`），不回退首页；存在的 `/wasm/**` 用 `Cache-Control: no-cache` 送出，避免空正文被缓存成 “0 kB transferred”。若浏览器曾把首页或空响应缓存成 `compiler.wasm`，刷新后按 `?v=` 重新拉取，空的或变短的正文会再试一次。仍失败时终端写明得到和期望的字节数；文件缺失则提示 `./build.sh vendor --java`，页面来自 dist 时再提示 `./build.sh build`。
+
 `./build.sh dev` 和 `./build.sh preview` 由 Vite 返回 `Cross-Origin-Opener-Policy: same-origin` 与 `Cross-Origin-Embedder-Policy: require-corp`。没有这两项头的静态站点也可以打开 `dist/`：页面在启动前注册同源的 `coi-serviceworker.js`，需要时刷新一次，自己补上同样的头。`file://` 和隐私模式没有 Service Worker，仍会看到隔离说明。
 
 ```bash

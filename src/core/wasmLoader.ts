@@ -1,6 +1,7 @@
 import type { BinaryWASIFS } from "@runno/wasi";
 import { t } from "@/i18n";
 import { WASM_BASE, type Asset } from "./manifest";
+import { fetchPinned, PinnedMismatch, PinnedMissing } from "./pinned-fetch";
 import { extractTarGz } from "./tar";
 
 export const CACHE_NAME = "simplecode-wasm-v1";
@@ -72,36 +73,33 @@ export async function cacheUsage(): Promise<number> {
 }
 
 async function download(asset: Asset, onProgress: Progress, signal?: AbortSignal): Promise<Uint8Array> {
-  const res = await fetch(`${WASM_BASE}${asset.file}`, { signal });
-  if (!res.ok) throw new Error(t("downloadHttp", { file: asset.file, status: res.status }));
-  const total = asset.size || Number(res.headers.get("content-length") ?? 0);
-  if (!res.body) {
-    const buf = new Uint8Array(await res.arrayBuffer());
-    onProgress(buf.byteLength, total);
-    return buf;
-  }
-  const reader = res.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let received = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    received += value.byteLength;
-    onProgress(Math.min(received, total), total);
-  }
-  const out = new Uint8Array(received);
-  let off = 0;
-  for (const c of chunks) {
-    out.set(c, off);
-    off += c.byteLength;
-  }
   // .tar.gz may be transparently decoded when served with Content-Encoding: gzip,
-  // so only enforce the exact size for wasm binaries.
-  if ((asset.kind === "wasm" || asset.kind === "bin") && asset.size && out.byteLength !== asset.size) {
-    throw new Error(t("sizeMismatch", { file: asset.file, expected: asset.size, actual: out.byteLength }));
+  // so only enforce the exact size for wasm and bin assets.
+  const enforceSize = (asset.kind === "wasm" || asset.kind === "bin") && asset.size > 0;
+  const total = asset.size || 0;
+  let received = 0;
+  try {
+    const bytes = await fetchPinned({
+      url: `${WASM_BASE}${asset.file}`,
+      version: asset.sha256,
+      expectBytes: enforceSize ? asset.size : undefined,
+      wasm: asset.kind === "wasm" || asset.file.endsWith(".wasm"),
+      signal,
+      onBytes(n) {
+        received += n;
+        const shown = Math.max(0, received);
+        onProgress(total ? Math.min(shown, total) : shown, total || shown);
+      },
+    });
+    onProgress(bytes.byteLength, total || bytes.byteLength);
+    return bytes;
+  } catch (e) {
+    if (e instanceof PinnedMissing) throw new Error(t("assetMissing", { file: asset.file }));
+    if (e instanceof PinnedMismatch) {
+      throw new Error(t("sizeMismatch", { file: asset.file, expected: asset.size, actual: e.got, sha: e.sha256 || "-" }));
+    }
+    throw e;
   }
-  return out;
 }
 
 async function fetchBytes(asset: Asset, onProgress: Progress, signal?: AbortSignal): Promise<Uint8Array> {

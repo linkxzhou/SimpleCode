@@ -1,6 +1,7 @@
 // Lazy TeaVM playground toolchain. Not part of the default wasm/ manifest.
 // teavm.org sends no CORS headers, so a COEP page cannot fetch it.
 // `./build.sh vendor --java` checks the pins and writes wasm/java/.
+import { fetchPinned, PinnedMismatch, PinnedMissing, sha256Hex } from "@/core/pinned-fetch";
 import { t } from "@/i18n";
 import lock from "../../scripts/sources.lock.json";
 
@@ -67,10 +68,6 @@ function cacheUrl(name: JavaFileName) {
   return new URL(`simplecode-teavm/${name}?v=${pins[name].sha256.slice(0, 12)}`, location.origin).href;
 }
 
-async function sha256(bytes: Uint8Array): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 async function readCache(name: JavaFileName): Promise<Uint8Array | undefined> {
   if (!cacheAvailable()) return undefined;
@@ -80,7 +77,7 @@ async function readCache(name: JavaFileName): Promise<Uint8Array | undefined> {
     if (!hit) return undefined;
     const bytes = new Uint8Array(await hit.arrayBuffer());
     if (bytes.byteLength !== pins[name].bytes) return undefined;
-    if ((await sha256(bytes)) !== pins[name].sha256) return undefined;
+    if ((await sha256Hex(bytes)) !== pins[name].sha256) return undefined;
     return bytes;
   } catch {
     return undefined;
@@ -103,35 +100,6 @@ async function writeCache(name: JavaFileName, bytes: Uint8Array) {
   }
 }
 
-async function fetchCounted(url: string, onBytes: (n: number) => void, signal?: AbortSignal): Promise<Uint8Array> {
-  const res = await fetch(url, { signal });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  if (!res.body) {
-    const buf = new Uint8Array(await res.arrayBuffer());
-    onBytes(buf.byteLength);
-    return buf;
-  }
-  const reader = res.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let received = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    received += value.byteLength;
-    onBytes(value.byteLength);
-  }
-  const out = new Uint8Array(received);
-  let off = 0;
-  for (const c of chunks) {
-    out.set(c, off);
-    off += c.byteLength;
-  }
-  return out;
-}
-
-class PinError extends Error {}
-
 async function loadOne(name: JavaFileName, onBytes: (n: number) => void, signal?: AbortSignal): Promise<Uint8Array> {
   const cached = await readCache(name);
   if (cached) {
@@ -139,25 +107,26 @@ async function loadOne(name: JavaFileName, onBytes: (n: number) => void, signal?
     return cached;
   }
   const pin = pins[name];
-  const url = `${import.meta.env.BASE_URL}${pin.sameOrigin}`;
-  let counted = 0;
   try {
-    const bytes = await fetchCounted(
-      url,
-      (n) => {
-        counted += n;
-        onBytes(n);
-      },
+    const bytes = await fetchPinned({
+      url: `${import.meta.env.BASE_URL}${pin.sameOrigin}`,
+      version: pin.sha256,
+      expectBytes: pin.bytes,
+      expectedSha256: pin.sha256,
+      wasm: name.endsWith(".wasm"),
       signal,
-    );
-    if (bytes.byteLength !== pin.bytes || (await sha256(bytes)) !== pin.sha256) {
-      throw new PinError(t("javaDigest", { file: name }));
-    }
+      onBytes,
+    });
     await writeCache(name, bytes);
     return bytes;
   } catch (e) {
-    if (counted) onBytes(-counted);
-    if (e instanceof PinError || (e as Error).name === "AbortError") throw e;
+    if ((e as Error).name === "AbortError") throw e;
+    if (e instanceof PinnedMissing) throw new Error(t("javaMissing", { file: name }));
+    if (e instanceof PinnedMismatch) {
+      const sha = e.sha256 || "-";
+      const vars = { file: name, expected: pin.bytes, got: e.got, sha };
+      throw new Error(e.got === pin.bytes ? t("javaDigest", vars) : t("javaShort", vars));
+    }
     const detail = e instanceof Error ? e.message : String(e);
     throw new Error(t("javaDownload", { detail }));
   }

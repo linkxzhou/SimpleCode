@@ -70,6 +70,32 @@ describe("i18n catalog", () => {
     assert.match(zh.aboutBooks, /快速入门/);
     assert.match(en.aboutBooks, /Quick Start/);
   });
+
+  it("tells a missing Java file apart from a real digest mismatch", () => {
+    const missing = t("javaMissing", { file: "compiler.wasm" });
+    assert.match(missing, /找不到 compiler\.wasm/);
+    assert.match(missing, /\.\/build\.sh vendor --java/);
+    assert.match(missing, /\.\/build\.sh build/);
+    assert.doesNotMatch(missing, /不一致/);
+    assert.match(t("javaDigest", { file: "compiler.wasm", expected: 4294850, got: 4294850, sha: "abc" }), /期望 4294850 字节，得到 4294850 字节/);
+    assert.match(t("javaDigest", { file: "compiler.wasm", expected: 4294850, got: 4294850, sha: "abc" }), /sha256 abc/);
+    const short = t("javaShort", { file: "compiler.wasm", expected: 4294850, got: 0, sha: "e3b0" });
+    assert.match(short, /下载不完整/);
+    assert.match(short, /得到 0 字节，期望 4294850 字节/);
+    assert.match(short, /sha256 e3b0/);
+    assert.doesNotMatch(short, /不一致/);
+    assert.match(t("assetMissing", { file: "v86.wasm" }), /找不到 v86\.wasm/);
+    assert.match(t("manifestMissing", { detail: "html" }), /html/);
+    assert.match(t("sizeMismatch", { file: "compiler.wasm", expected: 4, actual: 0, sha: "e3b0" }), /实际 0/);
+    setLocale("en");
+    assert.match(t("javaMissing", { file: "compiler.wasm" }), /compiler\.wasm was not found/);
+    assert.match(t("javaMissing", { file: "compiler.wasm" }), /vendor --java/);
+    assert.match(t("javaDigest", { file: "compiler.wasm", expected: 10, got: 10, sha: "abc" }), /expected 10 bytes, got 10/);
+    assert.match(t("javaShort", { file: "compiler.wasm", expected: 10, got: 0, sha: "e3b0" }), /incomplete \(got 0 bytes, expected 10/);
+    assert.match(t("rustDigest", { kind: "rustc", expected: 3, got: 3, sha: "abc" }), /expected 3 bytes, got 3/);
+    assert.match(t("rustShort", { kind: "rustc", expected: 3, got: 1, sha: "abc" }), /incomplete \(got 1 bytes, expected 3/);
+    assert.match(t("assetMissing", { file: "linux.wasm" }), /linux\.wasm was not found/);
+  });
 });
 
 describe("wasm progress placement", () => {
