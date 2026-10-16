@@ -642,3 +642,140 @@ COEP 下跨源脚本需要 CORP 或 CORS。v86 的 wasm 和脚本**从本站 `wa
 - https://github.com/container2wasm/container2wasm 与 https://static.sched.com/hosted_files/wasmcon24/dd/c2w.pdf
 - https://github.com/joelseverin/linux-wasm 与 https://zenn.dev/okuoku/articles/89a96bcee4cc93
 - https://www.runoob.com/linux/linux-tutorial.html （书的目录见 LEARN §20）
+
+---
+
+## 11. Rust 在浏览器里怎么跑（调研，2026-10-16）
+
+本节只做调研。不改 `scripts/languages.config.mjs`，不往 `wasm/` 放文件，也不写 `docs/`。§1.5、§4、§9.3 保持原样；§10 的 Linux 方案也不改。下面凡是写了字节数的，都是 2026-10-16 的 HTTP 响应头、GitHub Release API 的 `size`，或本机编译产物。作者自己的耗时只当引用，不写成我们测过。
+
+要接进今天的 `WASIWorkerHost`，模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`（`AGENTS.md`）。`@runno/wasi` 没有 `wasi.thread-spawn`，也没有共享内存。COOP/COEP 已经开着，那只解决 `SharedArrayBuffer`，不给 rustc 补进程或线程。
+
+### 11.1 对比
+
+| 方案 | 许可证 | 压缩下载（实测或发布资产） | 启动 / 编译 | `std` | 能接受多少真 Rust | 维护（GitHub `pushed_at`） | 进 `WASIWorkerHost` |
+|---|---|---|---|---|---|---|---|
+| **weblings**（Cranelift rustc） | MIT（API） | Release `artifacts-test-7` 共 **95,941,921** 字节 zstd。`rustc-wasm.tar.zst` 17,206,482；`std-sysroot.tar.zst` 34,472,965；`wasip1-sysroot.tar.zst` 43,403,178；`riscv64-sysroot.tar.zst` 858,946；`SHA256SUMS` 350 | 作者在公开帖里写小程序大多 **&lt;100ms**（本机打开帖子 JSON 返回 403，没有复测）。README 写 Cranelift 比 LLVM 快，但是「没有测过」 | 有，随 `std-sysroot` | 真 rustc。缺 LLVM 后端才有的部分未逐项测 | 仓库 2026-07-25；产物 2026-07-22 | 编译器不是 preview1 命令。**产物**若只导入 preview1，运行段可以交给现有宿主。导入表还没在本机打开 |
+| **rubrc**（LLVM rustc + Cargo） | README 写 MIT OR Apache-2.0。API 的 license 字段是空的（根目录没有被识别的 LICENSE） | `oligamiq/rust_wasm` `v0.2.1-release`（2026-08-29）：`rustc_opt.wasm.br` **19,774,341**；`llvm_opt.wasm.br` **20,794,577**；`wasm32-wasip1.tar.br` **18,933,366**。三者合计 59,502,284。该 Release 的资产名里没有 cargo / lsp | 作者写某一工作流从约 61s 降到 12s（`RELEASE.md`，2026-07-20）。不是本机数字 | 有，目标 sysroot 是单独的 tar | 真 rustc。`wasm32-wasip1` 与 `x86_64-unknown-linux-musl` 能链接。无 crates.io、无过程宏 | **2026-10-15**。README 标明 v2 预发布，单人维护 | 否。要 `browser_wasi_shim-threads` 和共享内存，不是一条 preview1 命令 |
+| bjorn3 `wasm-rustc` + `browser_wasi_shim` | shim 为 Apache-2.0 OR MIT。`wasm-rustc` 仓库 API 无许可证 | 本轮没有称到 demo 里的 `rustc.wasm` | `examples/rustc.html` 写明：没有外部进程，rustc 没有内置链接器，demo 会在链接前失败 | 页面列出一批 rlib | 补丁版 rustc，`wasm32-wasip1-threads` | wasm-rustc **2024-04-11**；shim **2026-02-03** | 否。示例还要 `wasi` 的 `thread-spawn` 和共享 `Memory` |
+| **rubri**（Miri） | MIT | Release `1.78-dev`（2024-09-07）27 个文件共 **109,087,810** 字节，最大的是 `libcore` 46,461,066 和 `libstd` 13,351,706。资产列表里没有 `.wasm` | README：关了 UB 检查仍慢；2000 次打印要 2–3 秒 | 解释 MIR，不是链接后的 std 二进制 | 真前端，无多文件、无 crates、README 写没有 I/O | 仓库 2025-11-19。Miri 本体 2026-10-15，但 [issue 722](https://github.com/rust-lang/miri/issues/722) 仍 open（更新 2026-02-24）：官方不支持编到 Wasm，而且慢 | 否。浏览器包装，不是 `_start` 命令 |
+| `rustc_codegen_cranelift` | Apache-2.0 | 它是 rustc 的代码生成插件，不是独立下载。猜的 preview 压缩包 URL 返回 404，体积不记 | 要跟着 rustc 跑 | 取决于外面的 rustc | 真后端，不读源码 | 2026-10-14 | 不适用。weblings 才是把它放进 Wasm 的那一层 |
+| rust-analyzer | Apache-2.0 或 MIT（仓库 Apache-2.0） | nightly（2026-10-16）18 个资产，**没有 wasm**。`rust-analyzer-x86_64-unknown-linux-gnu.gz` 15,063,869 | 不编译、不运行用户程序 | 分析用，历史讨论里的 wasm demo 没有 std（playground issue 357，未复测那份 7MiB） | 只做前端诊断 | 2026-10-16 | 否 |
+| evcxr | Cargo.toml 为 MIT OR Apache-2.0（API 字段是 `NOASSERTION`） | 无 wasm 发布 | 本机调 rustc | 全 | 全，因为它就是调用 rustc | 2026-10-14 | 否。不是 Wasm |
+| **subrust** | MIT OR Apache-2.0 | 源码 crate 185,883。本机 `rustc 1.83.0`、`--release --target wasm32-wasip1`：**2,690,926** 字节 wasm，gzip -9 **150,652**。sha256 `3c2bf8bd36c949c1b8e5dbe2f97d7fff750645c97d6b4371ab6e0c00bebdc0af` | 实例化这一份 2.6MB。`node:wasi` 上 `print_u64(6*7)` 退出码 0，标准输出 `42\n`。没有在浏览器里另计时 | **没有**堆和 `std`。输出走宿主函数 `print_u64` 等 | 严格子集。`println!` 报 `error[S032D]: unknown macro`，退出码 1。无闭包、泛型、trait、堆、`async`、`unsafe` | 0.1.1，仓库 2026-07-18，14 star，crates.io 近期下载 13 | **能**。导入只有 `wasi_snapshot_preview1`，导出 `_start` |
+| Rhai 1.26.1 | MIT OR Apache-2.0 | 源码 crate **501,003**（2026-09-10）。没有称 wasm | 未编 wasm | 动态类型，不是 Rust `std` | 不是 Rust | 仓库 2026-10-13 | 库能编到 preview1，但那是另一门语言 |
+| Rune 0.14.2 | MIT OR Apache-2.0 | 源码 crate **2,771,441**（2026-05-22） | 未编 wasm | 动态语言，自带 VM | 语法像 Rust，不是 rustc 能编的程序 | 2026-10-11 | 同 Rhai，不能当成 Rust |
+| v86 里跑官方 rustc | rustc / cargo 为 MIT OR Apache-2.0；内核与 BusyBox 见 §10 | 稳定版清单日期 **2026-10-15**，Rust **1.99.1**。`i686-unknown-linux-gnu`：整包 `rust-*.tar.xz` **299,622,536**；`rustc` **104,959,116**；`rust-std` **30,051,452**；`cargo` **12,846,540**。三者合计 147,857,108，还没算镜像里的 libc | **未测**。§10.2：v86 不跑 64 位内核，所以只能用这份 i686 宿主。解释执行再叠加 rustc，交互式 hello 不现实 | 全 | 全 | 官方工具链，当天有包 | 否。客户机是 PC，不是 preview1 命令 |
+| Playground API | 服务端是 rustc（MIT OR Apache-2.0）。不是本仓库要分发的二进制 | 浏览器不下载编译器 | 本机 `POST /execute`：墙钟 **1.42s**，响应里 `Finished … in 0.40s`，`stdout` 为 `Hello from Rust 42` | 全，外加 `/meta/crates` 的 **490** 个 crate | 全（stable / edition 2024 已打通） | playground 仓库 2026-10-14 | 否。代码离开浏览器 |
+
+`itszzl-sudo/rust-wasm-web-ide` 自称解释器 wasm 69KB，1 star，API 无许可证，没有打开那份 wasm，不进入上表。`mrustc`（MIT，2026-10-13）是 C++ 写的另一套编译器，没有找到浏览器构建。`rphle/tzap` 的 README 写的是队列语言，不是 Rust。
+
+### 11.2 真编译器
+
+**weblings**（https://github.com/AngelOnFira/weblings ，演示 https://weblings.forest-anderson.ca/ 返回 200）把补丁版 rustc 编成 Wasm，后端是 Cranelift：CLIF → [waffle](https://github.com/bytecodealliance/waffle) → wasm 目标文件 → 自带链接器。钉死的产物在 https://github.com/AngelOnFira/wasm-rustc/releases/tag/artifacts-test-7 ，`artifacts.lock` 里有 sha256。演示页当天停在 “Downloading the Rust toolchain”，本机没有把整套工具链下进浏览器再编一次。作者在 https://www.reddit.com/r/rust/comments/1v4pfv6/rust_compilation_in_the_browser_with_wasm/ 写小程序的编译、链接、执行大多不到 100ms；本机取该帖 JSON 得到 403，所以这句只当作者声称。
+
+**rubrc**（https://github.com/oligamiq/rubrc ，演示 https://rubrc.pages.dev/ 返回 200）走 LLVM。`rustc`、`llvm`、Cargo、`rust-analyzer` 是多份 Wasm，由 `wasi_virt_layer` 在 Worker 里调度，不是操作系统进程。README 写明需要 COOP/COEP，外部依赖和过程宏不行，命令偶发把会话打坏。预编译文件的说明在 https://github.com/oligamiq/rust_wasm 。`v0.2.1-release` 把大于 20MB 的文件在 Cloudflare Pages 上拆开；GitHub Release 上是完整的 `.br`。
+
+**bjorn3** 的 https://github.com/bjorn3/wasm-rustc 和 https://github.com/bjorn3/browser_wasi_shim 是上面两套的地基。shim 的 README 写 preview1 只实现了一个子集。`examples/rustc.html` 自己创建共享 `Memory`，并提供 `wasi.thread-spawn`。这和 `WASIWorkerHost` 的实例化方式不是同一个对象。
+
+Cranelift 仓库 https://github.com/rust-lang/rustc_codegen_cranelift 只是后端。单独把它放进 Wasm 并不能读 `.rs`。浏览器里的 Cranelift 路径就是 weblings。
+
+### 11.3 解释器
+
+官方解释器是 Miri（https://github.com/rust-lang/miri ，Apache-2.0）。它解释 MIR，用来查未定义行为，不是 REPL。issue 722 里维护者写：编到 Wasm 不是官方支持的目标；Miri 很慢，不适合拿来跑程序。rubri（https://github.com/LyonSyonII/rubri ，https://garriga.dev/rubri/ 返回 200）关掉了检查，README 仍把 2000 次打印写成 2–3 秒，并且没有 I/O 和 crates。发布的是 rlib，不是一条可以丢给 `WASIWorkerHost` 的命令。
+
+**subrust**（https://github.com/orbitalhigh/subrust ，crate 0.1.1）是本轮唯一测通的 preview1 命令。库是 `no_std`、无分配、无依赖；命令行 `subrust run <file.rs>` 用 std 读文件。本机命令：
+
+```text
+rustc 1.83.0 (90b35a623 2024-11-26)
+cargo build --release --target wasm32-wasip1
+```
+
+稳定版已经是 1.99.1，换编译器后字节数可能变。接受的程序必须也能被 rustc 编译并得到同一结果（README 的 L1/L2），所以它是 Rust 的子集，不是另一种语法。用户能写的是整数、`bool`、`f64`、函数、`if` / `while`、结构体、定长数组、无字段的 `enum` 和穷尽的 `match`、`assert!`。没有 `Vec`、`String`、`println!`、trait、闭包、堆。默认 `run` 的宿主 API 叫 `test`，打印用 `print_u64`。这够做沙箱脚本，不够做一门叫 Rust 的课。
+
+Rhai（https://github.com/rhaiscript/rhai）和 Rune（https://github.com/rune-rs/rune）是嵌入式动态语言。Rhai 接近 JS；Rune 的块和作用域看起来像 Rust。两边都过不了 `rustc`。拿它们标成 Rust，侧栏会名不副实。
+
+evcxr（https://github.com/evcxr/evcxr）是本机求值器，内部还是启动 rustc。没有 Wasm 形态。
+
+### 11.4 不放进浏览器的两条
+
+**v86。** §10 已经选定 v86 跑 32 位 BusyBox，并且写明 64 位内核不支持。官方仍提供 `i686-unknown-linux-gnu` 的 rustc 1.99.1，所以「客户机里装一个编译器」在包装上说得通，体积上说不通：光 `rustc` + `rust-std` + `cargo` 的 xz 就是 148MB，整包 rust xz 是 299,622,536 字节，解开后更大。v86 先解释 x86，热点页再编成 Wasm（https://github.com/copy/v86/blob/master/docs/how-it-works.md ）。rustc 自己就要数百 MB 到 1GB 级内存（§4.2）。两层叠在一起，不作为 Rust 的路径。Linux 继续按 §10 做 Shell 的外部命令，不在镜像里塞 rustc。
+
+**Playground。** `POST https://play.rust-lang.org/execute`，正文是 `channel` / `mode` / `edition` / `crateType` / `tests` / `backtrace` / `code`。当天请求：
+
+```json
+{"channel":"stable","mode":"debug","edition":"2024","crateType":"bin","tests":false,"backtrace":false,"code":"fn main(){ println!(\"Hello from Rust {}\", 6*7); }\n"}
+```
+
+响应 200，255 字节，`success: true`，标准输出 `Hello from Rust 42\n`。帮助页写的 crate 政策是 crates.io 下载量前 100、Rust Cookbook，以及它们的依赖（https://play.rust-lang.org/help ）。`/meta/crates` 当天返回 490 个名字。`OPTIONS` 和 `GET /execute`（405）都带 `access-control-allow-origin: *`，响应头里没有 `Cross-Origin-Resource-Policy`。COEP 页面里用 CORS `fetch` 有机会通过，用 no-cors 不行。本轮没有在带 COEP 的页面里再打一次。这是唯一「完整 Rust、马上能跑」的办法，也是唯一把用户源码送出浏览器的办法。
+
+### 11.5 推荐
+
+**开源、并且真的是 Rust：weblings 的 Cranelift 工具链（`artifacts-test-7`），两段执行。** 编译器留在它自己的 Worker 里；链出来的 wasm 若只导入 `wasi_snapshot_preview1`，再交给现有 `WASIWorkerHost`。选它而不是 rubrc，是因为产物有 sha256、许可证 API 能识别、压缩包里没有再塞一份 LLVM，而且链接目标已经单独打了 wasip1 sysroot。rubrc 更新更勤（2026-10-15），也明确写出 `wasm32-wasip1`。weblings 的产物导入如果不是 preview1，再改评 rubrc，而不是先改宿主。
+
+**最小、并且今天就能进现有宿主：subrust 那份 2,690,926 字节的 wasm。** gzip 后约 151KB。它是子集，不是 Rust 侧栏。不要把 `id` 做成 `rust`，也不要把它写进 101 本书。
+
+默认构建仍然不带 Rust。Playground 只做显式开关的后备，不能当离线语言。
+
+### 11.6 接入（推荐路径，本轮不写代码）
+
+1. 侧栏项先不要加。下载 `artifacts-test-7` 的 `rustc-wasm.tar.zst`、`std-sysroot.tar.zst`、`wasip1-sysroot.tar.zst`，按 `artifacts.lock` 对 sha256。
+2. 在独立页面里用 weblings 自己的宿主跑 `println!("Hello from Rust {}", 6 * 7);`，目标 `wasm32-wasip1`，`-C panic=abort`。记下产物的导入模块、解压后的字节、编译秒数、内存峰值。
+3. 导入只有 `wasi_snapshot_preview1` 且导出 `_start` 时，把字节交给现有 `RunSession`，标准输入仍走 xterm。这一步和 C 的「先产出 wasm，再当命令跑」同一形状，编译器本身不注册成 `languages.config.mjs` 里的 `run` 资产。
+4. 清单继续由 `write-manifest.mjs` 按磁盘文件写。编译器包不进默认 `./build.sh vendor`。实验开关再下载，Cache API 单独一个名字，避免和十门语言的 `simplecode-wasm-v1` 互相挤掉。
+5. 许可证：weblings MIT；Cranelift / rustc 为 Apache-2.0 与 MIT；若运行段确认能进现有宿主，再写 `LICENSES/THIRD_PARTY.md`。
+6. subrust 若以后要做，就是一条普通命令：`subrust run {entry}`。界面文案写明子集，示例用 `print_u64`，不要用 `println!`。那是另一张单，不在这条推荐里。
+
+### 11.7 风险
+
+1. weblings 是一个人的仓库，标签叫 `artifacts-test-7`，链接器 README 写明用了 AI 辅助。上游停更时要靠已经钉住的 zstd，不能假设演示站一直在。
+2. Cranelift 后端和 LLVM 不是同一集合。`async`、unwind、部分 `std` 可能编过或能编但不能跑。第 11.6 步第 2 点没做完之前，不要承诺与 play.rust-lang.org 相同。
+3. 编译器 Wasm 的内存仍是数百 MB 这一档（§4.2）。手机和低内存浏览器会失败。要有「实验、桌面」的提示。
+4. 若 rustc 模块要 threads / 共享内存，Safari 和没有 COOP/COEP 的部署会在编译段失败。运行段不应再依赖 threads。
+5. 把 subrust 标成 Rust，用户写 `Vec` 和 `println!` 会得到子集错误，看起来像运行时坏了。
+6. Playground 把源码送到 `play.rust-lang.org`。断网、限流、服务条款都在对方。COEP 下的 CORS 还要在真页面上试一次。
+7. rubrc、weblings、rubri、subrust 都是个人项目。和 §6 第 5 条一样，要锁版本。
+
+### 11.8 阶段
+
+不估日历。做完一步再开下一步。
+
+1. **称产物。** 只下载 weblings 的三份 zstd，编 hello，把导入表和秒数写回本节，替换「还没在本机打开」。不进侧栏。
+2. **运行段。** 导入表合格才接到 `WASIWorkerHost`。冒烟：`println!` 得到 42，再从 xterm 读一行。
+3. **缓存和许可证。** sha256 进 lock，默认 vendor 不拉这些文件。
+4. **侧栏实验项。** 文案标明实验。不成书，直到 `println!`、循环、结构体、`String` 在浏览器里和 rustc 一致。
+5. **停损。** 产物不能进 preview1 宿主就停。改评 rubrc 的链接结果，或者只保留 subrust，并且不使用语言 id `rust`。
+6. **Playground 开关。** 与离线路径分开。请求前说明源码会离开本机。先在 COEP 页面里确认 `fetch` 不被挡。
+
+### 11.9 来源
+
+2026-10-16 打开或测量过：
+
+- https://github.com/AngelOnFira/weblings （README、`artifacts.lock`、API：MIT，`pushed_at` 2026-07-25）
+- https://github.com/AngelOnFira/wasm-rustc/releases/tag/artifacts-test-7 （五个资产的 `size`，`published_at` 2026-07-22）
+- https://weblings.forest-anderson.ca/ （200）
+- https://www.reddit.com/r/rust/comments/1v4pfv6/rust_compilation_in_the_browser_with_wasm/ （作者声称 &lt;100ms；本机 JSON 403）
+- https://github.com/oligamiq/rubrc （README、`RELEASE.md`；API license 为空；`pushed_at` 2026-10-15）
+- https://github.com/oligamiq/rust_wasm `v0.2.1-release`（2026-08-29）的 `rustc_opt.wasm.br`、`llvm_opt.wasm.br`、`wasm32-wasip1.tar.br`
+- https://rubrc.pages.dev/ （200）
+- https://github.com/bjorn3/wasm-rustc （`pushed_at` 2024-04-11）
+- https://github.com/bjorn3/browser_wasi_shim （README、`examples/rustc.html`；`pushed_at` 2026-02-03）
+- https://github.com/rust-lang/rustc_codegen_cranelift （Apache-2.0，`pushed_at` 2026-10-14）
+- https://github.com/bytecodealliance/waffle
+- https://github.com/rust-lang/miri/issues/722 （open，更新 2026-02-24）
+- https://github.com/LyonSyonII/rubri （README、Release `1.78-dev`）
+- https://garriga.dev/rubri/ （200）
+- https://github.com/rust-lang/rust-analyzer/releases/tag/nightly （2026-10-16，无 wasm 资产）
+- https://github.com/rust-lang/rust-playground/issues/357
+- https://github.com/evcxr/evcxr `evcxr/Cargo.toml` 的 `license`
+- https://github.com/orbitalhigh/subrust 与 crates.io `subrust` 0.1.1
+- 本机 `subrust.wasm`（rustc 1.83.0，wasm32-wasip1，2,690,926 字节）和 `node:wasi` 的 `print_u64` / `println!` 两次运行
+- https://github.com/rhaiscript/rhai 与 crates.io `rhai` 1.26.1
+- https://github.com/rune-rs/rune 与 crates.io `rune` 0.14.2
+- https://github.com/thepowersgang/mrustc
+- https://static.rust-lang.org/dist/channel-rust-stable.toml （`date = 2026-10-15`，Rust 1.99.1）及四个 `i686-unknown-linux-gnu` 的 `.tar.xz` `Content-Length`
+- https://play.rust-lang.org/execute 与 https://play.rust-lang.org/meta/crates 与 https://play.rust-lang.org/help
+- https://github.com/copy/v86/blob/master/docs/how-it-works.md
+
+没有找到可引用的 X 帖。检索词包括 rubrc、weblings 和 in-browser rustc，结果为空或打不开。
+
