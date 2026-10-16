@@ -430,7 +430,7 @@ bzImage 是未改过的上游演示文件 `https://i.copy.sh/buildroot-bzimage68
 
 bzImage 再压一次不值得：gzip 9 只从 10,068,480 收到 10,053,272。快照用 zstd 19，因为 v86 认帧头 `28 b5 2f fd` 并用自己的 zstd 解开，不必再带一份解压库。Cache API 存的是这份压缩字节。清单里的 `size` 和 sha256 跟磁盘上的 `.zst` 走。文件不进 git，也不进 lock。五个输入的 sha256 再加 `zstd-19` 拼成 `thirdparty/cache/linux/state.stamp`；stamp 不变且 `.zst` 非空就跳过。同一份输入再次 `save_state` 的字节数会变，所以不能钉摘要。
 
-这次 Node 测量：冷启动到 `~% ` **2.19 秒**，未压缩状态 45,550,528 字节，原始 `initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.16 秒**，同一份状态的 zstd 帧恢复加运行 **0.24 秒**。客户机内存仍是 64 MiB。32 MiB 以及 36 / 40 / 48 MiB 在 30 秒内没有串口输出。启动后 `echo 3 > /proc/sys/vm/drop_caches` 没有改变 `free`：根文件系统是 ramfs，页缓存丢不掉那份文件。浏览器计时在 `./build.sh test` 的 smoke 输出里。
+这次 Node 测量：冷启动到 `~% ` **2.19 秒**，未压缩状态 45,550,528 字节，原始 `initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.16 秒**，同一份状态的 zstd 帧恢复加运行 **0.24 秒**。客户机内存仍是 64 MiB。32 MiB 以及 36 / 40 / 48 MiB 在 30 秒内没有串口输出。启动后 `echo 3 > /proc/sys/vm/drop_caches` 没有改变 `free`：根文件系统是 ramfs，页缓存丢不掉那份文件。浏览器里（Playwright，本机 preview）：第一次选中到 `ready` **0.8 秒**，四次 Run **0.3 秒**。docs-smoke 的第一个 `linux` 块 **1.1 秒**，其后的块约 **0.3 秒**。压缩前同一次本机测量是选中 0.9 秒、Run 0.2–0.3 秒；本机磁盘上传输不再是大头，省下的是那 27 MB。
 
 运行时是主线程上的 `LinuxMachine`（`src/core/linux.ts`），和 `WASIWorkerHost` 并列。libv86 在浏览器里自己开 yield Worker；专用 Worker 没有 `window`，这条构建走不通。选中 Linux 时从 `initial_state` 启动并等到提示符，侧栏在下载之后显示「启动中」。每次 Run 销毁上一台，用同一份状态新建，`create_file("main.sh")` 与 `create_file("stdin.txt")` 写到 `/mnt/main.sh`、`/mnt/stdin.txt`，串口发送：
 

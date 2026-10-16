@@ -974,7 +974,7 @@ print(f"你好，{name}！")
 
 - `./build.sh build`：vue-tsc 通过，`docs: 307 chapters, 887 runnable blocks`。
 - `./build.sh test`：单元测试合计 320 项通过（含每章短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell 与 Linux 的退出码 0、退出码 3、快照隔离）；`docs-smoke` 886 个块通过（887 个可运行块里 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。Linux 抽屉为灰阶，工具栏没被挡住，串口接受键盘输入的 `echo typed-ok`。
-- 浏览器计时在 `plan/LANGUAGES.md` §10.0。压缩后的 Node 冷启动 2.19 秒，zstd 帧恢复加运行 0.24 秒。
+- 浏览器计时在 `plan/LANGUAGES.md` §10.0：压缩后选中到 ready 0.8 秒，Run 0.3 秒。Node 冷启动 2.19 秒，zstd 帧恢复加运行 0.24 秒。
 - 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
