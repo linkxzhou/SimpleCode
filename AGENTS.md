@@ -123,11 +123,11 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **9p 在 `/mnt`。** 这份镜像的 fstab 把 `host9p` 挂在 `/mnt`，不是 `/mnt/host`。`create_file("main.sh")` 出现在 `/mnt/main.sh`。教学文件放 `/tmp`，避免和脚本撞名。
 
-**快照不钉字节。** `linux-state.bin` 约 45,554,624 字节，不压缩（v86 只按文件名把 `.zst` 解开）。同一份输入再次 `save_state` 字节会变，所以 lock 里没有它的 sha256。`thirdparty/cache/linux/state.stamp` 是五个输入摘要拼出来的；stamp 不变且文件非空，vendor 就跳过。状态文件不入库。每次 Run 用 `initial_state` 新建一台，交互里的 `cd` 和 `/tmp` 不会留到下一次 Run。
+**快照不钉字节，下载的是 zstd 帧。** `save_state()` 的原始缓冲大约 45.5 MB，不进 `wasm/`。vendor 用 zstd 19 写成 `linux-state.zst`（这次 18,285,816 字节）。v86 看帧头 `28 b5 2f fd` 自己解压，不看文件名；Cache API 存的是压缩字节，清单 `size` 对的是这份 `.zst`。不要把 `.zst` 标成 `Content-Encoding`，否则 `fetch` 会先解开，大小检查对不上。同一份输入再次 `save_state` 字节会变，所以 lock 里没有它的 sha256。`thirdparty/cache/linux/state.stamp` 是五个输入摘要再加压缩级别；stamp 不变且 `.zst` 非空，vendor 就跳过。状态文件不入库。每次 Run 把同一份压缩缓冲交给 `initial_state`。PATH 上没有 `zstd` 时，builder 用 `cc` 和 `make` 编译钉死的 zstd 1.5.7。bzImage 已经是压缩内核，再 gzip 只少大约 15 KB，不压。32 MiB 和不是 2 的幂的内存起不来。`drop_caches` 减不了这份 ramfs。
 
 **镜像是钉死的上游 bzImage。** sha256 `507a759c70ab7a490a233be454d0b5b88bc667956a410b531cb4edc091e2eb1c`，Buildroot 2024.05.2 / BusyBox 1.36.1 / Linux 6.8.12。macOS 编不了 Buildroot。`./build.sh vendor` 下载这份文件。`scripts/builders/linux/rebuild.sh --fetch` 只核对 Buildroot 2026.08 源码包，不参与 vendor；从零编出来的树对不上这个摘要。BIOS 的 URL 指向 GitHub `master`，锁是 sha256，master 一变校验就失败。
 
-**Linux 下载之后还有启动。** 六份文件合计 58,157,676 字节。侧栏在下载阶段显示百分比，`detail === "boot"` 时显示「启动中」。换走语言要关掉虚拟机并把状态设回已缓存，下次再选才重新启动。启动过程中的 `LinuxKilled` 不是下载失败。
+**Linux 下载之后还有启动。** 六份文件合计 30,888,868 字节（快照压缩之后）。侧栏在下载阶段显示百分比，`detail === "boot"` 时显示「启动中」。换走语言要关掉虚拟机并把状态设回已缓存，下次再选才重新启动。启动过程中的 `LinuxKilled` 不是下载失败。
 
 **SQL 概览被章名盖住。** 生成器用 slug `index` 写文件时，非第 0 章也会写成 `index.md`。只有 `chapter == 0` 才能用这个文件名（`ca3ab0b`）。
 

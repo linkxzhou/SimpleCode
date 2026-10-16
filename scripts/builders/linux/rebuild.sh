@@ -7,7 +7,7 @@
 #
 # Building Buildroot on macOS is not supported. On Linux, or from macOS via
 # Docker, the outline below is the replacement path. Re-lock bzimage and
-# regenerate linux-state.bin before pointing vendor at the new file.
+# regenerate linux-state.zst before pointing vendor at the new file.
 #
 #   docker run --rm -it -v "$PWD:/work" -w /work ubuntu:24.04 bash scripts/builders/linux/rebuild.sh --fetch
 #

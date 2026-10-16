@@ -182,6 +182,8 @@ class LinuxMachine {
       vga_memory_size: VGA,
       bios: { buffer: parts.bios.slice(0) },
       vga_bios: { buffer: parts.vga.slice(0) },
+      // parts.state is the zstd frame from vendor. v86 detects the frame magic
+      // and decompresses with the zstd already linked into v86.wasm.
       initial_state: { buffer: parts.state.slice(0) },
       autostart: true,
       disable_keyboard: true,

@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { docsPlugin } from "./scripts/vite-plugin-docs";
 import { refreshManifest } from "./scripts/write-manifest.mjs";
-import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
+import { createReadStream, cpSync, existsSync, rmSync, statSync } from "node:fs";
 import { join, normalize, resolve } from "node:path";
 
 const isolationHeaders = {
@@ -59,7 +59,9 @@ function wasmAssets(): Plugin {
         this.warn("wasm/manifest.json missing — run ./build.sh vendor");
         return;
       }
-      cpSync(wasmDir, join(outDir, "wasm"), { recursive: true, dereference: true });
+      const dest = join(outDir, "wasm");
+      rmSync(dest, { recursive: true, force: true });
+      cpSync(wasmDir, dest, { recursive: true, dereference: true });
     },
   };
 }

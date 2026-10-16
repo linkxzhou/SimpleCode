@@ -117,7 +117,7 @@ The binary links wasi-libc from wasi-sdk (MIT, BSD, and Apache-2.0; see the wasi
 
 ## Linux guest (v86 + Buildroot image)
 
-The sidebar language Linux is not a WASI module. `./build.sh vendor` downloads pinned files and writes `wasm/linux-state.bin`.
+The sidebar language Linux is not a WASI module. `./build.sh vendor` downloads pinned files and writes `wasm/linux-state.zst`, a zstd frame of the v86 snapshot. The browser stores that frame in the Cache API and hands it to v86, which decompresses it with the zstd already linked into `v86.wasm`. The `zstd` CLI used at vendor time is build-only (BSD-3-Clause or GPL-2.0, https://github.com/facebook/zstd); it is not shipped to the page.
 
 - [v86](https://github.com/copy/v86) 0.5.471 (`libv86.mjs`, `v86.wasm`) — BSD-2-Clause. Copyright (c) 2012, The v86 contributors. The full notice is `LICENSES/v86-BSD-2-Clause.txt`. The npm package also bundles Berkeley SoftFloat and other pieces listed in the upstream README; those stay inside the vendored `libv86` build.
 - SeaBIOS and the VGA BIOS (`seabios.bin`, `vgabios.bin`) come from the v86 `bios/` directory. SeaBIOS is LGPL-2.1 (`COPYING.LESSER` in the SeaBIOS sources). The files are pinned by sha256 because the npm tarball does not include them.

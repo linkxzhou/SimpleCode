@@ -974,7 +974,7 @@ print(f"你好，{name}！")
 
 - `./build.sh build`：vue-tsc 通过，`docs: 307 chapters, 887 runnable blocks`。
 - `./build.sh test`：单元测试合计 320 项通过（含每章短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell 与 Linux 的退出码 0、退出码 3、快照隔离）；`docs-smoke` 886 个块通过（887 个可运行块里 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。Linux 抽屉为灰阶，工具栏没被挡住，串口接受键盘输入的 `echo typed-ok`。
-- 浏览器计时在 `plan/LANGUAGES.md` §10.0：选中到 ready 0.9 秒，Run 0.2–0.3 秒。Node 冷启动 2.09 秒，快照恢复加运行 0.26 秒。
+- 浏览器计时在 `plan/LANGUAGES.md` §10.0。压缩后的 Node 冷启动 2.19 秒，zstd 帧恢复加运行 0.24 秒。
 - 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
@@ -1661,7 +1661,7 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 文档块的 info 以 `linux` 开头，并带 `run` 和 `expect`。`sh` 围栏不会进这台虚拟机。
 
 1. 按钮仍是 `RunButton`（`size="xs"`，文案 `Run`）。抽屉不盖住工具栏。
-2. 应用切到侧栏 Linux，必要时按清单下载 `libv86.mjs`、`v86.wasm`、BIOS、bzImage 和 `linux-state.bin`（Cache API，同源，合计 58,157,676 字节）。下载之后侧栏显示「启动中」。
+2. 应用切到侧栏 Linux，必要时按清单下载 `libv86.mjs`、`v86.wasm`、BIOS、bzImage 和 `linux-state.zst`（Cache API 存压缩字节，同源，合计 30,888,868 字节）。下载之后侧栏显示「启动中」。v86 在恢复快照时自己解开 zstd。
 3. 用快照新建一台客户机，把块的正文写成 `/mnt/main.sh`。`stdin="…"` 写成 `/mnt/stdin.txt`。
 4. 串口执行 `stty -echo; sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?; stty echo`。标准输出进现有 xterm。含哨兵的行不留在读者看到的输出里。退出码只认最后一次 `__SC_EXIT:` 后的数字，显示在 Run 旁边。
 5. 跑完这台客户机留着，后面还要 `stty echo`，然后可以继续打字。下一次 Run 会再从同一份快照新建，看不到这次的 `/tmp` 文件。Stop 或换语言才销毁。

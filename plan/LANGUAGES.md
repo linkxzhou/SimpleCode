@@ -401,7 +401,7 @@ Shell 仍留在 `WASIWorkerHost`。要 `ls`、`cd`、管道和外部命令时走
 
 ### 10.0 落地结果
 
-`./build.sh vendor` 在 macOS 与 Linux 上走同一条路：按 `scripts/sources.lock.json` 下载五份钉死的文件，再在本机用 Node 生成 `linux-state.bin`。macOS 编不了 Buildroot，所以不在 vendor 里编译镜像。`scripts/builders/linux/rebuild.sh` 只在 `--fetch` 时核对 Buildroot 2026.08 源码包（sha256 `87aaca4164ea9d5c8085854953018263f7963f07c22e73a2a2185cc98c581c34`），并在注释里写了 Ubuntu 容器的构建提纲。从零编出的树对不上下面这颗 bzImage 的摘要。
+`./build.sh vendor` 在 macOS 与 Linux 上走同一条路：按 `scripts/sources.lock.json` 下载五份钉死的文件，再在本机用 Node 生成快照，并用 zstd 19 压成 `linux-state.zst`。PATH 上没有 `zstd` 时，用宿主的 `cc` 和 `make` 编译钉死的 zstd 1.5.7 源码包。macOS 编不了 Buildroot，所以不在 vendor 里编译镜像。`scripts/builders/linux/rebuild.sh` 只在 `--fetch` 时核对 Buildroot 2026.08 源码包（sha256 `87aaca4164ea9d5c8085854953018263f7963f07c22e73a2a2185cc98c581c34`），并在注释里写了 Ubuntu 容器的构建提纲。从零编出的树对不上下面这颗 bzImage 的摘要。
 
 客户机身份（在这份镜像里读到的）：
 
@@ -417,7 +417,7 @@ Shell 仍留在 `WASIWorkerHost`。要 `ls`、`cd`、管道和外部命令时走
 
 bzImage 是未改过的上游演示文件 `https://i.copy.sh/buildroot-bzimage68.bin`，资料名 “Buildroot Linux 6.8”，10,068,480 字节，sha256 `507a759c70ab7a490a233be454d0b5b88bc667956a410b531cb4edc091e2eb1c`。v86 **0.5.471**。SeaBIOS / VGA BIOS 不在 npm 包里，URL 指向 GitHub `master`，锁是 sha256：`seabios.bin` `73e3f359…`（131,072），`vgabios.bin` `a4bc0d80…`（36,352）。`v86.wasm` 2,007,347，sha256 `2fc5609a…`。`libv86.mjs` 359,801，sha256 `c4e0281e…`。许可证在 `LICENSES/v86-BSD-2-Clause.txt` 和 `LICENSES/THIRD_PARTY.md`。
 
-六份运行时文件（2026-10-16 磁盘字节，合计 **58,157,676**）：
+六份运行时文件。压缩前合计 **58,157,676** 字节，其中未压缩快照 45,554,624。压缩后磁盘字节合计 **30,888,868**：
 
 | 文件 | 字节 | 清单 kind |
 |---|---:|---|
@@ -426,9 +426,11 @@ bzImage 是未改过的上游演示文件 `https://i.copy.sh/buildroot-bzimage68
 | `seabios.bin` | 131,072 | bin |
 | `vgabios.bin` | 36,352 | bin |
 | `linux-bzimage.bin` | 10,068,480 | bin |
-| `linux-state.bin` | 45,554,624 | bin |
+| `linux-state.zst` | 18,285,816 | bin |
 
-快照在 vendor 时生成，不压缩，不进 git，也不进 lock。五个输入的 sha256 拼成 `thirdparty/cache/linux/state.stamp`；stamp 不变且状态文件非空就跳过。同一份输入再次 `save_state` 的字节数会变，所以不能钉摘要。Node 上这一次：冷启动到 `~% ` **2.09 秒**，`initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.26 秒**。浏览器里（Playwright 打开本机 preview，六份文件从 `dist/wasm` 同源取出）：第一次选中 Linux 到 `ready` **0.9 秒**（含下载和快照启动）。随后四次 Run 为 **0.3、0.3、0.2、0.3 秒**。docs-smoke 的第一个 `linux` 块 **0.8 秒**，其余块 **0.2–0.4 秒**。
+bzImage 再压一次不值得：gzip 9 只从 10,068,480 收到 10,053,272。快照用 zstd 19，因为 v86 认帧头 `28 b5 2f fd` 并用自己的 zstd 解开，不必再带一份解压库。Cache API 存的是这份压缩字节。清单里的 `size` 和 sha256 跟磁盘上的 `.zst` 走。文件不进 git，也不进 lock。五个输入的 sha256 再加 `zstd-19` 拼成 `thirdparty/cache/linux/state.stamp`；stamp 不变且 `.zst` 非空就跳过。同一份输入再次 `save_state` 的字节数会变，所以不能钉摘要。
+
+这次 Node 测量：冷启动到 `~% ` **2.19 秒**，未压缩状态 45,550,528 字节，原始 `initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.16 秒**，同一份状态的 zstd 帧恢复加运行 **0.24 秒**。客户机内存仍是 64 MiB。32 MiB 以及 36 / 40 / 48 MiB 在 30 秒内没有串口输出。启动后 `echo 3 > /proc/sys/vm/drop_caches` 没有改变 `free`：根文件系统是 ramfs，页缓存丢不掉那份文件。浏览器计时在 `./build.sh test` 的 smoke 输出里。
 
 运行时是主线程上的 `LinuxMachine`（`src/core/linux.ts`），和 `WASIWorkerHost` 并列。libv86 在浏览器里自己开 yield Worker；专用 Worker 没有 `window`，这条构建走不通。选中 Linux 时从 `initial_state` 启动并等到提示符，侧栏在下载之后显示「启动中」。每次 Run 销毁上一台，用同一份状态新建，`create_file("main.sh")` 与 `create_file("stdin.txt")` 写到 `/mnt/main.sh`、`/mnt/stdin.txt`，串口发送：
 
@@ -438,7 +440,7 @@ stty -echo; sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?; stty echo
 
 退出码只认最后一次 `__SC_EXIT:(\d+)`。哨兵到达后虚拟机留着，`stty echo` 还要执行，随后同一台机器接受键盘。Stop 才 `destroy`。Ctrl+C 送 `\x03`，不拆虚拟机。换语言会关掉客户机，状态回到已缓存。UTF-8 用 `serial_send_bytes` 和逐字节 `TextDecoder`。`uart1: true` 才会有串口字节。32 MiB 内存时内核解压停在大约 30 MB，串口不再出字，所以是 64 MiB。
 
-下面 10.1–10.14 保留规划时的推理。和本节冲突时以本节为准：内存 64 MiB，9p 在 `/mnt`，客户机是 Buildroot 2024.05.2 / BusyBox 1.36.1 / 内核 6.8.12，快照是未压缩的 `linux-state.bin`，执行器在主线程。
+下面 10.1–10.14 保留规划时的推理。和本节冲突时以本节为准：内存 64 MiB，9p 在 `/mnt`，客户机是 Buildroot 2024.05.2 / BusyBox 1.36.1 / 内核 6.8.12，快照是 `linux-state.zst`，执行器在主线程。
 
 
 

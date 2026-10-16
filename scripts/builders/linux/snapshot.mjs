@@ -1,13 +1,14 @@
 // Cold-boot the pinned bzImage under v86 and save a shell-prompt snapshot.
 // Node only. Do not set window or navigator: v86 then takes the browser audio path.
-import { readFileSync, writeFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
 
 const opt = {};
 for (let i = 2; i < process.argv.length; i += 2) {
   opt[process.argv[i].replace(/^--/, "")] = process.argv[i + 1];
 }
-for (const key of ["lib", "wasm", "bios", "vga", "bzimage", "out"]) {
+for (const key of ["lib", "wasm", "bios", "vga", "bzimage", "out", "zstd"]) {
   if (!opt[key]) {
     console.error(`missing --${key}`);
     process.exit(2);
@@ -71,28 +72,43 @@ function start(extra) {
   return { emulator, waitFor, dump: () => text.replace(/\r/g, "") };
 }
 
+const level = opt.level || "19";
+
+async function checkRestore(label, file) {
+  const restored = start({ initial_state: { buffer: ab(file) } });
+  const t1 = Date.now();
+  await new Promise((resolve) => restored.emulator.add_listener("emulator-loaded", resolve));
+  await restored.emulator.create_file("main.sh", new TextEncoder().encode("echo snapshot-ok\nuname -r\n"));
+  await restored.emulator.create_file("stdin.txt", new Uint8Array());
+  restored.emulator.serial_send_bytes(0, new TextEncoder().encode("sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?\n"));
+  await restored.waitFor(/__SC_EXIT:0/, 20000);
+  const runSec = (Date.now() - t1) / 1000;
+  const dumped = restored.dump();
+  if (!dumped.includes("snapshot-ok")) {
+    console.error(dumped.slice(-500));
+    process.exit(1);
+  }
+  console.log(`linux ${label} restore+run ${runSec.toFixed(2)}s`);
+  await restored.emulator.stop();
+}
+
 const cold = start({ bzimage: { buffer: ab(opt.bzimage) } });
 const t0 = Date.now();
 await cold.waitFor(/~% /, 30000);
 const coldSec = (Date.now() - t0) / 1000;
 const state = await cold.emulator.save_state();
-writeFileSync(opt.out, Buffer.from(state));
+const rawPath = `${opt.out}.raw`;
+writeFileSync(rawPath, Buffer.from(state));
 await cold.emulator.stop();
-console.log(`linux cold boot ${coldSec.toFixed(2)}s, state ${state.byteLength} bytes`);
+console.log(`linux cold boot ${coldSec.toFixed(2)}s, raw state ${state.byteLength} bytes`);
 
-const restored = start({ initial_state: { buffer: ab(opt.out) } });
-const t1 = Date.now();
-await new Promise((resolve) => restored.emulator.add_listener("emulator-loaded", resolve));
-await restored.emulator.create_file("main.sh", new TextEncoder().encode("echo snapshot-ok\nuname -r\n"));
-await restored.emulator.create_file("stdin.txt", new Uint8Array());
-restored.emulator.serial0_send("sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?\n");
-await restored.waitFor(/__SC_EXIT:0/, 20000);
-const runSec = (Date.now() - t1) / 1000;
-const out = restored.dump();
-if (!out.includes("snapshot-ok")) {
-  console.error(out.slice(-500));
-  process.exit(1);
-}
-console.log(`linux snapshot restore+run ${runSec.toFixed(2)}s`);
-await restored.emulator.stop();
+await checkRestore("raw", rawPath);
+
+const compressed = spawnSync(opt.zstd, ["-"+level, "-f", "-q", "-o", opt.out, rawPath], { stdio: "inherit" });
+if (compressed.status !== 0) process.exit(compressed.status ?? 1);
+rmSync(rawPath);
+const zst = readFileSync(opt.out);
+console.log(`linux state zstd-${level} ${zst.length} bytes`);
+
+await checkRestore("zstd", opt.out);
 setTimeout(() => process.exit(0), 20);
