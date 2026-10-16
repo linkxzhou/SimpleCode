@@ -653,11 +653,11 @@ npm test                # vitest；npm run test:e2e → playwright
 
 ### 20.3 下载条
 
-侧栏语言行里的 wasm 进度条（`data-testid="wasm-progress"`）加上 `my-[4px]`，上下边距各比原来多 4px。
+侧栏语言行里的 wasm 进度条（`data-testid="wasm-progress"`）使用 `my-[8px]`，上下边距各 8px。
 
 ### 20.4 测试
 
-`tests/i18n-unit.test.ts` 检查两种语言的键一致、关于文案列出十二种语言、进度条类名含 `my-[4px]`。`tests/ui-chrome.spec.mjs` 打开弹层、刷新后语言仍在、英文占位、以及进度条的 computed margin。`scripts/check-mono.mjs` 把新弹层算进去。
+`tests/i18n-unit.test.ts` 检查两种语言的键一致、关于文案列出十二种语言、进度条类名含 `my-[8px]`。`tests/ui-chrome.spec.mjs` 打开弹层、刷新后语言仍在、英文占位、以及进度条的 computed margin。`scripts/check-mono.mjs` 把新弹层算进去。
 
 ### 20.5 终端跟着语言走
 
