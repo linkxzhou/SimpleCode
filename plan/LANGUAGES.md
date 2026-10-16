@@ -375,6 +375,8 @@ Nimbus 仓库：https://github.com/AshishKumar4/Nimbus （200）。这些包要�
 
 TeaVM 曾经有 WASI 草稿（https://github.com/konsoletyper/teavm/pull/610 ）。GitHub API：`state=closed`，`merged_at=null`，没有并进主线。草稿自己也写了类库仍要非 WASI 的宿主导入（时区、大小写、数学函数）。因此 Java **不能**零改动接上 `WASIWorkerHost`。若要做，TeaVM 的许可证和“完全在浏览器内编译”更接近本项目；CheerpJ 更完整，但自托管和商业条款与 `wasm/` 本地分发冲突。这是评估项，不是本轮实现。
 
+本段写「仍约 10–30 MB」时没有称到 `compiler.wasm`。2026-10-16 的称重、Chrome 计时和许可证结论在 §12。本节的体积不再作为实现依据。
+
 ### 9.3 Rust
 
 | 方案 | 许可证 | 体积 | 与 preview1 宿主 |
@@ -388,7 +390,7 @@ Rust 工具链的许可证（MIT / Apache-2.0）没问题，卡在体积、线�
 ### 9.4 顺序
 
 1. **Shell**：唯一能留在 `WASIWorkerHost` 里的。用 wasi-sdk 编 preview1 命令，内建 + 内建管道；明确没有 `fork`。
-2. **Java**：下一轮评估 TeaVM 适配器（新的 JS/Wasm GC 宿主、stdin 桥、本地托管）。不选 CheerpJ 作为默认。
+2. **Java**：评估结论在 §12。这里不实现。不选 CheerpJ 作为默认。
 3. **Rust**：暂缓。不下载 100 MB 以上的实验编译器，也不为 wasi-threads 改宿主。
 
 Shell 仍留在 `WASIWorkerHost`。要 `ls`、`cd`、管道和外部命令时走 §10 的 Linux，两门语言并存。
@@ -857,4 +859,217 @@ evcxr（https://github.com/evcxr/evcxr）是本机求值器，内部还是启动
 **书。** `docs/rust/` 28 章，目录形状对照菜鸟教程，正文原创。`docs-smoke` 默认跳过 Rust，避免 CI 每次都拉这 152 MB。`SIMPLECODE_RUST_DOCS=1` 才跑书里的块。
 
 **还做不到。** 没有 Cargo、crates.io、过程宏、多文件、`std::thread`。`sleep` 会卡在宿主 `poll_oneoff` 的时钟空转上，可运行块里不写。Safari 没有测。编译器非线程，不靠 `SharedArrayBuffer`；跑用户程序的那一步和别的语言一样要 COOP/COEP。88 MB 的模块在手机上可能被拒绝。subrust 没有接进侧栏。
+
+---
+
+## 12. Java：浏览器里从源码跑到终端（2026-10-16，只调研）
+
+目标与现在的侧栏相同：Monaco 里是用户写的 `.java`，按 Run，xterm 里看到标准输出，并能从键盘把字节送进 `System.in`。这一节只记录称重和一次原型，不增加语言 id，不改 `@runno/wasi`，也不把文件放进 `./build.sh vendor`。
+
+和 §11 的门一样：要直接交给 `WASIWorkerHost`，模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`。下面每一条公开产物都不是这样。Rust 能把编译器和运行段拆开，是因为链出来的 wasm 过了这道门。Java 这边编译器和跑出来的程序都要自己的 JS 胶水，运行段也不能交给现有宿主。
+
+### 12.1 对比
+
+体积是 2026-10-16 本机 `curl` 或解包后的字节。gzip 列是本机 `gzip -9`，不是服务器实际送出的编码。标了「未跑」的启动时间不是本机数字。
+
+| 方案 | 许可证 | 下载（未压缩 / gzip -9） | 浏览器内编译用户源码 | Java | stdin | 启动 | 维护 | `WASIWorkerHost` |
+|---|---|---|---|---|---|---|---|---|
+| **TeaVM + teavm-javac**（playground `/3/`） | TeaVM Apache-2.0。teavm-javac 的 README 写 Apache-2.0；根目录没有 LICENSE，GitHub API 的 license 字段为空。编进 `compiler.wasm` 的 javac 是 GPLv2 + Classpath Exception | 四份合计 **6,896,057** / **4,187,139**。见 §12.2 | 要。同一份 Wasm 里有 OpenJDK `javac` 和 TeaVM | `java.version` 打印 `21`。类库是 TeaVM 自己的，不是 OpenJDK 21 | 库存 `System.in.read()` 抛 `EOFException`。没有读字节的导入 | Chrome 见 §12.2：本地文件齐了之后 hello 合计 **811.9 ms** | TeaVM `pushed_at` 2026-10-15，0.16.0 发布于 2026-10-02。teavm-javac 提交 2026-10-05 | 否。Wasm GC + `teavm*` / `wasm:js-string` |
+| **CheerpJ 4.3** | 商业软件。社区许可给 FOSS、个人、一人公司；自托管和再分发要商业许可（https://cheerpj.com/licensing/ ） | 跑起来之前实际请求到的壳 **4,044,947** 字节。JDK 按需 jar 这一轮没下到。厂商文档写许多应用约 10–20 MB，不是本机数字 | 不要。吃的是已有 class / jar | 文档：8 / 11，17 为预览。4.3 变更日期 2026-04-21 | 未跑到 `main` | `cheerpjInit` **303 ms**，随后 iframe 被 COEP 挡住，20 s 内 `RunMain` 没返回 | Leaning Technologies，4.3 的文件 `Last-Modified` 2026-04-20 | 否。JS 库 + 按需区间 |
+| **JavaBox** | `package.json` 写 ISC。根目录没有 LICENSE，GitHub API 为空。`.data` 是 OpenJDK 21 镜像，这一部分是 GPLv2 + Classpath Exception | wasm **3,272,146** / 1,131,066；mjs **155,210** / 37,790；data **75,595,652** / 50,747,326。合计 **79,023,008** / **51,916,182** | 要。JVM 里的 `javax.tools.JavaCompiler` | OpenJDK 21 Zero 解释器 | README 写了 SharedArrayBuffer 环形缓冲。本机没把演示跑起来 | 未跑。演示页自己的文字写加载要 3–5 秒 | 仓库 2026-07-27，14 star，没有 Release | 否。Emscripten，导入模块名被压成 `a`（99 个函数），不导出 `_start` |
+| **TraceJVM 0.4.1** + **b-jvm** | npm `AGPL-3.0-only`。b-jvm 为 MIT | npm 包未压缩 52,868,134；tgz 51,392,940。运行时 zstd **51,114,681**，解开后 tar 成员合计 **129,543,886**（308 个文件） | 要。TeaVM 编的 OpenJDK 23 `javac`，另有 b-jvm 跑 class | 文档写 Java 23。标明 pre-release | 未跑 | 未跑 | npm 发布时间 2026-08-10。b-jvm `pushed_at` 2025-05-07，35 star，没有 Release | 否。`bjvm_main.wasm` 804,771 字节，加上三套 JDK 配置，不是 preview1 命令 |
+| **DoppioJVM** 0.5.0 + BrowserFS | MIT | 本轮没有重新称。2016 年的演示页写预载 **40 MB** 类库；作者当时说压缩后约 30 MB | 能，若把 JDK 的 `javac` 放进 BrowserFS。那是 Java 8 的类库 | Java 8 | 文档写标准流可以接到 UI。未复测 | 未跑 | Release 2016-10-30。仓库 `pushed_at` 2022-12-06，之后是依赖更新 | 否。TypeScript JVM，不是 Wasm 命令 |
+| **JWebAssembly** | Apache-2.0 | 编译器不在浏览器里。示例 `HelloWorld.wasm` **23,233**（2026-10-01） | 不要。编译器要在 JVM 上跑 | 字节码子集。里程碑 1 标成完成，DOM 库仍未完成 | 示例没有 stdin。导入是 `NonGC`、`Web`、`System` | 未把示例放进页面计时 | `pushed_at` 2026-10-01，当天有删死代码的提交 | 否。导出 `main` 函数，没有 `_start` |
+| **Bytecoder** | Apache-2.0 | 没有称到浏览器产物 | 不要。主机上的 AOT | README 写 Java 8 到 20，类库 OpenJDK 20 | 未测 | 未测 | 默认分支最近的提交是 Dependabot（2026-08-08）。`pushed_at` 2026-10-05 | 否。Wasm 后端要 JS |
+| **GraalVM Web Image** | 源码树里 `web-image/LICENSE` 是 GPLv2，README 的组件表写这一项**没有** Classpath Exception。Oracle 发行版是 GFTC，提前采用条款另计 | 本机没有 Oracle GraalVM 25，没有称 hello | 不要。`native-image --tool:svm-wasm` 在构建机上 | 随被编译的那个应用。文档要求 Oracle GraalVM 25.1+ | 文档写生成模块依赖 JS 导入，`wasmtime` 跑不了 | 未测。文档标实验 | `oracle/graal` `pushed_at` 2026-10-16 | 否 |
+| **J2CL** | Apache-2.0 | 产物是 Closure JavaScript，不是这条 Run 要的 wasm。未称 | 不要。Bazel / Closure 在构建机上 | Java 源码到 JS | 不适用 | 不适用 | `pushed_at` 2026-10-16 | 否 |
+| Fermyon **teavm-wasi** | Apache-2.0 | 未称。没有浏览器 javac | 不要 | TeaVM 类库 | 文档写给 Spin / 组件模型 | 未测 | 最后提交 2022-12-07，`pushed_at` 2023-12-17 | 否。不是 preview1 命令。上游 PR 610 已关闭且未合并 |
+| JamVM、Avian、Miniature JVM、OpenJDK Zero 的 WASI 构建 | JamVM（`jserv/jamvm`）GPL-2.0。Avian ISC，README 标 INACTIVE | 没有找到可下载的 preview1 命令 | — | — | — | — | JamVM 2023-12-03；Avian 2021-02-19 | 没有可交出去的模块。OpenJDK Zero 的浏览器构建是上面的 JavaBox，走 Emscripten |
+
+Kotlin/Wasm 能在浏览器里跑，输入是 Kotlin，不是用户的 `.java`，不放进这张表。
+
+### 12.2 TeaVM（本机跑通）
+
+`playground.html`（`Last-Modified` 2026-10-02，与 TeaVM 0.16.0 的发布日相同）把编译器放在 worker 里，路径是 `/playground/3/`。README 里另一条 `https://teavm.org/playground/compiler.wasm` 仍在，4,126,432 字节，`Last-Modified` 2025-06-15。下面的数字是页面真正引用的 `/playground/3/`，不是那条旧 URL。`/playground/3/compiler.wasm` 的 `Last-Modified` 是 1980-01-31，不能当版本号。
+
+| 文件 | 字节 | gzip -9 | sha256 |
+|---|---:|---:|---|
+| `compiler.wasm` | 4,294,850 | 1,634,718 | `7f3828e4b7bddf5504dadebfc4016e40f4441e15ee0519071781813ba2ed3a4c` |
+| `compiler.wasm-runtime.js` | 13,573 | 4,657 | `9ff6a6771f698be00ab9d5c7b46d904350a8d4115dc0b409553f31ed66688a55` |
+| `compile-classlib-teavm.bin` | 200,623 | 199,279 | `e80ae10423a39290c5f20b6bb6da34d21c3ad0a75cd8dbdda4998d2813045e15` |
+| `runtime-classlib-teavm.bin` | 2,387,011 | 2,348,485 | `ea670e71967eda93828cb894c1741a8ed2e94b3422eb99cb9eccec0de67daaa8` |
+| 合计 | 6,896,057 | 4,187,139 |  |
+
+两份 classlib 几乎压不动，应是已经压过的归档。`compiler.wasm` 能从 4.3 MB 压到 1.6 MB。对 `compiler.wasm` 送 `Accept-Encoding: gzip`，响应仍是 `Content-Length: 4294850`，没有 `Content-Encoding`。响应头里没有 `Access-Control-Allow-Origin`，也没有 `Cross-Origin-Resource-Policy`。
+
+带 COOP/COEP 的页面里，`fetch("https://teavm.org/playground/3/compiler.wasm")` 失败：没有 ACAO。和 §11.10 里 GitHub Release 的情况同一类，不能把 teavm.org 当成懒加载地址。TeaVM 的 GitHub Release 资产列表是空的，没有另一条可钉的压缩包 URL。
+
+`compiler.wasm` 的导入模块是 `teavmJso`、`teavmDate`、`wasm:js-string`、`teavm`、`teavmMath`、`teavmConsole`。导出里有 `createCompiler` 和 `teavm.memory`，没有 `_start`。它要 Wasm GC 和 JS 字符串内建。本机 Node 22.14.0（V8 12.4.254.21）能 `WebAssembly.compile`。Safari 没有开。
+
+原型没有进 SimpleCode。文件下到本机后，用 playground 同一份 `compiler.wasm-runtime.js` 调用 `createCompiler`、`setSdk`、`setTeaVMClasslib`、`compile`、`generateWebAssembly`。Playwright 自带的无头 Chromium 156.0.8078.4，页面带 COOP/COEP，文件走同源：
+
+| 步骤 | ms |
+|---|---:|
+| 读本地 `compiler.wasm` | 33.7 |
+| `load` | 78.1 |
+| `setSdk` + `setTeaVMClasslib` | 96.8 |
+| `javac` | 46.2 |
+| TeaVM 生成 wasm | 539.4 |
+| `main` | 0.2 |
+| 合计 | 811.9 |
+
+标准输出是 `Hello from Java 42`，产物 **18,014** 字节。同一条 hello 在 Node 上：编译模块 47.2 ms，实例化 150.1 ms，装类库 115.1 ms，javac 55.4 ms，生成 710.5 ms，跑 0.2 ms。再编一次 hello 是 501.1 ms。编译错误 `cannot find symbol` 在 Node 上 12 ms 返回，诊断带文件名和行号。
+
+产物的导入是 `wasm:js-string`、`teavmJso`、`teavm`、`teavmConsole`（只有 `putcharStdout`）。导出 `main`（global）和 `teavm.memory`。没有 `wasi_snapshot_preview1`，没有 `_start`。标准输出是 JS 回调里的一个字符，不是 WASI 的 fd。playground 的 `frame.js` 也只接了 stdout / stderr 的 `putchar`。
+
+同一套类库上另外几条程序（Node）：
+
+| 程序 | 结果 |
+|---|---|
+| `java.version`、`ArrayList`、`HashMap` | 打印 `java.version=21`，`os.name=TeaVM`。`java.specification.version`、`java.vendor`、`java.vm.name` 是 `null`。`String.join` 得到 `Rust 42`，两个 `HashMap` 值相加得到 `42`。javac 76 ms，生成 890 ms，wasm 41,307，跑 0.8 ms |
+| `System.in.read()` | 抛 `java.io.EOFException`。生成的 wasm 没有读 stdin 的导入 |
+| `Thread.sleep(50)` 然后 `new Thread` | `main` 在打印 `before-sleep` 之后就把控制权还给 JS。500 ms 后事件循环里才出现 `after-sleep`、`started`、`child`。等待走 runtime 里的 `setTimeout`，不是宿主的 `poll_oneoff` |
+| `new File("a.txt").exists()` | 打印 `false`。没有抛异常，也看不见 WASI 的文件系统 |
+| `Class.forName("java.lang.String")` | 空指针。反射不能当可用 |
+
+所以这是「浏览器里的 javac + 一份 TeaVM 类库」，不是 OpenJDK。`println`、集合、字符串够做入门例子。`System.in`、文件、反射、和 JDK 对齐的类库都还没有。
+
+### 12.3 更完整的 JVM
+
+**CheerpJ 4.3** 的加载器是 `https://cjrtnc.leaningtech.com/4.3/loader.js`。`loader.js`、`cj3.js`、`cj3.wasm` 的 `Last-Modified` 都是 2026-04-20。这些 URL 的响应带 `Access-Control-Allow-Origin: *` 和 `Cross-Origin-Resource-Policy: cross-origin`。
+
+在与上面相同的 COEP 页面里，`cheerpjInit()` 返回前请求了：
+
+| 文件 | 字节 | gzip -9 |
+|---|---:|---:|
+| `loader.js` | 7,521 | 2,509 |
+| `cj3.js` | 666,055 | 151,798 |
+| `cj3.wasm` | 372,758 | 115,256 |
+| `cheerpj.css` | 4,776 | 1,592 |
+| `cheerpOS.js` | 90,871 | 19,674 |
+| `cj3n8.wasm` | 2,902,966 | 1,118,436 |
+
+六份合计 4,044,947 字节。Chromium 里 `cheerpjInit` 用了 303 ms。接下来加载器要开 `https://cjrtnc.leaningtech.com/4.3/c.html`（179 字节，里面再引用 `c.js`，4,096 字节）。同一页面上 CORS `fetch` 这份 HTML 得到 200；把它放进 iframe 时 Chrome 报 `net::ERR_BLOCKED_BY_RESPONSE`。`curl -I` 能看到这份 HTML 的 ACAO 和 CORP。iframe 导航仍然被拒绝，`cheerpjRunMain("Main", "/app/hello.jar")` 在 20 秒内没有返回，本机服务器也没有收到对 `hello.jar` 的请求。JDK 的按需 jar 因此没有称到。厂商文档里的 10–20 MB 仍只当他们的描述。
+
+社区许可不能自托管，也不能再分发。SimpleCode 的运行时是 `./build.sh vendor` 复制进 `wasm/` 再由站点自己提供的。把 CheerpJ 放进这条路径需要商业许可。只链他们的 CDN，又在当前 COEP 页面里过不了 `c.html` 这一步。两条都不作为默认。
+
+**JavaBox** 的演示在 `https://javabox-demo.brian-fec.workers.dev/`。页面自己带 COEP。三份文件没有 ACAO、没有 CORP，所以别的源的 COEP 页面不能直接 `fetch`。wasm 3,272,146 字节，导入只有被压缩过的模块名 `a`，不导出 memory，也不导出 `_start`。`.data` 75,595,652 字节，gzip -9 仍有 50,747,326。README 写 OpenJDK 21 Zero、Emscripten pthread、256 MB 起步到 512 MB，stdin 用 `Atomics.wait`。那是真的 JDK，也是真的大，而且仓库没有独立的 LICENSE 文件。本机没有把这 79 MB 在浏览器里启动。
+
+**TraceJVM 0.4.1** 把 TeaVM 的 javac 和 b-jvm 打成一个 zstd。解开后的大头是三套 Temurin 23 配置（`core`、`server`、`spring-server` 的 `modules` 与 jar），加上 `compiler.wasm` 4,281,714 和 `bjvm_main.wasm` 804,771。许可证是 AGPL-3.0-only。站点把这份运行时链进页面，会把整个前端的分发条件带上。不放进默认下载。
+
+**Doppio** 是 JavaScript 写的 Java 8 JVM，MIT，标准流在文档里可以接到终端。类库是几十 MB 那一档，项目从 2016 年的 0.5.0 之后没有功能发布。不值得为它新做一套 BrowserFS。
+
+### 12.4 构建机上的 AOT
+
+这些编译器吃的是已经编好的 class，或者要在开发机上跑 `javac` / `native-image`。用户按 Run 时浏览器里没有它们，就不能当成这门语言的实现。
+
+JWebAssembly 仍在改（2026-10-01）。它把字节码收成 wasm，GC 在 JS 侧。示例 hello 只有 23,233 字节，导入 `NonGC`、`Web`、`System`，导出的是函数 `main`。编译器本身是给 JVM 用的库。Bytecoder 的 README 仍写 Java 8–20 和 OpenJDK 20 类库，默认分支上能看到的近期提交是依赖机器人。GraalVM Web Image 用 Native Image 的 Wasm 后端，文档写明产物依赖 JS，不能交给 wasmtime；社区树里这一组件是不带 Classpath Exception 的 GPLv2。J2CL 的 JS 后端产出 JavaScript。实验性的 J2Wasm 见 §12.11，编译器仍在构建机上。Fermyon 的 teavm-wasi 停在 2022，目标是组件模型，不是 `wasi_snapshot_preview1`，也没有浏览器里的 javac。
+
+### 12.5 没有一条 preview1 的 JVM
+
+检索 JamVM（含 `jserv/jamvm`）、Avian、Miniature JVM，以及 “OpenJDK Zero WASI”，公开仓库里没有现成的、导出 `_start` 且导入只有 `wasi_snapshot_preview1` 的命令模块。JavaBox 是 Zero 解释器的 Wasm 构建，宿主接口是 Emscripten。TeaVM 的 WASI 草稿 PR 610 在 2023-09-25 仍是关闭、未合并，正文写的是组件模型要用的分配器和一套非 WASI 导入。§12.11 里本机把 jacobin 和 rjvm 编到了 `wasm32-wasip1`，形状上能过这道门，但都没有打出 hello。因此不改 `WASIWorkerHost`。Java 若要做，编译和运行都留在自己的 Worker 里，用 `putchar` 把字符写进现有终端。这和 Rust 不同：Rust 只把编译器留在外面，用户程序仍走 `RunSession`。
+
+### 12.6 推荐
+
+**开源、体积小、并且今天能在浏览器里从源码跑到 stdout：TeaVM `/playground/3/` 的四份文件。** §12.11 按 GitHub 主题和星数又扫了一遍，并实际编了两条 WASI 解释器。没有一条在「浏览器里编译用户源码，再跑出 stdout」上超过 TeaVM，也没有一条能把 hello 交给 `WASIWorkerHost`。推荐不变。
+
+懒下载，Cache API 使用 `simplecode-teavm-v1`，与 `simplecode-wasm-v1`、`simplecode-rustc-v1` 分开。不进默认的 `./build.sh vendor`。进度条按未压缩的 6,896,057 字节算；gzip 只在我们自己提供这些文件时有用。下载地址必须是同源。teavm.org 在 COEP 页面里没有 CORS。
+
+不选 CheerpJ：社区许可不能放进 `wasm/`，COEP 页面里运行时 iframe 被拒绝，JDK 体积也还没在本机称到。不选 JavaBox：79 MB，而且 OpenJDK 镜像的许可证不是 `package.json` 里那一行 ISC 能单独代表的。不选 TraceJVM：AGPL-3.0-only，解开后 129,543,886 字节。不选 Doppio、JWebAssembly、Bytecoder、Web Image：要么停更，要么浏览器里没有 javac，要么许可证不适合和现有 MIT / Apache-2.0 运行时放在一起。
+
+stdin 还没通。库存类库让 `System.in.read()` 抛 `EOFException`。以后若做，要在调用用户 `main` 之前换上一个从 JS 读字节的 `InputStream`，字节来自 xterm 已经在用的那条共享缓冲；Worker 必须继续跑事件循环，`Thread.sleep` 才会回来。这一步不是给模块补 `fd_read`。
+
+### 12.7 接入（推荐路径，本轮不写代码）
+
+1. 侧栏先不要加。把 §12.2 的四份文件按 sha256 钉住。Cache API 名字用 `simplecode-teavm-v1`。默认 `./build.sh vendor` 不下载。实验开关再拉，和 `vendor --rust` 同一形状。
+2. 单独 Worker 里跑 §12.2 的 hello，标准输出进终端。编译诊断进终端。确认产物导入仍是 `teavm*` 与 `wasm:js-string`。
+3. stdin：先写明库存行为是 `EOFException`。桥做完之前，示例不要读 `System.in`。
+4. 不把 `compiler.wasm` 登记成 `languages.config.mjs` 的 `run` 资产，也不要把它交给 `WASIWorkerHost`。
+5. 许可证再写进 `LICENSES/THIRD_PARTY.md`：TeaVM 与 teavm-javac 的 Apache-2.0，javac 的 GPLv2 + Classpath Exception 声明，类库的 Apache Harmony、Joda-Time、jzlib。
+6. 没有 Wasm GC 的浏览器直接失败并写明原因。不要为此改宿主。
+
+### 12.8 风险
+
+1. `java.version` 印出 21，类库并不是 OpenJDK 21。用户写 `java.nio`、反射、JNI、大多数 JDK API 会在 javac 或运行时失败。文案不能写成「Java 21」。
+2. teavm-javac 是一个人的仓库，87 star。TeaVM 本身有发布节奏（0.16.0，2026-10-02），演示站的 URL 仍可能换路径。钉的是字节和 sha256，不是 `teavm.org` 的活链接。
+3. `compiler.wasm` 含 OpenJDK javac。Classpath Exception 允许这样分发，声明必须跟着走。
+4. `Thread.sleep` 和 `Thread.start` 依赖 JS 定时器。Worker 若在 `main` 返回时被关掉，后半段输出会丢。
+5. 库存没有 stdin。若示例或书里出现 `Scanner`，用户会看到 `EOFException`，看起来像运行器坏了。
+6. CheerpJ 的 CDN 在没有 COEP 的页面上可能是完整的。本仓库的页面有 COEP。不要用「别的站点能跑」推断这里能跑。
+7. JavaBox、TraceJVM、Doppio、个人分支的 WASI 移植都没有长期支持的发布物。和 §11.7 一样，真要做也得锁字节。
+
+### 12.9 阶段
+
+不估日历。做完一步再开下一步。这一节对应的代码不在本轮。
+
+1. **钉四份文件。** sha256 与 §12.2 一致。不进侧栏，不进默认 vendor。
+2. **终端。** Worker 里 hello 打出 `Hello from Java 42`。错误程序把 javac 诊断打到终端。
+3. **stdin。** 要么桥能读到 xterm 的一行，要么界面写明不支持，并且示例不读 `System.in`。
+4. **停损。** 产物导入出现 `wasi_snapshot_preview1` 以外的模块是预期，不要改宿主。若 Wasm GC 在目标浏览器里不可用，就停，不换 CheerpJ 进 `wasm/`。
+5. **书。** 在 `println`、循环、`String`、`ArrayList` 与 javac 诊断都稳定之后再考虑。反射、文件、线程不进第一批可运行块。
+
+### 12.10 来源
+
+2026-10-16 打开或测量过：
+
+- https://teavm.org/playground.html 与 `/playground/3/` 下的 `compiler.wasm`、`compiler.wasm-runtime.js`、`compile-classlib-teavm.bin`、`runtime-classlib-teavm.bin`、`frame.js`（stdout 只有 `putchar`）
+- https://teavm.org/playground/compiler.wasm （4,126,432 字节，`Last-Modified` 2025-06-15，不是页面在用的那份）
+- https://github.com/konsoletyper/teavm （Apache-2.0，`pushed_at` 2026-10-15，Release 0.16.0 于 2026-10-02，资产列表为空）
+- https://github.com/konsoletyper/teavm-javac （README 的 Apache-2.0 与 GPLv2+CPE 声明；API license 为空；提交 2026-10-05，`Update TeaVM to 0.16.0`）
+- https://github.com/konsoletyper/teavm/pull/610 （`closed`，`merged_at` 为空）
+- 本机 Node 22.14.0 与无头 Chromium 156.0.8078.4 上的 hello、诊断、`System.in`、`Thread`、`File`、`Class.forName`
+- 带 COEP 的页面对 `https://teavm.org/playground/3/compiler.wasm` 的 CORS 失败
+- https://cjrtnc.leaningtech.com/4.3/ 的 `loader.js`、`cj3.js`、`cj3.wasm`、`cj3n8.wasm`、`cheerpOS.js`、`cheerpj.css`、`c.html`、`c.js`（字节与 sha256 见上；`Last-Modified` 2026-04-20）
+- 同一 COEP 页面：`cheerpjInit` 303 ms，iframe `c.html` 为 `net::ERR_BLOCKED_BY_RESPONSE`，`cheerpjRunMain` 20 秒未返回
+- https://cheerpj.com/licensing/ 、https://cheerpj.com/docs/changelog.html （4.3，2026-04-21）、https://cheerpj.com/docs/guides/Startup-time-optimization （10–20 MB 为厂商描述）
+- https://javabox-demo.brian-fec.workers.dev/ 的 `javabox-direct.wasm`、`javabox-direct.mjs`、`javabox-direct.data`
+- https://github.com/bmarti44/javabox （`package.json` 的 ISC；`pushed_at` 2026-07-27）
+- https://registry.npmjs.org/@tracecode/tracejvm 0.4.1（AGPL-3.0-only，2026-08-10）及包内 zstd 解开后的 tar 成员
+- https://github.com/anematode/b-jvm （MIT，`pushed_at` 2025-05-07）
+- https://github.com/plasma-umass/doppio （MIT，Release v0.5.0，2016-10-30）
+- https://github.com/i-net-software/JWebAssembly 与示例 https://i-net-software.github.io/JWebAssembly/samples/HelloWorld/HelloWorld.wasm （23,233 字节）
+- https://github.com/mirkosertic/Bytecoder
+- https://www.graalvm.org/latest/reference-manual/web-image/ 与 https://github.com/oracle/graal 的 `web-image/LICENSE`、README 组件表
+- https://github.com/google/j2cl （`pushed_at` 2026-10-16）
+- https://github.com/fermyon/teavm-wasi （最后提交 2022-12-07）
+- https://github.com/jserv/jamvm （GPL-2.0，`pushed_at` 2023-12-03）
+- https://github.com/ReadyTalk/avian （ISC，`pushed_at` 2021-02-19，描述为 INACTIVE）
+
+没有找到可引用的、带体积的 Miniature JVM 或 OpenJDK Zero 的 WASI 命令模块。JavaBox 是 Zero 的 Emscripten 构建，已记在上面。
+
+### 12.11 GitHub 再检索（2026-10-16）
+
+问的是：有没有更好的仓库，把 Java 编成 `.wasm`，并且能在浏览器里跑。检索用的是 GitHub 仓库搜索，按 star 排序，并看 2024–2026 的 `pushed_at`。`topic:java-wasm` 和 `topic:jvm-wasm` 都是 0 个仓库。`topic:webassembly` 加 `topic:java` 的第一名仍是 TeaVM（3,128）。`"java to wasm"` 只有个位数 star 的示例仓库。`"wasm32-wasip1" jvm` 是 0。下面这张表只收和「源码 → 浏览器内编译 → wasm → stdout」有关的仓库。chicory（1,139，Apache-2.0）和 Endive（315，Apache-2.0）是在 JVM 里跑 Wasm，方向相反，不列入。
+
+| 仓库 | star / `pushed_at` | 许可证 | 体积（本机或未称） | Java | 浏览器内编译 | WASI preview1 命令 |
+|---|---|---|---|---|---|---|
+| [konsoletyper/teavm](https://github.com/konsoletyper/teavm) + [teavm-javac](https://github.com/konsoletyper/teavm-javac) | 3,128 / 2026-10-15；javac 仓库 87 / 2026-10-05 | Apache-2.0；javac 为 GPLv2+CPE | 6,896,057 / gzip-9 4,187,139。§12.2 | 类库自报 21 | 是。OpenJDK javac | 否 |
+| [google/j2cl](https://github.com/google/j2cl) 的 J2Wasm | 1,380 / 2026-10-16 | Apache-2.0 | 本轮没有跑 Bazel，没有称 sample wasm | 文档仍从 Java 11 讲起。2024-11-12 的讨论写将改用 javac 并走向 Java 21 | 否。`bazel build` 在构建机上 | 否。Wasm GC，要 JS |
+| [oracle/graal](https://github.com/oracle/graal) `web-image/` | 21,729 / 2026-10-16 | 该目录 GPLv2，无 Classpath Exception | 没有称到。也没有找到把 javac 做成 Web Image 再放进浏览器的发布物 | 随被编译的应用。要 Oracle GraalVM 25.1+ | 否。`native-image --tool:svm-wasm` | 否。文档写 `wasmtime` 跑不了 |
+| [mirkosertic/Bytecoder](https://github.com/mirkosertic/Bytecoder) | 961 / 2026-10-05 | Apache-2.0 | 未称浏览器产物 | README：8–20 | 否 | 否 |
+| [i-net-software/JWebAssembly](https://github.com/i-net-software/JWebAssembly) | 1,056 / 2026-10-01 | Apache-2.0 | 示例 hello 23,233 | 字节码子集 | 否 | 否。导出函数 `main` |
+| [leaningtech/javafiddle](https://github.com/leaningtech/javafiddle) | 54 / 2026-06-05 | 站点 Apache-2.0。运行时是 CheerpJ | 同 §12.3 的壳，JDK 未下到 | CheerpJ 4.3：8 / 11 / 17 预览 | 页面是 CheerpJ，不是新的编译器。COEP 下 §12.3 的 iframe 失败 | 否 |
+| [kawasima/199xVM](https://github.com/kawasima/199xVM) | 9 / 2026-06-14（默认分支提交 2026-03-18） | GPL-2.0 | `jvm_core.wasm` **2,019,991** / gzip-9 **597,962**。sha256 `75b9b7064c912f1a98891f041e066523eae1d3c60c7c2603300caf6e66b9a8b5`。类库 shim 有 413 个 `.java`，`bundle.bin` 不在 git 里 | README 写「渐进的 Java 25」，并写明不是完整 javac / HotSpot | 是，但是仓库自带的 TypeScript 编译器，不是 javac | 否。`wasm-bindgen`，导入 `__wbindgen_placeholder__` |
+| [andreabergia/rjvm](https://github.com/andreabergia/rjvm) | 1,580 / 2024-01-24 | Apache-2.0 | 见下面的原型 | README：JVM 7 的子集 | 否 | 上游默认构建不是。去掉 zip 的 C 解码器之后是 |
+| [platypusguy/jacobin](https://github.com/platypusguy/jacobin) | 757 / 2026-10-16 | MPL-2.0 | 见下面的原型 | 目标是 Java 21 的 class，无 JNI、无 JIT | 否。还要一份 `JAVA_HOME` | 本机 `wasm32-wasip1` 构建是 |
+| [lucasbaizer2/webjvm](https://github.com/lucasbaizer2/webjvm) | 7 / 2022-08-13 | MIT | 未称。要自备 OpenJDK 8 的 `rt.jar` | Java 8 | 否。测试类在主机上用 javac 编 | 否。`wasm-pack` / wasm-bindgen |
+| [birbe/jvm](https://github.com/birbe/jvm) | 19 / 2025-03-03 | API 无许可证 | 未称。README 写目前不能用 | 试验 JVM 20 | 否 | 否 |
+| [AntonioNoack/JVM2WASM](https://github.com/AntonioNoack/JVM2WASM) | 10 / 2026-02-21 | API 无许可证 | 未称。给 Rem's Engine 用的 AOT | Java 8 | 否 | 否。JS 绑定，不能同步 I/O |
+| [LiterMC/wasm-jdk](https://github.com/LiterMC/wasm-jdk) | 0 / 2025-06-29 | AGPL-3.0 | 未称。描述是 “JRE in browser” | 未打开产物 | 未证实 | 未证实 |
+| [tracecodeapp/tracejvm](https://github.com/tracecodeapp/tracejvm) | 0 / `pushed_at` 2026-10-16；默认分支提交 2026-08-14 | AGPL-3.0-only | §12.3：zstd 51,114,681，解开 129,543,886 | Java 23，pre-release | 是。TeaVM 编的 javac | 否 |
+| [JetBrains/kotlin](https://github.com/JetBrains/kotlin) `wasmJs` / `wasmWasi` | 53,471 / 2026-10-16 | JetBrains 代码 Apache-2.0 | 未称。对照用 | 不是 Java | 否。kotlinc 不在浏览器里。Playground 在服务器上 | `wasmWasi` 的产物可以是 WASI。输入是 Kotlin |
+
+GWT（1,630，2026-10-14）、bck2brwsr（125，2025-09-16）、JSweet（1,490，2023-12-16）把 Java 变成 JS 或 TypeScript，不产生交给 `WASIWorkerHost` 的命令。
+
+**混合路径的原型。** 设想是：浏览器里用 javac 产出 `.class`，再交一个编成 `wasm32-wasip1` 的小解释器。本机有 rustc 1.83.0 和 Go 1.22；jacobin 的 `go.mod` 要求 1.27.1，构建时用 `GOTOOLCHAIN=go1.27.1`。
+
+rjvm 的 CLI 用 `cargo build --release --target wasm32-wasip1 -p rjvm_vm_cli`。上游 `zip` 默认打开 zstd 和 bzip2，产物 1,639,467 字节，导入 `wasi_snapshot_preview1` **和** `env`（`ZSTD_*`、`BZ2_*`）。`WASIWorkerHost` 不会提供 `env`。把 zip 改成 `default-features = false` 再加 `deflate` 之后，产物 **1,585,323** 字节，gzip -9 **523,172**，sha256 `c249d84320c15a2c24e53ecc3e41e16743056cdc45ae50178ab4d439558e01c8`。导入只剩 `wasi_snapshot_preview1`（17 个），导出 `_start` 和 `memory`。Node 22 的 `node:wasi` 上跑 `rjvm/ControlFlow`：编译加实例化 5.2 ms，运行 57.7 ms，退出码 -1，标准错误是 `class not found: java/lang/Object`。仓库里没有 `java/lang/Object.class`。标准输出是空的。作者写明没有真正的 I/O，`tempPrint` 只是测试用的 native，打到日志，不是 `System.out`。没有 stdin。
+
+jacobin：`GOOS=wasip1 GOARCH=wasm go build -o jacobin.wasm ./src`。产物 **17,852,769** 字节，gzip -9 **4,047,348**，sha256 `84774c0ccb5f8d41c6dcabe46a56ee3c60dbf7a7dc351ff3ffc7fa4fb79ea4de`。导入只有 `wasi_snapshot_preview1`（35 个），导出 `_start` 和 `memory`。它启动时要 `JAVA_HOME` 指向带 `release` 文件的 JDK。本机 `jlink --add-modules java.base` 的目录是 40,250,326 字节，其中 `lib/modules` 11,894,651，`lib/server/libjvm.so` 26,668,192（Wasm 里用不上这份原生 JVM）。挂上这个目录和 `JACOBIN_HOME` 之后，`node:wasi` 跑 `-cp /app Main`：实例化准备 31.7 ms，运行 29.0 ms，退出码 2。标准错误是 `getOsProperty` 的空指针，版本行是 `Version: 0.9.103 Build 4628, OS: wasip1`。hello 没有执行，stdin 没有测到。
+
+199xVM 用 `cargo build --release --target wasm32-unknown-unknown -p jvm-core`。解释器大约 2.0 MB，但是胶水是 wasm-bindgen，不是 preview1。源码里 `System.in` 被做成空的 `ByteArrayInputStream`，注释写 “no stdin in 199xVM”。浏览器里的 “javac” 是 TypeScript，不是 OpenJDK。
+
+所以混合路径今天不成立：唯一能在浏览器里编译的 javac 仍然是 TeaVM 那份，而它已经直接产出可运行的 Wasm GC 模块。再接一个 WASI 解释器，要么缺 `java.lang`（rjvm），要么在 wasip1 上启动就 panic 并且还要几十 MB 的 JDK（jacobin）。两条都没有 stdout。不把它们放进默认下载，也不改宿主。TeaVM 仍是推荐。
+
+
 
