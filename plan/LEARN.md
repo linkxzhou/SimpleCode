@@ -1715,4 +1715,19 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 
 `tests/docs-ascii.test.ts` 去掉注释后再查非 ASCII。注释语法按语言区分：`#`、`//`、`/* */`、`--`、`--[[ ]]`、Ruby 的 `=begin`/`=end`。Shell 和 PHP 里的 `$#` 不是注释。这些语言里的分号是语句分隔，不当成注释。英文书的注释本身也必须是 ASCII。`tests/docs-length.test.ts` 对比中英围栏时先去掉注释，程序、`expect` 和 `stdin` 仍要一致。
 
+---
+
+## 23. 静态服务器自行打开跨源隔离（2026-10-16）
+
+`python -m http.server` 和 GitHub Pages 不能加 COOP/COEP，页面会停在 `IsolationGuard`。构建结果里带一个同源 Service Worker（`public/coi-serviceworker.js`），在 `createApp` 之前注册。
+
+- 已经 `crossOriginIsolated` 时不注册，避免干扰带响应头的 `dev` / `preview`。
+- 尚未隔离且能注册时，等脚本激活后刷新一次。`sessionStorage` 记下这一次，避免来回刷新。
+- `file://`、非安全上下文、隐私模式没有 Service Worker 时不刷新，仍显示说明页。说明页的中文和英文要写明：普通静态服务器在 `http://localhost` 或 https 上可以打开。
+- COEP 用 `require-corp`，与 Vite 的头一致。字体和 wasm 都同源，不需要 `credentialless`。
+- 脚本 URL 和 scope 相对 `import.meta.env.BASE_URL`。子路径部署要设 Vite `base`。
+- Service Worker 转发响应正文再补头，不改字节。Wasm、Linux 和同源 Rust 工具链的大小检查保持有效。
+
+验收：`tests/coi-static.mjs` 用无隔离头的静态服务器打开 `dist/`，断言 `crossOriginIsolated === true`，并跑通一段带 stdin 的程序。
+
 

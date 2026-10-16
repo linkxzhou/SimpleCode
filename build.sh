@@ -83,7 +83,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -99,6 +99,7 @@ cmd_test() {
   info "Running headless smoke test (builds if needed)"
   [ -f dist/index.html ] || cmd_build
   node tests/smoke.mjs "${args[@]}"
+  node tests/coi-static.mjs
   node --experimental-strip-types tests/docs-smoke.mjs
   node tests/learn.spec.mjs
   node tests/ui-chrome.spec.mjs
@@ -131,7 +132,7 @@ Usage: ./build.sh <command> [args]
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)
   preview | run      Serve dist/ with COOP/COEP headers (http://localhost:4173)
-  test [--docs|--smoke]  Headless tests. Default: unit + mono + smoke + docs-smoke + learn UI.
+  test [--docs|--smoke]  Headless tests. Default: unit + mono + smoke + static COI + docs-smoke + learn UI.
                      --docs runs the tutorial smoke test; --smoke runs the language hello-world smoke test.
   clean [--all]      Remove dist/ (and node_modules/, wasm/ with --all)
   help               Show this help

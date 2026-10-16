@@ -144,9 +144,10 @@ export const zh = {
 
   isolationTitle: "页面未启用跨源隔离（crossOriginIsolated）",
   isolationBefore: "SimpleCode 需要",
-  isolationAfter: "来支持程序输入（stdin）。请确保服务器返回以下响应头：",
-  isolationDev: "开发时请使用 ",
-  isolationPreview: "，生产预览使用 ",
+  isolationAfter:
+    "来支持程序输入（stdin）。构建结果放在普通静态服务器上即可：用 http://localhost 或 https 打开时，页面会自己启用隔离。若仍看到本页，多半是 file:// 或隐私模式拦下了 Service Worker。也可以由服务器返回这些响应头：",
+  isolationDev: "开发时用 ",
+  isolationPreview: "，由服务器带头的预览用 ",
   isolationEnd: "。",
 
   downloadHttp: "下载 {file} 失败：HTTP {status}",
@@ -315,9 +316,10 @@ export const en: { [K in MessageKey]: string } = {
 
   isolationTitle: "Cross-origin isolation is off (crossOriginIsolated)",
   isolationBefore: "SimpleCode needs",
-  isolationAfter: "for program input (stdin). The server must send these response headers:",
+  isolationAfter:
+    "for program input (stdin). The built files work on a plain static server: opening them over http://localhost or https lets the page turn isolation on itself. This screen remains when service workers are unavailable, such as file:// or private mode. A server can also send these headers:",
   isolationDev: "For development, use ",
-  isolationPreview: ". For a production preview, use ",
+  isolationPreview: ". To preview with headers from the server, use ",
   isolationEnd: ".",
 
   downloadHttp: "Failed to download {file}: HTTP {status}",

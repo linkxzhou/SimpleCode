@@ -398,7 +398,7 @@ SimpleCode/
    - `.tar.gz` → 下载后立即 `extractTarGz` 成 `BinaryWASIFS`，内存缓存（python stdlib 解压后约 4 MB）。
    - 注意：WASIWorkerHost 每次运行仍会在 Worker 里 `instantiateStreaming` 重新编译（clang 31 MB 编译可能数百 ms~数秒）。v1 接受；v2 可选：fork wasi-worker 支持传入 `WebAssembly.Module`（Module 可 postMessage 到 Worker），并缓存编译产物。⚠️
 5. **存储占用**：全部语言约 **122 MB**（见 §14）。侧栏底部显示 `navigator.storage.estimate()` 与本应用缓存大小，提供「清除缓存」（AlertDialog 二次确认）。
-6. **离线**：v1 不做 Service Worker；资产已缓存时离线仍可运行（页面本身需可访问）。v2 可加 SW 预缓存外壳。
+6. **离线**：不做预缓存外壳。语言文件仍靠 Cache API。没有 COOP/COEP 的静态站用 `public/coi-serviceworker.js` 只给响应补隔离头，不缓存正文。
 
 ---
 
@@ -412,7 +412,7 @@ Cross-Origin-Embedder-Policy: require-corp
 - **生产**：
   - Nginx：`add_header Cross-Origin-Opener-Policy same-origin always; add_header Cross-Origin-Embedder-Policy require-corp always;` `types { application/wasm wasm; }`；`/wasm/` 加 `Cache-Control: public, max-age=31536000, immutable`（文件名不带 hash 时改为 `max-age=86400` + 依赖 `?v=`）；开启 gzip/brotli 对 .wasm（压缩率约 3~4 倍，大幅降低首次下载；注意此时 Content-Length 为压缩后大小，进度改用 manifest size 估算 ⚠️）。
   - Netlify/Cloudflare Pages：`_headers` 文件；Vercel：`vercel.json headers`；Firebase：参考 runno `firebase.json`。
-  - **GitHub Pages 不支持自定义头** → 需 `coi-serviceworker` 方案（备选，记录在开发指南）。
+  - **没有自定义头的静态站**（`python -m http.server`、GitHub Pages）：`src/coi.ts` 在挂载前注册 `coi-serviceworker.js`。页面尚未隔离时注册，Service Worker 激活后只刷新一次；已经 `crossOriginIsolated`（`dev` / `preview`）则不注册。`file://` 和隐私模式仍走 `IsolationGuard`。COEP 用 `require-corp`，与 Vite 相同。脚本地址和 scope 相对 `import.meta.env.BASE_URL`。Wasm、Linux、Rust 同源下载仍走原来的 `fetch`，Service Worker 只转发正文并补头。
 - 运行时检测 `window.crossOriginIsolated`，为 false 时 `IsolationGuard` 显示说明，Run 禁用。
 - 副作用：COEP 下引入第三方资源（字体/CDN 图片）需 CORP/CORS；**所有字体与资源本地打包**。
 
@@ -534,7 +534,7 @@ stderr 输出以红色（`\x1b[31m…\x1b[0m`）包装写入，但若内容已�
 ## 14. 风险与发现
 1. **体积**：语言二进制总计约 **152 MB**（未压缩，2026-10-15 manifest）：python 24.6、ruby 24.5、php 13.1、quickjs 4.0、sqlite 3.6、C/C++ 共享 52.5、Lua 0.7、Go（Yaegi）35.0 MB。必须按需下载 + 缓存 + 服务端 brotli/gzip。clang.wasm（29.8 MB）与 `yaegi-0.16.1.wasm`（35.0 MB）超过 Cloudflare Pages 单文件 25 MiB 限制 ⚠️，部署平台需注意；wasm 不入库，由 `./build.sh vendor` 生成。
 2. **许可证**：runno 为 MIT。浏览器依赖 Sucrase（MIT，仅在运行 TypeScript 时懒加载，用于去类型）。二进制各有许可：CPython（PSF）、Ruby（Ruby License/BSD-2）、PHP（PHP License 3.01）、VMware WLR 构建脚本（Apache-2.0）、wasmedge-quickjs（Apache-2.0；QuickJS 本体 MIT）、SQLite（Public Domain）、binji wasm-clang / LLVM 8（Apache-2.0 with LLVM exception）、wasi-libc/libc++（MIT/Apache）、**Lua 5.4.9（MIT）**、**Yaegi（Apache-2.0）+ Go 标准库（BSD-3-Clause）**、wasi-sdk（Apache-2.0 with LLVM exceptions）。汇总见 `LICENSES/THIRD_PARTY.md`。
-3. **头要求**：COOP/COEP 是硬依赖；会影响嵌入第三方 iframe/资源、OAuth 弹窗等；GitHub Pages 需 coi-serviceworker。
+3. **头要求**：COOP/COEP 是硬依赖；会影响嵌入第三方 iframe/资源、OAuth 弹窗等。开发服务器直接发送头。静态站靠同源 Service Worker 补 `require-corp`，不改用 `credentialless`。
 4. **php-cgi** 输出可能带 CGI 响应头 ⚠️，需实测，必要时加 `-q`。
 5. **sqlite** 会读 stdin，可能看起来“卡住” ⚠️。
 6. **clang 旧版本**（LLVM 8.0.1，C++17 部分支持，无 C++20），`-Werror` 让警告变错误（沿用上游；可考虑去掉 ⚠️）；无线程、无网络、无 `exceptions`？（wasm-clang 对 C++ 异常支持有限 ⚠️）。

@@ -118,7 +118,9 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **草稿 PR 合并不了。** GitHub 上 draft 不能进 `main`。要合并时先标成 Ready for review。
 
-**COOP/COEP 和 SharedArrayBuffer。** `WASIWorkerHost` 一构造就分配 SAB。页面没有 `Cross-Origin-Opener-Policy: same-origin` 和 `Cross-Origin-Embedder-Policy: require-corp` 时，构造直接抛错，`IsolationGuard` 会挡住。Vite 的 `server.headers` 和 `preview.headers` 要带这两项。跨源字体和 CDN 脚本在 COEP 下会被拒绝，所以字体和 wasm 都同源。GitHub Pages 不能加这些头。
+**COOP/COEP 和 SharedArrayBuffer。** `WASIWorkerHost` 一构造就分配 SAB。页面没有 `Cross-Origin-Opener-Policy: same-origin` 和 `Cross-Origin-Embedder-Policy: require-corp` 时，构造直接抛错，`IsolationGuard` 会挡住。Vite 的 `server.headers` 和 `preview.headers` 要带这两项。跨源字体和 CDN 脚本在 COEP 下会被拒绝，所以字体和 wasm 都同源。
+
+没有这些头的静态站（`python -m http.server`、GitHub Pages）由 `public/coi-serviceworker.js` 补头。`src/coi.ts` 在挂载前注册，地址相对 `import.meta.env.BASE_URL`。已经隔离就不注册。需要时只刷新一次，用 `sessionStorage` 键 `simplecode:coi-reload` 防循环。COEP 用 `require-corp`，不用 `credentialless`：和开发服务器一致，而且资源都同源。Service Worker 只转发正文，Wasm / Linux / 同源 Rust 下载的字节数不能变。`file://` 和隐私模式仍走说明页。说明页要写明 `http://localhost` 或 https 上的普通静态服务器可以打开。细节在 `plan/LEARN.md` §23。
 
 **公开的 bash / BusyBox wasm 跑不起来。** `WASIWorkerHost` 只实现 `wasi_snapshot_preview1`。mayflower/busybox-wasm 带 JS 胶水；`@nimbus-sh/runtime-bash` 还要 `nimbus_proc`（`fork`、`execve`）和 `env`。所以 Shell 是仓库里的 `scripts/builders/shell/wasi-sh.c`。要真的 `ls` 和 `cd`，用侧栏 Linux（v86），不要再换一份 BusyBox wasm 塞进现有宿主。细节在 `plan/LANGUAGES.md` §9.1 和 §10。
 
