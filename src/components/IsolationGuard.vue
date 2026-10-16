@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ShieldAlert } from "lucide-vue-next";
+import { t } from "@/i18n";
 </script>
 
 <template>
   <div class="flex h-full items-center justify-center p-8">
     <div class="max-w-md space-y-3 text-sm">
       <ShieldAlert class="size-8 text-foreground" />
-      <h1 class="text-lg font-semibold">页面未启用跨源隔离（crossOriginIsolated）</h1>
+      <h1 class="text-lg font-semibold">{{ t("isolationTitle") }}</h1>
       <p class="text-muted-foreground">
-        SimpleCode 需要 <code>SharedArrayBuffer</code> 来支持程序输入（stdin）。请确保服务器返回以下响应头：
+        {{ t("isolationBefore") }} <code>SharedArrayBuffer</code> {{ t("isolationAfter") }}
       </p>
       <pre class="rounded-md bg-muted p-3 font-mono text-xs">Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp</pre>
-      <p class="text-muted-foreground">开发时请使用 <code>./build.sh dev</code>，生产预览使用 <code>./build.sh preview</code>。</p>
+      <p class="text-muted-foreground">{{ t("isolationDev") }}<code>./build.sh dev</code>{{ t("isolationPreview") }}<code>./build.sh preview</code>{{ t("isolationEnd") }}</p>
     </div>
   </div>
 </template>

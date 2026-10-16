@@ -4,6 +4,7 @@ import MiniSearch from "minisearch";
 import { books, loadChapter, searchDocs } from "virtual:docs-index";
 import type { ChapterDoc } from "@/docs/types";
 import { BOOK_LABEL, isBookId, RUNTIME_TO_BOOK, type BookId } from "@/docs/runtime";
+import { t } from "@/i18n";
 import { useLanguageStore } from "./language";
 
 const PROGRESS_KEY = "simplecode:learn:progress";
@@ -34,6 +35,7 @@ export const useDocsStore = defineStore("docs", () => {
   const loadError = ref<string>();
   const focusSearch = ref(false);
   const live = ref("");
+  const preferChinese = ref(false);
 
   const bookIds = books.map((b) => b.id);
   const pendingId = ref<BookId | undefined>();
@@ -42,7 +44,7 @@ export const useDocsStore = defineStore("docs", () => {
   const pending = computed(() => (pendingId.value ? !bookIds.includes(pendingId.value) : false));
   const title = computed(() => {
     const id = bookId.value ?? pendingId.value;
-    return id ? `${BOOK_LABEL[id]} 快速入门` : "快速入门";
+    return id ? t("quickStartNamed", { label: BOOK_LABEL[id] }) : t("quickStart");
   });
   const current = computed(() => chapters.value.find((c) => c.id === chapterId.value));
 
@@ -98,7 +100,7 @@ export const useDocsStore = defineStore("docs", () => {
       pendingId.value = id;
       view.value = "toc";
       query.value = "";
-      live.value = `${BOOK_LABEL[id]} 快速入门即将推出`;
+      live.value = t("comingSoonLive", { label: BOOK_LABEL[id] });
       return;
     }
     pendingId.value = undefined;
@@ -113,7 +115,11 @@ export const useDocsStore = defineStore("docs", () => {
   }
   function close() {
     open.value = false;
-    live.value = "已关闭教程";
+    preferChinese.value = false;
+    live.value = t("closedTutorial");
+  }
+  function revealChinese() {
+    preferChinese.value = true;
   }
   function toggle() {
     if (open.value) close();
@@ -128,7 +134,7 @@ export const useDocsStore = defineStore("docs", () => {
       persistPositions();
     }
     const meta = chapters.value.find((c) => c.id === id);
-    live.value = meta ? `正在阅读 ${meta.title}` : "";
+    live.value = meta ? t("reading", { title: meta.title }) : "";
     await ensureChapter(id);
   }
   function backToToc() {
@@ -204,6 +210,7 @@ export const useDocsStore = defineStore("docs", () => {
     live,
     bookIds,
     pending,
+    preferChinese,
     book,
     chapters,
     visibleChapters,
@@ -212,6 +219,7 @@ export const useDocsStore = defineStore("docs", () => {
     cache,
     show,
     close,
+    revealChinese,
     toggle,
     openChapter,
     backToToc,

@@ -1,3 +1,5 @@
+import { t } from "@/i18n";
+
 export type AssetKind = "wasm" | "fs" | "bin";
 
 export interface Asset {
@@ -50,7 +52,7 @@ export const WASM_BASE = `${import.meta.env.BASE_URL}wasm/`;
 
 export async function loadManifest(): Promise<Manifest> {
   const res = await fetch(`${WASM_BASE}manifest.json`, { cache: "no-cache" });
-  if (!res.ok) throw new Error(`无法加载 manifest.json：HTTP ${res.status}`);
+  if (!res.ok) throw new Error(t("manifestHttp", { status: res.status }));
   return (await res.json()) as Manifest;
 }
 

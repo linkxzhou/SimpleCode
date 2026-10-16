@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Badge } from "@/components/ui/badge";
-import { LEVEL_LABEL } from "@/docs/runtime";
+import { t } from "@/i18n";
 import { useDocsStore } from "@/stores/docs";
 import ChapterPager from "./ChapterPager.vue";
 import DocSegments from "./DocSegments.vue";
@@ -38,13 +38,15 @@ onBeforeUnmount(() => window.clearTimeout(timer));
 <template>
   <div class="flex h-full min-h-0 flex-col" data-testid="docs-chapter">
     <div ref="scroller" class="doc-scroll min-h-0 flex-1 overflow-auto px-5 py-4" @scroll="onScroll">
-        <p v-if="docs.loading && !doc" class="text-sm text-muted-foreground">正在加载…</p>
+        <p v-if="docs.loading && !doc" class="text-sm text-muted-foreground">{{ t("loading") }}</p>
         <p v-else-if="docs.loadError" class="text-sm" role="alert">{{ docs.loadError }}</p>
         <template v-else-if="meta">
           <h1 class="text-xl font-semibold leading-7 tracking-tight">{{ meta.title }}</h1>
           <p class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-            <Badge v-if="meta.level">{{ LEVEL_LABEL[meta.level] }}</Badge>
-            <span>约 {{ meta.minutes }} 分钟</span>
+            <Badge v-if="meta.level === 'beginner'">{{ t("levelBeginner") }}</Badge>
+            <Badge v-else-if="meta.level === 'intermediate'">{{ t("levelIntermediate") }}</Badge>
+            <Badge v-else-if="meta.level === 'advanced'">{{ t("levelAdvanced") }}</Badge>
+            <span>{{ t("aboutMinutes", { n: meta.minutes }) }}</span>
           </p>
           <div v-if="doc" class="mt-4">
             <DocSegments :segments="doc.segments" :book="meta.book" />

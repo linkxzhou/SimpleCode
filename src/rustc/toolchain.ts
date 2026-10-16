@@ -3,6 +3,7 @@
 // `./build.sh vendor --rust` verifies those archives and writes the unpacked
 // files under wasm/rust/. Otherwise the page fetches the same bytes from the
 // weblings demo, which does send Access-Control-Allow-Origin.
+import { t } from "@/i18n";
 import lock from "../../scripts/sources.lock.json";
 
 export const RUST_CACHE = "simplecode-rustc-v1";
@@ -137,7 +138,7 @@ async function loadOne(
         onBytes(n);
       }, signal);
       if (bytes.byteLength !== pin.bytes || (await sha256(bytes)) !== pin.sha256) {
-        throw new Error(`${kind} 与 sources.lock.json 不一致`);
+        throw new Error(t("rustDigest", { kind }));
       }
       await writeCache(kind, bytes);
       return bytes;
@@ -147,9 +148,7 @@ async function loadOne(
       last = e instanceof Error ? e.message : String(e);
     }
   }
-  throw new Error(
-    `无法下载 Rust 工具链（${last}）。GitHub Release 没有 CORS，COEP 页面读不到。请运行 ./build.sh vendor --rust，或检查 ${pin.upstream}`,
-  );
+  throw new Error(t("rustDownload", { detail: last, upstream: pin.upstream }));
 }
 
 export function rustReady(): boolean {

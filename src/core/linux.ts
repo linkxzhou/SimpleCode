@@ -2,6 +2,7 @@
 // The VM stays on the main thread: v86's browser yield path expects `window`
 // and spawns its own timer worker. A dedicated worker has no `window` and is
 // the wrong path for this build of libv86.
+import { t } from "@/i18n";
 import { terminal } from "./terminal";
 import { getLoaded } from "./wasmLoader";
 
@@ -11,7 +12,7 @@ const CMDLINE = "tsc=reliable mitigations=off random.trust_cpu=on console=ttyS0 
 
 export class LinuxKilled extends Error {
   constructor() {
-    super("已终止");
+    super(t("terminated"));
     this.name = "LinuxKilled";
   }
 }
@@ -52,9 +53,14 @@ class LinuxMachine {
   private tail = "";
   private decoder = new TextDecoder("utf-8", { fatal: false });
   private waiter?: { resolve: (code: number) => void; reject: (err: Error) => void };
+  private bootWait?: { finish: (err?: Error) => void };
   private timer?: ReturnType<typeof setTimeout>;
   private closing: Promise<void> = Promise.resolve();
   private sink: (text: string) => void = (text) => terminal.write(text);
+
+  private armSink() {
+    this.sink = (text) => terminal.write(text);
+  }
 
   get booted() {
     return !!this.emu;
@@ -67,7 +73,7 @@ class LinuxMachine {
     const vga = getLoaded("linux-vgabios");
     const state = getLoaded("linux-state");
     if (!wasm?.url || !lib?.url || !bios?.bytes || !vga?.bytes || !state?.bytes) {
-      throw new Error("Linux 运行时文件不完整");
+      throw new Error(t("linuxIncomplete"));
     }
     this.parts = {
       wasmUrl: wasm.url,
@@ -77,18 +83,21 @@ class LinuxMachine {
       state: toBuffer(state.bytes),
     };
     if (this.emu && !this.killed) return;
+    this.armSink();
     this.killed = false;
     const gen = ++this.gen;
     this.scriptMode = false;
     await this.spawn(gen);
-    if (gen !== this.gen) return;
+    if (gen !== this.gen || this.killed) throw new LinuxKilled();
     this.send("\n");
     await this.waitFor(gen, /~% /, 20000);
+    if (gen !== this.gen || this.killed) throw new LinuxKilled();
   }
 
   /** Fresh snapshot, 9p script, exit status from the guest sentinel. */
   async runScript(code: string, stdin: string): Promise<number> {
-    if (!this.parts) throw new Error("Linux 尚未下载");
+    if (!this.parts) throw new Error(t("linuxNotDownloaded"));
+    this.armSink();
     this.killed = false;
     const gen = ++this.gen;
     this.scriptMode = true;
@@ -104,7 +113,7 @@ class LinuxMachine {
       const exitCode = await new Promise<number>((resolve, reject) => {
         this.waiter = { resolve, reject };
         this.timer = setTimeout(() => {
-          if (this.waiter) this.failWait(new Error("Linux 运行超时"));
+          if (this.waiter) this.failWait(new Error(t("linuxRunTimeout")));
         }, 30000);
         this.emu?.serial_send_bytes(0, enc.encode("stty -echo; sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?; stty echo\n"));
       });
@@ -126,6 +135,8 @@ class LinuxMachine {
     this.gen++;
     this.scriptMode = false;
     this.failWait(new LinuxKilled());
+    this.bootWait?.finish(new LinuxKilled());
+    this.sink = () => {};
     const emu = this.emu;
     this.emu = undefined;
     this.retire(emu);
@@ -158,7 +169,7 @@ class LinuxMachine {
     if (this.ctor) return this.ctor;
     const mod = (await import(/* @vite-ignore */ libUrl)) as { default?: V86Ctor; V86?: V86Ctor };
     const ctor = mod.default ?? mod.V86;
-    if (typeof ctor !== "function") throw new Error("libv86 没有导出 V86");
+    if (typeof ctor !== "function") throw new Error(t("linuxNoV86"));
     this.ctor = ctor;
     return ctor;
   }
@@ -170,7 +181,7 @@ class LinuxMachine {
     await this.closing;
     if (gen !== this.gen || this.killed) throw new LinuxKilled();
     const parts = this.parts;
-    if (!parts) throw new Error("Linux 尚未下载");
+    if (!parts) throw new Error(t("linuxNotDownloaded"));
     const Ctor = await this.loadCtor(parts.libUrl);
     if (gen !== this.gen || this.killed) throw new LinuxKilled();
     this.decoder = new TextDecoder("utf-8", { fatal: false });
@@ -207,15 +218,22 @@ class LinuxMachine {
     }
     this.emu = emulator;
     await new Promise<void>((resolve, reject) => {
-      const timer = setTimeout(() => reject(new Error("Linux 启动超时")), 20000);
-      const done = () => {
+      let settled = false;
+      let timer: ReturnType<typeof setTimeout> | undefined;
+      const finish = (err?: Error) => {
+        if (settled) return;
+        settled = true;
         clearTimeout(timer);
-        resolve();
+        if (this.bootWait?.finish === finish) this.bootWait = undefined;
+        if (err) reject(err);
+        else resolve();
       };
-      if (loaded) done();
-      else emulator.add_listener("emulator-loaded", () => done());
+      timer = setTimeout(() => finish(new Error(t("linuxBootTimeout"))), 20000);
+      this.bootWait = { finish };
+      if (loaded || gen !== this.gen || this.killed) finish(gen !== this.gen || this.killed ? new LinuxKilled() : undefined);
+      else emulator.add_listener("emulator-loaded", () => finish());
     });
-    if (gen !== this.gen) throw new LinuxKilled();
+    if (gen !== this.gen || this.killed) throw new LinuxKilled();
   }
 
   private onSerial(chunk: string) {
@@ -244,20 +262,23 @@ class LinuxMachine {
     return new Promise<void>((resolve, reject) => {
       let settled = false;
       let timer: ReturnType<typeof setTimeout> | undefined;
-      const finish = (err?: Error) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timer);
-        this.sink = prev;
-        if (err) reject(err);
-        else resolve();
-      };
-      timer = setTimeout(() => finish(new Error(`等待串口提示符超时：${this.tail.slice(-180)}`)), ms);
-      this.sink = (text) => {
+      const wrapper = (text: string) => {
         prev(text);
         if (gen !== this.gen) finish(new LinuxKilled());
         else if (re.test(this.tail)) finish();
       };
+      const finish = (err?: Error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        if (this.bootWait?.finish === finish) this.bootWait = undefined;
+        if (this.sink === wrapper) this.sink = prev;
+        if (err) reject(err);
+        else resolve();
+      };
+      this.bootWait = { finish };
+      timer = setTimeout(() => finish(new Error(t("linuxPromptTimeout", { tail: this.tail.slice(-180) }))), ms);
+      this.sink = wrapper;
     });
   }
 }

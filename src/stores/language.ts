@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import { formatMB, languageAssetIds, languageSize, loadManifest, type LanguageSpec, type Manifest } from "@/core/manifest";
-import { LinuxKilled, bootLinux, linuxMachine } from "@/core/linux";
+import { LinuxKilled, attachLinuxConsole, linuxMachine } from "@/core/linux";
+import { cancelRustCompile } from "@/rustc/compile";
 import { clearRustCache, ensureRustToolchain, rustCacheBytes, rustDownloadBytes, rustIsCached, rustReady } from "@/rustc/toolchain";
 import { cacheUsage, clearCache as clearWasmCache, ensureAsset, getLoaded, isCached, pruneCache } from "@/core/wasmLoader";
 import { terminal } from "@/core/terminal";
+import type { MessageKey } from "@/i18n/messages.ts";
+import { useRunStore } from "./run";
 
 export type LangStatus = "idle" | "cached" | "downloading" | "ready" | "error";
 
@@ -27,7 +30,30 @@ export const useLanguageStore = defineStore("language", () => {
   const usage = ref(0);
   const selectionOrigin = ref<"user" | "doc">("user");
   const controllers = new Map<string, AbortController>();
-  const pending = new Map<string, Promise<boolean>>();
+  const attempt = new Map<string, number>();
+  const inflight = new Map<string, { token: number; promise: Promise<boolean> }>();
+
+  function invalidate(id: string) {
+    attempt.set(id, (attempt.get(id) ?? 0) + 1);
+  }
+
+  function claim(id: string) {
+    const token = (attempt.get(id) ?? 0) + 1;
+    attempt.set(id, token);
+    return token;
+  }
+
+  function live(id: string, token: number) {
+    return selectedId.value === id && attempt.get(id) === token;
+  }
+
+  function park(id: string) {
+    const st = states[id];
+    if (!st || st.status !== "downloading") return;
+    st.detail = undefined;
+    st.error = undefined;
+    st.status = "idle";
+  }
 
   const languages = computed(() => manifest.value?.languages ?? []);
   const selected = computed(() => languages.value.find((l) => l.id === selectedId.value));
@@ -78,37 +104,57 @@ export const useLanguageStore = defineStore("language", () => {
     if (selected.value) void ensure(selected.value.id);
   }
 
+  function releaseRuntime(prev: string) {
+    useRunStore().abandon();
+    cancelRustCompile();
+    for (const [cid, ctrl] of [...controllers]) {
+      invalidate(cid);
+      ctrl.abort();
+      park(cid);
+    }
+    if (!controllers.has(prev)) invalidate(prev);
+    if (prev === "linux" || linuxMachine.booted) {
+      linuxMachine.shutdown();
+      if (states.linux?.status === "ready") states.linux.status = "cached";
+    }
+    terminal.detachInput();
+    terminal.clear();
+  }
+
   async function select(id: string, origin: "user" | "doc" = "user") {
     const prev = selectedId.value;
+    if (prev !== id) releaseRuntime(prev);
     selectionOrigin.value = origin;
     selectedId.value = id;
     localStorage.setItem(SELECTED_KEY, id);
-    if (prev === "linux" && id !== "linux") {
-      linuxMachine.shutdown();
-      terminal.setPassthrough(undefined);
-      if (states.linux && states.linux.status === "ready") states.linux.status = "cached";
-    }
     return ensure(id);
   }
 
   function ensure(id: string): Promise<boolean> {
-    const existing = pending.get(id);
-    if (existing) return existing;
-    const p = doEnsure(id).finally(() => pending.delete(id));
-    pending.set(id, p);
-    return p;
+    const current = attempt.get(id) ?? 0;
+    const flight = inflight.get(id);
+    if (flight && flight.token === current) return flight.promise;
+    const token = claim(id);
+    const promise = doEnsure(id, token).finally(() => {
+      if (inflight.get(id)?.token === token) inflight.delete(id);
+    });
+    inflight.set(id, { token, promise });
+    return promise;
   }
 
-  async function doEnsure(id: string): Promise<boolean> {
+  async function doEnsure(id: string, token: number): Promise<boolean> {
     const m = manifest.value;
     const lang = m?.languages.find((l) => l.id === id);
-    if (!m || !lang) return false;
+    if (!m || !lang || !live(id, token)) return false;
     // Sidebar buttons appear as soon as the manifest is assigned, which is
     // before refreshStatuses fills `states`. Selecting in that window must
     // not throw on a missing entry.
     if (!states[id]) states[id] = { status: "idle", loaded: 0, total: sizeOf(lang) };
     const st = states[id];
     if (st.status === "ready") return true;
+    const note = (key: MessageKey, vars?: Record<string, string | number>, color = "2") => {
+      if (live(id, token)) terminal.system(key, vars, color);
+    };
     if (lang.compiler === "weblings") {
       const fromNetwork = st.status !== "cached" && !rustReady();
       st.status = "downloading";
@@ -117,26 +163,33 @@ export const useLanguageStore = defineStore("language", () => {
       st.loaded = 0;
       const ctrl = new AbortController();
       controllers.set(id, ctrl);
-      if (fromNetwork) terminal.system(`正在下载 ${lang.label} 工具链（${formatMB(st.total)}）…`);
+      if (fromNetwork) note("downloadingToolchain", { label: lang.label, size: formatMB(st.total) });
       try {
         await ensureRustToolchain((loaded, total) => {
+          if (!live(id, token)) return;
           st.loaded = loaded;
           st.total = total;
         }, ctrl.signal);
+        if (!live(id, token)) return false;
         st.status = "ready";
         st.loaded = st.total;
-        if (fromNetwork) terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
+        if (fromNetwork) note("readyCached", { label: lang.label }, "32");
         await refreshStatuses();
         void refreshUsage();
         return true;
       } catch (e) {
+        if (!live(id, token)) return false;
         const aborted = (e as Error).name === "AbortError";
         st.status = aborted ? "idle" : "error";
         st.error = aborted ? undefined : (e as Error).message;
-        terminal.system(aborted ? `已取消下载 ${lang.label}` : `下载 ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
+        note(
+          aborted ? "canceledDownload" : "downloadFailedLabel",
+          aborted ? { label: lang.label } : { label: lang.label, error: (e as Error).message },
+          aborted ? "2" : "31",
+        );
         return false;
       } finally {
-        controllers.delete(id);
+        if (controllers.get(id) === ctrl) controllers.delete(id);
       }
     }
     const ids = languageAssetIds(lang);
@@ -149,7 +202,7 @@ export const useLanguageStore = defineStore("language", () => {
     st.loaded = 0;
     const ctrl = new AbortController();
     controllers.set(id, ctrl);
-    if (fromNetwork) terminal.system(`正在下载 ${lang.label} 运行时（${formatMB(st.total)}）…`);
+    if (fromNetwork) note("downloadingRuntime", { label: lang.label, size: formatMB(st.total) });
     try {
       await Promise.all(
         ids.map((assetId) =>
@@ -157,6 +210,7 @@ export const useLanguageStore = defineStore("language", () => {
             assetId,
             m.assets[assetId],
             (loaded) => {
+              if (!live(id, token)) return;
               progress[assetId] = loaded;
               st.loaded = Object.values(progress).reduce((a, b) => a + b, 0);
             },
@@ -164,20 +218,28 @@ export const useLanguageStore = defineStore("language", () => {
           ),
         ),
       );
+      if (!live(id, token)) return false;
       if (lang.runtime === "v86") {
         st.detail = "boot";
-        terminal.system("正在启动 Linux…");
-        await bootLinux();
-        terminal.system("Linux 已启动，可以直接输入命令", "32");
+        note("bootingLinux");
+        await linuxMachine.bootFromAssets();
+        if (!live(id, token)) {
+          linuxMachine.shutdown();
+          return false;
+        }
+        attachLinuxConsole();
+        note("linuxReady", undefined, "32");
       }
+      if (!live(id, token)) return false;
       st.detail = undefined;
       st.status = "ready";
       st.loaded = st.total;
-      if (fromNetwork && lang.runtime !== "v86") terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
+      if (fromNetwork && lang.runtime !== "v86") note("readyCached", { label: lang.label }, "32");
       await refreshStatuses();
       void refreshUsage();
       return true;
     } catch (e) {
+      if (!live(id, token)) return false;
       const aborted = (e as Error).name === "AbortError";
       const stopped = e instanceof LinuxKilled;
       const booting = st.detail === "boot";
@@ -189,11 +251,14 @@ export const useLanguageStore = defineStore("language", () => {
       }
       st.status = aborted ? "idle" : "error";
       st.error = aborted ? undefined : (e as Error).message;
-      const action = booting ? "启动" : "下载";
-      terminal.system(aborted ? `已取消${action} ${lang.label}` : `${action} ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
+      note(
+        aborted ? (booting ? "canceledBoot" : "canceledDownload") : booting ? "failedBoot" : "downloadFailedLabel",
+        aborted ? { label: lang.label } : { label: lang.label, error: (e as Error).message },
+        aborted ? "2" : "31",
+      );
       return false;
     } finally {
-      controllers.delete(id);
+      if (controllers.get(id) === ctrl) controllers.delete(id);
     }
   }
 
@@ -202,8 +267,8 @@ export const useLanguageStore = defineStore("language", () => {
   }
 
   async function clearCache() {
-    linuxMachine.shutdown();
-    terminal.setPassthrough(undefined);
+    const prev = selectedId.value;
+    releaseRuntime(prev);
     await clearWasmCache();
     await clearRustCache();
     for (const s of Object.values(states)) if (s.status !== "downloading") s.status = "idle";

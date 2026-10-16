@@ -13,6 +13,7 @@ import { formatMB, type LanguageSpec } from "@/core/manifest";
 import { terminal } from "@/core/terminal";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
+import { t } from "@/i18n";
 
 const props = defineProps<{ block: CodeBlockData; book: string }>();
 const langs = useLanguageStore();
@@ -50,7 +51,7 @@ const pct = computed(() => {
 const sizeLabel = computed(() => (spec.value ? formatMB(langs.sizeOf(spec.value as LanguageSpec)).replace(/\.0(?= )/, "") : ""));
 const switchHint = computed(() => {
   if (!runtimeId.value || !bookRuntime.value || runtimeId.value === bookRuntime.value) return "";
-  return `→ 切换到 ${runtimeLabel(runtimeId.value)}`;
+  return t("switchRuntime", { label: runtimeLabel(runtimeId.value) });
 });
 const needsInput = computed(() => {
   if (props.block.stdin != null || !props.block.runnable) return false;
@@ -60,13 +61,13 @@ const busy = computed(
   () => active.value && (run.status === "preparing" || run.status === "compile" || run.status === "link" || run.status === "run"),
 );
 const note = computed(() => {
-  if (downloading.value) return `下载 ${pct.value}%`;
-  if (downloadError.value) return "下载失败";
+  if (downloading.value) return t("downloadPct", { pct: pct.value });
+  if (downloadError.value) return t("downloadFailed");
   if (!active.value || !pinned.value) return "";
-  if (pinned.value === "done") return `exit ${run.exitCode ?? 0}`;
-  if (pinned.value === "failed") return run.message ?? `exit ${run.exitCode ?? 1}`;
-  if (pinned.value === "crash") return "崩溃";
-  if (pinned.value === "terminated") return "已终止";
+  if (pinned.value === "done") return t("exitLine", { code: run.exitCode ?? 0 });
+  if (pinned.value === "failed") return run.message ?? t("exitLine", { code: run.exitCode ?? 1 });
+  if (pinned.value === "crash") return t("crash");
+  if (pinned.value === "terminated") return t("terminated");
   return "";
 });
 
@@ -76,7 +77,7 @@ watch(
     if (source !== props.block.id) return;
     if (status === "preparing" || status === "compile" || status === "link" || status === "run") {
       pinned.value = null;
-      live.value = status === "run" ? "运行中" : "正在准备运行";
+      live.value = status === "run" ? t("running") : t("preparingRun");
       return;
     }
     if (status === "done" || status === "failed" || status === "crash" || status === "terminated") {
@@ -90,7 +91,7 @@ watch(
         matched.value = text.includes(props.block.expect);
         actualTail.value = text.trim().slice(-600);
       }
-      live.value = status === "done" ? `运行结束，退出码 ${run.exitCode ?? 0}` : `运行结束，${note.value}`;
+      live.value = status === "done" ? t("runFinished", { code: run.exitCode ?? 0 }) : t("runFinishedNote", { note: note.value });
     }
   },
 );
@@ -125,8 +126,8 @@ async function onRun() {
     confirmStop: askConfirm,
   });
   if (result.type === "transpile-error") {
-    const at = result.line ? `（${result.line}:${result.column ?? 1}）` : "";
-    transpileError.value = `转译失败${at}：${result.message}`;
+    const at = result.line ? t("transpileAtPos", { line: result.line, column: result.column ?? 1 }) : "";
+    transpileError.value = t("transpileAt", { at, message: result.message });
   }
 }
 
@@ -135,7 +136,7 @@ async function copy() {
   try {
     await navigator.clipboard.writeText(props.block.code);
     copied.value = true;
-    live.value = "已复制";
+    live.value = t("copied");
   } catch {
     const sel = window.getSelection();
     if (codeEl.value && sel) {
@@ -144,7 +145,7 @@ async function copy() {
       sel.removeAllRanges();
       sel.addRange(range);
     }
-    copyHint.value = "复制失败，已选中代码，请按 ⌘C 或 Ctrl+C";
+    copyHint.value = t("copyFailed");
     copied.value = true;
   }
   window.setTimeout(() => {
@@ -173,12 +174,12 @@ function cancelDownload() {
 
 const runAria = computed(() => {
   const name = runtimeId.value ? runtimeLabel(runtimeId.value as RuntimeId) : props.block.lang;
-  return `运行此 ${name} 示例（会替换编辑器内容）`;
+  return t("runExample", { name });
 });
 const runTip = computed(() => {
-  if (!isolated) return "当前页面未隔离，无法运行";
-  if (needsDownload.value && spec.value && runtimeId.value) return `首次运行需下载 ${runtimeLabel(runtimeId.value)} 运行时（${sizeLabel.value}）`;
-  return "运行此示例";
+  if (!isolated) return t("notIsolated");
+  if (needsDownload.value && spec.value && runtimeId.value) return t("firstDownload", { label: runtimeLabel(runtimeId.value), size: sizeLabel.value });
+  return t("runThis");
 });
 </script>
 
@@ -194,25 +195,25 @@ const runTip = computed(() => {
     :data-expect="block.expect ?? ''"
     :data-runnable="block.runnable ? '1' : '0'"
     :data-smoke="block.smoke ?? ''"
-    :aria-label="block.title ? `代码示例：${block.title}` : `代码示例（${block.lang}）`"
+    :aria-label="block.title ? t('codeSampleTitle', { title: block.title }) : t('codeSampleLang', { lang: block.lang })"
     @keydown="onKey"
   >
     <div class="flex h-8 items-center gap-2 border-b border-border pl-3 pr-1">
       <span class="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{{ block.lang }}</span>
       <span v-if="block.title" class="truncate text-xs text-muted-foreground">{{ block.title }}</span>
       <span v-if="switchHint" class="truncate text-[11px] text-muted-foreground">{{ switchHint }}</span>
-      <span v-if="block.stdin != null && block.stdin !== ''" class="text-[11px] text-muted-foreground">需要输入</span>
+      <span v-if="block.stdin != null && block.stdin !== ''" class="text-[11px] text-muted-foreground">{{ t("needsInput") }}</span>
       <span class="flex-1" />
       <span v-if="!block.runnable" class="pr-2 text-[11px] text-muted-foreground">{{ block.reason }}</span>
       <Tooltip>
         <TooltipTrigger as-child>
-          <Button type="button" variant="ghost" size="xs" :aria-label="`复制 ${block.lang} 代码`" @click="copy">
+          <Button type="button" variant="ghost" size="xs" :aria-label="t('copyCode', { lang: block.lang })" @click="copy">
             <Check v-if="copied" />
             <Copy v-else />
-            <span class="doc-btn-label">{{ copied ? "已复制" : "复制" }}</span>
+            <span class="doc-btn-label">{{ copied ? t("copied") : t("copy") }}</span>
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">复制</TooltipContent>
+        <TooltipContent side="bottom">{{ t("copy") }}</TooltipContent>
       </Tooltip>
       <Tooltip v-if="block.runnable">
         <TooltipTrigger as-child>
@@ -236,7 +237,7 @@ const runTip = computed(() => {
         class="shrink-0 text-[11px] text-muted-foreground"
         :data-testid="downloading ? 'doc-download' : 'doc-run-note'"
       >{{ note }}</span>
-      <Button v-if="downloading" type="button" variant="ghost" size="xs" @click="cancelDownload">取消</Button>
+      <Button v-if="downloading" type="button" variant="ghost" size="xs" @click="cancelDownload">{{ t("cancel") }}</Button>
       <Button v-if="busy" type="button" variant="ghost" size="xs" data-testid="doc-stop" @click="runner.stopFromDoc(block.id)">
         <Square />
         <span class="doc-btn-label">Stop</span>
@@ -245,48 +246,48 @@ const runTip = computed(() => {
     <pre class="max-h-[480px] overflow-auto px-3 py-2.5 font-mono text-[13px] leading-[1.6]"><code ref="codeEl" v-html="block.html" /></pre>
     <div v-if="block.stdin != null || block.expect" class="space-y-1 border-t border-border px-3 py-1.5 text-xs text-muted-foreground">
       <CollapsibleRoot v-if="block.stdin != null">
-        <CollapsibleTrigger class="underline underline-offset-2">样例输入</CollapsibleTrigger>
+        <CollapsibleTrigger class="underline underline-offset-2">{{ t("sampleInput") }}</CollapsibleTrigger>
         <CollapsibleContent>
           <pre class="mt-1 whitespace-pre-wrap font-mono text-[12px] text-foreground">{{ block.stdin }}</pre>
           <label class="mt-1 flex items-center gap-2">
             <input v-model="useStdin" type="checkbox" class="accent-foreground" />
-            使用样例输入
+            {{ t("useSampleInput") }}
           </label>
-          <p v-if="!block.eof" class="mt-1">预填后不发送 EOF，程序可能继续等待输入。</p>
+          <p v-if="!block.eof" class="mt-1">{{ t("noEof") }}</p>
         </CollapsibleContent>
       </CollapsibleRoot>
       <CollapsibleRoot v-if="block.expect">
-        <CollapsibleTrigger class="underline underline-offset-2">期望输出</CollapsibleTrigger>
+        <CollapsibleTrigger class="underline underline-offset-2">{{ t("expectedOutput") }}</CollapsibleTrigger>
         <CollapsibleContent>
           <pre class="mt-1 whitespace-pre-wrap font-mono text-[12px] text-foreground">{{ block.expect }}</pre>
         </CollapsibleContent>
       </CollapsibleRoot>
     </div>
-    <p v-if="needsInput" class="border-t border-border px-3 py-1.5 text-xs text-muted-foreground">此示例需要输入</p>
+    <p v-if="needsInput" class="border-t border-border px-3 py-1.5 text-xs text-muted-foreground">{{ t("exampleNeedsInput") }}</p>
     <p v-if="copyHint" class="border-t border-border px-3 py-1.5 text-xs text-muted-foreground">{{ copyHint }}</p>
     <p v-if="transpileError" class="border-t border-foreground/60 px-3 py-2 text-xs" role="alert">{{ transpileError }}</p>
-    <p v-if="matched === true" class="border-t border-border px-3 py-1.5 text-xs">✓ 输出符合预期</p>
+    <p v-if="matched === true" class="border-t border-border px-3 py-1.5 text-xs">{{ t("expectMatch") }}</p>
     <div v-else-if="matched === false" class="border-t border-border px-3 py-1.5 text-xs">
-      <p>○ 输出与预期不同</p>
+      <p>{{ t("expectDiffer") }}</p>
       <CollapsibleRoot>
-        <CollapsibleTrigger class="underline underline-offset-2">查看差异</CollapsibleTrigger>
+        <CollapsibleTrigger class="underline underline-offset-2">{{ t("viewDiff") }}</CollapsibleTrigger>
         <CollapsibleContent>
-          <p class="mt-1 text-muted-foreground">预期</p>
+          <p class="mt-1 text-muted-foreground">{{ t("expected") }}</p>
           <pre class="whitespace-pre-wrap font-mono">{{ block.expect }}</pre>
-          <p class="mt-1 text-muted-foreground">实际（末尾）</p>
+          <p class="mt-1 text-muted-foreground">{{ t("actualTail") }}</p>
           <pre class="whitespace-pre-wrap font-mono">{{ actualTail }}</pre>
         </CollapsibleContent>
       </CollapsibleRoot>
     </div>
     <div v-if="confirmOpen" data-testid="doc-confirm" class="absolute right-2 top-9 z-10 w-64 rounded-md border border-border bg-popover p-3 text-xs text-popover-foreground shadow-sm">
-      <p>当前程序正在运行，停止并运行此示例？</p>
+      <p>{{ t("confirmStop") }}</p>
       <label class="mt-2 flex items-center gap-2 text-muted-foreground">
         <input v-model="rememberStop" type="checkbox" class="accent-foreground" />
-        不再询问
+        {{ t("dontAsk") }}
       </label>
       <div class="mt-2 flex justify-end gap-1">
-        <Button type="button" variant="ghost" size="xs" @click="answerConfirm(false)">取消</Button>
-        <Button type="button" size="xs" data-testid="doc-confirm-yes" @click="answerConfirm(true)">停止并运行</Button>
+        <Button type="button" variant="ghost" size="xs" @click="answerConfirm(false)">{{ t("cancel") }}</Button>
+        <Button type="button" size="xs" data-testid="doc-confirm-yes" @click="answerConfirm(true)">{{ t("stopAndRun") }}</Button>
       </div>
     </div>
     <span class="sr-only" aria-live="polite">{{ live }}</span>

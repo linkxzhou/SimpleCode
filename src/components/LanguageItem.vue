@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { formatMB, type LanguageSpec } from "@/core/manifest";
 import type { LangState } from "@/stores/language";
 import LanguageIcon from "./LanguageIcon.vue";
+import { t } from "@/i18n";
 
 const props = defineProps<{ lang: LanguageSpec; state?: LangState; size: number; selected: boolean; collapsed: boolean }>();
 defineEmits<{ select: [] }>();
@@ -16,11 +17,14 @@ const pct = computed(() => (props.state?.total ? Math.round((props.state.loaded 
 const sizeLabel = computed(() => formatMB(props.size).replace(".0", ""));
 const tip = computed(() => {
   const s = props.state;
-  if (status.value === "downloading" && s?.detail === "boot") return `${props.lang.label} · 启动中`;
-  if (status.value === "downloading" && s) return `${props.lang.label} · 下载中 ${pct.value}%（${formatMB(s.loaded)} / ${formatMB(s.total)}）`;
-  if (status.value === "error") return `${props.lang.label} · ${s?.error ?? "下载失败"}（点击重试）`;
-  if (status.value === "idle") return `${props.lang.label} · 点击下载 ${formatMB(props.size)}`;
-  return `${props.lang.label} ${props.lang.version ?? ""} · 已缓存`;
+  const label = props.lang.label;
+  if (status.value === "downloading" && s?.detail === "boot") return t("bootingDetail", { label });
+  if (status.value === "downloading" && s) {
+    return t("downloadingDetail", { label, pct: pct.value, loaded: formatMB(s.loaded), total: formatMB(s.total) });
+  }
+  if (status.value === "error") return t("errorDetail", { label, error: s?.error ?? t("downloadFailed") });
+  if (status.value === "idle") return t("idleDetail", { label, size: formatMB(props.size) });
+  return t("cachedDetail", { label, version: props.lang.version ?? "" });
 });
 </script>
 
@@ -49,10 +53,10 @@ const tip = computed(() => {
             v-if="status === 'downloading'"
             class="sidebar-expanded-only flex shrink-0 items-center gap-1 text-xs tabular-nums text-muted-foreground"
           >
-            <Loader2 class="size-3.5 animate-spin" />{{ state?.detail === "boot" ? "启动中" : `${pct}%` }}
+            <Loader2 class="size-3.5 animate-spin" />{{ state?.detail === "boot" ? t("booting") : `${pct}%` }}
           </span>
           <span v-else-if="status === 'error'" class="sidebar-expanded-only flex shrink-0 items-center gap-1 text-xs text-foreground">
-            <AlertCircle class="size-3.5" />重试
+            <AlertCircle class="size-3.5" />{{ t("retry") }}
           </span>
           <span v-else-if="status === 'idle'" class="sidebar-expanded-only flex shrink-0 items-center gap-1 text-xs tabular-nums text-muted-foreground">
             <Download class="size-3.5" />{{ sizeLabel }}
@@ -60,8 +64,9 @@ const tip = computed(() => {
           <Check v-else class="sidebar-expanded-only size-3.5 shrink-0 text-foreground" />
           <Progress
             v-if="status === 'downloading'"
+            data-testid="wasm-progress"
             :model-value="pct"
-            class="sidebar-expanded-only pointer-events-none absolute inset-x-2 bottom-1 h-0.5"
+            class="sidebar-expanded-only pointer-events-none absolute inset-x-2 bottom-1 my-[4px] h-0.5"
           />
         </template>
       </button>

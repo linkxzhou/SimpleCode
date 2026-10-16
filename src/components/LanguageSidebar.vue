@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { AlertCircle, ChevronsLeft, ChevronsRight, HardDrive, Moon, Sun, SunMoon, Trash2 } from "lucide-vue-next";
+import { computed, ref } from "vue";
+import { AlertCircle, ChevronsLeft, ChevronsRight, CircleHelp, HardDrive, Moon, Sun, SunMoon, Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import AboutDialog from "./AboutDialog.vue";
 import LanguageItem from "./LanguageItem.vue";
+import LocaleToggle from "./LocaleToggle.vue";
 import { useLanguageStore } from "@/stores/language";
 import { useTheme } from "@/composables/useTheme";
 import { formatMB } from "@/core/manifest";
+import { t } from "@/i18n";
 
 const props = defineProps<{ collapsed: boolean }>();
 const emit = defineEmits<{ toggle: [] }>();
@@ -15,11 +18,12 @@ const { mode, cycle } = useTheme();
 const isMac = navigator.platform.toLowerCase().includes("mac");
 const mod = isMac ? "⌘" : "Ctrl";
 
-const themeLabel = computed(() => (mode.value === "system" ? "跟随系统" : mode.value === "light" ? "浅色" : "深色"));
+const aboutOpen = ref(false);
+const themeLabel = computed(() => (mode.value === "system" ? t("themeFollow") : mode.value === "light" ? t("themeLight") : t("themeDark")));
 const cacheText = computed(() => formatMB(langs.usage));
 
 async function clear() {
-  if (confirm("确定清除所有已缓存的语言运行时？下次使用需重新下载。")) await langs.clearCache();
+  if (confirm(t("clearCacheConfirm"))) await langs.clearCache();
 }
 </script>
 
@@ -31,7 +35,7 @@ async function clear() {
   >
     <header
       class="sidebar-header flex h-10 shrink-0 items-center border-b border-border"
-      :class="props.collapsed ? 'justify-center' : 'gap-2.5 px-4'"
+      :class="props.collapsed ? 'justify-center' : 'gap-1.5 px-3'"
     >
       <Tooltip :disabled="!props.collapsed">
         <TooltipTrigger as-child>
@@ -51,11 +55,30 @@ async function clear() {
       </Tooltip>
       <h1
         data-testid="sidebar-title"
-        :class="props.collapsed ? 'sr-only' : 'sidebar-expanded-only min-w-0 truncate text-sm font-semibold tracking-tight'"
+        :class="props.collapsed ? 'sr-only' : 'sidebar-expanded-only min-w-0 flex-1 truncate text-sm font-semibold tracking-tight'"
       >
         SimpleCode
       </h1>
+      <template v-if="!props.collapsed">
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="sidebar-expanded-only size-7 shrink-0 text-foreground"
+              data-testid="about-button"
+              :aria-label="t('about')"
+              @click="aboutOpen = true"
+            >
+              <CircleHelp />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">{{ t("about") }}</TooltipContent>
+        </Tooltip>
+        <LocaleToggle class="sidebar-expanded-only" />
+      </template>
     </header>
+    <AboutDialog v-model:open="aboutOpen" />
 
     <div
       v-if="langs.manifestError"
@@ -63,15 +86,15 @@ async function clear() {
     >
       <Tooltip v-if="props.collapsed">
         <TooltipTrigger as-child>
-          <Button variant="ghost" size="icon" class="size-8" aria-label="重试加载语言列表" @click="langs.init()">
+          <Button variant="ghost" size="icon" class="size-8" :aria-label="t('retryLoad')" @click="langs.init()">
             <AlertCircle />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="right">{{ langs.manifestError }} · 重试</TooltipContent>
+        <TooltipContent side="right">{{ langs.manifestError }} · {{ t("retry") }}</TooltipContent>
       </Tooltip>
       <template v-else>
         <p>{{ langs.manifestError }}</p>
-        <button type="button" class="mt-1 underline underline-offset-2" @click="langs.init()">重试</button>
+        <button type="button" class="mt-1 underline underline-offset-2" @click="langs.init()">{{ t("retry") }}</button>
       </template>
     </div>
 
@@ -98,13 +121,29 @@ async function clear() {
       <div v-if="props.collapsed" class="flex flex-col items-center gap-1 py-2">
         <Tooltip>
           <TooltipTrigger as-child>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="size-8 text-foreground"
+              data-testid="about-button"
+              :aria-label="t('about')"
+              @click="aboutOpen = true"
+            >
+              <CircleHelp />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="right">{{ t("about") }}</TooltipContent>
+        </Tooltip>
+        <LocaleToggle />
+        <Tooltip>
+          <TooltipTrigger as-child>
             <span class="inline-flex">
               <Button
                 variant="ghost"
                 size="icon"
                 class="size-8 text-foreground"
                 data-testid="sidebar-clear"
-                aria-label="清除缓存"
+                :aria-label="t('clearCache')"
                 :disabled="!langs.usage"
                 @click="clear"
               >
@@ -112,7 +151,7 @@ async function clear() {
               </Button>
             </span>
           </TooltipTrigger>
-          <TooltipContent side="right">清除缓存（{{ cacheText }}）</TooltipContent>
+          <TooltipContent side="right">{{ t("clearCacheTip", { size: cacheText }) }}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
@@ -121,7 +160,7 @@ async function clear() {
               size="icon"
               class="size-8 text-foreground"
               data-testid="sidebar-theme"
-              :aria-label="`切换主题，当前${themeLabel}`"
+              :aria-label="t('themeCurrent', { theme: themeLabel })"
               @click="cycle"
             >
               <Sun v-if="mode === 'light'" />
@@ -129,7 +168,7 @@ async function clear() {
               <SunMoon v-else />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">主题：{{ themeLabel }}</TooltipContent>
+          <TooltipContent side="right">{{ t("themeTip", { theme: themeLabel }) }}</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
@@ -138,13 +177,13 @@ async function clear() {
               size="icon"
               class="size-8 text-foreground"
               data-testid="sidebar-toggle"
-              aria-label="展开侧栏"
+              :aria-label="t('expandSidebar')"
               @click="emit('toggle')"
             >
               <ChevronsRight />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">展开 <kbd class="ml-1 opacity-70">{{ mod }}B</kbd></TooltipContent>
+          <TooltipContent side="right">{{ t("expand") }} <kbd class="ml-1 opacity-70">{{ mod }}B</kbd></TooltipContent>
         </Tooltip>
       </div>
 
@@ -153,7 +192,7 @@ async function clear() {
           <span class="grid size-7 shrink-0 place-items-center text-muted-foreground" aria-hidden="true">
             <HardDrive class="size-4" />
           </span>
-          <span class="sidebar-expanded-only shrink-0 text-xs text-muted-foreground">缓存</span>
+          <span class="sidebar-expanded-only shrink-0 text-xs text-muted-foreground">{{ t("cache") }}</span>
           <span class="sidebar-expanded-only min-w-0 truncate text-xs tabular-nums text-foreground">{{ cacheText }}</span>
           <span class="flex-1" />
           <Tooltip>
@@ -164,16 +203,16 @@ async function clear() {
                   size="sm"
                   class="h-8 shrink-0 px-2 text-xs font-normal text-muted-foreground"
                   data-testid="sidebar-clear"
-                  aria-label="清除缓存"
+                  :aria-label="t('clearCache')"
                   :disabled="!langs.usage"
                   @click="clear"
                 >
                   <Trash2 />
-                  <span class="sidebar-expanded-only">清除</span>
+                  <span class="sidebar-expanded-only">{{ t("clear") }}</span>
                 </Button>
               </span>
             </TooltipTrigger>
-            <TooltipContent side="right">清除缓存（{{ cacheText }}）</TooltipContent>
+            <TooltipContent side="right">{{ t("clearCacheTip", { size: cacheText }) }}</TooltipContent>
           </Tooltip>
         </div>
         <div class="flex h-8 items-center gap-1">
@@ -184,7 +223,7 @@ async function clear() {
                 size="sm"
                 class="h-8 min-w-0 flex-1 justify-start gap-2.5 px-2 text-xs font-normal text-muted-foreground"
                 data-testid="sidebar-theme"
-                :aria-label="`切换主题，当前${themeLabel}`"
+                :aria-label="t('themeCurrent', { theme: themeLabel })"
                 @click="cycle"
               >
                 <span class="grid size-7 shrink-0 place-items-center">
@@ -195,7 +234,7 @@ async function clear() {
                 <span class="sidebar-expanded-only truncate">{{ themeLabel }}</span>
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">主题：{{ themeLabel }}</TooltipContent>
+            <TooltipContent side="right">{{ t("themeTip", { theme: themeLabel }) }}</TooltipContent>
           </Tooltip>
           <Tooltip>
             <TooltipTrigger as-child>
@@ -204,13 +243,13 @@ async function clear() {
                 size="icon"
                 class="size-8 shrink-0 text-muted-foreground"
                 data-testid="sidebar-toggle"
-                aria-label="折叠侧栏"
+                :aria-label="t('collapseSidebar')"
                 @click="emit('toggle')"
               >
                 <ChevronsLeft />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="right">折叠 <kbd class="ml-1 opacity-70">{{ mod }}B</kbd></TooltipContent>
+            <TooltipContent side="right">{{ t("collapse") }} <kbd class="ml-1 opacity-70">{{ mod }}B</kbd></TooltipContent>
           </Tooltip>
         </div>
       </div>

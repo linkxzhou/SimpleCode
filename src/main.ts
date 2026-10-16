@@ -1,6 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import App from "./App.vue";
+import { hydrateLocale } from "@/i18n";
 // Locally bundled fonts (no CDN; same-origin under COEP)
 import "@fontsource/inter/latin-400.css";
 import "@fontsource/inter/latin-500.css";
@@ -10,4 +11,5 @@ import "@fontsource/jetbrains-mono/latin-700.css";
 import "./style.css";
 import "./styles/docs.css";
 
+hydrateLocale();
 createApp(App).use(createPinia()).mount("#app");

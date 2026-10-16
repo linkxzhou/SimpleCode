@@ -6,6 +6,8 @@ import { terminal } from "@/core/terminal";
 import { TranspileError, transpileTypeScript } from "@/core/transpile";
 import { useLanguageStore } from "./language";
 import { useEditorStore } from "./editor";
+import { t } from "@/i18n";
+import type { MessageKey } from "@/i18n/messages.ts";
 
 export type RunStatus = "idle" | "preparing" | "compile" | "link" | "run" | "done" | "failed" | "terminated" | "crash";
 
@@ -21,10 +23,12 @@ export const useRunStore = defineStore("run", () => {
   const exitCode = ref<number>();
   const elapsed = ref(0);
   const message = ref<string>();
+  const messageKey = ref<MessageKey>();
   const source = ref<string>();
   let session: RunSession | undefined;
   let timer: number | undefined;
   let started = 0;
+  let generation = 0;
 
   const running = computed(() => ["preparing", "compile", "link", "run"].includes(status.value));
 
@@ -44,35 +48,58 @@ export const useRunStore = defineStore("run", () => {
     return !running.value;
   }
 
+  function abandon() {
+    generation++;
+    const current = session;
+    session = undefined;
+    current?.kill();
+    window.clearInterval(timer);
+    status.value = "idle";
+    exitCode.value = undefined;
+    message.value = undefined;
+    messageKey.value = undefined;
+    source.value = undefined;
+    elapsed.value = 0;
+  }
+
   async function run(opts?: RunOptions) {
     const langs = useLanguageStore();
     const editor = useEditorStore();
     const lang = langs.selected;
     if (!lang || running.value) return;
+    const gen = generation;
+    const langId = lang.id;
+    const still = () => gen === generation && langs.selectedId === langId;
     source.value = opts?.source ?? "editor";
     status.value = "preparing";
     message.value = undefined;
+    messageKey.value = undefined;
     exitCode.value = undefined;
     let code = editor.get(editor.activeBuffer(lang.id));
     if (lang.id === "quickjs" && editor.dialect === "ts") {
       try {
         code = await transpileTypeScript(code);
       } catch (e) {
+        if (!still()) return;
         stop();
         terminal.clear();
         elapsed.value = 0;
         status.value = "failed";
-        message.value = "转译失败";
+        messageKey.value = "transpileFailed";
+        message.value = t("transpileFailed");
         const detail = e instanceof TranspileError ? e.detail : e instanceof Error ? e.message : String(e);
-        terminal.system("TypeScript 转译失败", "31");
+        terminal.system("tsTranspileFailed", undefined, "31");
         terminal.write(detail.endsWith("\n") ? detail : `${detail}\n`);
         return;
       }
     }
+    if (!still()) return;
     if (!(await langs.ensure(lang.id))) {
+      if (!still()) return;
       status.value = "idle";
       return;
     }
+    if (!still()) return;
     stop();
     terminal.clear();
     status.value = "preparing";
@@ -82,9 +109,16 @@ export const useRunStore = defineStore("run", () => {
     const s = new RunSession(
       lang,
       {
-        stdout: (t) => terminal.write(t),
-        stderr: (t) => terminal.stderr(t),
+        stdout: (text) => {
+          if (!still()) return;
+          terminal.write(text);
+        },
+        stderr: (text) => {
+          if (!still()) return;
+          terminal.stderr(text);
+        },
         phase: (p: Phase) => {
+          if (!still() || session !== s) return;
           status.value = p;
           if (p === "run") {
             if (lang.runtime !== "v86") terminal.setInputHandler(inputHandler);
@@ -113,29 +147,32 @@ export const useRunStore = defineStore("run", () => {
     session = s;
     startTimer();
     const out = await s.run(code);
+    if (!still() || session !== s) return;
     stopTimer();
     terminal.flush();
     terminal.setInputHandler(undefined);
-    if (lang.runtime === "v86") attachLinuxConsole();
-    if (session !== s) return;
+    if (lang.runtime === "v86" && linuxMachine.booted) attachLinuxConsole();
     session = undefined;
     switch (out.type) {
       case "complete":
         exitCode.value = out.exitCode;
         if (out.phase !== "run" && out.exitCode !== 0) {
-          status.value = "failed";
-          message.value = out.phase === "compile" ? "编译失败" : "链接失败";
-          terminal.system(message.value, "31");
+        status.value = "failed";
+        const key = out.phase === "compile" ? "compileFailed" : "linkFailed";
+        messageKey.value = key;
+        message.value = t(key);
+        terminal.system(key, undefined, "31");
         } else status.value = out.exitCode === 0 ? "done" : "failed";
         break;
       case "terminated":
         status.value = "terminated";
-        terminal.system("已终止");
+        terminal.system("terminated");
         break;
       case "crash":
         status.value = "crash";
-        message.value = `${out.errorType}: ${out.message}`;
-        terminal.write(`\n\x1b[31m[Crashed] ${message.value}\x1b[0m\n`);
+        const detail = `${out.errorType}: ${out.message}`;
+        message.value = detail;
+        terminal.system("crashedBanner", { detail }, "31");
         break;
     }
   }
@@ -144,5 +181,5 @@ export const useRunStore = defineStore("run", () => {
     if (session) session.kill();
   }
 
-  return { status, exitCode, elapsed, message, source, running, run, stop, waitUntilIdle };
+  return { status, exitCode, elapsed, message, messageKey, source, running, run, stop, abandon, waitUntilIdle };
 });
