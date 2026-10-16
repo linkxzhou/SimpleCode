@@ -88,7 +88,9 @@ const SHIKI_LANG: Record<string, string> = {
 
 export interface RenderedDocs {
   books: BookIndex[];
+  booksEn: BookIndex[];
   searchDocs: SearchDoc[];
+  searchDocsEn: SearchDoc[];
   chapters: Record<string, ChapterDoc>;
 }
 
@@ -178,7 +180,7 @@ function createMarkdown(): MarkdownItLike {
   return md;
 }
 
-function walk(md: MarkdownItLike, tokens: Token[], start: number, end: number, chapterId: string, counter: { n: number }): Segment[] {
+function walk(md: MarkdownItLike, tokens: Token[], start: number, end: number, chapterId: string, counter: { n: number }, edition: "zh" | "en"): Segment[] {
   const segs: Segment[] = [];
   const buf: Token[] = [];
   const flush = () => {
@@ -201,15 +203,15 @@ function walk(md: MarkdownItLike, tokens: Token[], start: number, end: number, c
         else if (tokens[j].type === closeType) depth--;
         if (depth > 0) j++;
       }
-      const inner = walk(md, tokens, i + 1, j, chapterId, counter);
-      if (callout === "answer") segs.push({ type: "answer", title: t.info || "参考答案", segments: inner });
+      const inner = walk(md, tokens, i + 1, j, chapterId, counter, edition);
+      if (callout === "answer") segs.push({ type: "answer", title: t.info || (edition === "en" ? "Answer" : "参考答案"), segments: inner });
       else segs.push({ type: "callout", kind: callout, segments: inner });
       i = j + 1;
       continue;
     }
     if (t.type === "fence") {
       flush();
-      const parsed = parseFenceInfo(t.info || "");
+      const parsed = parseFenceInfo(t.info || "", edition);
       const code = t.content.replace(/\n$/, "");
       const id = `${chapterId}#${counter.n++}`;
       const block: CodeBlockData = {
@@ -262,10 +264,11 @@ export function highlight(highlighter: Highlighter, lang: string, code: string):
   }
 }
 
-function goalsHtml(goals: string[]): string {
+function goalsHtml(goals: string[], edition: "zh" | "en"): string {
   if (!goals.length) return "";
   const items = goals.map((g) => `<li>${escapeHtml(g)}</li>`).join("");
-  return `<h2>本章目标</h2><ul>${items}</ul>`;
+  const heading = edition === "en" ? "Goals" : "本章目标";
+  return `<h2>${heading}</h2><ul>${items}</ul>`;
 }
 
 function plainText(segs: Segment[]): string {
@@ -364,8 +367,10 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   });
 
   const books: BookIndex[] = [];
+  const booksEn: BookIndex[] = [];
   const chapters: Record<string, ChapterDoc> = {};
   const searchDocs: SearchDoc[] = [];
+  const searchDocsEn: SearchDoc[] = [];
 
   let entries: string[] = [];
   try {
@@ -377,7 +382,7 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   for (const name of entries) {
     const dir = join(docsDir, name);
     if (!statSync(dir).isDirectory()) continue;
-    if (name.startsWith("_")) continue;
+    if (name.startsWith("_") || name === "en") continue;
     if (!isBookId(name)) {
       errors.push(`未知文档目录 docs/${name}`);
       continue;
@@ -391,50 +396,59 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   const shipped = new Set<string>(SHIPPED_BOOKS);
   const wanted = only.length ? BOOKS.filter((b) => only.includes(b)) : [...BOOKS];
 
-  for (const book of wanted) {
-    const dir = join(docsDir, book);
+  async function loadEdition(book: BookId, edition: "zh" | "en") {
+    const dir = edition === "en" ? join(docsDir, "en", book) : join(docsDir, book);
+    const label = edition === "en" ? `en/${book}` : book;
     let files: string[] = [];
     try {
       files = readdirSync(dir).filter((f) => f.endsWith(".md"));
     } catch {
-      if (only.length || shipped.has(book)) errors.push(`缺少 docs/${book}/`);
-      continue;
+      if (edition === "zh" && (only.length || shipped.has(book))) errors.push(`缺少 docs/${book}/`);
+      return;
     }
     if (!files.length) {
-      if (only.length || shipped.has(book)) errors.push(`缺少 docs/${book}/`);
-      continue;
+      if (edition === "zh" && (only.length || shipped.has(book))) errors.push(`缺少 docs/${book}/`);
+      return;
     }
     const metas: ChapterMeta[] = [];
     const seen = new Set<number>();
+    const intoBooks = edition === "en" ? booksEn : books;
+    const intoSearch = edition === "en" ? searchDocsEn : searchDocs;
     for (const file of files) {
       const full = join(dir, file);
       const raw = readFileSync(full, "utf8");
       const parsed = matter(raw);
       const meta = validateMeta(full, book, parsed.data, errors);
       if (!meta) continue;
-      if (seen.has(meta.chapter)) errors.push(`${book}: chapter ${meta.chapter} 重复`);
+      if (edition === "en") meta.id = `en/${meta.id}`;
+      if (seen.has(meta.chapter)) errors.push(`${label}: chapter ${meta.chapter} 重复`);
       seen.add(meta.chapter);
       for (const src of meta.sources) {
         if (!sources[src]) errors.push(`${relative(process.cwd(), full)}: 未知 sources id ${src}`);
       }
       const tokens = md.parse(parsed.content, {});
       const counter = { n: 0 };
-      const segments = walk(md, tokens, 0, tokens.length, meta.id, counter);
-      const goals = goalsHtml(meta.goals);
-      if (goals && !parsed.content.includes("本章目标")) segments.unshift({ type: "html", html: goals });
+      const segments = walk(md, tokens, 0, tokens.length, meta.id, counter, edition);
+      const goals = goalsHtml(meta.goals, edition);
+      const marker = edition === "en" ? "\n## Goals" : "本章目标";
+      if (goals && !parsed.content.includes(marker)) segments.unshift({ type: "html", html: goals });
       await highlightAll(highlighter, segments);
       checkBlocks(full, segments, errors);
-      const doc: ChapterDoc = { meta, segments };
-      chapters[meta.id] = doc;
+      chapters[meta.id] = { meta, segments };
       metas.push(meta);
       const text = `${meta.goals.join(" ")} ${plainText(segments)}`.replace(/\s+/g, " ").trim().slice(0, 1500);
-      searchDocs.push({ id: meta.id, book, title: meta.title, headings: headingText(segments), text });
+      intoSearch.push({ id: meta.id, book, title: meta.title, headings: headingText(segments), text });
     }
     metas.sort((a, b) => a.chapter - b.chapter);
     const contentCount = metas.filter((m) => m.chapter > 0).length;
-    if (!metas.some((m) => m.chapter === 0)) errors.push(`${book}: 缺少 chapter 0 概览`);
-    if (contentCount < 10) errors.push(`${book}: 只有 ${contentCount} 章，至少需要 10 章（不含概览）`);
-    books.push({ id: book, chapters: metas });
+    if (!metas.some((m) => m.chapter === 0)) errors.push(`${label}: 缺少 chapter 0 概览`);
+    if (contentCount < 10) errors.push(`${label}: 只有 ${contentCount} 章，至少需要 10 章（不含概览）`);
+    intoBooks.push({ id: book, chapters: metas });
+  }
+
+  for (const book of wanted) {
+    await loadEdition(book, "zh");
+    await loadEdition(book, "en");
   }
 
   if (errors.length) {
@@ -442,7 +456,7 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   }
   const runnable = Object.values(chapters).reduce((n, ch) => n + countRunnable(ch.segments), 0);
   console.log(`docs: ${Object.keys(chapters).length} chapters, ${runnable} runnable blocks`);
-  return { books, chapters, searchDocs };
+  return { books, booksEn, chapters, searchDocs, searchDocsEn };
 }
 
 function countRunnable(segs: Segment[]): number {

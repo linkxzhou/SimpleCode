@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 
 /** Body character counts before the essay rewrite. Acceptance stays 3× until that book moves to ESSAY. */
@@ -24,6 +24,22 @@ function proseOf(body: string) {
 
 function hanCount(prose: string) {
   return [...prose].filter((ch) => /\p{Script=Han}/u.test(ch)).length;
+}
+
+function words(text: string) {
+  return text.match(/[A-Za-z0-9]+(?:'[A-Za-z]+)?/g) ?? [];
+}
+
+function fenceKey(text: string) {
+  const body = bodyOf(text);
+  const re = /```([^\n]*)\n([\s\S]*?)```/g;
+  const keys: string[] = [];
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(body))) {
+    const info = match[1].replace(/\s+title="(?:\\.|[^"\\])*"/g, "");
+    keys.push(`${info}\n${match[2]}`);
+  }
+  return keys;
 }
 
 function runnableCount(body: string) {
@@ -112,6 +128,55 @@ describe("chapter length", () => {
         const han = proseOf(bodyOf(readFileSync(`docs/${file}`, "utf8"))).replace(/[^\p{Script=Han}]/gu, "");
         for (let i = 0; i + 60 <= han.length; i++) {
           const frag = han.slice(i, i + 60);
+          const prev = seen.get(frag);
+          assert.ok(!prev || prev === file, `shared prose ${prev} ${file}`);
+          if (!prev) seen.set(frag, file);
+        }
+      }
+    }
+  });
+});
+
+describe("english chapters", () => {
+  for (const book of TUTORIAL) {
+    const dir = `docs/en/${book}`;
+    if (!existsSync(dir)) continue;
+    const files = readdirSync(dir).filter((name) => name.endsWith(".md")).sort();
+    it(`${book} uses the same chapter files`, () => {
+      const zh = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md")).sort();
+      assert.deepEqual(files, zh);
+    });
+    for (const name of files) {
+      it(`en/${book}/${name}`, () => {
+        const text = readFileSync(`${dir}/${name}`, "utf8");
+        const zh = readFileSync(`docs/${book}/${name}`, "utf8");
+        assert.deepEqual(fenceKey(text), fenceKey(zh), "fence code and expect");
+        const body = bodyOf(text);
+        const prose = proseOf(body);
+        const headings = prose.match(/^### .+$/gm) ?? [];
+        assert.ok(headings.length >= 3, `sections ${headings.length}`);
+        const intro = words(prose.split(/^### /m)[0] ?? "").length;
+        assert.ok(intro <= 140, `intro words ${intro}`);
+        for (const part of prose.split(/^### /m).slice(1)) {
+          const n = words(part).length;
+          assert.ok(n >= 1 && n <= 280, `section words ${n}`);
+        }
+        assert.ok(runnableCount(body) >= 2, `runnable ${runnableCount(body)}`);
+        assert.ok(!body.includes("## Common mistakes") && !body.includes("## 常见错误"), "template headings");
+      });
+    }
+  }
+
+  it("chapters do not share a 16-word run", () => {
+    const seen = new Map<string, string>();
+    for (const book of TUTORIAL) {
+      const dir = `docs/en/${book}`;
+      if (!existsSync(dir)) continue;
+      for (const name of readdirSync(dir).filter((file) => file.endsWith(".md"))) {
+        const file = `en/${book}/${name}`;
+        const list = words(proseOf(bodyOf(readFileSync(`docs/${file}`, "utf8"))).toLowerCase());
+        for (let i = 0; i + 16 <= list.length; i++) {
+          const frag = list.slice(i, i + 16).join(" ");
           const prev = seen.get(frag);
           assert.ok(!prev || prev === file, `shared prose ${prev} ${file}`);
           if (!prev) seen.set(frag, file);

@@ -45,8 +45,12 @@ function asString(v: string | boolean | undefined): string | undefined {
   return typeof v === "string" ? v : undefined;
 }
 
+const READ_ONLY = { zh: "仅供阅读", en: "For reading only" } as const;
+const MULTI_FILE = { zh: "多文件示例请在本地运行", en: "Run this multi-file example locally" } as const;
+const CANNOT_RUN = { zh: "不可运行", en: "Cannot run here" } as const;
+
 /** Parse a markdown fence info string: `python run stdin="Ada\\n" expect="hi"`. */
-export function parseFenceInfo(info: string): ParsedFence {
+export function parseFenceInfo(info: string, edition: "zh" | "en" = "zh"): ParsedFence {
   const src = info.trim();
   const langMatch = /^(\S+)/.exec(src);
   const lang = langMatch?.[1] ?? "";
@@ -77,9 +81,9 @@ export function parseFenceInfo(info: string): ParsedFence {
   const runtime = lang ? resolveRuntime(lang) : undefined;
   let runnable = false;
   let reason: string | undefined;
-  if (norun) reason = "仅供阅读";
-  else if (multi) reason = "多文件示例请在本地运行";
-  else if (!runtime) reason = "不可运行";
+  if (norun) reason = READ_ONLY[edition];
+  else if (multi) reason = MULTI_FILE[edition];
+  else if (!runtime) reason = CANNOT_RUN[edition];
   else runnable = true;
 
   let eof = true;
