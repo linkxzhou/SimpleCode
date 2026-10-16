@@ -5,6 +5,7 @@ import { LinuxKilled, linuxMachine } from "./linux";
 import { cancelRustCompile, compileRust } from "@/rustc/compile";
 import type { CommandSpec, LanguageSpec } from "./manifest";
 import { getLoaded } from "./wasmLoader";
+import { t } from "@/i18n";
 
 export type Phase = "compile" | "link" | "run";
 
@@ -84,22 +85,22 @@ export class RunSession {
   private binaryFor(cmd: CommandSpec, fs: WASIFS): { url: string; revoke: boolean } {
     if (cmd.asset) {
       const a = getLoaded(cmd.asset);
-      if (!a?.url) throw new Error(`运行时 ${cmd.asset} 尚未加载`);
+      if (!a?.url) throw new Error(t("runtimeNotLoaded", { asset: cmd.asset }));
       return { url: a.url, revoke: false };
     }
     if (cmd.fsPath) {
       const file = fs[cmd.fsPath];
-      if (!file || file.mode !== "binary") throw new Error(`找不到可执行文件 ${cmd.fsPath}`);
+      if (!file || file.mode !== "binary") throw new Error(t("executableMissing", { path: cmd.fsPath }));
       const url = URL.createObjectURL(new Blob([file.content], { type: "application/wasm" }));
       return { url, revoke: true };
     }
-    throw new Error("命令缺少 asset 或 fsPath");
+    throw new Error(t("commandMissing"));
   }
 
   private async exec(cmd: CommandSpec, fs: WASIFS, interactive: boolean) {
     if (cmd.baseFS) {
       const base = getLoaded(cmd.baseFS);
-      if (!base?.fs) throw new Error(`文件系统 ${cmd.baseFS} 尚未加载`);
+      if (!base?.fs) throw new Error(t("fsNotLoaded", { fs: cmd.baseFS }));
       fs = { ...fs, ...base.fs };
     }
     const { url, revoke } = this.binaryFor(cmd, fs);

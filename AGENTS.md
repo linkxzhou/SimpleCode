@@ -44,7 +44,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
-| `test` | 文档单元测试、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/learn.spec.mjs` |
+| `test` | 文档单元测试、`tests/i18n-unit.test.ts`、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/learn.spec.mjs`、`tests/ui-chrome.spec.mjs` |
 | `clean` | 删 `dist/`。`--all` 再删 `node_modules/` 和 `wasm/` |
 
 缺 wasm 时，`dev` / `build` 会先尝试只重写清单；清单对不上文件才会 vendor。
@@ -54,6 +54,9 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 黑白单色。侧栏、工具栏、按钮、抽屉、终端只用中性灰。**Monaco 语法色是唯一例外。** 文档 UI 由 `scripts/check-mono.mjs` 卡住彩色 Tailwind 类和非灰阶色值。
 
 - 折叠侧栏只有图标（约 56px）。缓存用量、清除、主题、展开都在**底部**。展开时一行一种语言。
+- 展开时，SimpleCode 标题右侧是 `?` 和「中 / EN」胶囊。`?` 打开关于弹层。折叠后这两项在页脚，56px 的标题行放不下胶囊。
+- 界面文案走 `src/i18n`（`zh` / `en`，默认 `zh`，`localStorage` 键 `simplecode:locale`）。书的 Markdown 不翻译。界面是 EN 时，快速入门先显示英文占位，点 “View the Chinese version” 才看中文书。
+- 侧栏 wasm 进度条有 `my-[4px]`，上下比贴边时各多 4px。
 - Run 只用 `src/components/RunButton.vue`：`Button` 的 `size="xs"`（高 28px），图标 Play，文案 `Run`。工具栏和文档代码块共用它。
 - 文档抽屉的 `top` 是 `var(--editor-toolbar-h)`（`src/style.css` 里 2.5rem）。抽屉不得盖住 Run 和语言切换。
 - 等宽字体是 JetBrains Mono，中文回退 `SimpleCode CJK`（`size-adjust: 120%`）。xterm 里一个汉字占两格；系统黑体的 1em 字面宽会在格子之间留出空隙，所以才放大到 120%。字体用 `local()`，不从网络拉，否则 COEP 会挡住。
@@ -136,6 +139,14 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 **文档冒烟在章节壳出现时就去点代码块。** `docs-chapter` 先渲染，代码块稍后才到。`tests/learn.spec.mjs` 要等 `[data-testid="docs-chapter"] [data-testid="doc-code-block"]`，不能只等外壳。
 
 **C++ 宿主编译和聚合初始化。** 本机 g++ 的头文件路径可能和选中的编译器版本不一致。教程里的派生类在 C++14 下不是聚合，`Rect{w,h}` 需要构造函数。这些是写示例时的约束，浏览器里的运行时仍是 clang 8。
+
+**界面文案两套一起改。** 侧栏、工具栏、抽屉、关于弹层、终端状态和下载失败句都在 `src/i18n/messages.ts`。新键要同时有 `zh` 和 `en`，`en` 的类型盖住 `zh` 的键。`t()` 必须在模板或 computed 里读到 `locale`，不然切换语言不刷新。不要为这个再加 vue-i18n。书的 Markdown、围栏里的「仅供阅读」不进这张表。默认是 `zh`。`tests/learn.spec.mjs` 认「返回目录」和「Python 快速入门」，那个用例的浏览器不要预写 `simplecode:locale=en`。
+
+**英文快速入门还没有。** 界面是 EN 时抽屉先放占位 “English Quick Start is under construction”，不直接铺开中文章节。点 “View the Chinese version” 才显示现有中文书，界面语言不变。关掉再开，占位回来。
+
+**折叠侧栏放不下标题行控件。** `?` 和「中 / EN」在展开时位于 SimpleCode 右侧。宽度落到 5rem 以下时，标题行控件带 `sidebar-expanded-only`，避免被裁切；折叠后的同一对控件在页脚。页脚的窄栏规则会把 `button` 收成 2rem 方块，语言胶囊要单独放开宽度。
+
+**下载进度条不要贴回去。** `LanguageItem` 里 `data-testid="wasm-progress"` 使用 `my-[4px]`。这是在原来的位置上增加的上下边距。
 
 ## 计划文件
 

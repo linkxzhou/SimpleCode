@@ -8,6 +8,7 @@ import RunButton from "./RunButton.vue";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
 import { fileNameFor, useEditorStore } from "@/stores/editor";
+import { t } from "@/i18n";
 
 const langs = useLanguageStore();
 const run = useRunStore();
@@ -28,7 +29,7 @@ function reset() {
   const l = langs.selected;
   if (!l) return;
   const name = l.id === "quickjs" ? (editor.dialect === "ts" ? "TypeScript" : "JavaScript") : l.label;
-  if (confirm(`恢复 ${name} 的示例代码？当前代码将被覆盖。`)) editor.reset(editor.activeBuffer(l.id));
+  if (confirm(t("resetConfirm", { name }))) editor.reset(editor.activeBuffer(l.id));
 }
 </script>
 
@@ -39,7 +40,7 @@ function reset() {
       v-if="jsTs"
       class="flex h-7 items-center rounded-md border border-border p-0.5"
       role="group"
-      aria-label="JavaScript 或 TypeScript"
+      :aria-label="t('dialectGroup')"
       data-testid="dialect-toggle"
     >
       <button
@@ -59,7 +60,7 @@ function reset() {
         class="h-6 rounded px-2 font-mono text-xs"
         :class="editor.dialect === 'ts' ? 'bg-accent text-foreground' : 'text-muted-foreground hover:text-foreground'"
         :aria-pressed="editor.dialect === 'ts'"
-        title="TypeScript（运行前去除类型）"
+        :title="t('tsTitle')"
         @click="editor.dialect = 'ts'"
       >
         TS
@@ -67,7 +68,7 @@ function reset() {
     </div>
     <LearnButton />
     <template v-if="downloading && langs.selected">
-      <Button variant="ghost" size="xs" @click="langs.cancel(langs.selected.id)"><X />取消下载</Button>
+      <Button variant="ghost" size="xs" @click="langs.cancel(langs.selected.id)"><X />{{ t("cancelDownload") }}</Button>
     </template>
     <Tooltip>
       <TooltipTrigger as-child>
@@ -75,14 +76,14 @@ function reset() {
           <RunButton test-id="run" :disabled="!langs.selected || run.running || downloading" :running="run.running" :status="run.status" @click="run.run()" />
         </span>
       </TooltipTrigger>
-      <TooltipContent side="bottom">{{ ready || downloading ? `运行 ${mod}+Enter` : "首次运行将下载该语言" }}</TooltipContent>
+      <TooltipContent side="bottom">{{ ready || downloading ? t("runShortcut", { mod }) : t("runWillDownload") }}</TooltipContent>
     </Tooltip>
     <Button v-if="run.running" variant="ghost-destructive" size="xs" data-testid="stop" @click="run.stop()"><Square />Stop</Button>
     <Tooltip>
       <TooltipTrigger as-child>
-        <Button variant="ghost" size="icon" class="h-7 w-7" aria-label="恢复示例代码" @click="reset"><RotateCcw /></Button>
+        <Button variant="ghost" size="icon" class="h-7 w-7" :aria-label="t('resetSample')" @click="reset"><RotateCcw /></Button>
       </TooltipTrigger>
-      <TooltipContent side="bottom">恢复示例代码</TooltipContent>
+      <TooltipContent side="bottom">{{ t("resetSample") }}</TooltipContent>
     </Tooltip>
   </div>
 </template>

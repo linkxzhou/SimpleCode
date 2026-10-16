@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { BOOK_LABEL, RUNTIME_TO_BOOK, type RuntimeId } from "@/docs/runtime";
 import { useDocsStore } from "@/stores/docs";
 import { useLanguageStore } from "@/stores/language";
+import { t } from "@/i18n";
 
 const langs = useLanguageStore();
 const docs = useDocsStore();
@@ -29,11 +30,11 @@ const mod = isMac ? "⌘" : "Ctrl";
         @click="docs.toggle()"
       >
         <BookOpen />
-        <span class="max-md:sr-only">{{ label }} 快速入门</span>
+        <span class="max-md:sr-only">{{ t("quickStartNamed", { label }) }}</span>
       </Button>
     </TooltipTrigger>
     <TooltipContent side="bottom">
-      打开 {{ label }} 快速入门
+      {{ t("openQuickStart", { label }) }}
       <kbd class="ml-1 font-mono text-[10px] opacity-70">{{ mod }}+J</kbd>
     </TooltipContent>
   </Tooltip>

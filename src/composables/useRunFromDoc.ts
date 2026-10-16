@@ -9,6 +9,7 @@ import { useEditorStore, type JsDialect } from "@/stores/editor";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
 import { useToastStore } from "@/stores/toast";
+import { t } from "@/i18n";
 
 export interface RunFromDocOptions {
   blockId: string;
@@ -44,7 +45,7 @@ async function typescriptForEditor(code: string): Promise<
 > {
   try {
     const js = (await transpileTypeScript(code)).replace(/\s+$/, "");
-    return { ok: true, code: `// 由 TypeScript 转译（原始代码见文档）\n${js}\n` };
+    return { ok: true, code: `${t("tsBanner")}\n${js}\n` };
   } catch (e) {
     if (e instanceof TranspileError) return { ok: false, message: e.detail, line: e.line, column: e.column };
     const message = e instanceof Error ? e.message : String(e);
@@ -105,10 +106,10 @@ export function useRunFromDoc() {
       undoState.code = prev;
       undoState.dialect = prevDialect;
       undoState.active = true;
-      const message = switched ? `已切换到 ${label}，并用示例替换了编辑器内容` : `已用示例替换编辑器内容（${label}）`;
-      toast.push(message, { label: "撤销", run: () => undoLastReplace() }, 8000);
+      const message = switched ? t("switchedReplaced", { label }) : t("replacedEditor", { label });
+      toast.push(message, { label: t("undo"), run: () => undoLastReplace() }, 8000);
     } else if (switched) {
-      toast.push(`已切换到 ${label}`, undefined, 4000);
+      toast.push(t("switchedTo", { label }), undefined, 4000);
     }
 
     editor.set(bufferId, finalCode, { origin: "doc", blockId: opts.blockId });

@@ -126,4 +126,10 @@
     padding: 0;
     justify-content: center;
   }
+  .sidebar-footer [data-testid="locale-toggle"] button {
+    width: auto;
+    height: 1.25rem;
+    flex: 1 1 auto;
+    padding: 0 0.25rem;
+  }
 }

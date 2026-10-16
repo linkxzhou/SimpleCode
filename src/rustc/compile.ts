@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { ensureRustToolchain, rustParts, type RustParts } from "./toolchain";
 
 export interface RustCompileResult {
@@ -56,7 +57,7 @@ function spawn(parts: RustParts): Promise<void> {
 async function engine(): Promise<Worker> {
   if (!ready) {
     const parts = rustParts();
-    if (!parts) throw new Error("Rust 工具链尚未加载");
+    if (!parts) throw new Error(t("rustNotLoaded"));
     ready = spawn(parts).catch((e) => {
       worker = undefined;
       ready = undefined;
@@ -64,7 +65,7 @@ async function engine(): Promise<Worker> {
     });
   }
   await ready;
-  if (!worker) throw new Error("rustc worker 未就绪");
+  if (!worker) throw new Error(t("rustWorker"));
   return worker;
 }
 

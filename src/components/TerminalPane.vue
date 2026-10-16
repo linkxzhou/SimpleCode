@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { terminal } from "@/core/terminal";
 import { useRunStore } from "@/stores/run";
+import { t } from "@/i18n";
 
 defineProps<{ collapsed: boolean }>();
 defineEmits<{ toggle: [] }>();
@@ -19,23 +20,23 @@ const BUSY = "bg-neutral-400 animate-pulse";
 const indicator = computed(() => {
   switch (run.status) {
     case "preparing":
-      return { dot: BUSY, text: "准备中…" };
+      return { dot: BUSY, text: t("preparing") };
     case "compile":
-      return { dot: BUSY, text: "编译中…" };
+      return { dot: BUSY, text: t("compiling") };
     case "link":
-      return { dot: BUSY, text: "链接中…" };
+      return { dot: BUSY, text: t("linking") };
     case "run":
-      return { dot: "bg-neutral-100 animate-pulse", text: "运行中 · Ctrl+D 发送 EOF" };
+      return { dot: "bg-neutral-100 animate-pulse", text: t("runningEof") };
     case "done":
-      return { dot: FILLED, text: `exit ${run.exitCode}` };
+      return { dot: FILLED, text: t("exitLine", { code: run.exitCode ?? 0 }) };
     case "failed":
       return { dot: RING, text: run.message ?? `exit ${run.exitCode}` };
     case "terminated":
-      return { dot: "bg-neutral-500", text: "已终止" };
+      return { dot: "bg-neutral-500", text: t("terminated") };
     case "crash":
-      return { dot: RING, text: "崩溃" };
+      return { dot: RING, text: t("crash") };
     default:
-      return { dot: "bg-neutral-600", text: "就绪" };
+      return { dot: "bg-neutral-600", text: t("ready") };
   }
 });
 const seconds = computed(() => (run.status === "idle" ? "" : `${(run.elapsed / 1000).toFixed(2)}s`));
@@ -60,7 +61,7 @@ onBeforeUnmount(() => ro?.disconnect());
         <span :class="['size-1.5 shrink-0 rounded-full', indicator.dot]" />{{ indicator.text }}
       </span>
       <span class="tabular-nums text-neutral-500">{{ seconds }}</span>
-      <Button variant="ghost" size="icon" class="h-6 w-6 text-neutral-400 hover:bg-white/10 hover:text-neutral-100" aria-label="清空" @click="terminal.clear()">
+      <Button variant="ghost" size="icon" class="h-6 w-6 text-neutral-400 hover:bg-white/10 hover:text-neutral-100" :aria-label="t('clearTerminal')" @click="terminal.clear()">
         <Eraser class="!size-3.5" />
       </Button>
       <Tooltip>
@@ -69,7 +70,7 @@ onBeforeUnmount(() => ro?.disconnect());
             variant="ghost"
             size="icon"
             class="h-6 w-6 text-neutral-400 hover:bg-white/10 hover:text-neutral-100"
-            :aria-label="collapsed ? '展开终端' : '折叠终端'"
+            :aria-label="collapsed ? t('expandTerminal') : t('collapseTerminal')"
             data-testid="terminal-toggle"
             @click="$emit('toggle')"
           >
@@ -77,7 +78,7 @@ onBeforeUnmount(() => ro?.disconnect());
             <ChevronDown v-else class="!size-3.5" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side="top">{{ collapsed ? "展开终端" : "折叠终端" }}</TooltipContent>
+        <TooltipContent side="top">{{ collapsed ? t("expandTerminal") : t("collapseTerminal") }}</TooltipContent>
       </Tooltip>
     </div>
     <div v-show="!collapsed" ref="el" class="min-h-0 flex-1 px-3 py-2" data-testid="terminal" @click="terminal.focus()" />

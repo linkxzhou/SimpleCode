@@ -5,6 +5,7 @@ import { LinuxKilled, bootLinux, linuxMachine } from "@/core/linux";
 import { clearRustCache, ensureRustToolchain, rustCacheBytes, rustDownloadBytes, rustIsCached, rustReady } from "@/rustc/toolchain";
 import { cacheUsage, clearCache as clearWasmCache, ensureAsset, getLoaded, isCached, pruneCache } from "@/core/wasmLoader";
 import { terminal } from "@/core/terminal";
+import { t } from "@/i18n";
 
 export type LangStatus = "idle" | "cached" | "downloading" | "ready" | "error";
 
@@ -117,7 +118,7 @@ export const useLanguageStore = defineStore("language", () => {
       st.loaded = 0;
       const ctrl = new AbortController();
       controllers.set(id, ctrl);
-      if (fromNetwork) terminal.system(`正在下载 ${lang.label} 工具链（${formatMB(st.total)}）…`);
+      if (fromNetwork) terminal.system(t("downloadingToolchain", { label: lang.label, size: formatMB(st.total) }));
       try {
         await ensureRustToolchain((loaded, total) => {
           st.loaded = loaded;
@@ -125,7 +126,7 @@ export const useLanguageStore = defineStore("language", () => {
         }, ctrl.signal);
         st.status = "ready";
         st.loaded = st.total;
-        if (fromNetwork) terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
+        if (fromNetwork) terminal.system(t("readyCached", { label: lang.label }), "32");
         await refreshStatuses();
         void refreshUsage();
         return true;
@@ -133,7 +134,10 @@ export const useLanguageStore = defineStore("language", () => {
         const aborted = (e as Error).name === "AbortError";
         st.status = aborted ? "idle" : "error";
         st.error = aborted ? undefined : (e as Error).message;
-        terminal.system(aborted ? `已取消下载 ${lang.label}` : `下载 ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
+        terminal.system(
+          aborted ? t("canceledDownload", { label: lang.label }) : t("downloadFailedLabel", { label: lang.label, error: (e as Error).message }),
+          aborted ? "2" : "31",
+        );
         return false;
       } finally {
         controllers.delete(id);
@@ -149,7 +153,7 @@ export const useLanguageStore = defineStore("language", () => {
     st.loaded = 0;
     const ctrl = new AbortController();
     controllers.set(id, ctrl);
-    if (fromNetwork) terminal.system(`正在下载 ${lang.label} 运行时（${formatMB(st.total)}）…`);
+    if (fromNetwork) terminal.system(t("downloadingRuntime", { label: lang.label, size: formatMB(st.total) }));
     try {
       await Promise.all(
         ids.map((assetId) =>
@@ -166,14 +170,14 @@ export const useLanguageStore = defineStore("language", () => {
       );
       if (lang.runtime === "v86") {
         st.detail = "boot";
-        terminal.system("正在启动 Linux…");
+        terminal.system(t("bootingLinux"));
         await bootLinux();
-        terminal.system("Linux 已启动，可以直接输入命令", "32");
+        terminal.system(t("linuxReady"), "32");
       }
       st.detail = undefined;
       st.status = "ready";
       st.loaded = st.total;
-      if (fromNetwork && lang.runtime !== "v86") terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
+      if (fromNetwork && lang.runtime !== "v86") terminal.system(t("readyCached", { label: lang.label }), "32");
       await refreshStatuses();
       void refreshUsage();
       return true;
@@ -189,8 +193,16 @@ export const useLanguageStore = defineStore("language", () => {
       }
       st.status = aborted ? "idle" : "error";
       st.error = aborted ? undefined : (e as Error).message;
-      const action = booting ? "启动" : "下载";
-      terminal.system(aborted ? `已取消${action} ${lang.label}` : `${action} ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
+      terminal.system(
+        aborted
+          ? booting
+            ? t("canceledBoot", { label: lang.label })
+            : t("canceledDownload", { label: lang.label })
+          : booting
+            ? t("failedBoot", { label: lang.label, error: (e as Error).message })
+            : t("downloadFailedLabel", { label: lang.label, error: (e as Error).message }),
+        aborted ? "2" : "31",
+      );
       return false;
     } finally {
       controllers.delete(id);

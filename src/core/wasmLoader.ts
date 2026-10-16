@@ -1,4 +1,5 @@
 import type { BinaryWASIFS } from "@runno/wasi";
+import { t } from "@/i18n";
 import { WASM_BASE, type Asset } from "./manifest";
 import { extractTarGz } from "./tar";
 
@@ -72,7 +73,7 @@ export async function cacheUsage(): Promise<number> {
 
 async function download(asset: Asset, onProgress: Progress, signal?: AbortSignal): Promise<Uint8Array> {
   const res = await fetch(`${WASM_BASE}${asset.file}`, { signal });
-  if (!res.ok) throw new Error(`下载 ${asset.file} 失败：HTTP ${res.status}`);
+  if (!res.ok) throw new Error(t("downloadHttp", { file: asset.file, status: res.status }));
   const total = asset.size || Number(res.headers.get("content-length") ?? 0);
   if (!res.body) {
     const buf = new Uint8Array(await res.arrayBuffer());
@@ -98,7 +99,7 @@ async function download(asset: Asset, onProgress: Progress, signal?: AbortSignal
   // .tar.gz may be transparently decoded when served with Content-Encoding: gzip,
   // so only enforce the exact size for wasm binaries.
   if ((asset.kind === "wasm" || asset.kind === "bin") && asset.size && out.byteLength !== asset.size) {
-    throw new Error(`${asset.file} 大小不匹配（期望 ${asset.size}，实际 ${out.byteLength}）`);
+    throw new Error(t("sizeMismatch", { file: asset.file, expected: asset.size, actual: out.byteLength }));
   }
   return out;
 }

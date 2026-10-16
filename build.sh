@@ -83,7 +83,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/manifest-refresh.test.mjs
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -101,6 +101,7 @@ cmd_test() {
   node tests/smoke.mjs "${args[@]}"
   node --experimental-strip-types tests/docs-smoke.mjs
   node tests/learn.spec.mjs
+  node tests/ui-chrome.spec.mjs
 }
 
 cmd_clean() {

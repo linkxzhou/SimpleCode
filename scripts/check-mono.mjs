@@ -3,7 +3,15 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const roots = ["src/components/docs", "src/composables/useRunFromDoc.ts", "scripts/docs/themes.ts", "src/styles/docs.css"];
+const roots = [
+  "src/components/docs",
+  "src/components/AboutDialog.vue",
+  "src/components/LocaleToggle.vue",
+  "src/components/ui/dialog",
+  "src/composables/useRunFromDoc.ts",
+  "scripts/docs/themes.ts",
+  "src/styles/docs.css",
+];
 const chroma =
   /\b(?:text|bg|border|ring|from|to|via|fill|stroke|outline|decoration|shadow|caret|accent|divide)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)(?:-\d{2,3})?\b/;
 const hexRe = /#([0-9a-fA-F]{3,8})\b/g;

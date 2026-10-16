@@ -6,6 +6,7 @@ import { terminal } from "@/core/terminal";
 import { TranspileError, transpileTypeScript } from "@/core/transpile";
 import { useLanguageStore } from "./language";
 import { useEditorStore } from "./editor";
+import { t } from "@/i18n";
 
 export type RunStatus = "idle" | "preparing" | "compile" | "link" | "run" | "done" | "failed" | "terminated" | "crash";
 
@@ -62,9 +63,9 @@ export const useRunStore = defineStore("run", () => {
         terminal.clear();
         elapsed.value = 0;
         status.value = "failed";
-        message.value = "转译失败";
+        message.value = t("transpileFailed");
         const detail = e instanceof TranspileError ? e.detail : e instanceof Error ? e.message : String(e);
-        terminal.system("TypeScript 转译失败", "31");
+        terminal.system(t("tsTranspileFailed"), "31");
         terminal.write(detail.endsWith("\n") ? detail : `${detail}\n`);
         return;
       }
@@ -124,13 +125,13 @@ export const useRunStore = defineStore("run", () => {
         exitCode.value = out.exitCode;
         if (out.phase !== "run" && out.exitCode !== 0) {
           status.value = "failed";
-          message.value = out.phase === "compile" ? "编译失败" : "链接失败";
+          message.value = out.phase === "compile" ? t("compileFailed") : t("linkFailed");
           terminal.system(message.value, "31");
         } else status.value = out.exitCode === 0 ? "done" : "failed";
         break;
       case "terminated":
         status.value = "terminated";
-        terminal.system("已终止");
+        terminal.system(t("terminated"));
         break;
       case "crash":
         status.value = "crash";

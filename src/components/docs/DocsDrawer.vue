@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { Button } from "@/components/ui/button";
 import DocsHeader from "./DocsHeader.vue";
 import ChapterList from "./ChapterList.vue";
 import ChapterView from "./ChapterView.vue";
 import { useDocsStore } from "@/stores/docs";
+import { locale, t } from "@/i18n";
 
 const docs = useDocsStore();
+const englishHold = computed(() => locale.value === "en" && !docs.preferChinese);
 const mobile = ref(window.matchMedia("(max-width: 767px)").matches);
 const mq = window.matchMedia("(max-width: 767px)");
 function onMq() {
@@ -24,6 +27,10 @@ function onResizeStart(e: PointerEvent) {
   window.addEventListener("pointermove", move);
   window.addEventListener("pointerup", up);
 }
+
+watch(locale, (value) => {
+  if (value === "en") docs.preferChinese = false;
+});
 
 watch(
   () => docs.open,
@@ -46,7 +53,7 @@ onBeforeUnmount(() => {
       v-if="docs.open && mobile"
       type="button"
       class="fixed inset-0 z-30 bg-foreground/20"
-      aria-label="关闭教程"
+      :aria-label="t('closeTutorial')"
       @click="docs.close()"
     />
     <Transition name="doc-drawer">
@@ -56,7 +63,7 @@ onBeforeUnmount(() => {
         data-testid="docs-drawer"
         role="dialog"
         :aria-modal="mobile ? 'true' : 'false'"
-        :aria-label="`${docs.title} 教程`"
+        :aria-label="t('tutorialLabel', { title: docs.title })"
         class="doc-drawer fixed z-40 flex flex-col bg-background shadow-sm"
         :class="mobile ? 'inset-x-0 bottom-0 top-[var(--editor-toolbar-h)] rounded-t-lg border-t border-border' : 'bottom-0 right-0 top-[var(--editor-toolbar-h)] border-l border-border'"
         :data-side="mobile ? 'bottom' : 'right'"
@@ -76,9 +83,14 @@ onBeforeUnmount(() => {
           @search="docs.openSearch()"
         />
         <div class="flex min-h-0 flex-1 flex-col">
-          <div v-if="docs.pending" class="flex flex-1 flex-col gap-2 px-5 py-8" data-testid="docs-soon">
-            <p class="text-sm font-medium">即将推出</p>
-            <p class="text-sm leading-6 text-muted-foreground">{{ docs.title }} 还在编写。目前可以阅读 Python、JavaScript 和 Go。</p>
+          <div v-if="englishHold" class="flex flex-1 flex-col items-start gap-3 px-5 py-8" data-testid="docs-en-placeholder">
+            <p class="text-sm font-medium">{{ t("enPlaceholderTitle") }}</p>
+            <p class="text-sm leading-6 text-muted-foreground">{{ t("enPlaceholderBody") }}</p>
+            <Button type="button" size="sm" data-testid="docs-view-zh" @click="docs.revealChinese()">{{ t("viewChinese") }}</Button>
+          </div>
+          <div v-else-if="docs.pending" class="flex flex-1 flex-col gap-2 px-5 py-8" data-testid="docs-soon">
+            <p class="text-sm font-medium">{{ t("comingSoon") }}</p>
+            <p class="text-sm leading-6 text-muted-foreground">{{ t("comingSoonBody") }}</p>
           </div>
           <ChapterList v-else-if="docs.view === 'toc'" class="min-h-0 flex-1" />
           <ChapterView v-else class="min-h-0 flex-1" />

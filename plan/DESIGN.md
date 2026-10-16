@@ -626,3 +626,35 @@ npm test                # vitest；npm run test:e2e → playwright
 - v0.3（2026-10-15）：字体本地打包（`@fontsource/inter`、`@fontsource/jetbrains-mono`，latin 子集）；新增 `@font-face "SimpleCode CJK"`（`local()` 系统 CJK 字体 + `size-adjust: 120%`），使 CJK 字形正好占 xterm 两个单元格（`|abcdefghij|` 与 `|一二三四五|` 等宽）；xterm 在字体加载后重新测量。stderr 改为非粗体暗灰（`38;5;247`），且只对完整行着色——未以换行结束的 stderr 片段（如 CPython 在 TTY 下写到 stderr 的 `input()` 提示）40ms 内无后续则按普通文本输出。
 - v0.4（2026-10-15）：侧栏底改为 `--background`（浅色纯白、深色近黑，无强调色）。标题由 “Languages” 改为品牌名 “SimpleCode”。展开态为圆角等高语言行 + 对齐的缓存/主题/折叠页脚；折叠态底部为居中的纯图标按钮（清除缓存、主题、展开）与右侧 Tooltip。
 - v0.6（2026-10-15）：QuickJS 的界面标签改为 **JS/TS**（id 仍是 `quickjs`，wasm 仍是 `wasmedge_quickjs.wasm`，图标缩写 `JS`，版本字段 `QuickJS` 用于侧栏 Tooltip）。工具栏增加 JS/TS 切换，Monaco 模式与示例、草稿分开，选择持久化。TypeScript 经 Sucrase 懒加载去类型；转译错误进入终端且不启动 wasm。冒烟测试覆盖 JS、带 `interface` 与类型标注的 TS，以及一条转译失败用例。
+
+---
+
+## 20. 关于弹层、界面语言、下载条间距（2026-10-16）
+
+十二门语言已经在侧栏里。这一节只改界面外壳，不改书的 Markdown。
+
+### 20.1 关于
+
+展开侧栏时，品牌名 SimpleCode 的右侧放一个 `?`（`CircleHelp`）和一个语言胶囊。`?` 打开 shadcn-vue / reka-ui 的 Dialog（`src/components/ui/dialog`），黑白，说明 SimpleCode 的目标：浏览器里跑代码，文件不上传。功能写清楚这几件事：
+
+- 十二种语言：Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell、Rust、Linux
+- wasm 第一次使用才下载，之后进 Cache API
+- Monaco 编辑器
+- 终端看输出、也能输入
+- 每种语言有快速入门，示例可以直接运行
+
+文案跟当前界面语言走。折叠侧栏只有 56px，标题行放不下胶囊。这时 `?` 和胶囊挪到页脚图标列，仍然点得到；展开时只出现在标题右侧，页脚不重复一份。
+
+### 20.2 界面语言
+
+不用 vue-i18n。`src/i18n` 放 `zh` / `en` 两张表，`locale` 默认 `zh`，`localStorage` 键是 `simplecode:locale`。`t(key)` 在渲染时读 `locale`，这样切换会刷新。侧栏、工具栏、抽屉、关于弹层、终端状态，以及下载进度和失败句，都走这张表。书的正文仍是中文，不翻译。
+
+界面是 EN 时，打开快速入门先看到单色占位，标题是 “English Quick Start is under construction”。按钮 “View the Chinese version” 在这一次打开里显示现有中文书，界面语言不变。关掉抽屉再打开，占位回来。切回「中」则直接显示中文书。
+
+### 20.3 下载条
+
+侧栏语言行里的 wasm 进度条（`data-testid="wasm-progress"`）加上 `my-[4px]`，上下边距各比原来多 4px。
+
+### 20.4 测试
+
+`tests/i18n-unit.test.ts` 检查两种语言的键一致、关于文案列出十二种语言、进度条类名含 `my-[4px]`。`tests/ui-chrome.spec.mjs` 打开弹层、刷新后语言仍在、英文占位、以及进度条的 computed margin。`scripts/check-mono.mjs` 把新弹层算进去。
