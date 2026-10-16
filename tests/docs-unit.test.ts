@@ -58,6 +58,7 @@ describe("resolveRuntime", () => {
       ["sh", "shell"],
       ["shell", "shell"],
       ["bash", "shell"],
+      ["linux", "linux"],
     ];
     for (const [alias, runtime] of cases) assert.equal(resolveRuntime(alias), runtime);
     assert.equal(resolveRuntime("Py"), "python");
