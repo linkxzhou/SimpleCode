@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// About dialog, locale persistence, English Quick Start placeholder, progress spacing.
+// About dialog, locale persistence, English Quick Start, progress spacing.
 import { spawn } from "node:child_process";
 import { chromium } from "playwright";
 
@@ -79,12 +79,14 @@ try {
   check(pressed === "true" && stored === "en", `locale persisted (${pressed}, ${stored})`);
 
   await page.getByTestId("learn-button").click();
-  await page.getByTestId("docs-en-placeholder").waitFor();
-  const placeholder = await page.getByTestId("docs-en-placeholder").innerText();
-  check(placeholder.includes("English Quick Start is under construction"), "English Quick Start placeholder");
-  await page.getByTestId("docs-view-zh").click();
-  await page.waitForSelector('[data-testid="docs-search"], [data-testid="docs-chapter"]');
-  check((await page.getByTestId("docs-en-placeholder").count()) === 0, "Chinese book replaces the placeholder");
+  await page.getByTestId("docs-search").waitFor();
+  check((await page.getByTestId("docs-en-placeholder").count()) === 0, "English Python book has no placeholder");
+  const toc = await page.getByTestId("docs-drawer").innerText();
+  check(toc.includes("Python Environment Setup"), "English chapter titles in the table of contents");
+  await page.getByTestId("chapter-link").first().click();
+  await page.getByTestId("docs-chapter").waitFor();
+  const chapter = await page.getByTestId("docs-chapter").innerText();
+  check(chapter.includes("Goals") && chapter.includes("print"), "English chapter body");
   await page.getByTestId("docs-close").click();
 
   await page.getByTestId("sidebar-toggle").click();
