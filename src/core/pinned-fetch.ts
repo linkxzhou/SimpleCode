@@ -84,6 +84,12 @@ export interface FetchPinnedOptions {
   expectedSha256?: string;
   wasm?: boolean;
   signal?: AbortSignal;
+  /**
+   * A confirmed HTTP 404 is retried with `reload` unless this is false.
+   * Callers that fall back to another URL should skip that second request.
+   * An empty body or an HTML 200 still retries: that is a stale cache, not a miss.
+   */
+  retryNotFound?: boolean;
   /** Byte deltas. A failed attempt is rolled back with a negative count. */
   onBytes?: (n: number) => void;
   fetchImpl?: typeof fetch;
@@ -99,15 +105,20 @@ async function readBody(res: Response, onBytes?: (n: number) => void): Promise<{
   const reader = res.body.getReader();
   const chunks: Uint8Array[] = [];
   let received = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    if (!value?.byteLength) continue;
-    // Copy now. A later read may reuse this view's buffer, and Buffer#slice shares memory.
-    const copy = new Uint8Array(value);
-    chunks.push(copy);
-    received += copy.byteLength;
-    onBytes?.(copy.byteLength);
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value?.byteLength) continue;
+      // Copy now. A later read may reuse this view's buffer, and Buffer#slice shares memory.
+      const copy = new Uint8Array(value);
+      chunks.push(copy);
+      received += copy.byteLength;
+      onBytes?.(copy.byteLength);
+    }
+  } catch (e) {
+    await reader.cancel().catch(() => {});
+    throw e;
   }
   const bytes = new Uint8Array(received);
   let off = 0;
@@ -121,7 +132,8 @@ async function readBody(res: Response, onBytes?: (n: number) => void): Promise<{
 /**
  * Fetch a pinned file. The first try revalidates (`no-cache`). A missing file
  * (non-OK, HTML, or `<!doctype`), an empty or short body, or a size/hash
- * mismatch retries once with `reload`. DevTools "0 kB transferred" is often a
+ * mismatch retries once with `reload`. `retryNotFound: false` stops on the
+ * first HTTP 404 so a caller can try another URL. DevTools "0 kB transferred" is often a
  * memory-cache or service-worker hit; a body that is actually empty fails here
  * with got/expected sizes instead of being treated as success.
  */
@@ -137,6 +149,17 @@ export async function fetchPinned(opts: FetchPinnedOptions): Promise<Uint8Array>
     let counted = 0;
     try {
       const res = await fetchImpl(url, { cache, signal: opts.signal });
+      if (opts.signal?.aborted) {
+        await res.body?.cancel().catch(() => {});
+        throw new DOMException("The operation was aborted.", "AbortError");
+      }
+      // A real 404 will 404 again after reload. Callers with another URL
+      // should not pay for that second request, or read a body the service
+      // worker may already have aborted.
+      if (res.status === 404 && opts.retryNotFound === false) {
+        await res.body?.cancel().catch(() => {});
+        throw new PinnedMissing("HTTP 404");
+      }
       const { bytes, counted: n } = await readBody(res, (delta) => {
         counted += delta;
         opts.onBytes?.(delta);
@@ -161,7 +184,8 @@ export async function fetchPinned(opts: FetchPinnedOptions): Promise<Uint8Array>
       networkError = undefined;
     } catch (e) {
       if (counted) opts.onBytes?.(-counted);
-      if ((e as Error).name === "AbortError" || opts.signal?.aborted) throw e;
+      if (e instanceof PinnedMissing) throw e;
+      if (opts.signal?.aborted || (e as Error).name === "AbortError") throw e;
       networkError = e;
     }
   }

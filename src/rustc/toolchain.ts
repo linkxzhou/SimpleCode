@@ -3,9 +3,9 @@
 // `./build.sh vendor --rust` verifies those archives and writes the unpacked
 // files under wasm/rust/. Otherwise the page fetches the same bytes from the
 // weblings demo, which does send Access-Control-Allow-Origin.
-import { fetchPinned, PinnedMismatch, sha256Hex } from "@/core/pinned-fetch";
-import { t } from "@/i18n";
+import { sha256Hex } from "@/core/pinned-fetch";
 import lock from "../../scripts/sources.lock.json";
+import { fetchRustAsset } from "./fallback";
 
 export const RUST_CACHE = "simplecode-rustc-v1";
 
@@ -42,7 +42,7 @@ export interface RustParts {
 }
 
 let parts: RustParts | undefined;
-let inflight: Promise<RustParts> | undefined;
+let inflight: { promise: Promise<RustParts>; signal?: AbortSignal } | undefined;
 
 function cacheAvailable() {
   return typeof caches !== "undefined";
@@ -97,38 +97,22 @@ async function loadOne(
     return cached;
   }
   const pin = pins[kind];
-  const wasm = kind === "rustc";
   // Upstream URLs stay unversioned. A `?v=` query can miss a CDN that does not expect it.
-  const attempts: { url: string; version?: string }[] = [
-    { url: `${import.meta.env.BASE_URL}${pin.sameOrigin}`, version: pin.sha256 },
-    { url: pin.upstream },
-  ];
-  let last = "";
-  for (const attempt of attempts) {
-    try {
-      const bytes = await fetchPinned({
-        url: attempt.url,
-        version: attempt.version,
-        expectBytes: pin.bytes,
-        expectedSha256: pin.sha256,
-        wasm,
-        signal,
-        onBytes,
-      });
-      await writeCache(kind, bytes);
-      return bytes;
-    } catch (e) {
-      if ((e as Error).name === "AbortError") throw e;
-      if (e instanceof PinnedMismatch) {
-        const sha = e.sha256 || "-";
-        const vars = { kind, expected: pin.bytes, got: e.got, sha };
-        last = e.got === pin.bytes ? t("rustDigest", vars) : t("rustShort", vars);
-      } else {
-        last = e instanceof Error ? e.message : String(e);
-      }
-    }
-  }
-  throw new Error(t("rustDownload", { detail: last, upstream: pin.upstream }));
+  const bytes = await fetchRustAsset({
+    kind,
+    attempts: [
+      { url: `${import.meta.env.BASE_URL}${pin.sameOrigin}`, version: pin.sha256 },
+      { url: pin.upstream },
+    ],
+    bytes: pin.bytes,
+    sha256: pin.sha256,
+    wasm: kind === "rustc",
+    signal,
+    onBytes,
+    upstream: pin.upstream,
+  });
+  await writeCache(kind, bytes);
+  return bytes;
 }
 
 export function rustReady(): boolean {
@@ -171,21 +155,25 @@ export function ensureRustToolchain(onProgress: (loaded: number, total: number) 
     onProgress(rustDownloadBytes(), rustDownloadBytes());
     return Promise.resolve(parts);
   }
-  if (inflight) return inflight;
+  // A language switch aborts the previous signal. Joining that promise would
+  // fail the new selection with the same AbortError.
+  if (inflight && !inflight.signal?.aborted) return inflight.promise;
   const total = rustDownloadBytes();
-  inflight = (async () => {
+  const owned = signal;
+  const promise = (async () => {
     let loaded = 0;
     const bump = (n: number) => {
       loaded += n;
       onProgress(Math.min(loaded, total), total);
     };
-    const [rustcBytes, bundle] = await Promise.all([loadOne("rustc", bump, signal), loadOne("bundle", bump, signal)]);
+    const [rustcBytes, bundle] = await Promise.all([loadOne("rustc", bump, owned), loadOne("bundle", bump, owned)]);
     const module = await WebAssembly.compile(rustcBytes);
     parts = { module, bundle };
     onProgress(total, total);
     return parts;
   })().finally(() => {
-    inflight = undefined;
+    if (inflight?.promise === promise) inflight = undefined;
   });
-  return inflight;
+  inflight = { promise, signal: owned };
+  return promise;
 }

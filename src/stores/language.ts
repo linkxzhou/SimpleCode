@@ -133,7 +133,14 @@ export const useLanguageStore = defineStore("language", () => {
     selectionOrigin.value = origin;
     selectedId.value = id;
     localStorage.setItem(SELECTED_KEY, id);
-    return ensure(id);
+    try {
+      return await ensure(id);
+    } catch (e) {
+      // A language switch aborts the download. Resolve so a caller that
+      // returns this promise does not surface AbortError to Vue.
+      if ((e as Error).name === "AbortError") return false;
+      throw e;
+    }
   }
 
   function ensure(id: string): Promise<boolean> {
