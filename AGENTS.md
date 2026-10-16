@@ -81,7 +81,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 十二本书一起检查连续 60 个汉字不重复。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28。合计 335 章。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件。Linux 的文档冒烟会启动客户机。
+现在的书（章数）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28。合计 335 章，966 个可运行块。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件。Linux 的文档冒烟会启动客户机。
 
 ### 运行时限制（可运行块里避开）
 
