@@ -1691,6 +1691,6 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 - 同一测试核对围栏：去掉 `title` 之后，info 和代码正文与中文一致。
 - `tests/docs-smoke.mjs` 对 `docs/en` 再跑一遍可运行块（Rust 仍要 `SIMPLECODE_RUST_DOCS=1`）。用例 id 带 `en/` 前缀。
 
-2026-10-16 十二本都已写成。中英各 335 章、967 个可运行围栏。默认 `docs-smoke` 跑中英各 887 块（不含 Rust，也不含 Python 那个 `smoke=skip`），合计 1774。界面是 EN 时这十二本不再显示占位；缺文件的章仍显示 “English Quick Start is under construction”。
+2026-10-16 十二本都已写成。中英各 335 章。`./build.sh build` 打出 `docs: 670 chapters, 1932 runnable blocks`（中英各 966）。默认 `docs-smoke` 不含 Rust，也不跑 Python 那个 `smoke=skip`，中英各 886 块，合计 1772。界面是 EN 时这十二本不再显示占位；缺文件的章仍显示 “English Quick Start is under construction”。
 
 

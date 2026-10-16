@@ -84,7 +84,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 十二本书一起检查连续 60 个汉字不重复。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28。每种语言 335 章、967 个可运行围栏（其中 1 个 Python `while True` 是 `smoke=skip`）。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。默认文档冒烟是中英各 887 块，合计 1774。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
+现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28。每种语言 335 章。渲染日志是 `docs: 670 chapters, 1932 runnable blocks`（中英各 966 个可运行块）。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。默认文档冒烟不含 Rust，中英各 886 块，合计 1772。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
 
 ### 运行时限制（可运行块里避开）
 
