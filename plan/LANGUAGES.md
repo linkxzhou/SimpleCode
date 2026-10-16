@@ -39,7 +39,7 @@
 - 其余（Java/C#/VB/R/Fortran/Pascal/Octave）都是 Emscripten / .NET / JS 产物，需要引入 **Runtime 适配层**（§2）。
 - Rust 能做到“浏览器内编译”，但依赖 wasi-threads、体积巨大、仍属实验，建议作为后期“实验语言”。
 - **Shell / Java / Rust 的 2026-10-15 复核**（体积、许可证、与 `WASIWorkerHost` 是否兼容、建议顺序）见 §9。结论：先做 Shell（WASI 命令），Java 单独评估适配器，Rust 暂缓。
-- **Linux（v86 + Buildroot）** 是另一条运行时，规划见 §10（2026-10-16）。本轮只写设计，不改侧栏、不改 `docs/`。
+- **Linux（v86 + Buildroot）** 已接入侧栏，kind 为 `v86`，见 §10。客户机是 i686、内核 6.8.12、Buildroot 2024.05.2、BusyBox 1.36.1。Shell 仍是 wasi-sh。
 
 ---
 
@@ -395,9 +395,54 @@ Shell 仍留在 `WASIWorkerHost`。要 `ls`、`cd`、管道和外部命令时走
 
 ---
 
-## 10. Linux：v86 + Buildroot（规划，2026-10-16）
+## 10. Linux：v86 + Buildroot（已实现，2026-10-16）
 
-本节只定方案。不改 `scripts/languages.config.mjs`，不往 `wasm/` 放新文件，不增加 `docs/linux/`，也不把 Linux 放进 `SHIPPED_BOOKS`。下面标了字节数的项，是 2026-10-16 对本机发出的 HTTP 响应或 GitHub contents API 的测量。镜像启动时间和我们自己的 bzImage 体积尚未测量，标为未测。
+侧栏已有 Linux（短标签 `Lx`）。`scripts/languages.config.mjs` 的 runtime 是 `v86`。`docs/linux/` 共 30 章，`SHIPPED_BOOKS` 含 `linux`。Shell 仍是 wasi-sh，围栏 `sh` / `bash` 不进这台客户机。
+
+### 10.0 落地结果
+
+`./build.sh vendor` 在 macOS 与 Linux 上走同一条路：按 `scripts/sources.lock.json` 下载五份钉死的文件，再在本机用 Node 生成快照，并用 zstd 19 压成 `linux-state.zst`。PATH 上没有 `zstd` 时，用宿主的 `cc` 和 `make` 编译钉死的 zstd 1.5.7 源码包。macOS 编不了 Buildroot，所以不在 vendor 里编译镜像。`scripts/builders/linux/rebuild.sh` 只在 `--fetch` 时核对 Buildroot 2026.08 源码包（sha256 `87aaca4164ea9d5c8085854953018263f7963f07c22e73a2a2185cc98c581c34`），并在注释里写了 Ubuntu 容器的构建提纲。从零编出的树对不上下面这颗 bzImage 的摘要。
+
+客户机身份（在这份镜像里读到的）：
+
+| 项 | 值 |
+|---|---|
+| `uname -a` | Linux (none) 6.8.12 #5 PREEMPT_DYNAMIC Sat Aug 31 22:58:35 UTC 2024 i686 |
+| `/etc/os-release` | Buildroot 2024.05.2 |
+| BusyBox | v1.36.1 (2024-08-31 21:21:23 UTC) |
+| 主机名 / 家目录 / 提示符 | `buildroot`、`/root`、`~% ` |
+| 内存 / VGA | 64 MiB / 2 MiB |
+| 9p | 标签 `host9p`，挂在 `/mnt` |
+| 命令行 | `tsc=reliable mitigations=off random.trust_cpu=on console=ttyS0 quiet` |
+
+bzImage 是未改过的上游演示文件 `https://i.copy.sh/buildroot-bzimage68.bin`，资料名 “Buildroot Linux 6.8”，10,068,480 字节，sha256 `507a759c70ab7a490a233be454d0b5b88bc667956a410b531cb4edc091e2eb1c`。v86 **0.5.471**。SeaBIOS / VGA BIOS 不在 npm 包里，URL 指向 GitHub `master`，锁是 sha256：`seabios.bin` `73e3f359…`（131,072），`vgabios.bin` `a4bc0d80…`（36,352）。`v86.wasm` 2,007,347，sha256 `2fc5609a…`。`libv86.mjs` 359,801，sha256 `c4e0281e…`。许可证在 `LICENSES/v86-BSD-2-Clause.txt` 和 `LICENSES/THIRD_PARTY.md`。
+
+六份运行时文件。压缩前合计 **58,157,676** 字节，其中未压缩快照 45,554,624。压缩后磁盘字节合计 **30,888,868**：
+
+| 文件 | 字节 | 清单 kind |
+|---|---:|---|
+| `v86.wasm` | 2,007,347 | wasm |
+| `libv86.mjs` | 359,801 | bin |
+| `seabios.bin` | 131,072 | bin |
+| `vgabios.bin` | 36,352 | bin |
+| `linux-bzimage.bin` | 10,068,480 | bin |
+| `linux-state.zst` | 18,285,816 | bin |
+
+bzImage 再压一次不值得：gzip 9 只从 10,068,480 收到 10,053,272。快照用 zstd 19，因为 v86 认帧头 `28 b5 2f fd` 并用自己的 zstd 解开，不必再带一份解压库。Cache API 存的是这份压缩字节。清单里的 `size` 和 sha256 跟磁盘上的 `.zst` 走。文件不进 git，也不进 lock。五个输入的 sha256 再加 `zstd-19` 拼成 `thirdparty/cache/linux/state.stamp`；stamp 不变且 `.zst` 非空就跳过。同一份输入再次 `save_state` 的字节数会变，所以不能钉摘要。
+
+这次 Node 测量：冷启动到 `~% ` **2.19 秒**，未压缩状态 45,550,528 字节，原始 `initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.16 秒**，同一份状态的 zstd 帧恢复加运行 **0.24 秒**。客户机内存仍是 64 MiB。32 MiB 以及 36 / 40 / 48 MiB 在 30 秒内没有串口输出。启动后 `echo 3 > /proc/sys/vm/drop_caches` 没有改变 `free`：根文件系统是 ramfs，页缓存丢不掉那份文件。浏览器里（Playwright，本机 preview）：第一次选中到 `ready` **0.8 秒**，四次 Run **0.3 秒**。docs-smoke 的第一个 `linux` 块 **1.1 秒**，其后的块约 **0.3 秒**。压缩前同一次本机测量是选中 0.9 秒、Run 0.2–0.3 秒；本机磁盘上传输不再是大头，省下的是那 27 MB。
+
+运行时是主线程上的 `LinuxMachine`（`src/core/linux.ts`），和 `WASIWorkerHost` 并列。libv86 在浏览器里自己开 yield Worker；专用 Worker 没有 `window`，这条构建走不通。选中 Linux 时从 `initial_state` 启动并等到提示符，侧栏在下载之后显示「启动中」。每次 Run 销毁上一台，用同一份状态新建，`create_file("main.sh")` 与 `create_file("stdin.txt")` 写到 `/mnt/main.sh`、`/mnt/stdin.txt`，串口发送：
+
+```sh
+stty -echo; sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?; stty echo
+```
+
+退出码只认最后一次 `__SC_EXIT:(\d+)`。哨兵到达后虚拟机留着，`stty echo` 还要执行，随后同一台机器接受键盘。Stop 才 `destroy`。Ctrl+C 送 `\x03`，不拆虚拟机。换语言会关掉客户机，状态回到已缓存。UTF-8 用 `serial_send_bytes` 和逐字节 `TextDecoder`。`uart1: true` 才会有串口字节。32 MiB 内存时内核解压停在大约 30 MB，串口不再出字，所以是 64 MiB。
+
+下面 10.1–10.14 保留规划时的推理。和本节冲突时以本节为准：内存 64 MiB，9p 在 `/mnt`，客户机是 Buildroot 2024.05.2 / BusyBox 1.36.1 / 内核 6.8.12，快照是 `linux-state.zst`，执行器在主线程。
+
+
 
 ### 10.1 为什么单开一门 Linux
 
@@ -603,7 +648,11 @@ COEP 下跨源脚本需要 CORP 或 CORS。v86 的 wasm 和脚本**从本站 `wa
 | 串口在启动时很慢 | `quiet`，快照取在提示符出现之后 |
 | COEP 误用 CDN | 审查时禁止 `libv86` 的跨源 URL |
 
-### 10.12 验收（实现完成时，不是本轮）
+### 10.12 验收
+
+2026-10-16 已按 10.0 接进侧栏、Cache API、现有 xterm 和 `docs/linux/`。手机仍未测。Darwin 与 Linux 的 vendor 都下载同一份 bzImage，不在本机编译 Buildroot。
+
+
 
 1. 侧栏有 Linux。下载只在第一次 Run 发生，进度可见，刷新后 Cache API 命中，字节数与清单一致。
 2. 交互终端里 `ls`、`cd`、`pwd`、管道到 BusyBox 命令有输出；`cd` 在这台交互机里保持到 Stop。
@@ -616,7 +665,7 @@ COEP 下跨源脚本需要 CORP 或 CORS。v86 的 wasm 和脚本**从本站 `wa
 
 ### 10.13 阶段
 
-不估日历。每一阶段的产物如下，做完再开下一阶段。
+下面六步已落地。和原稿的差别见 10.0：镜像用钉死的上游 bzImage，9p 在 `/mnt`，快照不压缩。
 
 1. **钉版本。** 把 §10.3 的 v86 与 Buildroot 摘要写进 lock。单独 HTML 用本地文件启动 `i.copy.sh` 那颗演示内核的拷贝（先称重再锁定），串口打出 `uname`。不进侧栏。
 2. **自己的镜像。** `scripts/builders/linux/` 在 Linux 与 macOS（Docker 或预编译）上打出同一 sha256 的 i686 bzImage，BusyBox 1.38.0，9p 挂到 `/mnt/host`，`ttyS0` 自动登录，无网络。

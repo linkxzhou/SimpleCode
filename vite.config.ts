@@ -2,7 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { docsPlugin } from "./scripts/vite-plugin-docs";
 import { refreshManifest } from "./scripts/write-manifest.mjs";
-import { createReadStream, cpSync, existsSync, statSync } from "node:fs";
+import { createReadStream, cpSync, existsSync, rmSync, statSync } from "node:fs";
 import { join, normalize, resolve } from "node:path";
 
 const isolationHeaders = {
@@ -42,7 +42,11 @@ function wasmAssets(): Plugin {
           ? "application/wasm"
           : file.endsWith(".json")
             ? "application/json"
-            : "application/gzip";
+            : file.endsWith(".mjs") || file.endsWith(".js")
+              ? "text/javascript"
+              : file.endsWith(".gz")
+                ? "application/gzip"
+                : "application/octet-stream";
         res.setHeader("Content-Type", type);
         res.setHeader("Content-Length", String(statSync(file).size));
         res.setHeader("Cache-Control", file.endsWith(".json") ? "no-cache" : "public, max-age=86400");
@@ -55,7 +59,9 @@ function wasmAssets(): Plugin {
         this.warn("wasm/manifest.json missing — run ./build.sh vendor");
         return;
       }
-      cpSync(wasmDir, join(outDir, "wasm"), { recursive: true, dereference: true });
+      const dest = join(outDir, "wasm");
+      rmSync(dest, { recursive: true, force: true });
+      cpSync(wasmDir, dest, { recursive: true, dereference: true });
     },
   };
 }

@@ -22,6 +22,41 @@
     },
     "prebuiltUrl": "https://github.com/linkxzhou/SimpleCode/releases/download/wasi-runtimes-1/yaegi-0.16.1.wasm"
   },
+  "linux": {
+    "v86": "0.5.471",
+    "note": "Guest is the pinned copy/v86 Buildroot Linux 6.8 image (kernel 6.8.12, Buildroot 2024.05.2, BusyBox 1.36.1), not a from-scratch Buildroot 2026.08 tree. macOS and Linux both download these bytes. linux-state.zst is a zstd frame of save_state() produced by snapshot.mjs and is not byte-pinned. v86 decompresses that frame. BIOS files are not in the npm tarball; their sha256 is the pin, so a drifting master URL fails the check. SIMPLECODE_LINUX_BUILD is not the vendor path; see scripts/builders/linux/rebuild.sh.",
+    "memoryMiB": 64,
+    "vgaMiB": 2,
+    "cmdline": "tsc=reliable mitigations=off random.trust_cpu=on console=ttyS0 quiet",
+    "v86Wasm": {
+      "url": "https://cdn.jsdelivr.net/npm/v86@0.5.471/build/v86.wasm",
+      "sha256": "2fc5609ae837fcbc77147155de6f1014677ecab5369f5584ebc670e9d56e6510"
+    },
+    "lib": {
+      "url": "https://cdn.jsdelivr.net/npm/v86@0.5.471/build/libv86.mjs",
+      "sha256": "c4e0281ed9566edfcff54e4660c635f14d32e136104b475763b19ac87b891dc1"
+    },
+    "seabios": {
+      "url": "https://github.com/copy/v86/raw/master/bios/seabios.bin",
+      "sha256": "73e3f359102e3a9982c35fce98eb7cd08f18303ac7f1ba6ebfbe6cdc1c244d98"
+    },
+    "vgabios": {
+      "url": "https://github.com/copy/v86/raw/master/bios/vgabios.bin",
+      "sha256": "a4bc0d80cc3ca028c73dafa8fee396b8d054ce87ebd8abfbd31b06b437607880"
+    },
+    "bzimage": {
+      "url": "https://i.copy.sh/buildroot-bzimage68.bin",
+      "sha256": "507a759c70ab7a490a233be454d0b5b88bc667956a410b531cb4edc091e2eb1c"
+    },
+    "buildrootUrl": "https://buildroot.org/downloads/buildroot-2026.08.tar.xz",
+    "buildrootSha256": "87aaca4164ea9d5c8085854953018263f7963f07c22e73a2a2185cc98c581c34",
+    "zstd": {
+      "version": "1.5.7",
+      "url": "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz",
+      "sha256": "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3",
+      "level": 19
+    }
+  },
   "shell": {
     "version": "1",
     "output": "wasi-sh.wasm",

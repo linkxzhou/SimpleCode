@@ -12,8 +12,17 @@ import { assets, languages } from "./languages.config.mjs";
 
 const WASM_MAGIC = Buffer.from([0x00, 0x61, 0x73, 0x6d]);
 
-export function fingerprint(fileName, buf) {
-  const isWasm = fileName.endsWith(".wasm");
+export function fingerprint(fileName, buf, kind) {
+  const resolved = kind || (fileName.endsWith(".wasm") ? "wasm" : "fs");
+  if (resolved === "bin") {
+    return {
+      file: fileName,
+      size: buf.length,
+      sha256: createHash("sha256").update(buf).digest("hex"),
+      kind: "bin",
+    };
+  }
+  const isWasm = resolved === "wasm";
   const magicOk = isWasm ? buf.subarray(0, 4).equals(WASM_MAGIC) : buf[0] === 0x1f && buf[1] === 0x8b;
   if (!magicOk) {
     const err = new Error(`${fileName}: bad magic header (Git LFS pointer?)`);
@@ -48,7 +57,7 @@ export function manifestFromDir(wasmDir) {
       missing.push(spec.file);
       continue;
     }
-    records[id] = fingerprint(spec.file, readFileSync(path));
+    records[id] = fingerprint(spec.file, readFileSync(path), spec.kind);
   }
   if (missing.length) {
     const err = new Error(`缺少 ${missing.join(", ")}。请先运行 ./build.sh vendor`);

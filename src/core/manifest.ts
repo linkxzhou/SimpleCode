@@ -1,4 +1,4 @@
-export type AssetKind = "wasm" | "fs";
+export type AssetKind = "wasm" | "fs" | "bin";
 
 export interface Asset {
   file: string;
@@ -31,6 +31,10 @@ export interface LanguageSpec {
   prepare?: CommandSpec[];
   run: CommandSpec;
   autoEOF?: boolean;
+  /** "v86" runs a Linux guest. Omitted languages stay on WASIWorkerHost. */
+  runtime?: "wasi" | "v86";
+  /** Asset ids to download. Used instead of prepare/run when set. */
+  assets?: string[];
 }
 
 export interface Manifest {
@@ -50,6 +54,7 @@ export async function loadManifest(): Promise<Manifest> {
 
 /** All asset ids a language needs (deduped). */
 export function languageAssetIds(lang: LanguageSpec): string[] {
+  if (lang.assets?.length) return [...new Set(lang.assets)];
   const ids = new Set<string>();
   for (const c of [...(lang.prepare ?? []), lang.run]) {
     if (c.asset) ids.add(c.asset);

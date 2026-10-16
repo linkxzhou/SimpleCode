@@ -1,4 +1,4 @@
-export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell";
+export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "linux";
 
 export type DocLang =
   | "python"
@@ -19,7 +19,8 @@ export type DocLang =
   | "go"
   | "sh"
   | "shell"
-  | "bash";
+  | "bash"
+  | "linux";
 
 export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   python: "python",
@@ -41,13 +42,14 @@ export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   sh: "shell",
   shell: "shell",
   bash: "shell",
+  linux: "linux",
 };
 
-export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell"] as const;
+export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "linux"] as const;
 export type BookId = (typeof BOOKS)[number];
 
 /** Books with a full curriculum in this release. Other ids stay in the map and show “即将推出”. */
-export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell"] as const;
+export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "linux"] as const;
 
 export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   python: "python",
@@ -60,6 +62,7 @@ export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   lua: "lua",
   go: "go",
   shell: "shell",
+  linux: "linux",
 };
 
 export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
@@ -73,6 +76,7 @@ export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
   lua: "lua",
   go: "go",
   shell: "shell",
+  linux: "linux",
 };
 
 export const BOOK_LABEL: Record<BookId, string> = {
@@ -86,6 +90,7 @@ export const BOOK_LABEL: Record<BookId, string> = {
   lua: "Lua",
   go: "Go",
   shell: "Shell",
+  linux: "Linux",
 };
 
 export const LEVEL_LABEL = {
@@ -105,6 +110,7 @@ const RUNTIME_LABEL: Record<RuntimeId, string> = {
   lua: "Lua",
   go: "Go",
   shell: "Shell",
+  linux: "Linux",
 };
 
 export function resolveRuntime(lang: string): RuntimeId | undefined {

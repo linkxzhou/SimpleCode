@@ -8,14 +8,23 @@ export type Progress = (loaded: number, total: number) => void;
 
 export interface LoadedAsset {
   id: string;
-  /** Blob URL with type application/wasm (wasm assets) */
+  /** Blob URL (wasm, or a bin such as libv86.mjs) */
   url?: string;
   /** Extracted filesystem (fs assets) */
   fs?: BinaryWASIFS;
+  /** Raw bytes for kind "bin" (BIOS, bzImage, snapshot, lib) */
+  bytes?: Uint8Array;
 }
 
 const loaded = new Map<string, LoadedAsset>();
 const inflight = new Map<string, Promise<LoadedAsset>>();
+
+function assetMime(asset: Asset) {
+  if (asset.kind === "wasm" || asset.file.endsWith(".wasm")) return "application/wasm";
+  if (asset.file.endsWith(".mjs") || asset.file.endsWith(".js")) return "text/javascript";
+  if (asset.kind === "fs") return "application/gzip";
+  return "application/octet-stream";
+}
 
 function cacheKey(asset: Asset) {
   return `${WASM_BASE}${asset.file}?v=${asset.sha256.slice(0, 12)}`;
@@ -88,7 +97,7 @@ async function download(asset: Asset, onProgress: Progress, signal?: AbortSignal
   }
   // .tar.gz may be transparently decoded when served with Content-Encoding: gzip,
   // so only enforce the exact size for wasm binaries.
-  if (asset.kind === "wasm" && asset.size && out.byteLength !== asset.size) {
+  if ((asset.kind === "wasm" || asset.kind === "bin") && asset.size && out.byteLength !== asset.size) {
     throw new Error(`${asset.file} 大小不匹配（期望 ${asset.size}，实际 ${out.byteLength}）`);
   }
   return out;
@@ -116,7 +125,7 @@ async function fetchBytes(asset: Asset, onProgress: Progress, signal?: AbortSign
       await cache.put(
         key,
         new Response(new Blob([bytes]), {
-          headers: { "content-type": asset.kind === "wasm" ? "application/wasm" : "application/gzip", "x-size": String(bytes.byteLength) },
+          headers: { "content-type": assetMime(asset), "x-size": String(bytes.byteLength) },
         }),
       );
     } catch (e) {
@@ -143,7 +152,9 @@ export function ensureAsset(id: string, asset: Asset, onProgress: Progress, sign
       const result: LoadedAsset =
         asset.kind === "wasm"
           ? { id, url: URL.createObjectURL(new Blob([bytes], { type: "application/wasm" })) }
-          : { id, fs: extractTarGz(bytes) };
+          : asset.kind === "bin"
+            ? { id, bytes, url: URL.createObjectURL(new Blob([bytes], { type: assetMime(asset) })) }
+            : { id, fs: extractTarGz(bytes) };
       loaded.set(id, result);
       return result;
     })().finally(() => inflight.delete(id));
