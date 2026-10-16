@@ -66,7 +66,7 @@ const tip = computed(() => {
             v-if="status === 'downloading'"
             data-testid="wasm-progress"
             :model-value="pct"
-            class="sidebar-expanded-only pointer-events-none absolute inset-x-2 bottom-1 my-[4px] h-0.5"
+            class="sidebar-expanded-only pointer-events-none absolute inset-x-2 bottom-1 my-[8px] h-0.5"
           />
         </template>
       </button>
