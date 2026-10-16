@@ -4,6 +4,8 @@ import { formatMB, languageAssetIds, languageSize, loadManifest, type LanguageSp
 import { LinuxKilled, attachLinuxConsole, linuxMachine } from "@/core/linux";
 import { cancelRustCompile } from "@/rustc/compile";
 import { clearRustCache, ensureRustToolchain, rustCacheBytes, rustDownloadBytes, rustIsCached, rustReady } from "@/rustc/toolchain";
+import { cancelJavaRun } from "@/teavm/run";
+import { clearJavaCache, ensureJavaToolchain, javaCacheBytes, javaDownloadBytes, javaIsCached, javaReady } from "@/teavm/toolchain";
 import { cacheUsage, clearCache as clearWasmCache, ensureAsset, getLoaded, isCached, pruneCache } from "@/core/wasmLoader";
 import { terminal } from "@/core/terminal";
 import type { MessageKey } from "@/i18n/messages.ts";
@@ -61,11 +63,12 @@ export const useLanguageStore = defineStore("language", () => {
 
   function sizeOf(lang: LanguageSpec) {
     if (lang.compiler === "weblings") return rustDownloadBytes();
+    if (lang.compiler === "teavm") return javaDownloadBytes();
     return manifest.value ? languageSize(manifest.value, lang) : 0;
   }
 
   async function refreshUsage() {
-    usage.value = (await cacheUsage()) + (await rustCacheBytes());
+    usage.value = (await cacheUsage()) + (await rustCacheBytes()) + (await javaCacheBytes());
   }
 
   async function refreshStatuses() {
@@ -75,9 +78,11 @@ export const useLanguageStore = defineStore("language", () => {
       if (!states[lang.id]) states[lang.id] = { status: "idle", loaded: 0, total: sizeOf(lang) };
       const st = states[lang.id]; // re-read through the reactive proxy
       if (st.status === "downloading") continue;
-      if (lang.compiler === "weblings") {
-        if (rustReady()) st.status = "ready";
-        else if (await rustIsCached()) st.status = "cached";
+      if (lang.compiler === "weblings" || lang.compiler === "teavm") {
+        const ready = lang.compiler === "weblings" ? rustReady() : javaReady();
+        const cached = lang.compiler === "weblings" ? await rustIsCached() : await javaIsCached();
+        if (ready) st.status = "ready";
+        else if (cached) st.status = "cached";
         else if (st.status !== "error") st.status = "idle";
         continue;
       }
@@ -107,6 +112,7 @@ export const useLanguageStore = defineStore("language", () => {
   function releaseRuntime(prev: string) {
     useRunStore().abandon();
     cancelRustCompile();
+    cancelJavaRun();
     for (const [cid, ctrl] of [...controllers]) {
       invalidate(cid);
       ctrl.abort();
@@ -155,17 +161,20 @@ export const useLanguageStore = defineStore("language", () => {
     const note = (key: MessageKey, vars?: Record<string, string | number>, color = "2") => {
       if (live(id, token)) terminal.system(key, vars, color);
     };
-    if (lang.compiler === "weblings") {
-      const fromNetwork = st.status !== "cached" && !rustReady();
+    if (lang.compiler === "weblings" || lang.compiler === "teavm") {
+      const bytes = lang.compiler === "weblings" ? rustDownloadBytes : javaDownloadBytes;
+      const readyNow = lang.compiler === "weblings" ? rustReady : javaReady;
+      const ensure = lang.compiler === "weblings" ? ensureRustToolchain : ensureJavaToolchain;
+      const fromNetwork = st.status !== "cached" && !readyNow();
       st.status = "downloading";
       st.error = undefined;
-      st.total = rustDownloadBytes();
+      st.total = bytes();
       st.loaded = 0;
       const ctrl = new AbortController();
       controllers.set(id, ctrl);
       if (fromNetwork) note("downloadingToolchain", { label: lang.label, size: formatMB(st.total) });
       try {
-        await ensureRustToolchain((loaded, total) => {
+        await ensure((loaded, total) => {
           if (!live(id, token)) return;
           st.loaded = loaded;
           st.total = total;
@@ -271,6 +280,7 @@ export const useLanguageStore = defineStore("language", () => {
     releaseRuntime(prev);
     await clearWasmCache();
     await clearRustCache();
+    await clearJavaCache();
     for (const s of Object.values(states)) if (s.status !== "downloading") s.status = "idle";
     await refreshUsage();
   }

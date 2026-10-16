@@ -13,6 +13,7 @@ import "monaco-editor/esm/vs/basic-languages/lua/lua.contribution";
 import "monaco-editor/esm/vs/basic-languages/go/go.contribution";
 import "monaco-editor/esm/vs/basic-languages/shell/shell.contribution";
 import "monaco-editor/esm/vs/basic-languages/rust/rust.contribution";
+import "monaco-editor/esm/vs/basic-languages/java/java.contribution";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 
 (self as unknown as { MonacoEnvironment: monaco.Environment }).MonacoEnvironment = {

@@ -152,6 +152,21 @@ func main() {
 }
 `,
   ),
+  java: pair(
+    "// 读入一行名字",
+    "// Read one line, then greet that name",
+    `import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner in = new Scanner(System.in);
+        System.out.print("What's your name? ");
+        String name = in.nextLine();
+        System.out.println("Hello, " + name + "!");
+    }
+}
+`,
+  ),
   rust: pair(
     "// 把三个数加起来",
     "// Add three numbers",

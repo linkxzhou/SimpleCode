@@ -30,7 +30,7 @@ export const zh = {
 
   aboutTitle: "关于 SimpleCode",
   aboutLead: "SimpleCode 是浏览器里的多语言练习场。代码在这台电脑上运行，不会上传。",
-  aboutLanguages: "十二种语言：Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell、Rust、Linux。",
+  aboutLanguages: "十三种语言：Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell、Rust、Java、Linux。",
   aboutWasm: "运行时是 WebAssembly，第一次使用才下载，然后放进 Cache API，下次打开不用重下。",
   aboutEditor: "编辑器是 Monaco。",
   aboutTerminal: "终端用来看输出，也可以输入。",
@@ -167,6 +167,14 @@ export const zh = {
   rustWorker: "rustc worker 未就绪",
   rustDigest: "{kind} 与 sources.lock.json 不一致",
   rustDownload: "无法下载 Rust 工具链（{detail}）。GitHub Release 没有 CORS，COEP 页面读不到。请运行 ./build.sh vendor --rust，或检查 {upstream}",
+  javaNotLoaded: "Java 工具链尚未加载",
+  javaWorker: "Java worker 未就绪",
+  javaBridge: "找不到 Java 桥接类 {file}",
+  javaDigest: "{file} 与 sources.lock.json 不一致",
+  javaDownload: "无法下载 Java 工具链（{detail}）。teavm.org 没有 CORS，COEP 页面读不到。请运行 ./build.sh vendor --java",
+  javaWasmGc: "当前浏览器没有 Wasm GC，Java 编译器无法启动",
+  javaNoMain: "找不到 main 方法。请写 public static void main(String[] args)。",
+  javaManyMain: "找到多个 main 方法：{list}",
 } as const;
 
 export type MessageKey = keyof typeof zh;
@@ -202,7 +210,7 @@ export const en: { [K in MessageKey]: string } = {
 
   aboutTitle: "About SimpleCode",
   aboutLead: "SimpleCode is an in-browser playground for several languages. Your code runs on this computer and is not uploaded.",
-  aboutLanguages: "Twelve languages: Python, Ruby, JS/TS, SQLite, C, C++, PHP, Lua, Go, Shell, Rust, and Linux.",
+  aboutLanguages: "Thirteen languages: Python, Ruby, JS/TS, SQLite, C, C++, PHP, Lua, Go, Shell, Rust, Java, and Linux.",
   aboutWasm: "Runtimes are WebAssembly files. They download the first time you use a language, then stay in the Cache API.",
   aboutEditor: "The editor is Monaco.",
   aboutTerminal: "A terminal shows output and accepts input.",
@@ -340,4 +348,13 @@ export const en: { [K in MessageKey]: string } = {
   rustDigest: "{kind} does not match sources.lock.json",
   rustDownload:
     "Could not download the Rust toolchain ({detail}). GitHub Release assets have no CORS, so a COEP page cannot read them. Run ./build.sh vendor --rust, or check {upstream}",
+  javaNotLoaded: "The Java toolchain is not loaded yet",
+  javaWorker: "The Java worker is not ready",
+  javaBridge: "Java bridge class {file} was not found",
+  javaDigest: "{file} does not match sources.lock.json",
+  javaDownload:
+    "Could not download the Java toolchain ({detail}). teavm.org does not send CORS, so a COEP page cannot read it. Run ./build.sh vendor --java",
+  javaWasmGc: "This browser has no Wasm GC, so the Java compiler cannot start",
+  javaNoMain: "Main method not found. Write public static void main(String[] args).",
+  javaManyMain: "Multiple main methods found: {list}",
 };

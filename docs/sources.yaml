@@ -181,6 +181,16 @@ runoob-rust:
   url: https://www.runoob.com/rust/rust-tutorial.html
   license: 目录形状参考，正文原创
   adapt: false
+runoob-java:
+  title: 菜鸟教程 Java
+  url: https://www.runoob.com/java/java-tutorial.html
+  license: 目录形状参考，正文原创
+  adapt: false
+oracle-java-tutorial:
+  title: The Java Tutorials
+  url: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/index.html
+  license: Oracle
+  adapt: false
 v86-buildroot:
   title: v86 Buildroot Linux 6.8 image
   url: https://github.com/copy/v86

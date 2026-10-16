@@ -1,4 +1,4 @@
-export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "rust" | "linux";
+export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "rust" | "java" | "linux";
 
 export type DocLang =
   | "python"
@@ -22,6 +22,7 @@ export type DocLang =
   | "bash"
   | "rust"
   | "rs"
+  | "java"
   | "linux";
 
 export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
@@ -46,14 +47,15 @@ export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   bash: "shell",
   rust: "rust",
   rs: "rust",
+  java: "java",
   linux: "linux",
 };
 
-export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "linux"] as const;
+export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "java", "linux"] as const;
 export type BookId = (typeof BOOKS)[number];
 
 /** Books with a full curriculum in this release. Other ids stay in the map and show “即将推出”. */
-export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "rust", "linux"] as const;
+export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "rust", "java", "linux"] as const;
 
 export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   python: "python",
@@ -67,6 +69,7 @@ export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   go: "go",
   shell: "shell",
   rust: "rust",
+  java: "java",
   linux: "linux",
 };
 
@@ -82,6 +85,7 @@ export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
   go: "go",
   shell: "shell",
   rust: "rust",
+  java: "java",
   linux: "linux",
 };
 
@@ -97,6 +101,7 @@ export const BOOK_LABEL: Record<BookId, string> = {
   go: "Go",
   shell: "Shell",
   rust: "Rust",
+  java: "Java",
   linux: "Linux",
 };
 
@@ -118,6 +123,7 @@ const RUNTIME_LABEL: Record<RuntimeId, string> = {
   go: "Go",
   shell: "Shell",
   rust: "Rust",
+  java: "Java",
   linux: "Linux",
 };
 

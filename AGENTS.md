@@ -4,9 +4,9 @@
 
 ## 项目是什么
 
-浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell 的运行时是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。Rust 的编译器是 weblings 的 Cranelift rustc，在另一个 Worker 里编译；编出来的 wasm 再交给同一个 `WASIWorkerHost`。Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
+浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell 的运行时是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。Rust 的编译器是 weblings 的 Cranelift rustc，在另一个 Worker 里编译；编出来的 wasm 再交给同一个 `WASIWorkerHost`。Java 的编译和运行都在 TeaVM 自己的 Worker 里（Wasm GC），产物不交给 `WASIWorkerHost`。Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
 
-教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十二本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`。细节见 `plan/LANGUAGES.md` §10 和 §11，以及 `plan/LEARN.md` §20。
+教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十三本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`，Java 的书在 `docs/java/`。细节见 `plan/LANGUAGES.md` §10、§11 和 §12，以及 `plan/LEARN.md` §20 和 §23。
 
 ## 架构
 
@@ -20,6 +20,7 @@
   → src/core/runner.ts  RunSession
        ├─ WASIWorkerHost（WASI 语言，Web Worker；Rust 的产物也走这里）
        ├─ weblings rustc（rust，单独 Worker，只编译）
+       ├─ TeaVM javac（java，单独 Worker，编译并运行）
        └─ LinuxMachine（linux，主线程 v86，src/core/linux.ts）
 终端 src/core/terminal.ts（xterm；Linux 期间按键原样送进串口）
 文档 DocsDrawer
@@ -29,7 +30,7 @@
 
 资源在 `wasm/`。`scripts/languages.config.mjs` 列出资产和语言。`scripts/write-manifest.mjs` 按磁盘文件生成 `wasm/manifest.json`（`size`、`sha256`）。该文件 gitignore，不提交。`src/core/wasmLoader.ts` 用 Cache API（`simplecode-wasm-v1`）缓存，并用清单里的 `size` 核对。
 
-语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`rust`、`linux`（界面文案 Linux，短标签 `Lx`）。Rust 不进默认 `./build.sh vendor`，也不写进 `wasm/manifest.json`。`./build.sh vendor --rust` 校验 pin 后把 `rustc.wasm` 和 `sysroot-wasip1.bundle` 放到 `wasm/rust/`。没跑这条命令时，页面从 pin 住的演示地址下载同一对文件，并用 Cache API（`simplecode-rustc-v1`）缓存。GitHub Release 资产在 COEP 页面里没有 CORS，不能当浏览器下载地址。
+语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`rust`、`java`、`linux`（界面文案 Linux，短标签 `Lx`；Java 短标签 `Jv`）。Rust 不进默认 `./build.sh vendor`，也不写进 `wasm/manifest.json`。`./build.sh vendor --rust` 校验 pin 后把 `rustc.wasm` 和 `sysroot-wasip1.bundle` 放到 `wasm/rust/`。没跑这条命令时，页面从 pin 住的演示地址下载同一对文件，并用 Cache API（`simplecode-rustc-v1`）缓存。GitHub Release 资产在 COEP 页面里没有 CORS，不能当浏览器下载地址。Java 同样不进默认 vendor 和清单。`./build.sh vendor --java` 校验 pin 后把四份 TeaVM 文件放到 `wasm/java/`。页面只读这四份同源文件，Cache API 名是 `simplecode-teavm-v1`。`teavm.org` 没有 CORS，不能当浏览器下载地址。
 
 ## 技术栈和命令
 
@@ -40,7 +41,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | 子命令 | 作用 |
 |---|---|
 | `install` | `yarn install` |
-| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单。`--rust` 另下 weblings 工具链，不进这份清单 |
+| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单。`--rust` 另下 weblings 工具链，`--java` 另下 TeaVM 四份文件，两者都不进这份清单 |
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
@@ -81,10 +82,10 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 每章至少两个可运行块：info 里有 `run`，并有 `expect="子串"`。
 - `norun` 只供阅读，旁边写原因。`smoke=skip` 仍算结构测试里的可运行块，`docs-smoke` 不执行它（Python 的 `while True` 用了这个）。
 - 不要再写固定的「常见错误 / 最佳实践 / 小结 / 练习」四节。
-- 十二本书一起检查连续 60 个汉字不重复。
+- 十三本书一起检查连续 60 个汉字不重复。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28。每种语言 335 章。渲染日志是 `docs: 670 chapters, 1932 runnable blocks`（中英各 966 个可运行块）。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。默认文档冒烟不含 Rust，中英各 886 块，合计 1772。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
+现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28、Java 28。中英各 363 章。`./build.sh build` 打出 `docs: 726 chapters, 2098 runnable blocks`（中英各 1049 个可运行块）。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。Java 的 `docs-smoke` 同样默认不跑（每块都要在浏览器里编 wasm）。`SIMPLECODE_JAVA_DOCS=1` 才执行。默认文档冒烟不含 Rust 和 Java，也不跑 Python 那个 `smoke=skip`。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件；Java 同样有 hello、标准输入、编译错误和 `Thread.sleep`。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
 
 ### 运行时限制（可运行块里避开）
 
@@ -95,6 +96,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - **Go（Yaegi 0.16.1）**：没有网络，不能 import 第三方。`time.Sleep` 在 `poll_oneoff` 上等不回来。自定义 `error` 放进接口再调用 `Error()` 会 panic。
 - **Lua 5.4.9**：`pcall` 依赖 wasi-sdk 的 `-mllvm -wasm-enable-sjlj` 和 `-lsetjmp`。不要定义 `LUA_USE_POSIX`，否则 `pcall` 坏掉。`#` 和 `string.len` 按字节。`print` 多个参数之间是制表符。没有 `os.execute`、`io.popen`，也不能 `require` 别的文件。
 - **Rust（weblings，`artifacts-test-7`）**：单个 `main.rs`，edition 2024，`-O`，`panic=abort`。没有 Cargo、crates.io、过程宏、`std::thread` 和 `std::thread::sleep`（宿主的 `poll_oneoff` 时钟会空转）。编译器本身要虚拟 sysroot 和 `CLIF2WASM_OBJECT=1`，所以不作为 preview1 命令注册。产物只导入 `wasi_snapshot_preview1` 并导出 `_start`。Safari 没有测过。细节在 `plan/LANGUAGES.md` §11.10。
+- **Java（TeaVM 0.16.0 playground `/3/`）**：单个 `Main.java`，`public` 类必须叫 `Main`。不是 OpenJDK。没有包、正则、nio、反射、JNI 和真实文件。`Scanner` 与 `InputStreamReader` 是仓库里的替换类，不是 JDK 原件。`Thread.sleep` 靠 Worker 里的 `setTimeout`，Worker 要留到计时器走完。标准输入是 `simplecode.read`，在 Worker 里 `Atomics.wait`，不要改成 WASI `fd_read`。没有 Wasm GC 就停，不要改用 CheerpJ。细节在 `plan/LANGUAGES.md` §12 和 `plan/LEARN.md` §23。
 - **Linux（v86 0.5.471）**：客户机是 i686、内核 6.8.12、Buildroot 2024.05.2、BusyBox 1.36.1，家目录 `/root`，提示符 `~% `。没有网络、包管理器、ssh、vim。`apt`、`yum`、`ssh`、`vim`、`passwd`、`fdisk`、`reboot`、`useradd` 标 `norun`。每次 Run 从快照恢复，围栏之间不共享 `/tmp`。`ls` 要加 `--color=never`。`chmod u+x` 在 644 文件上是 `-rwxr--r--`。9p 在 `/mnt`，脚本是 `/mnt/main.sh`。退出码来自串口上最后一次 `__SC_EXIT:` 后的数字。
 
 ## 工作顺序
@@ -152,7 +154,9 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **下载进度条贴在按钮底边。** `LanguageItem` 里 `data-testid="wasm-progress"` 使用 `absolute inset-x-0 bottom-0 h-0.5`，铺满按钮宽度，下沿与按钮下沿对齐。不要再加 `my-[8px]`，也不要把它做成按钮下面的另一行。
 
-**换语言时终端要一起换。** 侧栏从一门语言点到另一门（包括 Linux 和其他语言互切）时，先停掉 WASI、v86 和 rustc，卸掉 xterm 的串口透传和 stdin，清屏，再绑到新运行时。下载或运行途中换走，旧的完成回调不能再写屏幕，也不能把 v86 串口重新接上。界面「中 / EN」切换时，下载进度、错误和提示按新语言重画；程序打印的内容留在原处。系统句用消息键存在 `src/core/terminal.ts`，不要先 `t()` 再写进 xterm。
+**换语言时终端要一起换。** 侧栏从一门语言点到另一门（包括 Linux 和其他语言互切）时，先停掉 WASI、v86、rustc 和 TeaVM，卸掉 xterm 的串口透传和 stdin，清屏，再绑到新运行时。下载或运行途中换走，旧的完成回调不能再写屏幕，也不能把 v86 串口重新接上。Java 正在编译或卡在 `System.in` 时也要 `terminate` 那个 Worker。界面「中 / EN」切换时，下载进度、错误和提示按新语言重画；程序打印的内容留在原处。系统句用消息键存在 `src/core/terminal.ts`，不要先 `t()` 再写进 xterm。
+
+**Java 不是 OpenJDK，也不能从 teavm.org 拉文件。** `compiler.wasm` 要 Wasm GC 和 `wasm:js-string`。四份 pin 在 `scripts/sources.lock.json` 的 `java`，合计 6,896,057 字节。浏览器只 `fetch` 同源 `wasm/java/`。缺文件时终端说明去跑 `./build.sh vendor --java`。不要把 `compiler.wasm` 登记成 WASI 命令，也不要把它写进 `wasm/manifest.json`。`System.in` 盖掉的是 `TConsoleInputStream` 的 class 文件（`@Import` 模块 `simplecode`），在 TeaVM javac 里重编这份带注解的源码会把编译器打栈溢出。`Scanner` 的桩 class 在内存里追加到 SDK gzip 归档的末尾，不改 pin 住的那份 `compile-classlib-teavm.bin`。`main()` 返回之后 Worker 还要等 `teavmAsync` 的计时器，否则 `Thread.sleep` 后面的输出丢了。Stop 不能等这个计时器。javac 编进 `compiler.wasm` 的是 GPLv2 + Classpath Exception，见 `LICENSES/THIRD_PARTY.md`。
 
 ## 计划文件
 
@@ -160,7 +164,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 |---|---|
 | `plan/DESIGN.md` | 布局、COOP/COEP、缓存、单色、侧栏 |
 | `plan/LANGUAGES.md` | 语言评估、Lua/Go/Shell 的实现记录、Linux §10 的落地结果 |
-| `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书在 §20 |
+| `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书在 §20、Java 书在 §23 |
 | `plan/learn-research.md` | 教程取材笔记 |
 
-当前书在短节改写之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案，#13 Rust 调研，#14 Linux 运行时）。Rust 的实现记录在 `plan/LANGUAGES.md` §11.10。Linux 的落地记录在 §10。
+当前书在短节改写之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案，#13 Rust 调研，#14 Linux 运行时）。Rust 的实现记录在 `plan/LANGUAGES.md` §11.10。Linux 的落地记录在 §10。Java 的调研在 §12，侧栏实现按 §12.12。
