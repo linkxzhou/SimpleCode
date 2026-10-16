@@ -428,7 +428,7 @@ bzImage 是未改过的上游演示文件 `https://i.copy.sh/buildroot-bzimage68
 | `linux-bzimage.bin` | 10,068,480 | bin |
 | `linux-state.bin` | 45,554,624 | bin |
 
-快照在 vendor 时生成，不压缩，不进 git，也不进 lock。五个输入的 sha256 拼成 `thirdparty/cache/linux/state.stamp`；stamp 不变且状态文件非空就跳过。同一份输入再次 `save_state` 的字节数会变，所以不能钉摘要。Node 上这一次：冷启动到 `~% ` **2.09 秒**，`initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.26 秒**。浏览器里的下载、启动和 Run 秒数在 `./build.sh test` 通过后补进本节。
+快照在 vendor 时生成，不压缩，不进 git，也不进 lock。五个输入的 sha256 拼成 `thirdparty/cache/linux/state.stamp`；stamp 不变且状态文件非空就跳过。同一份输入再次 `save_state` 的字节数会变，所以不能钉摘要。Node 上这一次：冷启动到 `~% ` **2.09 秒**，`initial_state` 恢复并跑完 `echo snapshot-ok; uname -r` **0.26 秒**。浏览器里（Playwright 打开本机 preview，六份文件从 `dist/wasm` 同源取出）：第一次选中 Linux 到 `ready` **0.9 秒**（含下载和快照启动）；其后 Run 为 **0.3 秒**、**0.2 秒**、**0.2 秒**。
 
 运行时是主线程上的 `LinuxMachine`（`src/core/linux.ts`），和 `WASIWorkerHost` 并列。libv86 在浏览器里自己开 yield Worker；专用 Worker 没有 `window`，这条构建走不通。选中 Linux 时从 `initial_state` 启动并等到提示符，侧栏在下载之后显示「启动中」。每次 Run 销毁上一台，用同一份状态新建，`create_file("main.sh")` 与 `create_file("stdin.txt")` 写到 `/mnt/main.sh`、`/mnt/stdin.txt`，串口发送：
 
