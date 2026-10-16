@@ -77,6 +77,7 @@ const SHIKI_LANG: Record<string, string> = {
   shell: "bash",
   rust: "rust",
   rs: "rust",
+  linux: "bash",
   json: "json",
   yaml: "yaml",
   yml: "yaml",

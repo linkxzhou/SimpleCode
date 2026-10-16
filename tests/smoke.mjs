@@ -85,7 +85,37 @@ const cases = [
     monaco: "shell",
     fileName: "main.sh",
   },
-].filter((c) => !only.length || only.includes(c.id));
+  {
+    id: "linux",
+    code: "echo hello-from-linux\nls --color=never -1 /mnt\n",
+    expect: ["hello-from-linux", "main.sh"],
+    fileName: "main.sh",
+    monaco: "shell",
+    exitCode: "0",
+  },
+  {
+    id: "linux",
+    name: "exit",
+    code: "echo nope\nexit 3\n",
+    expect: "nope",
+    statuses: ["failed"],
+    exitCode: "3",
+  },
+  {
+    id: "linux",
+    name: "marker",
+    code: "echo secret > /tmp/marker && echo wrote\n",
+    expect: "wrote",
+    exitCode: "0",
+  },
+  {
+    id: "linux",
+    name: "isolate",
+    code: "ls /tmp/marker || echo absent\n",
+    expect: "absent",
+    exitCode: "0",
+  },
+].filter((c) => !only.length || only.includes(c.id) || only.includes(c.name));
 
 const server = spawn("yarn", ["vite", "preview", "--port", String(PORT), "--strictPort"], { stdio: ["ignore", "pipe", "pipe"] });
 const stop = () => { try { server.kill("SIGTERM"); } catch {} };
@@ -183,10 +213,11 @@ try {
         { timeout: 120_000 },
       );
       const status = await page.getAttribute('[data-testid="run-status"]', "data-status");
+      const exitCode = await page.getAttribute('[data-testid="run-status"]', "data-exit");
       const out = await page.evaluate(() => globalThis.__simplecodeTerminal.transcript);
       const expects = Array.isArray(c.expect) ? c.expect : [c.expect];
       const statuses = c.statuses ?? ["done"];
-      const ok = statuses.includes(status) && expects.every((part) => out.includes(part));
+      const ok = statuses.includes(status) && expects.every((part) => out.includes(part)) && (c.exitCode == null || exitCode === c.exitCode);
       if (!ok) failed++;
       const label = (c.name ? `${c.id}/${c.name}` : c.id).padEnd(16);
       console.log(`${ok ? "✓" : "✗"} ${label} load ${((tl - t0) / 1000).toFixed(1)}s run ${((Date.now() - tl) / 1000).toFixed(1)}s status=${status} out=${JSON.stringify(out.replace(/\x1b\[[0-9;]*m/g, "").trim().slice(-160))}`);

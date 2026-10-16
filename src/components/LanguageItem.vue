@@ -16,6 +16,7 @@ const pct = computed(() => (props.state?.total ? Math.round((props.state.loaded 
 const sizeLabel = computed(() => formatMB(props.size).replace(".0", ""));
 const tip = computed(() => {
   const s = props.state;
+  if (status.value === "downloading" && s?.detail === "boot") return `${props.lang.label} · 启动中`;
   if (status.value === "downloading" && s) return `${props.lang.label} · 下载中 ${pct.value}%（${formatMB(s.loaded)} / ${formatMB(s.total)}）`;
   if (status.value === "error") return `${props.lang.label} · ${s?.error ?? "下载失败"}（点击重试）`;
   if (status.value === "idle") return `${props.lang.label} · 点击下载 ${formatMB(props.size)}`;
@@ -48,7 +49,7 @@ const tip = computed(() => {
             v-if="status === 'downloading'"
             class="sidebar-expanded-only flex shrink-0 items-center gap-1 text-xs tabular-nums text-muted-foreground"
           >
-            <Loader2 class="size-3.5 animate-spin" />{{ pct }}%
+            <Loader2 class="size-3.5 animate-spin" />{{ state?.detail === "boot" ? "启动中" : `${pct}%` }}
           </span>
           <span v-else-if="status === 'error'" class="sidebar-expanded-only flex shrink-0 items-center gap-1 text-xs text-foreground">
             <AlertCircle class="size-3.5" />重试

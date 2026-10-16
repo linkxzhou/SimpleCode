@@ -119,4 +119,8 @@ for n in 1 2 3 4 5; do
   echo "$n"
 done
 `,
+  linux: `echo "Hello from Linux"
+ls --color=never -1 / | head -n 4
+printf '%s\\n' 甲 乙 | grep 乙
+`,
 };

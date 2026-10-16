@@ -181,3 +181,8 @@ runoob-rust:
   url: https://www.runoob.com/rust/rust-tutorial.html
   license: 目录形状参考，正文原创
   adapt: false
+v86-buildroot:
+  title: v86 Buildroot Linux 6.8 image
+  url: https://github.com/copy/v86
+  license: BSD-2-Clause / GPL-2.0
+  adapt: false

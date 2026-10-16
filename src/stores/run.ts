@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { attachLinuxConsole, linuxMachine } from "@/core/linux";
 import { RunSession, type Phase } from "@/core/runner";
 import { terminal } from "@/core/terminal";
 import { TranspileError, transpileTypeScript } from "@/core/transpile";
@@ -86,7 +87,7 @@ export const useRunStore = defineStore("run", () => {
         phase: (p: Phase) => {
           status.value = p;
           if (p === "run") {
-            terminal.setInputHandler(inputHandler);
+            if (lang.runtime !== "v86") terminal.setInputHandler(inputHandler);
             if (stdin) {
               const shown = stdin.endsWith("\n") ? stdin : `${stdin}\n`;
               terminal.write(`\x1b[38;5;247m${shown}\x1b[39m`);
@@ -101,12 +102,21 @@ export const useRunStore = defineStore("run", () => {
       onEOF: () => void s.pushEOF(),
       onInterrupt: () => stop(),
     };
+    if (lang.runtime === "v86") {
+      terminal.setInputHandler(undefined);
+      terminal.setPassthrough({
+        onData: (data) => {
+          if (data.includes("\x03")) linuxMachine.send("\x03");
+        },
+      });
+    }
     session = s;
     startTimer();
     const out = await s.run(code);
     stopTimer();
     terminal.flush();
     terminal.setInputHandler(undefined);
+    if (lang.runtime === "v86") attachLinuxConsole();
     if (session !== s) return;
     session = undefined;
     switch (out.type) {

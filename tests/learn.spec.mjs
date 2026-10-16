@@ -314,6 +314,41 @@ try {
   await saveShot(page, "learn-shell-run.png");
   await page.click('[data-testid="docs-close"]');
 
+  await page.click('[data-testid="lang-linux"]');
+  await page.waitForSelector('[data-testid="lang-linux"][data-status="ready"]', { timeout: 180_000 });
+  const linuxLabel = await page.textContent('[data-testid="lang-linux"]');
+  check(linuxLabel?.includes("Linux") && linuxLabel?.includes("Lx"), `linux sidebar label ${linuxLabel}`);
+  const linuxMono = await page.locator('[data-testid="lang-linux"] span').first().evaluate((el) => {
+    const color = getComputedStyle(el).color;
+    const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return false;
+    return Math.abs(Number(match[1]) - Number(match[2])) <= 2 && Math.abs(Number(match[2]) - Number(match[3])) <= 2;
+  });
+  check(linuxMono, "linux icon is monochrome");
+  await openLearn(page);
+  const linuxTitle = await page.textContent('[data-testid="docs-title"]');
+  check(linuxTitle?.includes("Linux 快速入门") && !(await page.$('[data-testid="docs-soon"]')), `linux book opens ${linuxTitle}`);
+  await assertToolbarClear(page);
+  const linuxDrawer = "/tmp/learn-linux-drawer.png";
+  await page.locator('[data-testid="docs-drawer"]').screenshot({ path: linuxDrawer });
+  check(monoRatio(linuxDrawer) >= 0.99, "linux drawer grayscale");
+  await page.click('[data-testid="chapter-link"][data-chapter="1"]');
+  await page.waitForSelector('[data-testid="docs-chapter"] [data-testid="doc-code-block"]');
+  const linuxBlock = page.locator('[data-testid="docs-chapter"] [data-testid="doc-code-block"][data-runnable="1"]').first();
+  const linuxExpect = await linuxBlock.getAttribute("data-expect");
+  await linuxBlock.locator('[data-testid="doc-run"]').click();
+  await waitForBlock(page, linuxBlock);
+  const linuxOut = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
+  check(linuxOut.includes(linuxExpect), `linux chapter run ${linuxExpect}`);
+  await page.waitForFunction(() => (globalThis.__simplecodeTerminal.transcript || "").includes("~%"), null, { timeout: 15_000 });
+  // The drawer covers the right side of the terminal. Click the visible left edge.
+  await page.locator('[data-testid="terminal"]').click({ position: { x: 24, y: 24 } });
+  await page.keyboard.type("echo typed-ok");
+  await page.keyboard.press("Enter");
+  await page.waitForFunction(() => (globalThis.__simplecodeTerminal.transcript || "").includes("typed-ok"), null, { timeout: 15_000 });
+  check(true, "linux serial accepts a typed command");
+  await page.click('[data-testid="docs-close"]');
+
   await page.click('[data-testid="lang-go"]');
   await page.waitForSelector('[data-testid="lang-go"][data-status="ready"]', { timeout: 180_000 });
   await showToc(page);

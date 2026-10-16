@@ -123,3 +123,13 @@ Not part of the default `./build.sh vendor`. `./build.sh vendor --rust` checks t
 - rustc and Cranelift (`rustc_codegen_cranelift`) — MIT OR Apache-2.0. The wasm binary is the pinned artifact above.
 - [browser_wasi_shim](https://github.com/bjorn3/browser_wasi_shim) — Apache-2.0 OR MIT. The copies under `src/rustc/shim/` come from the weblings `app/public/vendor/browser_wasi_shim` tree and are used only to host rustc, not the user's program.
 - [fzstd](https://github.com/101arrowz/fzstd) — MIT. Used by `scripts/vendor-rust.mjs` to decompress the archives. It is not loaded in the browser.
+
+## Linux guest (v86 + Buildroot image)
+
+The sidebar language Linux is not a WASI module. `./build.sh vendor` downloads pinned files and writes `wasm/linux-state.zst`, a zstd frame of the v86 snapshot. The browser stores that frame in the Cache API and hands it to v86, which decompresses it with the zstd already linked into `v86.wasm`. The `zstd` CLI used at vendor time is build-only (BSD-3-Clause or GPL-2.0, https://github.com/facebook/zstd); it is not shipped to the page.
+
+- [v86](https://github.com/copy/v86) 0.5.471 (`libv86.mjs`, `v86.wasm`) — BSD-2-Clause. Copyright (c) 2012, The v86 contributors. The full notice is `LICENSES/v86-BSD-2-Clause.txt`. The npm package also bundles Berkeley SoftFloat and other pieces listed in the upstream README; those stay inside the vendored `libv86` build.
+- SeaBIOS and the VGA BIOS (`seabios.bin`, `vgabios.bin`) come from the v86 `bios/` directory. SeaBIOS is LGPL-2.1 (`COPYING.LESSER` in the SeaBIOS sources). The files are pinned by sha256 because the npm tarball does not include them.
+- Guest kernel: Linux **6.8.12** i686, GPL-2.0. The bzImage is the unmodified v86 demo file `https://i.copy.sh/buildroot-bzimage68.bin` (profile “Buildroot Linux 6.8”), not a Buildroot 2026.08 tree built in this repository.
+- Guest userspace: Buildroot **2024.05.2** (`/etc/os-release`) and BusyBox **1.36.1** (GPL-2.0). BusyBox source for that version: https://busybox.net/downloads/busybox-1.36.1.tar.bz2 . Buildroot 2024.05.2: https://buildroot.org/downloads/buildroot-2024.05.2.tar.gz . The image is prebuilt; `scripts/builders/linux/rebuild.sh` documents a Linux or Docker fetch of Buildroot 2026.08 and is not what `./build.sh vendor` runs. A from-scratch image would not match the pinned digest.
+- 9p on this image is mounted at `/mnt` (tag `host9p`), not `/mnt/host`.

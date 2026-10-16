@@ -10,7 +10,7 @@ const BASE: Record<string, number> = {
 const ABSOLUTE: string[] = [];
 
 /** plan/LEARN.md §19. Short tutorial sections, Runoob-style. The 2500-character essay rule is retired. */
-const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "rust"];
+const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "linux", "rust"];
 
 function bodyOf(text: string) {
   const parts = text.split("---");

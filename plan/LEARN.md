@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：十种语言都已按 §19 改成菜鸟教程那种短节。2500 字的短文规则已退出验收。界面文案仍是「快速入门」。
+> 状态：十一本书都已按 §19 改成菜鸟教程那种短节。2500 字的短文规则已退出验收。界面文案仍是「快速入门」。Linux 见 §20。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -935,7 +935,7 @@ print(f"你好，{name}！")
 
 ## 15. 完成情况
 
-对照 §11。✅ 已交付，⚠️ 有偏差或未测完，❌ 未做。日期 2026-10-15。
+对照 §11。✅ 已交付，⚠️ 有偏差或未测完，❌ 未做。十本书的日期是 2026-10-15。Linux 在 2026-10-16 补进下表。
 
 | 里程碑 | 状态 | 说明 |
 |---|---|---|
@@ -948,7 +948,7 @@ print(f"你好，{name}！")
 
 ### 语言
 
-十种语言都按 §19 计：至少 20 章，每章至少 3 个 `###` 短节。不再使用 2500 字下限。
+已出版的书都按 §19 计：至少 20 章，每章至少 3 个 `###` 短节。不再使用 2500 字下限。
 
 | 语言 | 状态 | 章数 | 汉字（最少–最多，合计） |
 |---|---|---|---|
@@ -962,13 +962,19 @@ print(f"你好，{name}！")
 | PHP | ✅ | 34 | 按 §19：PHP 教程到 PHP MySQL。读不到标准输入，`$_GET`、文件、Cookie 和 mysqli 标为只读 |
 | Lua | ✅ | 22 | 按 §19：Lua 教程到 Lua 数据库访问。文件、`require` 和 `os.execute` 标为只读 |
 | Shell | ✅ | 21 | 按 §19：Shell 教程到 Shell 外部命令。只有 wasi-sh 内建，没有函数、数组、算术展开和外部命令 |
+| Linux | ✅ | 30 | 按 §19 与 §20：Linux 教程到 Linux echo。围栏语言 `linux`。客户机是 Buildroot 2024.05.2、内核 6.8.12、BusyBox 1.36.1。每次 Run 从快照恢复，示例各自准备 `/tmp` 里的文件 |
 
-十种语言合计 277 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Shell 21）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。Linux 快速入门只写在 §20，没有 `docs/linux/`，也不在 `SHIPPED_BOOKS`。
+十本书合计 277 章。加上 Linux 30 章，一共 **307** 章。`SHIPPED_BOOKS` 含这十一本。缺目录时构建才会失败。`scripts/docs/render.ts` 报 `docs: 307 chapters, 887 runnable blocks`（Linux 77 个可运行块）。Shell 仍是 wasi-sh。
+
+
 
 ### 验收
 
-- `./build.sh build`：vue-tsc 通过，`docs: 277 chapters, 810 runnable blocks`。
-- `./build.sh test`：单元测试合计 289 项通过（含每章短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell）；`docs-smoke` 809 个可运行块通过（另有 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。
+2026-10-15 的十本书是 `docs: 277 chapters, 810 runnable blocks`，单元测试 289 项，docs-smoke 809 块。2026-10-16 加上 Linux 之后：
+
+- `./build.sh build`：vue-tsc 通过，`docs: 307 chapters, 887 runnable blocks`。
+- `./build.sh test`：单元测试合计 320 项通过（含每章短节结构、60 字不重复、manifest）；`check-mono`；各语言 hello-world（含 Shell 与 Linux 的退出码 0、退出码 3、快照隔离）；`docs-smoke` 886 个块通过（887 个可运行块里 1 个 Python `while True` 为 `smoke=skip`）；`tests/learn.spec.mjs` 通过。Linux 抽屉为灰阶，工具栏没被挡住，串口接受键盘输入的 `echo typed-ok`。
+- 浏览器计时在 `plan/LANGUAGES.md` §10.0：压缩后选中到 ready 0.8 秒，Run 0.3 秒。Node 冷启动 2.19 秒，zstd 帧恢复加运行 0.24 秒。
 - 截图：`learn-toolbar.png`（工具栏按钮为「Python 快速入门」）、`learn-go-chapter.png`（并发一章）、`learn-js-chapter.png`、`learn-ruby-chapter.png`、`learn-shell-chapter.png`、`learn-shell-run.png`。另有抽屉浅色/深色整页，灰阶 100%。Go 的 channel 示例渲染行数与源码一致、相邻行距等于行高。文档 Run 与工具栏 Run 同为 28px、文案 `Run`。Shell 第一章运行输出包含期望的 `$item`。
 
 ### 与计划的偏差
@@ -985,6 +991,9 @@ print(f"你好，{name}！")
 - 代码块行距：Shiki 插在 `.line` 之间的换行由 `collapseShikiLines` 去掉，`.doc-code pre` 使用 `white-space: normal`。空行仍保留空的 `.line`。
 - 文档 Run 与工具栏 Run 都是 `RunButton`（`size="xs"`，空闲文案 `Run`）。下载百分比和退出码在按钮旁边。
 - 围栏上的 `stdin=""` 是空输入而不是「没有声明输入」：运行时送出 EOF，`getline` 和 `io.read` 才能把「没有字节」和「空行」分开。Python 的 `input` 在这一份运行时里要等换行，问候和最后一章的样例写成 `Ada\n`、`林夏\n`。
+- Linux 的可运行块每次从同一份快照开始，上一个块写进 `/tmp` 的文件不会留下。`expect` 按 BusyBox 1.36.1 写。`ls` 用 `--color=never`，避免可执行文件名被颜色码包住。`chmod u+x` 在 644 的文件上得到 `-rwxr--r--`。`apt`、`yum`、`ssh`、`vim`、`passwd`、`fdisk`、`reboot`、`useradd` 标 `norun`。退出码 127 的命令不放进可运行块。
+
+
 
 ---
 
@@ -1379,17 +1388,17 @@ Go 已改按 §19，不再用本节的 2500 字和「小结 / 练习」。下面
 
 ### 19.4 测试
 
-`tests/docs-length.test.ts` 对十种语言都用短节结构：至少 20 章，每章至少 3 个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块。2500 字、小结和练习不再检查。十种语言一起做 60 字不重复，避免把同一段说明贴进两章。
+`tests/docs-length.test.ts` 对已出版的书用短节结构：至少 20 章，每章至少 3 个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块。2500 字、小结和练习不再检查。这些书一起做 60 字不重复，避免把同一段说明贴进两章。Linux 从 2026-10-16 起算在里面。
 
 ---
 
-## 20. Linux 快速入门（计划，未成书）
+## 20. Linux 快速入门（已成书，2026-10-16）
 
-对照菜鸟教程 Linux 目录：<https://www.runoob.com/linux/linux-tutorial.html>（手机版 <https://m.runoob.com/linux/>）。2026-10-16 从教程页 HTML 抽出左侧标题。正文将来是新的中文，不搬它的句子和示例字符串。`sources.yaml` 不把它标成可改写来源。
+对照菜鸟教程 Linux 目录：<https://www.runoob.com/linux/linux-tutorial.html>（手机版 <https://m.runoob.com/linux/>）。2026-10-16 从教程页 HTML 抽出左侧标题。正文是新的中文，不搬它的句子和示例字符串。`sources.yaml` 的 `v86-buildroot` 标 `adapt: false`。
 
-这一本讲的是侧栏里的 **Linux**（v86 + Buildroot，见 `plan/LANGUAGES.md` §10），不是已经出版的 Shell。Shell 仍是 wasi-sh，围栏 `sh` / `bash` 继续跑 Shell。Linux 的围栏语言用 `linux`，成书时再加进 `src/docs/runtime.ts`。在那之前不要建 `docs/linux/`，也不要把它放进 `SHIPPED_BOOKS`，否则构建会要求一本还不存在的书。
+书在 `docs/linux/`，30 章，已进 `SHIPPED_BOOKS`。围栏语言是 `linux`，映射到侧栏 Linux。Shell 仍是 wasi-sh，围栏 `sh` / `bash` 继续跑 Shell。
 
-运行时是 32 位 Linux，用户空间是 BusyBox 1.38.0，串口即现有终端。没有包管理器，没有网络，没有完整 vim。可运行块必须能在这台镜像上结束，并带 `expect`。做不到的命令标 `norun`，旁边写原因。章数按 §19：至少 20 章，每章至少三个 `###`，一节只讲一件事。
+运行时是 i686 Linux 6.8.12，用户空间是 Buildroot 2024.05.2 上的 BusyBox 1.36.1，串口即现有终端。没有包管理器，没有网络，没有完整 vim。可运行块必须能在这台镜像上结束，并带 `expect`。做不到的命令标 `norun`，旁边写原因。章数按 §19：30 章，每章至少三个 `###`，一节只讲一件事。每一次 Run 都从快照恢复，所以上一个围栏留下的 `/tmp` 文件不会出现在下一个围栏里。
 
 Shell 教程、Shell 变量、Shell echo、Shell test、Shell 流程控制、Shell 函数留在 Shell 那一本。这里不重复。
 
@@ -1475,7 +1484,7 @@ Shell 教程、Shell 变量、Shell echo、Shell test、Shell 流程控制、She
 - ### 三位一组对应拥有者、组、其他人
 - ### `chmod` 改这九位
 
-可运行：在 `/tmp` 建一个文件，`chmod 644`，再 `ls -l`。`chown` 标只读：教学镜像只有 root，改属主没有可观察的第二个用户。9p 上的权限若与普通磁盘不一致，这一节的例子放在 `/tmp`（initramfs），不放在 `/mnt/host`。
+可运行：在 `/tmp` 建一个文件，`chmod 644`，再 `ls -l`。`chown` 标只读：教学镜像只有 root，改属主没有可观察的第二个用户。9p 上的权限和普通磁盘不一致，这一节的例子放在 `/tmp`（initramfs）。
 
 **10. Linux 文件与目录管理**
 
@@ -1499,7 +1508,7 @@ Shell 教程、Shell 变量、Shell echo、Shell test、Shell 流程控制、She
 - ### initramfs 和 9p 是两种文件系统
 - ### `fdisk` 会改分区表
 
-可运行：`df` 与 `mount`，期望里能看到 `/mnt/host` 或 9p。`fdisk`、`mkfs` 标只读。
+可运行：`df` 与 `mount`，期望里能看到 `/mnt` 上的 `host9p`。`fdisk`、`mkfs` 标只读。
 
 **13. Linux vi/vim**
 
@@ -1643,7 +1652,7 @@ Shell 教程、Shell 变量、Shell echo、Shell test、Shell 流程控制、She
 |---|---|
 | `ls`、`cd` 与后续命令写在同一次运行、`pwd`、`mkdir`、`cp`、`mv`、`rm`、`cat`、`chmod`、`grep`、`echo`、`ps`、`df`、`mount`、`id`、`whoami`、管道、重定向、`/proc/cmdline`、`/etc/os-release` | 安装、云服务器、WSL、忘记密码、`ssh`、`useradd`、`fdisk`、`mkfs`、`vim`、`yum`、`apt`、`reboot`、`passwd`、任何需要网络的命令 |
 
-`/mnt/host` 是文档 Run 放入 `main.sh` 的 9p 目录。教学例子优先写 `/tmp`，避免和这次运行的脚本文件搅在一起。需要演示「主机传来的文件」时，再 `ls /mnt/host`。
+`/mnt` 是文档 Run 放入 `main.sh` 的 9p 目录（`create_file("main.sh")` → `/mnt/main.sh`）。教学例子优先写 `/tmp`，避免和这次运行的脚本文件搅在一起。需要演示「主机传来的文件」时，再 `ls /mnt`。
 
 BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不写整张表格。中文文件名可以出现在 `echo` 和 `cat` 里；`grep` 的图案先用镜像上实际编码试过再写进期望。
 
@@ -1652,14 +1661,14 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 文档块的 info 以 `linux` 开头，并带 `run` 和 `expect`。`sh` 围栏不会进这台虚拟机。
 
 1. 按钮仍是 `RunButton`（`size="xs"`，文案 `Run`）。抽屉不盖住工具栏。
-2. 应用切到侧栏 Linux，必要时按清单下载 `libv86.mjs`、`v86.wasm`、BIOS、bzImage 和 `linux-state.zst`（Cache API，同源）。
-3. 用快照新建一台客户机，把块的正文写成 `/mnt/host/main.sh`。`stdin="…"` 写成 `/mnt/host/stdin.bin`。
-4. 串口执行 `sh /mnt/host/main.sh < /mnt/host/stdin.bin`，再打印 `__SC_EXIT:` 和退出码。标准输出进现有 xterm。哨兵行不留在读者看到的输出里，退出码显示在 Run 旁边，和别的语言一样。
-5. 跑完销毁这台实例。下一次文档 Run 看不到这次的 `/tmp` 文件。
-6. 人在底部终端里打字时，按键经 `serial0_send` 进同一台交互客户机（不是文档 Run 那台）。`ls`、`cd`、管道在那里保持，直到 Stop 或换语言。
+2. 应用切到侧栏 Linux，必要时按清单下载 `libv86.mjs`、`v86.wasm`、BIOS、bzImage 和 `linux-state.zst`（Cache API 存压缩字节，同源，合计 30,888,868 字节）。下载之后侧栏显示「启动中」。v86 在恢复快照时自己解开 zstd。
+3. 用快照新建一台客户机，把块的正文写成 `/mnt/main.sh`。`stdin="…"` 写成 `/mnt/stdin.txt`。
+4. 串口执行 `stty -echo; sh /mnt/main.sh < /mnt/stdin.txt; echo __SC_EXIT:$?; stty echo`。标准输出进现有 xterm。含哨兵的行不留在读者看到的输出里。退出码只认最后一次 `__SC_EXIT:` 后的数字，显示在 Run 旁边。
+5. 跑完这台客户机留着，后面还要 `stty echo`，然后可以继续打字。下一次 Run 会再从同一份快照新建，看不到这次的 `/tmp` 文件。Stop 或换语言才销毁。
+6. 人在底部终端里打字时，按键经 `serial_send_bytes` 进这台客户机。`ls`、`cd`、管道保持到下一次 Run、Stop 或换语言。UTF-8 按字节送，回车映射成换行。
 
 `smoke=skip` 仍算结构测试里的可运行块，docs-smoke 不执行它。Linux 成书前不要给会死循环的 `yes` 或 `tail -f` 加 `run`。无限输出的例子用 `norun`。
 
-成书之后 `tests/docs-length.test.ts` 的 `TUTORIAL` 才加上 `linux`。那时候的验收沿用 §19：至少 20 章，每章至少三个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块，并和另外十本书一起做 60 字不重复。
+`tests/docs-length.test.ts` 的 `TUTORIAL` 已含 `linux`。验收沿用 §19：30 章，每章至少三个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块，并和另外十本书一起做 60 字不重复。`tests/docs-smoke.mjs` 会跑这些 `linux` 块：第一块启动客户机，后面的块复用快照。
 
 

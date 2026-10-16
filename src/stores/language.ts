@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import { formatMB, languageAssetIds, languageSize, loadManifest, type LanguageSpec, type Manifest } from "@/core/manifest";
+import { LinuxKilled, bootLinux, linuxMachine } from "@/core/linux";
 import { clearRustCache, ensureRustToolchain, rustCacheBytes, rustDownloadBytes, rustIsCached, rustReady } from "@/rustc/toolchain";
 import { cacheUsage, clearCache as clearWasmCache, ensureAsset, getLoaded, isCached, pruneCache } from "@/core/wasmLoader";
 import { terminal } from "@/core/terminal";
@@ -12,6 +13,8 @@ export interface LangState {
   loaded: number;
   total: number;
   error?: string;
+  /** "boot" while the Linux guest is restoring its snapshot. */
+  detail?: "download" | "boot";
 }
 
 const SELECTED_KEY = "simplecode:language";
@@ -76,9 +79,15 @@ export const useLanguageStore = defineStore("language", () => {
   }
 
   async function select(id: string, origin: "user" | "doc" = "user") {
+    const prev = selectedId.value;
     selectionOrigin.value = origin;
     selectedId.value = id;
     localStorage.setItem(SELECTED_KEY, id);
+    if (prev === "linux" && id !== "linux") {
+      linuxMachine.shutdown();
+      terminal.setPassthrough(undefined);
+      if (states.linux && states.linux.status === "ready") states.linux.status = "cached";
+    }
     return ensure(id);
   }
 
@@ -134,6 +143,7 @@ export const useLanguageStore = defineStore("language", () => {
     const fromNetwork = st.status !== "cached";
     const progress: Record<string, number> = {};
     st.status = "downloading";
+    st.detail = "download";
     st.error = undefined;
     st.total = sizeOf(lang);
     st.loaded = 0;
@@ -154,17 +164,33 @@ export const useLanguageStore = defineStore("language", () => {
           ),
         ),
       );
+      if (lang.runtime === "v86") {
+        st.detail = "boot";
+        terminal.system("正在启动 Linux…");
+        await bootLinux();
+        terminal.system("Linux 已启动，可以直接输入命令", "32");
+      }
+      st.detail = undefined;
       st.status = "ready";
       st.loaded = st.total;
-      if (fromNetwork) terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
+      if (fromNetwork && lang.runtime !== "v86") terminal.system(`${lang.label} 已就绪（已缓存），按 Ctrl/⌘+Enter 运行`, "32");
       await refreshStatuses();
       void refreshUsage();
       return true;
     } catch (e) {
       const aborted = (e as Error).name === "AbortError";
+      const stopped = e instanceof LinuxKilled;
+      const booting = st.detail === "boot";
+      st.detail = undefined;
+      if (stopped) {
+        if (st.status === "downloading") st.status = "cached";
+        st.error = undefined;
+        return false;
+      }
       st.status = aborted ? "idle" : "error";
       st.error = aborted ? undefined : (e as Error).message;
-      terminal.system(aborted ? `已取消下载 ${lang.label}` : `下载 ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
+      const action = booting ? "启动" : "下载";
+      terminal.system(aborted ? `已取消${action} ${lang.label}` : `${action} ${lang.label} 失败：${(e as Error).message}`, aborted ? "2" : "31");
       return false;
     } finally {
       controllers.delete(id);
@@ -176,6 +202,8 @@ export const useLanguageStore = defineStore("language", () => {
   }
 
   async function clearCache() {
+    linuxMachine.shutdown();
+    terminal.setPassthrough(undefined);
     await clearWasmCache();
     await clearRustCache();
     for (const s of Object.values(states)) if (s.status !== "downloading") s.status = "idle";
