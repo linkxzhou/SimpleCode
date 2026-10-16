@@ -56,7 +56,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 - 折叠侧栏只有图标（约 56px）。缓存用量、清除、主题、展开都在**底部**。展开时一行一种语言。
 - 展开时，SimpleCode 标题右侧是 `?` 和「中 / EN」胶囊。`?` 打开关于弹层。折叠后这两项在页脚，56px 的标题行放不下胶囊。
 - 界面文案走 `src/i18n`（`zh` / `en`，默认 `zh`，`localStorage` 键 `simplecode:locale`）。中文书在 `docs/<book>/`，英文书在 `docs/en/<book>/`（同一文件名）。界面是 EN 时抽屉打开英文；缺的那一本或那一章仍显示 “English Quick Start is under construction”，点 “View the Chinese version” 看中文。
-- 侧栏 wasm 进度条有 `my-[4px]`，上下比贴边时各多 4px。
+- 侧栏 wasm 进度条有 `my-[8px]`，上下边距各 8px。
 - Run 只用 `src/components/RunButton.vue`：`Button` 的 `size="xs"`（高 28px），图标 Play，文案 `Run`。工具栏和文档代码块共用它。
 - 文档抽屉的 `top` 是 `var(--editor-toolbar-h)`（`src/style.css` 里 2.5rem）。抽屉不得盖住 Run 和语言切换。
 - 等宽字体是 JetBrains Mono，中文回退 `SimpleCode CJK`（`size-adjust: 120%`）。xterm 里一个汉字占两格；系统黑体的 1em 字面宽会在格子之间留出空隙，所以才放大到 120%。字体用 `local()`，不从网络拉，否则 COEP 会挡住。
@@ -146,7 +146,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **折叠侧栏放不下标题行控件。** `?` 和「中 / EN」在展开时位于 SimpleCode 右侧。宽度落到 5rem 以下时，标题行控件带 `sidebar-expanded-only`，避免被裁切；折叠后的同一对控件在页脚。页脚的窄栏规则会把 `button` 收成 2rem 方块，语言胶囊要单独放开宽度。
 
-**下载进度条不要贴回去。** `LanguageItem` 里 `data-testid="wasm-progress"` 使用 `my-[4px]`。这是在原来的位置上增加的上下边距。
+**下载进度条不要贴回去。** `LanguageItem` 里 `data-testid="wasm-progress"` 使用 `my-[8px]`，上下边距各 8px。
 
 **换语言时终端要一起换。** 侧栏从一门语言点到另一门（包括 Linux 和其他语言互切）时，先停掉 WASI、v86 和 rustc，卸掉 xterm 的串口透传和 stdin，清屏，再绑到新运行时。下载或运行途中换走，旧的完成回调不能再写屏幕，也不能把 v86 串口重新接上。界面「中 / EN」切换时，下载进度、错误和提示按新语言重画；程序打印的内容留在原处。系统句用消息键存在 `src/core/terminal.ts`，不要先 `t()` 再写进 xterm。
 

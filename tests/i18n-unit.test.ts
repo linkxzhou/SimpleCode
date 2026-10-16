@@ -73,8 +73,8 @@ describe("i18n catalog", () => {
 });
 
 describe("wasm progress spacing", () => {
-  it("adds 4px of vertical margin around the download bar", () => {
+  it("adds 8px of vertical margin around the download bar", () => {
     const src = readFileSync(new URL("../src/components/LanguageItem.vue", import.meta.url), "utf8");
-    assert.match(src, /data-testid="wasm-progress"[\s\S]{0,240}my-\[4px\]/);
+    assert.match(src, /data-testid="wasm-progress"[\s\S]{0,240}my-\[8px\]/);
   });
 });

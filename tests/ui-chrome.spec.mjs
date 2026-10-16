@@ -84,9 +84,10 @@ try {
   const toc = await page.getByTestId("docs-drawer").innerText();
   check(toc.includes("Python Environment Setup"), "English chapter titles in the table of contents");
   await page.getByTestId("chapter-link").first().click();
-  await page.getByTestId("docs-chapter").waitFor();
-  const chapter = await page.getByTestId("docs-chapter").innerText();
-  check(chapter.includes("Goals") && chapter.includes("print"), "English chapter body");
+  const chapterRoot = page.getByTestId("docs-chapter");
+  await chapterRoot.locator("[data-testid=doc-code-block]").first().waitFor();
+  const chapter = await chapterRoot.innerText();
+  check(chapter.includes("Python Tutorial") && chapter.includes("print"), "English chapter body");
   await page.getByTestId("docs-close").click();
 
   await page.getByTestId("sidebar-toggle").click();
@@ -123,7 +124,7 @@ try {
       const style = getComputedStyle(el);
       return { top: style.marginTop, bottom: style.marginBottom };
     });
-    check(margins.top === "4px" && margins.bottom === "4px", `progress bar vertical margin ${margins.top} / ${margins.bottom}`);
+    check(margins.top === "8px" && margins.bottom === "8px", `progress bar vertical margin ${margins.top} / ${margins.bottom}`);
   } finally {
     release();
     await progressPage.close().catch(() => {});
