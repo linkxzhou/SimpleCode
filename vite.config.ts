@@ -5,6 +5,8 @@ import { refreshManifest } from "./scripts/write-manifest.mjs";
 import { createReadStream, cpSync, existsSync, rmSync, statSync } from "node:fs";
 import { join, normalize, resolve, sep } from "node:path";
 
+// Dev and preview send the headers themselves, so the page is already isolated
+// and does not register coi-serviceworker.js. Static hosts rely on that worker.
 const isolationHeaders = {
   "Cross-Origin-Opener-Policy": "same-origin",
   "Cross-Origin-Embedder-Policy": "require-corp",

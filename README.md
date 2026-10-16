@@ -17,7 +17,14 @@ git clone --depth 1 https://github.com/taybenlor/runno thirdparty/runno   # 提�
 ./build.sh test      # 无头冒烟测试（含 Linux；JS 与 TS 各一例；Rust 需 wasm/rust 或可访问的演示地址）
 ```
 
-部署时服务器必须返回 `Cross-Origin-Opener-Policy: same-origin` 与 `Cross-Origin-Embedder-Policy: require-corp`，并以 `application/wasm` 提供 `.wasm`。设计文档见 [plan/DESIGN.md](plan/DESIGN.md)，语言方案见 [plan/LANGUAGES.md](plan/LANGUAGES.md)。
+`./build.sh dev` 和 `./build.sh preview` 由 Vite 返回 `Cross-Origin-Opener-Policy: same-origin` 与 `Cross-Origin-Embedder-Policy: require-corp`。没有这两项头的静态站点也可以打开 `dist/`：页面在启动前注册同源的 `coi-serviceworker.js`，需要时刷新一次，自己补上同样的头。`file://` 和隐私模式没有 Service Worker，仍会看到隔离说明。
+
+```bash
+./build.sh build
+python3 -m http.server 4173 -d dist   # http://localhost:4173
+```
+
+部署在子目录时，把 Vite 的 `base` 设成该路径。Service Worker 的地址和 `wasm/` 都相对 `base`。`.wasm` 仍以 `application/wasm` 提供。设计文档见 [plan/DESIGN.md](plan/DESIGN.md)，语言方案见 [plan/LANGUAGES.md](plan/LANGUAGES.md)。
 
 侧栏里的 **JS/TS** 仍使用同一份 wasmedge-quickjs（只执行 JavaScript）。工具栏可在 JS 与 TS 之间切换：Monaco 分别用 `javascript` / `typescript` 高亮，两份示例和草稿分开保存，选择记在本机。运行 TypeScript 时，浏览器才懒加载 [Sucrase](https://github.com/alangpierce/sucrase)，把类型标注和 `interface` 剥掉后再交给 QuickJS。这不是完整类型检查。转译失败时错误写在终端，不会启动 wasm。
 
