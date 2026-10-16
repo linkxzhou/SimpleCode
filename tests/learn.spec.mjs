@@ -341,7 +341,8 @@ try {
   const linuxOut = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
   check(linuxOut.includes(linuxExpect), `linux chapter run ${linuxExpect}`);
   await page.waitForFunction(() => (globalThis.__simplecodeTerminal.transcript || "").includes("~%"), null, { timeout: 15_000 });
-  await page.click('[data-testid="terminal"]');
+  // The drawer covers the right side of the terminal. Click the visible left edge.
+  await page.locator('[data-testid="terminal"]').click({ position: { x: 24, y: 24 } });
   await page.keyboard.type("echo typed-ok");
   await page.keyboard.press("Enter");
   await page.waitForFunction(() => (globalThis.__simplecodeTerminal.transcript || "").includes("typed-ok"), null, { timeout: 15_000 });
