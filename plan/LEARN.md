@@ -1,6 +1,6 @@
 # SimpleCode「{Language} 快速入门」教学系统设计（LEARN）
 
-> 状态：十一本书都已按 §19 改成菜鸟教程那种短节。2500 字的短文规则已退出验收。界面文案仍是「快速入门」。Linux 见 §20。
+> 状态：十一本书都已按 §19 改成菜鸟教程那种短节。2500 字的短文规则已退出验收。界面文案仍是「快速入门」。Linux 见 §20。Java 见 §23。
 > 原始调研与许可证核对：[`plan/learn-research.md`](learn-research.md)。
 
 
@@ -1713,6 +1713,73 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 
 编辑器每种语言的默认示例同样只用 ASCII。注释随界面「中 / EN」切换：缓冲区仍是某一种未改过的默认示例时，切换语言只换注释；读者改过的缓冲区不动。
 
-`tests/docs-ascii.test.ts` 去掉注释后再查非 ASCII。注释语法按语言区分：`#`、`//`、`/* */`、`--`、`--[[ ]]`、Ruby 的 `=begin`/`=end`。Shell 和 PHP 里的 `$#` 不是注释。这些语言里的分号是语句分隔，不当成注释。英文书的注释本身也必须是 ASCII。`tests/docs-length.test.ts` 对比中英围栏时先去掉注释，程序、`expect` 和 `stdin` 仍要一致。
+`tests/docs-ascii.test.ts` 去掉注释后再查非 ASCII。注释语法按语言区分：`#`、`//`、`/* */`、`--`、`--[[ ]]`、Ruby 的 `=begin`/`=end`。Shell 和 PHP 里的 `$#` 不是注释。这些语言里的分号是语句分隔，不当成注释。英文书的注释本身也必须是 ASCII。`tests/docs-length.test.ts` 对比中英围栏时先去掉注释，程序、`expect` 和 `stdin` 仍要一致。Java 的注释也是 `//` 和 `/* */`，归在同一组。
+
+---
+
+## 23. Java 快速入门（TeaVM，2026-10-16）
+
+Java 是第十三种语言。书 id 是 `java`，侧栏 id 也是 `java`，编辑器文件是 `Main.java`。运行时按 `plan/LANGUAGES.md` §12：浏览器里的 TeaVM 0.16.0 javac，编译和运行都在单独的 Worker，不交给 `WASIWorkerHost`。正文按 §19 和 §22：正式章名、一节一件事、句子原创、程序只用 ASCII。中英各 28 章（概览加 27 章）。英文在 `docs/en/java/`，文件名与中文相同。
+
+界面不要写成「Java 21」或「OpenJDK」。`java.version` 会打印 `21`，类库仍是 TeaVM（`os.name` 是 `TeaVM`）。书里用得到的说法是：这里的编译器是 TeaVM，类库是它自己的一份。
+
+### 23.1 章节目录
+
+章名对齐菜鸟教程 Java 和 Oracle *The Java Tutorials* 的题目。每章至少三个 `###`，至少两个可运行块。辅助类写在同一个文件里，不加 `public`。唯一的 `public` 类叫 `Main`。
+
+| 文件 | 中文章名 | 英文章名 |
+|---|---|---|
+| `index.md` | Java 教程 | Java Tutorial |
+| `01-intro.md` | Java 简介 | Java Introduction |
+| `02-setup.md` | Java 环境设置 | Java Environment Setup |
+| `03-syntax.md` | Java 基础语法 | Java Basic Syntax |
+| `04-comments.md` | Java 注释 | Java Comments |
+| `05-types.md` | Java 基本数据类型 | Java Basic Datatypes |
+| `06-vars.md` | Java 变量类型 | Java Variable Types |
+| `07-operators.md` | Java 运算符 | Java Operators |
+| `08-string.md` | Java 字符串 | Java Strings |
+| `09-array.md` | Java 数组 | Java Arrays |
+| `10-if.md` | Java 条件语句 | Java Decision Making |
+| `11-switch.md` | Java switch 语句 | Java switch Statement |
+| `12-loop.md` | Java 循环结构 | Java Loop Control |
+| `13-method.md` | Java 方法 | Java Methods |
+| `14-class.md` | Java 对象和类 | Java Objects and Classes |
+| `15-inherit.md` | Java 继承 | Java Inheritance |
+| `16-interface.md` | Java 接口 | Java Interfaces |
+| `17-exception.md` | Java 异常处理 | Java Exceptions |
+| `18-scanner.md` | Java Scanner | Java Scanner |
+| `19-reader.md` | Java 字符流 | Java Character Streams |
+| `20-arraylist.md` | Java ArrayList | Java ArrayList |
+| `21-hashmap.md` | Java HashMap | Java HashMap |
+| `22-builder.md` | Java StringBuilder | Java StringBuilder |
+| `23-math.md` | Java Math | Java Math |
+| `24-sleep.md` | Java 线程休眠 | Java Thread Sleep |
+| `25-enum.md` | Java 枚举 | Java Enums |
+| `26-static.md` | Java 静态 | Java static |
+| `27-limits.md` | Java 在这个练习场的限制 | Limits of this Java playground |
+
+`18-scanner.md` 和 `19-reader.md` 的可运行块带 `stdin`。`24-sleep.md` 使用 `Thread.sleep`，宿主要等 TeaVM 的计时器走完。`27-limits.md` 里文件和反射标 `norun`，旁边写原因；同一章仍有两个能跑的块，说明打印和集合还在。
+
+### 23.2 可运行块里避开的事
+
+这些是 TeaVM 类库和这份桥的边界，不是「Java 语言没有」。做不到的例子放 `norun`。
+
+- 不写 `package`。平台类路径上已经有 `java.base`，再声明 `java.*` 会让这份 javac 失败。
+- 不写第二个 `public` 类，也不要两个 `main`。
+- 不用 `java.util.regex`、`java.nio`、`java.io.File` 当真实文件、反射、JNI。`Class.forName` 会空指针。`new File("a.txt").exists()` 只是返回 `false`。
+- `System.out.printf` 的 `%n` 会抛未知转换。换行用 `println`。
+- `String.format` 能跑，但会把很大一块格式化类库编进 wasm。书里用 `+` 拼接。
+- `Scanner` 不是 JDK 那份。练习场在内存里往 SDK 归档追加一个很小的 `java.util.Scanner`，实现类是 `org.teavm.classlib.java.util.TScanner`。方法只有 `next`、`nextLine`、`nextInt`、`hasNext`、`hasNextLine`、`hasNextInt`、`close`。没有正则，没有 `useDelimiter`。
+- `InputStreamReader` 换成不碰 nio 的版本：一个字节当成一个 0–255 的字符。书里的输入保持 ASCII。`BufferedReader.readLine` 可以。
+- `System.in` 不能 `System.setIn`。库存的 `TConsoleInputStream.read` 会抛 `EOFException`。练习场用带 `@Import(module="simplecode", name="read")` 的类文件盖掉它。读在 Worker 里用 `Atomics.wait` 堵住，xterm 的一行写进 `SharedArrayBuffer`。预填的 `stdin` 在 `main` 之前放进缓冲；`EOF` 返回 `-1`，这样 `Scanner` 和 `readLine` 会结束，而不是抛 `EOFException`。
+- `Thread.sleep` 把 `main` 交回 JS，续体走 `setTimeout`。Worker 要留着，直到挂起的计时器归零。Stop 和换语言直接关掉 Worker。
+
+### 23.3 下载和验收
+
+四份文件合计 6,896,057 字节，sha256 见 §12.2。不进默认 `./build.sh vendor`，也不进 `wasm/manifest.json`。`./build.sh vendor --java` 校验后写到 `wasm/java/`。页面只从同源取这些文件（`teavm.org` 没有 CORS）。Cache API 名是 `simplecode-teavm-v1`。进度走语言按钮底边已有的 2px 条。
+
+`tests/docs-length.test.ts` 的 `TUTORIAL` 加上 `java`，和另外十二本书一起做 60 个汉字、英文 16 个词的不重复检查。`tests/docs-smoke.mjs` 默认不跑 Java（每块都要编一次 wasm）。`SIMPLECODE_JAVA_DOCS=1` 才执行书里的块，中英都跑。`tests/smoke.mjs` 始终覆盖 hello、标准输入、编译错误和 `Thread.sleep`。
+
+sources 登记 `runoob-java` 和 `oracle-java-tutorial`，`adapt: false`。只借章名，不搬句子。
 
 

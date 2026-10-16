@@ -1071,5 +1071,17 @@ jacobin：`GOOS=wasip1 GOARCH=wasm go build -o jacobin.wasm ./src`。产物 **17
 
 所以混合路径今天不成立：唯一能在浏览器里编译的 javac 仍然是 TeaVM 那份，而它已经直接产出可运行的 Wasm GC 模块。再接一个 WASI 解释器，要么缺 `java.lang`（rjvm），要么在 wasip1 上启动就 panic 并且还要几十 MB 的 JDK（jacobin）。两条都没有 stdout。不把它们放进默认下载，也不改宿主。TeaVM 仍是推荐。
 
+### 12.12 侧栏落地
+
+上面 §12.1 到 §12.11 仍是调研记录，不改结论。侧栏语言 id 是 `java`，短标签 `Jv`，版本文案写 TeaVM，不写 Java 21。
+
+- 四份 pin 与 §12.2 相同，`./build.sh vendor --java` 写到 `wasm/java/`，不进 `wasm/manifest.json`。浏览器只读同源，Cache API 名 `simplecode-teavm-v1`。
+- 编译和运行都在 `src/teavm/` 的 Worker。`compiler.wasm` 不注册成 WASI 命令。
+- `System.in` 用预编译的 `TConsoleInputStream`（`@Import` 模块 `simplecode`，名字 `read`）盖掉类库。读在 Worker 里 `Atomics.wait`。xterm 的一行和文档 `stdin` 写进同一块 `SharedArrayBuffer`。`EOF` 是 `-1`。
+- `java.util.Scanner` 不在 SDK 里。桩 class 在内存里追加到 `compile-classlib` 的 gzip 记录末尾，不改 pin 的摘要。实现是 `TScanner`。`TInputStreamReader` 换成不引用 nio 的版本，这样 `BufferedReader.readLine` 能过 Wasm GC。
+- `Thread.sleep` 之后 Worker 留着，直到 `teavmAsync` 计时器归零。Stop 和换语言 `terminate` 这个 Worker，并清掉终端。
+- 没有 Wasm GC 就报错停下，不换 CheerpJ。
+- 书在 `plan/LEARN.md` §23。`docs-smoke` 用 `SIMPLECODE_JAVA_DOCS=1`。`tests/smoke.mjs` 覆盖 hello、stdin、编译错误和 sleep。
+
 
 
