@@ -31,13 +31,13 @@ SELECT COUNT(*) FROM (SELECT DISTINCT name FROM item);
 
 排序后第一行是确定的。
 
-```sql run expect="water" title="字典序第一个"
+```sql run expect="tea" title="字典序第一个"
 CREATE TABLE item (name TEXT);
 INSERT INTO item VALUES ('tea'), ('water'), ('tea');
 SELECT name FROM (SELECT DISTINCT name FROM item) ORDER BY name LIMIT 1;
 ```
 
-输出里能看到 `water`。
+输出里能看到 `tea`。
 
 ### 多列
 

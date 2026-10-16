@@ -20,7 +20,7 @@ An assertion affects only the checks that happen before transpilation. At runtim
 When the value is already a string, `as string` lets the annotation pass.
 
 ```ts run expect="1" title="One character"
-const value: unknown = "tea";
+const value: unknown = "t";
 console.log((value as string).length);
 ```
 
@@ -47,7 +47,7 @@ function len(value: unknown): number {
   if (typeof value === "string") return value.length;
   return 0;
 }
-console.log(len("tea"));
+console.log(len("t"));
 ```
 
 The length of the string logs `1`.

@@ -20,7 +20,7 @@ updated: "2026-10-15"
 值已经是字符串时，`as string` 让类型标注通过。
 
 ```ts run expect="1" title="一个字"
-const value: unknown = "tea";
+const value: unknown = "t";
 console.log((value as string).length);
 ```
 
@@ -47,7 +47,7 @@ function len(value: unknown): number {
   if (typeof value === "string") return value.length;
   return 0;
 }
-console.log(len("tea"));
+console.log(len("t"));
 ```
 
 输出里能看到 `1`。

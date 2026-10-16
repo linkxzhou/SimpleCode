@@ -31,13 +31,13 @@ Tea and water are the two remaining names, so the outer count is `2`.
 
 Sorting the distinct names makes the first row fixed.
 
-```sql run expect="water" title="First in binary order"
+```sql run expect="tea" title="First in binary order"
 CREATE TABLE item (name TEXT);
 INSERT INTO item VALUES ('tea'), ('water'), ('tea');
 SELECT name FROM (SELECT DISTINCT name FROM item) ORDER BY name LIMIT 1;
 ```
 
-Binary order places `water` ahead of tea, and `LIMIT 1` returns that name.
+Binary order places `tea` ahead of water, and `LIMIT 1` returns that name.
 
 ### Deduplicate across two columns
 
