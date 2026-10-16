@@ -39,6 +39,7 @@
 - 其余（Java/C#/VB/R/Fortran/Pascal/Octave）都是 Emscripten / .NET / JS 产物，需要引入 **Runtime 适配层**（§2）。
 - Rust 能做到“浏览器内编译”，但依赖 wasi-threads、体积巨大、仍属实验，建议作为后期“实验语言”。
 - **Shell / Java / Rust 的 2026-10-15 复核**（体积、许可证、与 `WASIWorkerHost` 是否兼容、建议顺序）见 §9。结论：先做 Shell（WASI 命令），Java 单独评估适配器，Rust 暂缓。
+- **Linux（v86 + Buildroot）** 是另一条运行时，规划见 §10（2026-10-16）。本轮只写设计，不改侧栏、不改 `docs/`。
 
 ---
 
@@ -132,7 +133,7 @@ export interface RunHandle {
   done: Promise<RunOutcome>;
 }
 export interface RuntimeAdapter {
-  kind: string;                                   // "wasi" | "wasi-reactor" | "emscripten" | "dotnet" | "js-codegen" | "teavm"
+  kind: string;                                   // "wasi" | "wasi-reactor" | "emscripten" | "dotnet" | "js-codegen" | "teavm" | "v86"
   prepare?(lang: LanguageSpec, assets: AssetMap): Promise<void>; // 一次性初始化（如加载编译器）
   run(lang: LanguageSpec, code: string, io: RuntimeIO): RunHandle;
 }
@@ -143,6 +144,7 @@ export interface RuntimeAdapter {
 - `DotnetAdapter`、`TeaVMAdapter`、`JsCodegenAdapter`（Pascal：编译出 JS 后在沙箱 Worker 执行）。
 - **统一 stdin 通道**：抽出 `StdinChannel`（SharedArrayBuffer + Atomics，与 `@runno/wasi` 协议一致：Int32 长度头 + 数据，-1 = EOF），所有 Worker 侧适配器共用；UI 层（xterm 行编辑）不变。
 - **Worker 隔离**：非 WASI 运行时一律放进独立 Worker，Stop = `worker.terminate()`，与现有语义一致；COOP/COEP 下同源 Worker/Blob Worker 均可用。
+- **`v86`（规划）**：完整 i686 Linux，串口接到现有 xterm，脚本经 9p 进出。不走 `WASIWorkerHost`。设计、体积和阶段见 §10。
 
 ### 2.2 Manifest schema 扩展（向后兼容，version: 2）
 ```jsonc
@@ -388,3 +390,255 @@ Rust 工具链的许可证（MIT / Apache-2.0）没问题，卡在体积、线�
 1. **Shell**：唯一能留在 `WASIWorkerHost` 里的。用 wasi-sdk 编 preview1 命令，内建 + 内建管道；明确没有 `fork`。
 2. **Java**：下一轮评估 TeaVM 适配器（新的 JS/Wasm GC 宿主、stdin 桥、本地托管）。不选 CheerpJ 作为默认。
 3. **Rust**：暂缓。不下载 100 MB 以上的实验编译器，也不为 wasi-threads 改宿主。
+
+Shell 仍留在 `WASIWorkerHost`。要 `ls`、`cd`、管道和外部命令时走 §10 的 Linux，两门语言并存。
+
+---
+
+## 10. Linux：v86 + Buildroot（规划，2026-10-16）
+
+本节只定方案。不改 `scripts/languages.config.mjs`，不往 `wasm/` 放新文件，不增加 `docs/linux/`，也不把 Linux 放进 `SHIPPED_BOOKS`。下面标了字节数的项，是 2026-10-16 对本机发出的 HTTP 响应或 GitHub contents API 的测量。镜像启动时间和我们自己的 bzImage 体积尚未测量，标为未测。
+
+### 10.1 为什么单开一门 Linux
+
+§8.4 的 Shell 是 `wasi-sh`：内建命令和内建之间的管道可以跑，外部程序退出 127，没有 `cd`、`fork`、`exec`。§9.1 量过三份公开的 bash / BusyBox wasm，它们带 `nimbus_proc`、Emscripten 胶水或 WASI Preview 2，`WASIWorkerHost` 实例化不了。
+
+Linux 这一门要的是 BusyBox 用户空间：`ls`、`cd`、管道接到外部命令、脚本的退出码。那是一台 32 位客户机，不是 preview1 命令模块，所以适配器放在 `WASIWorkerHost` 旁边，kind 为 `v86`（§2.1）。Shell 保持原样。
+
+### 10.2 v86 是什么
+
+[copy/v86](https://github.com/copy/v86) 在浏览器里模拟一台 x86 PC：CPU 加硬件，而不是一层 Linux 系统调用。机器码先解释执行，热点页再编译成 Wasm 模块（单个函数、`brtable` 加 stackifier）。模块之间没有 Wasm 链接，主循环在模块之间切换。分页完全模拟（没有 `mmap`）。4 MB 的缓存扮演 TLB。80 位浮点走 Berkeley SoftFloat。来源：[docs/how-it-works.md](https://github.com/copy/v86/blob/master/docs/how-it-works.md)。
+
+README 写明：Linux 可用，**64 位内核不支持**。推荐用 [Buildroot](https://buildroot.org/) 做最小镜像，并指向 [humphd/browser-vm](https://github.com/humphd/browser-vm) 和 [darin755/browser-buildroot](https://github.com/Darin755/browser-buildroot)。SkiffOS、Alpine（`tools/docker/alpine/`）、Arch Linux 32 也能跑。官网演示：[copy.sh/v86](https://copy.sh/v86/)。
+
+许可证是 BSD-2-Clause（[LICENSE](https://github.com/copy/v86/blob/master/LICENSE)；npm `v86@0.5.471` 的 `license` 字段同为 `BSD-2-Clause`）。随仓库带入的第三方：`lib/softfloat`、`lib/zstd`、kvm-unit-tests、qemutests，以及 `src/floppy.js` 里移植自 QEMU 的 MIT 片段（README 的 License 段）。状态压缩用内置 zstd。9p / 文件系统 / UART 的思路来自 jor1k（README Credits）。
+
+客户机侧：Linux 内核 GPL-2.0，BusyBox 在 Buildroot 2026.08 的 `package/busybox/busybox.mk` 里是 **1.38.0**，许可证 **GPL-2.0**（另有 bzip2-1.0.6）。SeaBIOS 仓库里有 `COPYING.LESSER`。镜像和 BIOS 必须在 `LICENSES/THIRD_PARTY.md` 里写明，defconfig 与 BusyBox 配置入库，以便按 GPLv2 提供对应源码。v86 自己的 BSD-2-Clause 文本随 `libv86` 一起放进 `LICENSES/`。
+
+### 10.3 体积（2026-10-16 测量）
+
+npm 当前版本是 **0.5.471**（`registry.npmjs.org/v86/latest`）。jsDelivr 上该版本构建产物的 `Content-Length` 或下载字节数：
+
+| 文件 | 字节 | 角色 |
+|---|---:|---|
+| `build/v86.wasm` | 2,007,347 | 运行时 JIT 用的 Wasm |
+| `build/v86-fallback.wasm` | 2,040,034 | 回退 Wasm，默认路径不用 |
+| `build/libv86.js` | 359,839 | 浏览器脚本 |
+| `build/libv86.mjs` | 359,801 | ESM，实现时用这份，动态 `import`，不进首屏包 |
+| `v86.d.ts` | 24,740 | 类型，不部署 |
+
+BIOS 来自 GitHub `copy/v86` `master` 的 contents API（与 npm 包不一定同一提交，锁定时改记 tag 上的摘要）：
+
+| 文件 | 字节 |
+|---|---:|
+| `bios/seabios.bin` | 131,072 |
+| `bios/vgabios.bin` | 36,352 |
+
+官方资料表把 “Buildroot Linux” 写成 **4.9 MB**、32 位 bzImage，“Minimal Linux with Lua, ping, curl, telnet”（[index.html](https://github.com/copy/v86/blob/master/index.html) 与 [在线资料页](https://copy.sh/v86/?profile=buildroot)）。同一天 `https://i.copy.sh/buildroot-bzimage68.bin` 的 `Content-Length` 是 **10,068,480**。两数都记下来：4.9 MB 是页面上的资料标签，10,068,480 是现在这份演示内核的响应头。我们的教学镜像单独构建，体积未测，目标是去掉 Lua、curl、ping 和网络之后小于这份演示内核。
+
+`v86.d.ts` 写明：`bios`、`initial_state`、`bzimage`、`initrd`、`multiboot`、软盘**总是同步加载**。`.zst` 状态由内置 zstd 解开。因此教学路径先用 Cache API 下完整文件，再把 `ArrayBuffer` 交给构造函数，不靠它的 URL 加载器边下边启动。
+
+Buildroot 源码包：稳定系列 2026.08（[下载页](https://buildroot.org/download.html)，发布说明 2026-09-04）。`buildroot-2026.08.tar.xz` 的 `Content-Length` 为 6,115,596，本机下载后的 sha256 为 `87aaca4164ea9d5c8085854953018263f7963f07c22e73a2a2185cc98c581c34`。同目录的 `.sha256` 侧车文件返回 404，所以摘要以这次下载为准，写进 `scripts/sources.lock.json` 时再对一次。
+
+### 10.4 和另外四条路
+
+| 方案 | 做什么 | 和本项目 | 来源 |
+|---|---|---|---|
+| **v86 + Buildroot** | 模拟整台 32 位 PC，BusyBox 用户空间 | 选定方案。BSD-2-Clause 运行时，镜像可本地托管，能 `ls` / `cd` / 管道 | https://github.com/copy/v86 |
+| **JSLinux** | Fabrice Bellard 的整机模拟。x86_64 Alpine、Windows 2000、FreeDOS、riscv64 Buildroot 等 | 同属整机模拟，是网站而不是可锁定进 `wasm/` 的库 | https://bellard.org/jslinux/ |
+| **WebVM / CheerpX** | x86→Wasm JIT，加上 Linux 系统调用层（用户态）。磁盘按 HTTP Range 拉取，IndexedDB 缓存，镜像可到约 2 GB。有网络和桌面 | 能力更全，许可证是商业产品。和 §9.2 对 CheerpJ 的结论一样：不作为默认、不从 CDN 拉运行时 | [CheerpX 1.0](https://labs.leaningtech.com/blog/cx-10)、[概述](https://cheerpx.io/docs/overview)、[WebVM 2.0](https://labs.leaningtech.com/blog/webvm-20) |
+| **container2wasm** | 把现成容器放进 Bochs / TinyEMU / QEMU（浏览器路径用 QEMU Wasm），支持 x86_64 与 AArch64 | 适合分发容器。WasmCon 2024 幻灯片写明：浏览器路径当时没有网络，也没有 Wizer 预初始化，冷启动因此更慢 | [仓库](https://github.com/container2wasm/container2wasm)、[幻灯片](https://static.sched.com/hosted_files/wasmcon24/dd/c2w.pdf) |
+| **linux-wasm** | 把内核编译成 Wasm 架构，不模拟 CPU。NOMMU：没有 `fork`（只有 `vfork`），`mmap` 受限 | 实验端口，教不了普通 Linux 的进程和文件语义 | [joelseverin/linux-wasm](https://github.com/joelseverin/linux-wasm)、[WasmLinux 笔记](https://zenn.dev/okuoku/articles/89a96bcee4cc93) |
+
+2026-10-16 检索公开网页时，没有找到一篇能打开原文、又带启动时间或体积数字的 X 帖。启动时间的公开叙述用 Simon Willison 的工具页和博客（§10.6）。
+
+### 10.5 镜像怎么构建
+
+产物是一颗 **i686** bzImage（initramfs 打在里面）加上空的 9p 目录，不单独发布 initrd。内核必须是 32 位。
+
+钉死的版本：
+
+- Buildroot **2026.08**，源码包摘要见 §10.3。
+- BusyBox **1.38.0**，取自该 tag 的 `package/busybox/busybox.mk`（https://gitlab.com/buildroot.org/buildroot/-/raw/2026.08/package/busybox/busybox.mk）。
+- v86 **0.5.471** 的 `libv86.mjs` 与 `v86.wasm`。
+- 内核版本在 `scripts/builders/linux/` 的 defconfig 里写死一条 i686 配置（2026.08 的发布说明包含 6.12 与 6.1 等系列，[LWN](https://lwn.net/Articles/1092913/)）。具体小版本在第一次成功构建时写入 `sources.lock.json`，本节不预填。
+
+客户机配置（提交到仓库，不生成进 git 的二进制）：
+
+- `BR2_i386=y`，静态 BusyBox，有 `sh`、`ls`、`cd` 所用的 shell 内建、`mkdir`、`cp`、`mv`、`rm`、`cat`、`chmod`、`grep`、`ps`、`echo`、`pwd`。
+- 没有包管理器、没有网络工具、没有编译器、没有完整 vim。
+- 内核打开 9p 所需的选项，使下面这条挂载成立（命令来自 [docs/filesystem.md](https://github.com/copy/v86/blob/master/docs/filesystem.md)）：`mount -t 9p -o trans=virtio,version=9p2000.L host9p /mnt/host`。计划中的配置片段：`CONFIG_NET_9P`、`CONFIG_NET_9P_VIRTIO`、`CONFIG_VIRTIO`、`CONFIG_VIRTIO_PCI`、`CONFIG_9P_FS`。
+- `/etc/fstab` 在启动时挂上 `/mnt/host`。`/etc/inittab` 在 `ttyS0` 上自动登录 root（v86 Alpine 示例是 `agetty --autologin root -s ttyS0`，见 [讨论 #1046](https://github.com/copy/v86/discussions/1046)）。
+- 内核命令行：`console=ttyS0 quiet`。串口是唯一控制台，启动横幅不灌进 xterm。
+- 不设置 `network_relay_url`。镜像里可以有 `ping` 二进制也不去配网卡。
+
+构建在 Linux 上原生进行，或在任何宿主上用 Linux 容器跑同一份脚本。macOS 不在本机跑 Buildroot：`uname` 为 Darwin 时走 Docker；没有 Docker 时下载 `prebuiltUrl` 并核对 sha256，和 §8.3 的 Lua / Go / Shell 同一模式。脚本保持 bash 3.2（`sha256sum` 或 `shasum -a 256`，不用 bash 4 语法）。两次构建的 bzImage 摘要必须相同，写进 `scripts/sources.lock.json`。二进制不入库。`./build.sh vendor` 结束后由 `scripts/write-manifest.mjs` 按磁盘文件重写 `wasm/manifest.json`。
+
+步骤（实现时放进 `scripts/builders/linux/build.sh`，本轮不执行）：
+
+```bash
+curl -fsSL -o buildroot-2026.08.tar.xz https://buildroot.org/downloads/buildroot-2026.08.tar.xz
+echo "87aaca4164ea9d5c8085854953018263f7963f07c22e73a2a2185cc98c581c34  buildroot-2026.08.tar.xz" | sha256sum -c
+tar -xf buildroot-2026.08.tar.xz
+# 树外构建：make O=../out BR2_EXTERNAL=../external simplecode_defconfig && make
+# 产物：bzImage。用 v86 0.5.471 启动到串口提示符，save_state，再压成 .zst
+```
+
+### 10.6 启动、快照、9p、串口
+
+`memory_size` 必须是 2 的幂。`v86.d.ts` 的默认值是 64 MiB，示例注释里出现过 16 MiB；`vga_memory_size` 默认 8 MiB。教学机先用 **32 MiB** 内存和 **2 MiB** 显存（[examples/save_restore.html](https://github.com/copy/v86/blob/master/examples/save_restore.html) 用 32 MiB / 2 MiB VGA；[Simon Willison 的页面](https://github.com/simonw/tools/blob/main/v86.html) 用 64 MiB / 2 MiB）。界面不显示 VGA 画布。冷启动仍带 SeaBIOS 和 VGA BIOS，因为官方串口示例两者都传了（[examples/serial.html](https://github.com/copy/v86/blob/master/examples/serial.html)）。
+
+冷启动时间：Simon Willison 的工具写 “typically 10-30 seconds depending on your connection and device”（[工具页](https://tools.simonwillison.net/v86)，[2026-01-06 的说明](https://simonwillison.net/2026/Jan/6/v86/)）。他 2026-03 的研究笔记描述的是 Buildroot 2024.05.2、约 39 MB RAM、BusyBox、Lua 5.4.6，并且没有配网络中继（[研究列表](https://simonwillison.net/elsewhere/research/)）。这是别人的镜像和机器，我们的镜像未测。
+
+快照用来跳过这段冷启动。`save_state()` 返回整个模拟器状态的 `ArrayBuffer`（CPU、内存、设备）。`restore_state` / `initial_state` 要求构造参数与保存时一致；**状态格式会随 v86 版本变化**（`v86.d.ts` 对 `restore_state` 的说明）。维护者在[讨论 #855](https://github.com/copy/v86/discussions/855) 里确认：从状态恢复时不再使用 BIOS。流程是构建机冷启动一次，等到 `ttyS0` 上出现 shell 提示符，调用 `save_state`，用 zstd 压成 `linux-state.zst`，和 bzImage 一起钉摘要。运行时优先 `initial_state`。v86 升级必须重做快照。快照体积未测；32 MiB 内存的未压缩状态会落在同一数量级，页面上只放压缩后的文件。
+
+9p 是脚本进出的通道。`filesystem` 省略 `basefs` / `baseurl` 时得到空的 9p（filesystem.md）。构造之后：
+
+- `create_file("/main.sh", bytes)` 把编辑器或文档块写进客户机的 `/mnt/host/main.sh`。
+- 有 stdin 时再写 `/mnt/host/stdin.bin`。
+- `read_file` 只在需要把客户机写回的文件交给检查时使用。文档运行的标准输出走串口，不走这个读回。
+
+`handle9p` 自定义服务器不会提供 `create_file`，也不随快照自动对齐（filesystem.md）。教学路径用内置空 9p，不用 WebSocket 代理。
+
+串口接到**已经存在的** xterm（`src/core/terminal.ts`），不在页面上再挂一个终端。v86 0.5.471 的 `serial_console.type` 可以是 `textarea`、`xtermjs` 或 `none`，也有 `set_serial_container_xtermjs`。我们的 xterm 还要服务 Python、C、Shell，所以用编程接口：`serial0-output-byte` 写入 xterm，xterm 的 `onData` 调用 `serial0_send`。`serial_console.type = "none"`，不把 v86 自带的 xterm 装进 DOM。交互行编辑仍由现有终端负责（DESIGN §9）。
+
+退出码。v86 没有“进程退出码”回调，客户机把码打到串口：
+
+```sh
+sh /mnt/host/main.sh < /mnt/host/stdin.bin
+echo __SC_EXIT:$?
+```
+
+适配器在串口流里认出最后一行 `__SC_EXIT:`，把数字交给现有的 `RunOutcome.exitCode`，并从终端文本里去掉这行哨兵。脚本的标准输入来自文件，避免和这一行命令抢串口。没有 stdin 的块用空文件，相当于 EOF。超时或 Stop 则 `worker.terminate()`，结果为 `terminated`。
+
+每次文档 Run 都 `new` 一个带同一份 `initial_state` 和空 9p 的实例，跑完销毁。这样上一次的 `cd` 和 `/mnt/host` 文件不会留到下一次。操场上的交互终端是另一条寿命：切到 Linux 后保持这一台，直到 Stop、换语言或再次从文档 Run（文档 Run 仍用新实例，避免把读者的主目录写脏）。脚本里的 `cd` 只影响该脚本；要看目录变化，示例写成 `cd /tmp && pwd`。人在终端里敲的 `cd` 留在这台交互虚拟机里。
+
+### 10.7 页面上的位置
+
+```
+┌ 侧栏 ────────┬ 工具栏：Run（h-7）·「Linux 快速入门」─────────────┐
+│ Linux   Lx   │ 编辑器 main.sh（Monaco shell 高亮）                │
+│ （折叠仅图标）├──────────────────────────────────────────────────┤
+│              │ xterm                                            │
+│ 底部：缓存   │   $ ls / | head                                  │
+│ 清除、主题   │   bin                                            │
+│ 折叠         │   exit 0                                         │
+└──────────────┴──────────────────────────────────────────────────┘
+        文档 Run                         交互终端
+             │                                │
+             ▼                                ▼
+      新 V86 + initial_state            已启动的同一台
+      create_file(main.sh)             serial0_send(按键)
+      serial0_send(包装命令)            serial0-output-byte → xterm
+      解析 __SC_EXIT:
+```
+
+```mermaid
+flowchart LR
+  subgraph ui [页面]
+    Editor[编辑器 main.sh]
+    Xterm[现有 xterm]
+    Run[RunButton]
+  end
+  subgraph worker [LinuxWorker]
+    V86[v86 0.5.471]
+    Guest[i686 Linux + BusyBox]
+  end
+  Cache[(Cache API simplecode-wasm-v1)]
+  Run --> Cache
+  Cache --> V86
+  Editor -->|create_file 9p| Guest
+  V86 --> Guest
+  Guest -->|ttyS0| Xterm
+  Xterm -->|serial0_send| Guest
+```
+
+### 10.8 接进现有代码的位置
+
+实现时才改这些文件。本轮一个都不动。
+
+| 位置 | 做什么 |
+|---|---|
+| `scripts/languages.config.mjs` | 增加 `id: "linux"`，`label: "Linux"`，`short: "Lx"`，`syntax: "shell"`，`fileName: "main.sh"`。资产是一组文件（`libv86.mjs`、`v86.wasm`、`seabios.bin`、`vgabios.bin`、bzImage、`linux-state.zst`），没有 `run.asset` 那种 WASI 命令 |
+| `scripts/sources.lock.json` | 钉 Buildroot 2026.08、BusyBox 1.38.0、v86 0.5.471、BIOS 与产物的 sha256。宿主差异走 `prebuiltUrl`，和 Lua 一样允许 Apple Silicon 的构建机差异，但镜像摘要必须全平台一致（构建发生在 Linux 容器里） |
+| `scripts/builders/linux/build.sh` | 上面的可重复构建。`scripts/vendor-wasm.mjs` 在 `./build.sh vendor` 时调用它 |
+| `scripts/write-manifest.mjs` | 仍从磁盘写 `size` 和 `sha256`。`wasm/manifest.json` 继续 gitignore |
+| `src/core/runner.ts` | 今天 `RunSession` 只 `new WASIWorkerHost`。Linux 走旁边的 `V86Session`：同样的 `stdout` / `stderr` / `phase` / `kill` / `done`。标准输入不走那条 8 KB `SharedArrayBuffer` |
+| `src/core/wasmLoader.ts` | `CACHE_NAME` 仍是 `simplecode-wasm-v1`，键带 sha256 前缀。Linux 的多个文件在第一次点 Run 时下载，带现有进度条。不进首屏 JS |
+| `src/core/terminal.ts` | 复用同一 xterm。Linux 运行期间字节来自串口 |
+| `src/docs/runtime.ts` | 成书时再加 book id `linux`、围栏语言 `linux`、`BOOK_LABEL`「Linux」。`sh` / `bash` 继续映射到 Shell（wasi-sh）。在这之前把 `ls` 放进 `sh` 围栏会在 docs-smoke 里得到退出码 127 |
+| `LICENSES/THIRD_PARTY.md` | v86 BSD-2-Clause、SeaBIOS、Linux、BusyBox GPL-2.0，并指向可重建的 defconfig |
+
+侧栏文案是 **Linux**。折叠后只剩图标 **Lx**，缓存、清除、主题、折叠仍在底部（DESIGN §11，PR #1）。Run 继续用 `RunButton`（`size="xs"`，高 28px，文案 `Run`）。文档抽屉的 `top` 保持 `var(--editor-toolbar-h)`，不盖住工具栏。界面仍是黑白；Monaco 的 shell 语法色是唯一例外。终端字体继续用 `JetBrains Mono` 加 `SimpleCode CJK`（`size-adjust: 120%`），中文占两格。
+
+### 10.9 COOP/COEP、缓存、内存、手机
+
+页面已经为 `WASIWorkerHost` 发送 `Cross-Origin-Opener-Policy: same-origin` 和 `Cross-Origin-Embedder-Policy: require-corp`（DESIGN §8）。`IsolationGuard` 在 `crossOriginIsolated` 为假时挡住 Run。v86 的基本串口示例不分配 `SharedArrayBuffer`；同一页仍保持隔离，因为别的语言需要它。
+
+COEP 下跨源脚本需要 CORP 或 CORS。v86 的 wasm 和脚本**从本站 `wasm/` 提供**，和现有运行时一样，不从 jsDelivr 或 copy.sh 加载。Worker 同源。字体已经本地化（`src/style.css`）。
+
+缓存：每个文件第一次使用时下载，`src/core/wasmLoader.ts` 用清单里的 `size` 核对字节数，不匹配就失败。侧栏「清除」删掉 `simplecode-wasm-v1`，Linux 文件一起消失。清单不提交，避免 Mac 上的体积差和 `git pull` 冲突（§8.5）。
+
+内存：客户机 32 MiB（2 的幂）加 2 MiB VGA，加上约 2 MB 的 `v86.wasm` 和尚未称重的 bzImage、压缩快照。JIT 还会按热点页再分配模块（how-it-works.md：模块太多时浏览器内存会涨，`MAX_PAGES` 因此偏低）。手机上这组数字可能顶到标签页上限。第一版把手机标为未测：串口控制台、小内存、快照恢复、不画 VGA。验收不要求手机在本轮通过。
+
+### 10.10 界面行为
+
+选中 Linux 之后，编辑器是 `main.sh`，终端是这台机器的 shell。读者可以输入 `ls`、`cd`、`pwd`，也可以 `ls / | head`。BusyBox 的外部 applet 能被管道接上。Stop 销毁 Worker。
+
+文档块和工具栏 Run 把缓冲区当成脚本跑完，并在按钮旁显示退出码，和其他语言相同。交互终端里已经 `cd` 过的目录不影响下一次文档 Run。
+
+### 10.11 风险
+
+| 风险 | 处理 |
+|---|---|
+| 冷启动 10–30 秒（他人测量） | 发布 `initial_state`；v86 升级就重做快照 |
+| 状态格式绑定 v86 版本 | `sources.lock.json` 同时钉 v86 与 `linux-state.zst` |
+| bzImage / BIOS 在构造时同步读入 | 先下到缓存再构造 |
+| 9p 与快照不一致 | 每次文档 Run 用新实例和空 9p |
+| 哨兵字符串出现在脚本输出里 | 只认末行的 `__SC_EXIT:`；脚本正文里的同名字符串原样显示 |
+| BusyBox 与 GNU 的 `ls` / `ps` 输出不同 | 教程的 `expect` 按 BusyBox 写，并在章内说明 |
+| GPL 客户机 | defconfig 入库，`THIRD_PARTY.md` 记录版本与源码包地址 |
+| 手机内存 | 32 MiB 客户机；手机验收单列，未测前不承诺 |
+| 网络、`apt`、`yum`、`ssh`、改密码、装 vim | 教程标 `norun`。默认不配 `network_relay_url` |
+| 串口在启动时很慢 | `quiet`，快照取在提示符出现之后 |
+| COEP 误用 CDN | 审查时禁止 `libv86` 的跨源 URL |
+
+### 10.12 验收（实现完成时，不是本轮）
+
+1. 侧栏有 Linux。下载只在第一次 Run 发生，进度可见，刷新后 Cache API 命中，字节数与清单一致。
+2. 交互终端里 `ls`、`cd`、`pwd`、管道到 BusyBox 命令有输出；`cd` 在这台交互机里保持到 Stop。
+3. 文档 Run 执行脚本，退出码等于哨兵。带 `stdin` 的块从 9p 文件读入。连续两次 Run 看不到对方创建的文件。
+4. Stop 在启动和运行中都能结束，终端可再次 Run。
+5. 页面仍要求 COOP/COEP；Linux 资源全部同源。现有十门语言的 `./build.sh test` 保持通过。
+6. `./build.sh vendor` 在 Linux 上打出锁定的 bzImage；Darwin 通过 Docker 或预编译文件得到同一摘要。
+7. 快照恢复后出现 shell 提示符。冷启动秒数和快照秒数记进本节，替换「未测」。
+8. 成书后 `linux` 围栏进入 docs-smoke；`sh` 围栏仍只跑 wasi-sh。
+
+### 10.13 阶段
+
+不估日历。每一阶段的产物如下，做完再开下一阶段。
+
+1. **钉版本。** 把 §10.3 的 v86 与 Buildroot 摘要写进 lock。单独 HTML 用本地文件启动 `i.copy.sh` 那颗演示内核的拷贝（先称重再锁定），串口打出 `uname`。不进侧栏。
+2. **自己的镜像。** `scripts/builders/linux/` 在 Linux 与 macOS（Docker 或预编译）上打出同一 sha256 的 i686 bzImage，BusyBox 1.38.0，9p 挂到 `/mnt/host`，`ttyS0` 自动登录，无网络。
+3. **快照。** 提示符出现后 `save_state`，压缩，用 `initial_state` 恢复。记录冷启动和恢复的秒数。
+4. **脚本与退出码。** `create_file`、stdin 文件、`__SC_EXIT:`。两次运行互不可见。
+5. **接进应用。** `V86Session` 与 `RunSession` 并列，侧栏、Cache API、现有 xterm、Run 按钮。hello-world 冒烟：`echo hello && ls /mnt/host`。
+6. **书。** 按 `plan/LEARN.md` §20 写 `docs/linux/`，围栏语言 `linux`，docs-smoke 通过。`sh` 仍是 Shell。
+
+### 10.14 来源
+
+2026-10-16 打开或测量过的页面：
+
+- https://github.com/copy/v86 （README、LICENSE、`docs/how-it-works.md`、`docs/filesystem.md`、`examples/serial.html`、`examples/save_restore.html`、`bios/` contents API）
+- https://www.npmjs.com/package/v86 对应 registry 版本 0.5.471；jsDelivr 上 `v86.wasm`、`libv86.js`、`libv86.mjs` 的字节数
+- https://copy.sh/v86/ 与资料页 `?profile=buildroot`；https://i.copy.sh/buildroot-bzimage68.bin 的 `Content-Length`
+- https://github.com/copy/v86/discussions/855 （恢复状态时不用 BIOS）
+- https://github.com/copy/v86/discussions/1046 （串口提示符后 `save_state`，`ttyS0` 自动登录）
+- https://buildroot.org/download.html 与 `buildroot-2026.08.tar.xz`；https://gitlab.com/buildroot.org/buildroot/-/raw/2026.08/package/busybox/busybox.mk
+- https://lwn.net/Articles/1092913/
+- https://tools.simonwillison.net/v86 与 https://simonwillison.net/2026/Jan/6/v86/ 与 https://simonwillison.net/elsewhere/research/
+- https://bellard.org/jslinux/
+- https://labs.leaningtech.com/blog/cx-10 、https://labs.leaningtech.com/blog/webvm-20 、https://cheerpx.io/docs/overview
+- https://github.com/container2wasm/container2wasm 与 https://static.sched.com/hosted_files/wasmcon24/dd/c2w.pdf
+- https://github.com/joelseverin/linux-wasm 与 https://zenn.dev/okuoku/articles/89a96bcee4cc93
+- https://www.runoob.com/linux/linux-tutorial.html （书的目录见 LEARN §20）

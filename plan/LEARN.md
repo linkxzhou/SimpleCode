@@ -963,7 +963,7 @@ print(f"你好，{name}！")
 | Lua | ✅ | 22 | 按 §19：Lua 教程到 Lua 数据库访问。文件、`require` 和 `os.execute` 标为只读 |
 | Shell | ✅ | 21 | 按 §19：Shell 教程到 Shell 外部命令。只有 wasi-sh 内建，没有函数、数组、算术展开和外部命令 |
 
-十种语言合计 277 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Shell 21）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。
+十种语言合计 277 章（Go 29、Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Shell 21）。`SHIPPED_BOOKS` 含全部十本。缺目录时构建才会失败。Linux 快速入门只写在 §20，没有 `docs/linux/`，也不在 `SHIPPED_BOOKS`。
 
 ### 验收
 
@@ -1380,5 +1380,286 @@ Go 已改按 §19，不再用本节的 2500 字和「小结 / 练习」。下面
 ### 19.4 测试
 
 `tests/docs-length.test.ts` 对十种语言都用短节结构：至少 20 章，每章至少 3 个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块。2500 字、小结和练习不再检查。十种语言一起做 60 字不重复，避免把同一段说明贴进两章。
+
+---
+
+## 20. Linux 快速入门（计划，未成书）
+
+对照菜鸟教程 Linux 目录：<https://www.runoob.com/linux/linux-tutorial.html>（手机版 <https://m.runoob.com/linux/>）。2026-10-16 从教程页 HTML 抽出左侧标题。正文将来是新的中文，不搬它的句子和示例字符串。`sources.yaml` 不把它标成可改写来源。
+
+这一本讲的是侧栏里的 **Linux**（v86 + Buildroot，见 `plan/LANGUAGES.md` §10），不是已经出版的 Shell。Shell 仍是 wasi-sh，围栏 `sh` / `bash` 继续跑 Shell。Linux 的围栏语言用 `linux`，成书时再加进 `src/docs/runtime.ts`。在那之前不要建 `docs/linux/`，也不要把它放进 `SHIPPED_BOOKS`，否则构建会要求一本还不存在的书。
+
+运行时是 32 位 Linux，用户空间是 BusyBox 1.38.0，串口即现有终端。没有包管理器，没有网络，没有完整 vim。可运行块必须能在这台镜像上结束，并带 `expect`。做不到的命令标 `norun`，旁边写原因。章数按 §19：至少 20 章，每章至少三个 `###`，一节只讲一件事。
+
+Shell 教程、Shell 变量、Shell echo、Shell test、Shell 流程控制、Shell 函数留在 Shell 那一本。这里不重复。
+
+### 20.1 章序
+
+每一节是将来正文里的一个 `###`。标「可运行」的例子用 `linux` 围栏；标「只读」的用 `norun`。
+
+**0. Linux 教程**
+
+- ### 这台浏览器里跑的是 32 位 Linux
+- ### 侧栏上的 Linux 和 Shell 各有一个运行时
+- ### 终端可以直接敲命令
+
+可运行：`uname` 打出 Linux。只读：不在这一章讲安装步骤。
+
+**1. Linux 简介**
+
+- ### 内核负责进程和文件，命令来自用户空间
+- ### 这里的命令是 BusyBox applet
+- ### 发行版名字可以读 `/etc/os-release`
+
+可运行：`cat /etc/os-release`。BusyBox 的字段比桌面发行版短，`expect` 按镜像实际输出写。
+
+**2. Linux 安装**
+
+- ### 页面不会分区或写入硬盘
+- ### 第一次点 Run 才下载内核和快照
+- ### 安装命令在这台机器上没有对应程序
+
+三节都是说明。示例 `fdisk` 标只读。
+
+**3. Linux 云服务器**
+
+- ### 云主机会给公网地址和密钥
+- ### 这台虚拟机没有网卡
+- ### 登录云主机的命令不会在这里执行
+
+`ssh` 标只读。
+
+**4. WSL 安装 Linux**
+
+- ### WSL 是 Windows 里的另一套 Linux
+- ### 浏览器里的客户机不经过 Windows
+- ### 启用 WSL 的命令无法在页面里运行
+
+只读。
+
+**5. Linux 系统启动过程**
+
+- ### 内核命令行挂在 `/proc/cmdline`
+- ### 快照从 shell 提示符开始，跳过前面的打印
+- ### 重启会拆掉这台虚拟机
+
+可运行：`cat /proc/cmdline`，期望里有 `console=ttyS0`。`reboot` 标只读。
+
+**6. Linux 系统目录结构**
+
+- ### 路径从 `/` 往下长
+- ### `.` 是当前目录，`..` 是上一级
+- ### `/bin`、`/etc`、`/tmp`、`/proc` 各放一类东西
+
+可运行：`ls /` 与 `ls /bin`。期望用 BusyBox `ls` 的名字列表，不假设 GNU 的分色和列宽。
+
+**7. Linux 忘记密码解决方法**
+
+- ### 单用户改密码需要能碰到引导器
+- ### 这台机器自动登录 root，没有密码提示
+- ### `passwd` 不作为可运行示例
+
+只读。
+
+**8. Linux 远程登录**
+
+- ### `ssh` 把 shell 接到另一台机器
+- ### 镜像没有 ssh 客户机，也没有服务器
+- ### 终端已经是这台机器的控制台
+
+只读。
+
+**9. Linux 文件基本属性**
+
+- ### `ls -l` 的第一列是类型和权限
+- ### 三位一组对应拥有者、组、其他人
+- ### `chmod` 改这九位
+
+可运行：在 `/tmp` 建一个文件，`chmod 644`，再 `ls -l`。`chown` 标只读：教学镜像只有 root，改属主没有可观察的第二个用户。9p 上的权限若与普通磁盘不一致，这一节的例子放在 `/tmp`（initramfs），不放在 `/mnt/host`。
+
+**10. Linux 文件与目录管理**
+
+- ### 绝对路径从 `/` 写起
+- ### `mkdir`、`cp`、`mv`、`rm` 改目录树
+- ### `cd` 只影响当前这条命令序列
+
+可运行：`mkdir /tmp/box && cd /tmp/box && pwd && cp /etc/hostname . && ls`。交互终端里单独敲的 `cd` 会留在那台虚拟机里；文档 Run 每次从快照开始，脚本结束后目录不保留。正文用同一条 `&&` 链把 `cd` 和后续命令放在一次运行里。
+
+**11. Linux 用户和用户组管理**
+
+- ### `id` 打印 uid 和 gid
+- ### 这台机器只有 root
+- ### `useradd` 不在镜像里
+
+可运行：`id` 与 `whoami`。`useradd`、`groupadd` 标只读。
+
+**12. Linux 磁盘管理**
+
+- ### `df` 看挂载点还剩多少空间
+- ### initramfs 和 9p 是两种文件系统
+- ### `fdisk` 会改分区表
+
+可运行：`df` 与 `mount`，期望里能看到 `/mnt/host` 或 9p。`fdisk`、`mkfs` 标只读。
+
+**13. Linux vi/vim**
+
+- ### vi 在终端里编辑文件
+- ### 镜像不带 vim
+- ### 教程改文件时用重定向，不用全屏编辑器
+
+只读。不把 BusyBox vi 算作可运行：全屏程序和文档 Run 的「跑完即退出」合不到一起。
+
+**14. Linux yum 命令**
+
+- ### yum 从仓库安装 RPM
+- ### 镜像没有仓库，也没有网
+- ### 命令不存在时 shell 返回 127
+
+示例标只读。若正文需要展示 127，用一条明确不存在的命令，并标 `smoke=skip` 或 `norun`：可运行的 127 仍要在 docs-smoke 里设定退出码约定，成书时再定，默认先 `norun`。
+
+**15. Linux apt 命令**
+
+- ### apt 从仓库安装 deb
+- ### 这台机器没有 apt
+- ### 教学用的命令已经在 `/bin`
+
+只读。
+
+**16. Linux ls 命令**
+
+- ### 不带参数时列出当前目录
+- ### `-l` 显示长格式
+- ### `-a` 带出以点开头的名字
+
+可运行。期望按 BusyBox 的列对齐写，或用 `ls -1` 让一行一个名字。
+
+**17. Linux cd 命令**
+
+- ### 不带参数时回到家目录
+- ### `cd -` 回到上一个目录
+- ### 脚本里的 `cd` 不改变调用者
+
+可运行：`cd /tmp && pwd`。单独一行 `cd /tmp` 的文档块标只读，并说明退出后工作目录看不出来。
+
+**18. Linux pwd 命令**
+
+- ### `pwd` 打印当前目录
+- ### 它跟随上一条 `cd`
+- ### 物理路径和逻辑路径在没有软链时相同
+
+可运行：`cd /tmp && pwd`，期望 `/tmp`。
+
+**19. Linux mkdir 命令**
+
+- ### 创建一个目录
+- ### `-p` 连同缺少的父目录一起建
+- ### 已存在时命令失败
+
+可运行：`mkdir -p /tmp/a/b && ls /tmp/a`。
+
+**20. Linux cp 命令**
+
+- ### 把文件复制到新路径
+- ### 目标是目录时保留原名
+- ### 复制目录需要递归
+
+可运行：`echo hi > /tmp/one && cp /tmp/one /tmp/two && cat /tmp/two`。`cp -r` 用两个目录再跑一次。
+
+**21. Linux mv 命令**
+
+- ### 改名是同一文件系统上的移动
+- ### 目标已存在时会被换掉
+- ### 移到别的目录要写完整目标
+
+可运行：`echo hi > /tmp/old && mv /tmp/old /tmp/new && ls /tmp/new`。
+
+**22. Linux rm 命令**
+
+- ### 删除文件
+- ### 删目录要加递归
+- ### 删掉的文件不会进回收站
+
+可运行：`echo hi > /tmp/gone && rm /tmp/gone && ls /tmp/gone`。第二条 `ls` 失败，整段脚本的退出码不是 0。文档块把 `ls` 放在 `||` 后面打印一句固定文本，让 `expect` 有稳定子串，退出码仍由哨兵带回。
+
+**23. Linux cat 命令**
+
+- ### 把文件内容写到标准输出
+- ### 多个文件按顺序接在一起
+- ### 没有参数时从标准输入读到 EOF
+
+可运行：文件版 `cat`。标准输入版用围栏 `stdin="林夏\n"`，期望输出里有这行。stdin 经 9p 文件重定向，不从串口读（§10.6）。
+
+**24. Linux chmod 命令**
+
+- ### 数字模式把九位写成三个八进制数
+- ### `u+x` 只给拥有者加执行
+- ### 改的是权限，不是文件内容
+
+可运行：`chmod 755` 之后 `ls -l` 里能看到 `rwxr-xr-x`。例子放在 `/tmp`。
+
+**25. Linux grep 命令**
+
+- ### 打印匹配的行
+- ### `-n` 带行号
+- ### 不匹配时退出码为 1
+
+可运行：`grep` 一个写死的词。退出码 1 的例子用 `||` 打印固定句子，避免 docs-smoke 把「没找到」当成失败，除非成书时给围栏增加 `exit` 断言。当前冒烟只检查输出子串和进程能结束。
+
+**26. Linux 管道**
+
+- ### 左边的标准输出接到右边的标准输入
+- ### 中间可以再接一条命令
+- ### 这是两个 BusyBox 进程，不是 Shell 那本里的内建管道
+
+可运行：`ls / | head` 或 `printf 'a\nb\n' | grep b`。期望是 BusyBox `head` 的默认行数之内的子串。
+
+**27. Linux 重定向**
+
+- ### `>` 把标准输出写进文件
+- ### `>>` 追加
+- ### `<` 从文件读标准输入
+
+可运行：`echo ada > /tmp/out && cat /tmp/out`。
+
+**28. Linux ps 命令**
+
+- ### `ps` 列出当前进程
+- ### BusyBox 的列和 procps 不一样
+- ### 看不到宿主机上的浏览器进程
+
+可运行：`ps`，期望里有 `sh` 或 `ps` 自己的名字。正文说明列标题以镜像为准。
+
+**29. Linux echo 命令**
+
+- ### `echo` 把参数打出来并换行
+- ### `-n` 不换行
+- ### 这是 `/bin/echo`，和 Shell 书里的内建不是同一个程序
+
+可运行。Shell 书继续讲 wasi-sh 的 `echo`。两边的期望各自写，不共用 60 字以上的说明段落。
+
+### 20.2 哪些例子能跑
+
+| 在镜像上可运行 | 标 `norun` |
+|---|---|
+| `ls`、`cd` 与后续命令写在同一次运行、`pwd`、`mkdir`、`cp`、`mv`、`rm`、`cat`、`chmod`、`grep`、`echo`、`ps`、`df`、`mount`、`id`、`whoami`、管道、重定向、`/proc/cmdline`、`/etc/os-release` | 安装、云服务器、WSL、忘记密码、`ssh`、`useradd`、`fdisk`、`mkfs`、`vim`、`yum`、`apt`、`reboot`、`passwd`、任何需要网络的命令 |
+
+`/mnt/host` 是文档 Run 放入 `main.sh` 的 9p 目录。教学例子优先写 `/tmp`，避免和这次运行的脚本文件搅在一起。需要演示「主机传来的文件」时，再 `ls /mnt/host`。
+
+BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不写整张表格。中文文件名可以出现在 `echo` 和 `cat` 里；`grep` 的图案先用镜像上实际编码试过再写进期望。
+
+### 20.3 点 Run 之后发生什么
+
+文档块的 info 以 `linux` 开头，并带 `run` 和 `expect`。`sh` 围栏不会进这台虚拟机。
+
+1. 按钮仍是 `RunButton`（`size="xs"`，文案 `Run`）。抽屉不盖住工具栏。
+2. 应用切到侧栏 Linux，必要时按清单下载 `libv86.mjs`、`v86.wasm`、BIOS、bzImage 和 `linux-state.zst`（Cache API，同源）。
+3. 用快照新建一台客户机，把块的正文写成 `/mnt/host/main.sh`。`stdin="…"` 写成 `/mnt/host/stdin.bin`。
+4. 串口执行 `sh /mnt/host/main.sh < /mnt/host/stdin.bin`，再打印 `__SC_EXIT:` 和退出码。标准输出进现有 xterm。哨兵行不留在读者看到的输出里，退出码显示在 Run 旁边，和别的语言一样。
+5. 跑完销毁这台实例。下一次文档 Run 看不到这次的 `/tmp` 文件。
+6. 人在底部终端里打字时，按键经 `serial0_send` 进同一台交互客户机（不是文档 Run 那台）。`ls`、`cd`、管道在那里保持，直到 Stop 或换语言。
+
+`smoke=skip` 仍算结构测试里的可运行块，docs-smoke 不执行它。Linux 成书前不要给会死循环的 `yes` 或 `tail -f` 加 `run`。无限输出的例子用 `norun`。
+
+成书之后 `tests/docs-length.test.ts` 的 `TUTORIAL` 才加上 `linux`。那时候的验收沿用 §19：至少 20 章，每章至少三个 `###`，引言不超过 180 个汉字，每节 1 到 400 个汉字，至少两个可运行块，并和另外十本书一起做 60 字不重复。
 
 
