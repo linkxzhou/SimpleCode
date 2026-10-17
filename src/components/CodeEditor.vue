@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { applyCommentTypography, EDITOR_FONT_SIZE, EDITOR_LINE_HEIGHT, type CommentThemeName } from "@/core/commentFont";
 import { monaco } from "@/core/monaco";
 import { useLanguageStore } from "@/stores/language";
 import { syntaxFor, useEditorStore } from "@/stores/editor";
@@ -27,12 +28,24 @@ function modelFor(id: string, syntax: string) {
   return m;
 }
 
+function themeName(dark: boolean): CommentThemeName {
+  return dark ? "simplecode-dark" : "simplecode-light";
+}
+
 onMounted(() => {
+  // Install the comment rule before the first frame so Monaco measures 13px
+  // comment glyphs instead of the 14px grid.
+  const initial = themeName(isDark.value);
+  monaco.editor.setTheme(initial);
+  applyCommentTypography(initial);
   editor = monaco.editor.create(el.value!, {
     automaticLayout: true,
     fontFamily: '"JetBrains Mono", "SimpleCode CJK", ui-monospace, SFMono-Regular, Menlo, monospace',
-    fontSize: 14,
-    lineHeight: 22,
+    fontSize: EDITOR_FONT_SIZE,
+    lineHeight: EDITOR_LINE_HEIGHT,
+    // ASCII lines otherwise position the cursor on the 14px grid and ignore
+    // the smaller comment spans. DOM measurement keeps clicks on the glyphs.
+    disableMonospaceOptimizations: true,
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
     padding: { top: 12 },
@@ -82,7 +95,11 @@ watch(
   },
   { flush: "post" },
 );
-watch(isDark, (d) => monaco.editor.setTheme(d ? "simplecode-dark" : "simplecode-light"));
+watch(isDark, (d) => {
+  const theme = themeName(d);
+  monaco.editor.setTheme(theme);
+  applyCommentTypography(theme);
+});
 
 onBeforeUnmount(() => {
   editor?.dispose();

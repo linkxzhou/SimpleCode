@@ -666,3 +666,22 @@ npm test                # vitest；npm run test:e2e → playwright
 - `reset` 清屏，再绑到新运行时。下载或运行途中换走也一样：旧尝试作废，完成回调不再写终端、不再改状态、不再把串口接回去
 
 界面语言「中 / EN」切换时，终端里的系统句（下载进度、就绪、失败、终止、崩溃）按新文案重画。程序自己打印的 stdout / stderr 保持原样。系统句在 `src/core/terminal.ts` 里记成消息键，`TerminalPane` 在 `locale` 变化时重放。
+
+---
+
+## 21. 注释字号比代码小 1px（2026-10-17）
+
+编辑器字号是 14px，行高 22px。注释经常是中文，和代码一样大，看起来偏大。Monaco 的 token 规则只有颜色和 `fontStyle`，没有按 token 设 `fontSize`。文档代码块是构建期 Shiki，不是 Monaco，这一节不改它们。
+
+### 21.1 做法
+
+两套主题都显式写 `token: "comment"`，颜色沿用继承来的注释色，并且这个颜色不跟别的 token 共用：浅色 `#008000`，深色 `#608b4e`。Monaco 按颜色生成 `.mtkN`。主题一切换，序号会变，所以不把 `N` 写死。`setTheme` 之后读 `style.monaco-colors`，找到这条颜色对应的类，再给 `.monaco-editor .view-lines span.mtkN` 加上 `font-size: 13px` 和 `line-height: 22px`。
+
+只改 `font-size` 时，纯 ASCII 注释行走 `FastRenderedViewLine`：光标按 `列 × spaceWidth` 画，不看变窄的 DOM。实测一行 ASCII 注释的光标会漂出十几个像素。中文行本来就不是 basic ASCII，光标读 DOM，能跟着字形走。因此编辑器打开 `disableMonospaceOptimizations`，ASCII 注释也改读 DOM。打开之后，代码、ASCII 注释、中文注释的光标和字形边界的偏差都停在原来大约 1.4px 的亚像素误差里；`.view-line` 和光标高度仍是 22px。字形框底边不动，只是 13px 的字框矮 1px，所以行高和基线不动。
+
+不用 `letter-spacing` 把 ASCII 垫回 14px 的格子。那样光标也能对齐，但汉字的前进宽度只小约 0.6px，字与字之间多出空隙，不是「小一号」。
+
+### 21.2 不改的东西
+
+- 代码、字符串里的汉字仍是 14px，CJK 回退仍是 `SimpleCode CJK` 的 `size-adjust: 120%`。注释 span 字号变成 13px 之后，同一套回退让汉字大约 15.6px 宽（代码里大约 16.8px）。
+- 文档抽屉的 Shiki 块不走这套类名。
