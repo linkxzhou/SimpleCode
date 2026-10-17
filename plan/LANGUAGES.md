@@ -854,6 +854,8 @@ evcxr（https://github.com/evcxr/evcxr）是本机求值器，内部还是启动
 
 **下载。** 带 COEP 的页面 `fetch` GitHub Release 失败：`release-assets.githubusercontent.com` 没有 `Access-Control-Allow-Origin`。同一页面能读 `https://weblings.forest-anderson.ca/rustc/assets-meta.json`，体积与上面两份解包一致。2026-10-16 用浏览器 UA 把演示站的 `rustc.wasm` 和 `sysroot-wasip1.bundle` 下到本机，sha256 与 lock 相同。页面先找同源 `wasm/rust/`，再找这两条演示 URL，然后核对 sha256。缓存名 `simplecode-rustc-v1`，与 `simplecode-wasm-v1` 分开。Node 侧的 `vendor --rust` 仍从 GitHub 下 zstd，不受页面 COEP 限制。
 
+同源 404 不再走 `fetchPinned` 的第二次 `cache: "reload"`。那次重试是为了空正文和被缓存成首页的 200；文件确实不存在时再请求一次，静态服务器的日志里同一条 `?v=` 会出现两次，而且读 404 正文时服务工作线程可能把请求收成 `AbortError: signal is aborted without reason`。`loadOne` 以前把任何 `AbortError` 原样抛出，上游一次都不会开始，侧栏的 `select` 事件把这个拒绝交给 Vue。现在 404 只请求一次就换上游；调用方的 `AbortSignal` 已经 abort 才算用户换了语言，这个错误在 `select` 里吞掉，不冒到点击处理函数。信号还活着的 `AbortError` 当成这次地址失败，继续下一条。
+
 **运行段。** 编译器留在自己的 Worker：它要整份 sysroot 和 `CLIF2WASM_OBJECT=1`，不是一条交给现有宿主的命令。成功后的字节写到 `/program.wasm`，`RunSession` 用原来的 `fsPath` 执行。编译错误打到终端。侧栏文案是 Rust，图标是单色 `Rs`，默认文件 `main.rs`。
 
 **书。** `docs/rust/` 28 章，目录形状对照菜鸟教程，正文原创。`docs-smoke` 默认跳过 Rust，避免 CI 每次都拉这 152 MB。`SIMPLECODE_RUST_DOCS=1` 才跑书里的块。

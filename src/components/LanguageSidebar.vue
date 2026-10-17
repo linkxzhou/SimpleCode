@@ -25,6 +25,15 @@ const cacheText = computed(() => formatMB(langs.usage));
 async function clear() {
   if (confirm(t("clearCacheConfirm"))) await langs.clearCache();
 }
+
+function choose(id: string) {
+  // Do not return the promise. Vue reports a rejection from this handler as
+  // an uncaught error on `onSelect`, including AbortError from a language switch.
+  void langs.select(id).catch((err: unknown) => {
+    if ((err as { name?: string } | null)?.name === "AbortError") return;
+    console.error(err);
+  });
+}
 </script>
 
 <template>
@@ -112,7 +121,7 @@ async function clear() {
         :size="langs.sizeOf(lang)"
         :selected="lang.id === langs.selectedId"
         :collapsed="props.collapsed"
-        @select="langs.select(lang.id)"
+        @select="choose(lang.id)"
       />
     </nav>
 

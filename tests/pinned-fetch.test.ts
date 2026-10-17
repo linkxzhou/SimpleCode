@@ -210,6 +210,48 @@ describe("fetchPinned", () => {
     assert.deepEqual(bytes, good);
   });
 
+  it("does not reload a 404 when retryNotFound is false", async () => {
+    let calls = 0;
+    await assert.rejects(
+      () =>
+        fetchPinned({
+          url: "/wasm/rust/rustc.wasm",
+          version: SHA,
+          expectBytes: 4,
+          retryNotFound: false,
+          fetchImpl: (async () => {
+            calls += 1;
+            return responseFor("missing", 404, "text/plain");
+          }) as typeof fetch,
+        }),
+      (err: unknown) => {
+        assert.ok(err instanceof PinnedMissing);
+        assert.equal(err.reason, "HTTP 404");
+        return true;
+      },
+    );
+    assert.equal(calls, 1);
+  });
+
+  it("still reloads an empty body when 404 retries are off", async () => {
+    const good = wasmBytes(4);
+    const caches: Array<RequestCache | undefined> = [];
+    const bytes = await fetchPinned({
+      url: "/wasm/a.wasm",
+      version: SHA,
+      expectBytes: 4,
+      wasm: true,
+      retryNotFound: false,
+      fetchImpl: (async (_input: RequestInfo | URL, init?: RequestInit) => {
+        caches.push(init?.cache);
+        if (caches.length === 1) return responseFor(new Uint8Array(), 200, "application/wasm");
+        return responseFor(good, 200, "application/wasm");
+      }) as typeof fetch,
+    });
+    assert.deepEqual(bytes, good);
+    assert.deepEqual(caches, ["no-cache", "reload"]);
+  });
+
   it("does not retry an abort", async () => {
     let calls = 0;
     const aborted = new Error("aborted");
