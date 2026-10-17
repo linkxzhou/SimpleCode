@@ -33,11 +33,8 @@ function themeName(dark: boolean): CommentThemeName {
 }
 
 onMounted(() => {
-  // Install the comment rule before the first frame so Monaco measures 13px
-  // comment glyphs instead of the 14px grid.
   const initial = themeName(isDark.value);
   monaco.editor.setTheme(initial);
-  applyCommentTypography(initial);
   editor = monaco.editor.create(el.value!, {
     automaticLayout: true,
     fontFamily: '"JetBrains Mono", "SimpleCode CJK", ui-monospace, SFMono-Regular, Menlo, monospace',
@@ -59,6 +56,9 @@ onMounted(() => {
   });
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => void run.run());
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Period, () => run.stop());
+  // The .mtk stylesheet is created with the editor. Apply before the first
+  // animation frame so Monaco measures the 13px comment glyphs.
+  applyCommentTypography(initial);
   (globalThis as unknown as { __simplecodeEditor: typeof editor }).__simplecodeEditor = editor;
 });
 

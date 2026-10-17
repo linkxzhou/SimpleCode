@@ -675,7 +675,7 @@ npm test                # vitest；npm run test:e2e → playwright
 
 ### 21.1 做法
 
-两套主题都显式写 `token: "comment"`，颜色沿用继承来的注释色，并且这个颜色不跟别的 token 共用：浅色 `#008000`，深色 `#608b4e`。Monaco 按颜色生成 `.mtkN`。主题一切换，序号会变，所以不把 `N` 写死。`setTheme` 之后读 `style.monaco-colors`，找到这条颜色对应的类，再给 `.monaco-editor .view-lines span.mtkN` 加上 `font-size: 13px` 和 `line-height: 22px`。
+两套主题都显式写 `token: "comment"`，颜色沿用继承来的注释色，并且这个颜色不跟别的 token 共用：浅色 `#008000`，深色 `#608b4e`。Monaco 按颜色生成 `.mtkN`。浅色注释是 `.mtk8`，深色注释是另一个序号（关键字会占用浅色里的那个序号），所以不把 `N` 写死。`style.monaco-colors` 要等编辑器创建出来才插入页面。创建之后、以及每次 `setTheme` 之后，读这份样式，找到注释色对应的类，再给 `.monaco-editor .view-lines span.mtkN` 加上 `font-size: 13px` 和 `line-height: 22px`。这次查找发生在第一帧绘制之前，Monaco 量到的就是缩小后的字形。
 
 只改 `font-size` 时，纯 ASCII 注释行走 `FastRenderedViewLine`：光标按 `列 × spaceWidth` 画，不看变窄的 DOM。实测一行 ASCII 注释的光标会漂出十几个像素。中文行本来就不是 basic ASCII，光标读 DOM，能跟着字形走。因此编辑器打开 `disableMonospaceOptimizations`，ASCII 注释也改读 DOM。打开之后，代码、ASCII 注释、中文注释的光标和字形边界的偏差都停在原来大约 1.4px 的亚像素误差里；`.view-line` 和光标高度仍是 22px。字形框底边不动，只是 13px 的字框矮 1px，所以行高和基线不动。
 
