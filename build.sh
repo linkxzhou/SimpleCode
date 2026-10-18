@@ -91,7 +91,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/wasm-static.test.mjs
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then

@@ -15,6 +15,7 @@ import "monaco-editor/esm/vs/basic-languages/shell/shell.contribution";
 import "monaco-editor/esm/vs/basic-languages/rust/rust.contribution";
 import "monaco-editor/esm/vs/basic-languages/java/java.contribution";
 import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
+import { COMMENT_THEME_COLOR } from "@/core/commentFont";
 
 (self as unknown as { MonacoEnvironment: monaco.Environment }).MonacoEnvironment = {
   getWorker: () => new EditorWorker(),
@@ -23,7 +24,7 @@ import EditorWorker from "monaco-editor/esm/vs/editor/editor.worker?worker";
 monaco.editor.defineTheme("simplecode-light", {
   base: "vs",
   inherit: true,
-  rules: [],
+  rules: [{ token: "comment", foreground: COMMENT_THEME_COLOR["simplecode-light"] }],
   colors: {
     "editor.background": "#ffffff",
     "editorLineNumber.foreground": "#a1a1aa",
@@ -35,7 +36,7 @@ monaco.editor.defineTheme("simplecode-light", {
 monaco.editor.defineTheme("simplecode-dark", {
   base: "vs-dark",
   inherit: true,
-  rules: [],
+  rules: [{ token: "comment", foreground: COMMENT_THEME_COLOR["simplecode-dark"] }],
   colors: {
     "editor.background": "#09090b",
     "editorLineNumber.foreground": "#52525b",
