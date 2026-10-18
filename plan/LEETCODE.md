@@ -642,4 +642,5 @@ Java 的提交文件是一整份 `Main.java`：上游的 `Solution` 改成包内
 - Python 题解顺序按 §7.1：kamyu104，然后 neetcode，然后 pattern-500，然后 doocs。doocs 只有 118、129、223 三份，许可证保持 CC BY-SA 4.0。
 - 样例在本机 CPython 上对照通过。浏览器冒烟是 `tests/leetcode-smoke.mjs`，默认只跑 Python `core`。Java 要 `SIMPLECODE_JAVA_LEETCODE=1`，Rust 要 `SIMPLECODE_RUST_LEETCODE=1`。
 - QuickJS 没有题解文件，§7.3 的 stdin 探测没有跑。
-- 题解按题动态导入。`./build.sh build` 在日志里打印 `js chunks` 的数量。
+- 题解按题动态导入。`./build.sh build` 在日志里打印 `js chunks` 的数量。这次是 1544。
+- `./build.sh test` 含 `leetcode-smoke` 的 200 道 Python。没有把 Python 挪出默认列表。Java / Rust 题解文件不存在，仍由 `SIMPLECODE_JAVA_LEETCODE` 和 `SIMPLECODE_RUST_LEETCODE` 打开。
