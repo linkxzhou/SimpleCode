@@ -3,7 +3,9 @@
 // esbuild bundles this module into the Vite config and rejects a mid-stream #!.
 // The manifest is generated, not committed: Lua's wasm is not byte-stable on
 // Apple Silicon, so a Linux digest checked in beside a local binary fails the
-// size check at download time.
+// size check at download time. The committed Rust toolchain under wasm/rust/
+// is not an entry here: rustc is not a WASI command, and the sysroot bundle
+// is not gzip.
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";

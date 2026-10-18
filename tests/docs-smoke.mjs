@@ -12,7 +12,7 @@ const PORT = Number(process.env.DOCS_PORT ?? 4321);
 const BASE = `http://127.0.0.1:${PORT}`;
 // linux boots once on the first block (language ensure). Later blocks restore the
 // same snapshot inside the guest instead of cold-booting again.
-// Rust docs-smoke is opt-in: each block compiles in the ~152 MB weblings toolchain.
+// Rust docs-smoke is opt-in: each block compiles with the committed weblings toolchain.
 // SIMPLECODE_RUST_DOCS=1 runs those blocks. The hello-world smoke still covers Rust.
 // Java docs-smoke is opt-in for the same reason: every block compiles to Wasm GC.
 // SIMPLECODE_JAVA_DOCS=1 runs those blocks. tests/smoke.mjs still covers Java.

@@ -70,12 +70,19 @@ describe("manifest refresh", () => {
 
   it("is not a tracked file, so pull cannot restore a foreign digest", () => {
     const ignore = readFileSync(".gitignore", "utf8");
-    assert.match(ignore, /^wasm\/$/m);
+    assert.match(ignore, /^wasm\/\*$/m);
     assert.doesNotMatch(ignore, /!wasm\/manifest\.json/);
+    assert.match(ignore, /!wasm\/rust\/rustc\.wasm/);
     const listed = spawnSync("git", ["ls-files", "--", "wasm/manifest.json"], { encoding: "utf8" });
     assert.equal(listed.status, 0);
     assert.equal(listed.stdout.trim(), "");
     const check = spawnSync("git", ["check-ignore", "-q", "wasm/manifest.json"]);
     assert.equal(check.status, 0);
+    const rustc = spawnSync("git", ["check-ignore", "-q", "wasm/rust/rustc.wasm"]);
+    assert.notEqual(rustc.status, 0);
+    const bundle = spawnSync("git", ["check-ignore", "-q", "wasm/rust/sysroot-wasip1.bundle"]);
+    assert.notEqual(bundle.status, 0);
+    const other = spawnSync("git", ["check-ignore", "-q", "wasm/python-3.11.3.wasm"]);
+    assert.equal(other.status, 0);
   });
 });
