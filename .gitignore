@@ -18,7 +18,14 @@ dist-ssr/
 # manifest.json records size/sha256 of the files on disk. Lua's wasm is not
 # byte-stable on Apple Silicon, so a committed Linux manifest must not be
 # checked back out over a locally built binary.
-wasm/
+# The Rust toolchain is committed (both files are under GitHub's 100 MB limit).
+# Ignore the directory contents, then put those three paths back.
+wasm/*
+!wasm/rust/
+wasm/rust/*
+!wasm/rust/rustc.wasm
+!wasm/rust/sysroot-wasip1.bundle
+!wasm/rust/SOURCES.md
 
 # third-party source and toolchain caches (clone / vendor separately, see README)
 thirdparty/runno/

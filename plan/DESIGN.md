@@ -295,8 +295,9 @@ flowchart TD
 SimpleCode/
 ├── plan/DESIGN.md                 # 本文件
 ├── thirdparty/runno/              # 上游源码（只读参考，不修改）
-├── wasm/                          # ★ 语言二进制（脚本从 thirdparty/runno/langs 复制；.gitignore 或 Git LFS）
+├── wasm/                          # ★ 语言二进制（脚本从 thirdparty/runno/langs 复制；默认 gitignore）
 │   ├── manifest.json              # 由脚本按磁盘文件生成（含 size/sha256），不提交
+│   └── rust/                      # 例外：提交 rustc.wasm 与 sysroot-wasip1.bundle，不进 manifest
 │   ├── python-3.11.3.wasm  python-3.11.3.tar.gz
 │   ├── ruby-3.2.0.wasm     ruby-3.2.0.tar.gz
 │   ├── wasmedge_quickjs.wasm  sqlite.wasm  php-cgi-8.2.0.wasm

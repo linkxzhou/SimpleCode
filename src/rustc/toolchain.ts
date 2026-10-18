@@ -1,8 +1,7 @@
-// Lazy weblings toolchain. Not part of the default wasm/ manifest.
-// GitHub Release assets do not send CORS, so a COEP page cannot read them.
-// `./build.sh vendor --rust` verifies those archives and writes the unpacked
-// files under wasm/rust/. Otherwise the page fetches the same bytes from the
-// weblings demo, which does send Access-Control-Allow-Origin.
+// Lazy weblings toolchain. The two files are committed under wasm/rust/ and
+// are not part of the default wasm/ manifest. The page loads only those
+// same-origin copies. `./build.sh vendor --rust --refresh` re-downloads the
+// pinned GitHub archives into that directory.
 import { sha256Hex } from "@/core/pinned-fetch";
 import lock from "../../scripts/sources.lock.json";
 import { fetchRustAsset } from "./fallback";
@@ -13,7 +12,6 @@ interface UnpackedPin {
   bytes: number;
   sha256: string;
   sameOrigin: string;
-  upstream: string;
 }
 
 const rust = lock.rust;
@@ -22,13 +20,11 @@ const pins: Record<"rustc" | "bundle", UnpackedPin> = {
     bytes: rust.unpacked["rustc.wasm"].bytes,
     sha256: rust.unpacked["rustc.wasm"].sha256,
     sameOrigin: rust.unpacked["rustc.wasm"].sameOrigin,
-    upstream: rust.unpacked["rustc.wasm"].upstream,
   },
   bundle: {
     bytes: rust.unpacked["sysroot-wasip1.bundle"].bytes,
     sha256: rust.unpacked["sysroot-wasip1.bundle"].sha256,
     sameOrigin: rust.unpacked["sysroot-wasip1.bundle"].sameOrigin,
-    upstream: rust.unpacked["sysroot-wasip1.bundle"].upstream,
   },
 };
 
@@ -97,19 +93,15 @@ async function loadOne(
     return cached;
   }
   const pin = pins[kind];
-  // Upstream URLs stay unversioned. A `?v=` query can miss a CDN that does not expect it.
   const bytes = await fetchRustAsset({
     kind,
-    attempts: [
-      { url: `${import.meta.env.BASE_URL}${pin.sameOrigin}`, version: pin.sha256 },
-      { url: pin.upstream },
-    ],
+    url: `${import.meta.env.BASE_URL}${pin.sameOrigin}`,
+    version: pin.sha256,
     bytes: pin.bytes,
     sha256: pin.sha256,
     wasm: kind === "rustc",
     signal,
     onBytes,
-    upstream: pin.upstream,
   });
   await writeCache(kind, bytes);
   return bytes;

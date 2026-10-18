@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-// Opt-in: download pinned weblings artifacts, check sha256, unpack the two
-// files the browser worker needs into wasm/rust/. Not part of default vendor.
+// Download pinned weblings artifacts, check sha256, unpack the two files the
+// browser worker needs into wasm/rust/. Those files are committed. This script
+// is not part of default vendor. Pass --refresh to re-download the GitHub
+// archives even when wasm/rust/ already matches the lock.
 import { createHash } from "node:crypto";
-import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
@@ -55,19 +57,23 @@ function already(name, pin) {
   return buf.length === pin.bytes && sha256(buf) === pin.sha256;
 }
 
+const refresh = process.argv.includes("--refresh");
 mkdirSync(outDir, { recursive: true });
 const wanted = Object.entries(lock.unpacked);
-if (wanted.every(([name, pin]) => already(name, pin))) {
+if (!refresh && wanted.every(([name, pin]) => already(name, pin))) {
   console.log("✓ wasm/rust already matches sources.lock.json");
   process.exit(0);
 }
 
 const tmp = join(root, "wasm/.rust-tmp");
 mkdirSync(tmp, { recursive: true });
+if (refresh) {
+  for (const assetName of Object.keys(lock.assets)) rmSync(join(tmp, assetName), { force: true });
+}
 
 for (const [assetName, asset] of Object.entries(lock.assets)) {
   const dest = join(tmp, assetName);
-  if (!existsSync(dest) || readFileSync(dest).length !== asset.bytes) {
+  if (refresh || !existsSync(dest) || readFileSync(dest).length !== asset.bytes) {
     console.log(`↓ ${assetName}`);
     await download(asset.url, dest);
   }
@@ -89,4 +95,4 @@ for (const [assetName, asset] of Object.entries(lock.assets)) {
   console.log(`✓ ${asset.extract} ${file.byteLength} ${pin.sha256.slice(0, 12)}`);
 }
 
-console.log("✓ wasm/rust ready (not part of the default language manifest)");
+console.log("✓ wasm/rust ready (committed; not part of the default language manifest)");

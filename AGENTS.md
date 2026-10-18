@@ -30,7 +30,7 @@
 
 资源在 `wasm/`。`scripts/languages.config.mjs` 列出资产和语言。`scripts/write-manifest.mjs` 按磁盘文件生成 `wasm/manifest.json`（`size`、`sha256`）。该文件 gitignore，不提交。`src/core/wasmLoader.ts` 用 Cache API（`simplecode-wasm-v1`）缓存，并用清单里的 `size` 核对。
 
-语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`rust`、`java`、`linux`（界面文案 Linux，短标签 `Lx`；Java 短标签 `Jv`）。Rust 不进默认 `./build.sh vendor`，也不写进 `wasm/manifest.json`。`./build.sh vendor --rust` 校验 pin 后把 `rustc.wasm` 和 `sysroot-wasip1.bundle` 放到 `wasm/rust/`。没跑这条命令时，页面从 pin 住的演示地址下载同一对文件，并用 Cache API（`simplecode-rustc-v1`）缓存。GitHub Release 资产在 COEP 页面里没有 CORS，不能当浏览器下载地址。Java 同样不进默认 vendor 和清单。`./build.sh vendor --java` 校验 pin 后把四份 TeaVM 文件放到 `wasm/java/`。页面只读这四份同源文件，Cache API 名是 `simplecode-teavm-v1`。`teavm.org` 没有 CORS，不能当浏览器下载地址。同源钉住的文件请求带 `?v=`（sha256 前 12 位），先 `cache: "no-cache"`，不对再 `cache: "reload"` 一次。空正文或短正文也走这次重试。dev 和 preview 里缺失的 `/wasm/**` 是 404，不是首页；存在的文件响应是 `Cache-Control: no-cache`。
+语言 id：`python`、`ruby`、`quickjs`（界面文案 JS/TS）、`sqlite`、`clang`、`clangpp`、`php-cgi`、`lua`、`go`、`shell`、`rust`、`java`、`linux`（界面文案 Linux，短标签 `Lx`；Java 短标签 `Jv`）。Rust 的 `rustc.wasm` 和 `sysroot-wasip1.bundle` 提交在 `wasm/rust/`，不写进 `wasm/manifest.json`。页面只从同源读这两份，Cache API 名是 `simplecode-rustc-v1`。`./build.sh vendor --rust` 在文件与 pin 一致时跳过；`--refresh` 再从 GitHub Release 的 zstd 校验并覆盖。GitHub Release 资产在 COEP 页面里没有 CORS，不能当浏览器下载地址。Java 同样不进默认 vendor 和清单。`./build.sh vendor --java` 校验 pin 后把四份 TeaVM 文件放到 `wasm/java/`。页面只读这四份同源文件，Cache API 名是 `simplecode-teavm-v1`。`teavm.org` 没有 CORS，不能当浏览器下载地址。同源钉住的文件请求带 `?v=`（sha256 前 12 位），先 `cache: "no-cache"`，不对再 `cache: "reload"` 一次。空正文或短正文也走这次重试。dev 和 preview 里缺失的 `/wasm/**` 是 404，不是首页；存在的文件响应是 `Cache-Control: no-cache`。
 
 ## 技术栈和命令
 

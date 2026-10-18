@@ -38,8 +38,9 @@ cmd_install() {
 
 cmd_vendor() {
   if [ "${1:-}" = "--rust" ]; then
-    info "Vendoring the weblings Rust toolchain → wasm/rust/ (not the default manifest)"
-    node scripts/vendor-rust.mjs
+    shift
+    info "Vendoring the weblings Rust toolchain → wasm/rust/ (committed; not the default manifest)"
+    node scripts/vendor-rust.mjs "$@"
     return
   fi
   if [ "${1:-}" = "--java" ]; then
@@ -61,6 +62,9 @@ cmd_build() {
   need_deps; need_wasm
   if [ ! -f wasm/java/compiler.wasm ]; then
     echo "${c_bold}⚠ wasm/java is missing — run ./build.sh vendor --java, then rebuild dist${c_off}" >&2
+  fi
+  if [ ! -f wasm/rust/rustc.wasm ] || [ ! -f wasm/rust/sysroot-wasip1.bundle ]; then
+    echo "${c_bold}⚠ wasm/rust is missing — the toolchain is committed; restore wasm/rust and rebuild dist${c_off}" >&2
   fi
   info "Type-checking"
   yarn vue-tsc --noEmit
@@ -91,7 +95,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/rust-no-remote.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -121,8 +125,16 @@ cmd_clean() {
   info "Removing dist/ and Vite cache"
   rm -rf dist node_modules/.vite
   if [ "${1:-}" = "--all" ]; then
-    info "Removing node_modules/ and wasm/ binaries"
-    rm -rf node_modules wasm
+    info "Removing node_modules/ and generated wasm/ binaries"
+    rm -rf node_modules
+    if [ -d wasm ]; then
+      find wasm -mindepth 1 -maxdepth 1 ! -name rust -exec rm -rf {} +
+      if [ -d wasm/rust ]; then
+        find wasm/rust -mindepth 1 \
+          ! -name rustc.wasm ! -name sysroot-wasip1.bundle ! -name SOURCES.md \
+          -exec rm -rf {} +
+      fi
+    fi
   fi
 }
 
@@ -134,7 +146,8 @@ Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
   vendor [--link|--rust|--java]  Copy wasm runtimes from thirdparty/runno/langs into wasm/,
-                     --rust downloads the pinned weblings toolchain into wasm/rust/.
+                     --rust checks the pinned weblings toolchain in wasm/rust/ (committed).
+                     --rust --refresh re-downloads those archives from GitHub and overwrites wasm/rust/.
                      --java downloads the pinned TeaVM files into wasm/java/.
                      Neither flag adds those files to the default manifest.
                      build Lua and Go (scripts/builders; Linux or macOS, x86_64 or arm64), and
@@ -146,7 +159,8 @@ Usage: ./build.sh <command> [args]
   preview | run      Serve dist/ with COOP/COEP headers (http://localhost:4173)
   test [--docs|--smoke]  Headless tests. Default: unit + mono + smoke + static COI + docs-smoke + learn UI.
                      --docs runs the tutorial smoke test; --smoke runs the language hello-world smoke test.
-  clean [--all]      Remove dist/ (and node_modules/, wasm/ with --all)
+  clean [--all]      Remove dist/ (and node_modules/ plus generated wasm/ with --all;
+                     the committed wasm/rust toolchain stays)
   help               Show this help
 
 Environment: HOST (default localhost), PORT

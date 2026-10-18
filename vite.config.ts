@@ -113,6 +113,9 @@ function wasmAssets(): Plugin {
       if (!existsSync(join(wasmDir, "java/compiler.wasm"))) {
         this.warn("wasm/java is missing — run ./build.sh vendor --java, then rebuild dist");
       }
+      if (!existsSync(join(wasmDir, "rust/rustc.wasm")) || !existsSync(join(wasmDir, "rust/sysroot-wasip1.bundle"))) {
+        this.warn("wasm/rust is missing — the toolchain is committed; restore wasm/rust and rebuild dist");
+      }
     },
     configureServer(server) {
       syncManifest((message) => server.config.logger.warn(message));
@@ -148,7 +151,7 @@ function wasmAssets(): Plugin {
 export default defineConfig({
   plugins: [docsPlugin(), vue(), wasmAssets()],
   resolve: { alias: { "@": resolve(__dirname, "src") } },
-  server: { headers: isolationHeaders, watch: { ignored: ["**/thirdparty/**"] } },
+  server: { headers: isolationHeaders, watch: { ignored: ["**/thirdparty/**", "**/wasm/**"] } },
   preview: { headers: isolationHeaders },
   worker: { format: "es" },
   build: { target: "es2022", chunkSizeWarningLimit: 4096 },

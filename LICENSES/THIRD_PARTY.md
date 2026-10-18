@@ -117,7 +117,14 @@ The binary links wasi-libc from wasi-sdk (MIT, BSD, and Apache-2.0; see the wasi
 
 ## Rust (weblings)
 
-Not part of the default `./build.sh vendor`. `./build.sh vendor --rust` checks the pinned `artifacts-test-7` archives from [AngelOnFira/wasm-rustc](https://github.com/AngelOnFira/wasm-rustc/releases/tag/artifacts-test-7) and writes `wasm/rust/rustc.wasm` plus `wasm/rust/sysroot-wasip1.bundle`. The page may also fetch those two unpacked files from the weblings demo. Digests are in `scripts/sources.lock.json`.
+The unpacked files are committed at `wasm/rust/rustc.wasm` (87,871,387 bytes, sha256 `41412081eefc3e08ec5664ed0748902a7e575e1f267898dcc64d412702df7e83`) and `wasm/rust/sysroot-wasip1.bundle` (71,313,335 bytes, sha256 `6dba13d6077cb7936ed6661cd1087bc9e92dc1d8b35903ecf22881c97ac3980b`). They are not part of `wasm/manifest.json`. The page loads only these same-origin copies.
+
+`./build.sh vendor --rust` checks the pinned `artifacts-test-7` archives and skips when those files already match. `./build.sh vendor --rust --refresh` downloads them again:
+
+- `rustc.wasm` comes from [rustc-wasm.tar.zst](https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/rustc-wasm.tar.zst) (sha256 `a96f6d53afff3c95d6387def27f6ddb53a02575679dc6c981d60797c32dcd022`). The same bytes were published at `https://weblings.forest-anderson.ca/rustc/rustc.wasm`.
+- `sysroot-wasip1.bundle` comes from [wasip1-sysroot.tar.zst](https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/wasip1-sysroot.tar.zst) (sha256 `4eedff7b0cd4330bfe226734b67751a97fac5572ac55392e93f9d3e4886a277d`). The same bytes were published at `https://weblings.forest-anderson.ca/rustc/sysroot-wasip1.bundle`.
+
+Digests are also in `scripts/sources.lock.json` and `wasm/rust/SOURCES.md`. The demo host is not a runtime download.
 
 - [weblings](https://github.com/AngelOnFira/weblings) — MIT. The compiler worker in `src/rustc/worker.js` follows its `app/public/worker.js`.
 - rustc and Cranelift (`rustc_codegen_cranelift`) — MIT OR Apache-2.0. The wasm binary is the pinned artifact above.
