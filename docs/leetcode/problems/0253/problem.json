@@ -1,0 +1,35 @@
+{
+  "id": 253,
+  "slug": "meeting-rooms-ii",
+  "summary": "公开题名是「会议室 II」。从标准输入读取按参数顺序排列的若干记号，只根据这些值完成题名所说的计算，把结果写成一个整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "0\n",
+      "stdout": "0\n",
+      "note": "对照时去掉末尾换行后再比较。输入是按参数顺序排列的若干记号。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/meeting-rooms-ii/",
+    "en": "https://leetcode.com/problems/meeting-rooms-ii/"
+  },
+  "io": {
+    "kind": "list[list[int]]",
+    "out": "int"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "tiationg-kho/leetcode-pattern-500",
+      "sourceUrl": "https://github.com/tiationg-kho/leetcode-pattern-500/blob/c3ee9ee6e40d386600e0a3545844350a264c5b56/%5BH%5Darray/%5BH%5Darray-line-sweep/253-meeting-rooms-ii.py",
+      "sourceRevision": "c3ee9ee6e40d386600e0a3545844350a264c5b56",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2023 Tiationg Kho",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

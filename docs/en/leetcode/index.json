@@ -1,0 +1,3956 @@
+[
+  {
+    "id": 1,
+    "slug": "two-sum",
+    "title": "Two Sum",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 2,
+    "slug": "add-two-numbers",
+    "title": "Add Two Numbers",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 3,
+    "slug": "longest-substring-without-repeating-characters",
+    "title": "Longest Substring Without Repeating Characters",
+    "difficulty": "medium",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 4,
+    "slug": "median-of-two-sorted-arrays",
+    "title": "Median of Two Sorted Arrays",
+    "difficulty": "hard",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 5,
+    "slug": "longest-palindromic-substring",
+    "title": "Longest Palindromic Substring",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 7,
+    "slug": "reverse-integer",
+    "title": "Reverse Integer",
+    "difficulty": "medium",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 10,
+    "slug": "regular-expression-matching",
+    "title": "Regular Expression Matching",
+    "difficulty": "hard",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 11,
+    "slug": "container-with-most-water",
+    "title": "Container With Most Water",
+    "difficulty": "medium",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 12,
+    "slug": "integer-to-roman",
+    "title": "Integer to Roman",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 14,
+    "slug": "longest-common-prefix",
+    "title": "Longest Common Prefix",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 15,
+    "slug": "3sum",
+    "title": "3Sum",
+    "difficulty": "medium",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 16,
+    "slug": "3sum-closest",
+    "title": "3Sum Closest",
+    "difficulty": "medium",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 17,
+    "slug": "letter-combinations-of-a-phone-number",
+    "title": "Letter Combinations of a Phone Number",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 19,
+    "slug": "remove-nth-node-from-end-of-list",
+    "title": "Remove Nth Node From End of List",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 20,
+    "slug": "valid-parentheses",
+    "title": "Valid Parentheses",
+    "difficulty": "easy",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 21,
+    "slug": "merge-two-sorted-lists",
+    "title": "Merge Two Sorted Lists",
+    "difficulty": "easy",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 22,
+    "slug": "generate-parentheses",
+    "title": "Generate Parentheses",
+    "difficulty": "medium",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 23,
+    "slug": "merge-k-sorted-lists",
+    "title": "Merge K Sorted Lists",
+    "difficulty": "hard",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 24,
+    "slug": "swap-nodes-in-pairs",
+    "title": "Swap Nodes In Pairs",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 25,
+    "slug": "reverse-nodes-in-k-group",
+    "title": "Reverse Nodes In K Group",
+    "difficulty": "hard",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 29,
+    "slug": "divide-two-integers",
+    "title": "Divide Two Integers",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 33,
+    "slug": "search-in-rotated-sorted-array",
+    "title": "Search In Rotated Sorted Array",
+    "difficulty": "medium",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 34,
+    "slug": "find-first-and-last-position-of-element-in-sorted-array",
+    "title": "Find First And Last Position of Element In Sorted Array",
+    "difficulty": "medium",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 35,
+    "slug": "search-insert-position",
+    "title": "Search Insert Position",
+    "difficulty": "easy",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 36,
+    "slug": "valid-sudoku",
+    "title": "Valid Sudoku",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 37,
+    "slug": "sudoku-solver",
+    "title": "Sudoku Solver",
+    "difficulty": "hard",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 39,
+    "slug": "combination-sum",
+    "title": "Combination Sum",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 40,
+    "slug": "combination-sum-ii",
+    "title": "Combination Sum II",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 41,
+    "slug": "first-missing-positive",
+    "title": "First Missing Positive",
+    "difficulty": "hard",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 42,
+    "slug": "trapping-rain-water",
+    "title": "Trapping Rain Water",
+    "difficulty": "hard",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 43,
+    "slug": "multiply-strings",
+    "title": "Multiply Strings",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 45,
+    "slug": "jump-game-ii",
+    "title": "Jump Game II",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 46,
+    "slug": "permutations",
+    "title": "Permutations",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 48,
+    "slug": "rotate-image",
+    "title": "Rotate Image",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 49,
+    "slug": "group-anagrams",
+    "title": "Group Anagrams",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 50,
+    "slug": "powx-n",
+    "title": "Pow(x, n)",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 51,
+    "slug": "n-queens",
+    "title": "N Queens",
+    "difficulty": "hard",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 53,
+    "slug": "maximum-subarray",
+    "title": "Maximum Subarray",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 54,
+    "slug": "spiral-matrix",
+    "title": "Spiral Matrix",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 55,
+    "slug": "jump-game",
+    "title": "Jump Game",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 56,
+    "slug": "merge-intervals",
+    "title": "Merge Intervals",
+    "difficulty": "medium",
+    "tags": [
+      "interval"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 57,
+    "slug": "insert-interval",
+    "title": "Insert Interval",
+    "difficulty": "medium",
+    "tags": [
+      "interval"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 62,
+    "slug": "unique-paths",
+    "title": "Unique Paths",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 64,
+    "slug": "minimum-path-sum",
+    "title": "Minimum Path Sum",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 66,
+    "slug": "plus-one",
+    "title": "Plus One",
+    "difficulty": "easy",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "neetcode150"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 70,
+    "slug": "climbing-stairs",
+    "title": "Climbing Stairs",
+    "difficulty": "easy",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 72,
+    "slug": "edit-distance",
+    "title": "Edit Distance",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 73,
+    "slug": "set-matrix-zeroes",
+    "title": "Set Matrix Zeroes",
+    "difficulty": "medium",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 74,
+    "slug": "search-a-2d-matrix",
+    "title": "Search a 2D Matrix",
+    "difficulty": "medium",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 75,
+    "slug": "sort-colors",
+    "title": "Sort Colors",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 76,
+    "slug": "minimum-window-substring",
+    "title": "Minimum Window Substring",
+    "difficulty": "hard",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 77,
+    "slug": "combinations",
+    "title": "Combinations",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 78,
+    "slug": "subsets",
+    "title": "Subsets",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 79,
+    "slug": "word-search",
+    "title": "Word Search",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 84,
+    "slug": "largest-rectangle-in-histogram",
+    "title": "Largest Rectangle In Histogram",
+    "difficulty": "hard",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 86,
+    "slug": "partition-list",
+    "title": "Partition List",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 90,
+    "slug": "subsets-ii",
+    "title": "Subsets II",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 91,
+    "slug": "decode-ways",
+    "title": "Decode Ways",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 92,
+    "slug": "reverse-linked-list-ii",
+    "title": "Reverse Linked List II",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 94,
+    "slug": "binary-tree-inorder-traversal",
+    "title": "Binary Tree Inorder Traversal",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 97,
+    "slug": "interleaving-string",
+    "title": "Interleaving String",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 98,
+    "slug": "validate-binary-search-tree",
+    "title": "Validate Binary Search Tree",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 100,
+    "slug": "same-tree",
+    "title": "Same Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 101,
+    "slug": "symmetric-tree",
+    "title": "Symmetric Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 102,
+    "slug": "binary-tree-level-order-traversal",
+    "title": "Binary Tree Level Order Traversal",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 104,
+    "slug": "maximum-depth-of-binary-tree",
+    "title": "Maximum Depth of Binary Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 105,
+    "slug": "construct-binary-tree-from-preorder-and-inorder-traversal",
+    "title": "Construct Binary Tree From Preorder And Inorder Traversal",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 108,
+    "slug": "convert-sorted-array-to-binary-search-tree",
+    "title": "Convert Sorted Array to Binary Search Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 110,
+    "slug": "balanced-binary-tree",
+    "title": "Balanced Binary Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 115,
+    "slug": "distinct-subsequences",
+    "title": "Distinct Subsequences",
+    "difficulty": "hard",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 118,
+    "slug": "pascals-triangle",
+    "title": "Pascals Triangle",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 121,
+    "slug": "best-time-to-buy-and-sell-stock",
+    "title": "Best Time to Buy And Sell Stock",
+    "difficulty": "easy",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 122,
+    "slug": "best-time-to-buy-and-sell-stock-ii",
+    "title": "Best Time to Buy And Sell Stock II",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 124,
+    "slug": "binary-tree-maximum-path-sum",
+    "title": "Binary Tree Maximum Path Sum",
+    "difficulty": "hard",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 125,
+    "slug": "valid-palindrome",
+    "title": "Valid Palindrome",
+    "difficulty": "easy",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 127,
+    "slug": "word-ladder",
+    "title": "Word Ladder",
+    "difficulty": "hard",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 128,
+    "slug": "longest-consecutive-sequence",
+    "title": "Longest Consecutive Sequence",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 129,
+    "slug": "sum-root-to-leaf-numbers",
+    "title": "Sum Root to Leaf Numbers",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 130,
+    "slug": "surrounded-regions",
+    "title": "Surrounded Regions",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 131,
+    "slug": "palindrome-partitioning",
+    "title": "Palindrome Partitioning",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 133,
+    "slug": "clone-graph",
+    "title": "Clone Graph",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 134,
+    "slug": "gas-station",
+    "title": "Gas Station",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 136,
+    "slug": "single-number",
+    "title": "Single Number",
+    "difficulty": "easy",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 138,
+    "slug": "copy-list-with-random-pointer",
+    "title": "Copy List With Random Pointer",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 139,
+    "slug": "word-break",
+    "title": "Word Break",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 141,
+    "slug": "linked-list-cycle",
+    "title": "Linked List Cycle",
+    "difficulty": "easy",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 143,
+    "slug": "reorder-list",
+    "title": "Reorder List",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 144,
+    "slug": "binary-tree-preorder-traversal",
+    "title": "Binary Tree Preorder Traversal",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 146,
+    "slug": "lru-cache",
+    "title": "LRU Cache",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 148,
+    "slug": "sort-list",
+    "title": "Sort List",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 150,
+    "slug": "evaluate-reverse-polish-notation",
+    "title": "Evaluate Reverse Polish Notation",
+    "difficulty": "medium",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 152,
+    "slug": "maximum-product-subarray",
+    "title": "Maximum Product Subarray",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 153,
+    "slug": "find-minimum-in-rotated-sorted-array",
+    "title": "Find Minimum In Rotated Sorted Array",
+    "difficulty": "medium",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 155,
+    "slug": "min-stack",
+    "title": "Min Stack",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 160,
+    "slug": "intersection-of-two-linked-lists",
+    "title": "Intersection of Two Linked Lists",
+    "difficulty": "easy",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 167,
+    "slug": "two-sum-ii-input-array-is-sorted",
+    "title": "Two Sum II Input Array Is Sorted",
+    "difficulty": "medium",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 169,
+    "slug": "majority-element",
+    "title": "Majority Element",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 189,
+    "slug": "rotate-array",
+    "title": "Rotate Array",
+    "difficulty": "medium",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 190,
+    "slug": "reverse-bits",
+    "title": "Reverse Bits",
+    "difficulty": "easy",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 191,
+    "slug": "number-of-1-bits",
+    "title": "Number of 1 Bits",
+    "difficulty": "easy",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 198,
+    "slug": "house-robber",
+    "title": "House Robber",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 199,
+    "slug": "binary-tree-right-side-view",
+    "title": "Binary Tree Right Side View",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 200,
+    "slug": "number-of-islands",
+    "title": "Number of Islands",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 202,
+    "slug": "happy-number",
+    "title": "Happy Number",
+    "difficulty": "easy",
+    "tags": [
+      "math"
+    ],
+    "lists": [
+      "neetcode150",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 206,
+    "slug": "reverse-linked-list",
+    "title": "Reverse Linked List",
+    "difficulty": "easy",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 207,
+    "slug": "course-schedule",
+    "title": "Course Schedule",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 208,
+    "slug": "implement-trie-prefix-tree",
+    "title": "Implement Trie Prefix Tree",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 209,
+    "slug": "minimum-size-subarray-sum",
+    "title": "Minimum Size Subarray Sum",
+    "difficulty": "medium",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 210,
+    "slug": "course-schedule-ii",
+    "title": "Course Schedule II",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 211,
+    "slug": "design-add-and-search-words-data-structure",
+    "title": "Design Add And Search Words Data Structure",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 212,
+    "slug": "word-search-ii",
+    "title": "Word Search II",
+    "difficulty": "hard",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 213,
+    "slug": "house-robber-ii",
+    "title": "House Robber II",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 215,
+    "slug": "kth-largest-element-in-an-array",
+    "title": "Kth Largest Element In An Array",
+    "difficulty": "medium",
+    "tags": [
+      "heap"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 216,
+    "slug": "combination-sum-iii",
+    "title": "Combination Sum III",
+    "difficulty": "medium",
+    "tags": [
+      "backtracking"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 217,
+    "slug": "contains-duplicate",
+    "title": "Contains Duplicate",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 218,
+    "slug": "the-skyline-problem",
+    "title": "The Skyline Problem",
+    "difficulty": "hard",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 223,
+    "slug": "rectangle-area",
+    "title": "Rectangle Area",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 226,
+    "slug": "invert-binary-tree",
+    "title": "Invert Binary Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 230,
+    "slug": "kth-smallest-element-in-a-bst",
+    "title": "Kth Smallest Element In a Bst",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 234,
+    "slug": "palindrome-linked-list",
+    "title": "Palindrome Linked List",
+    "difficulty": "easy",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 235,
+    "slug": "lowest-common-ancestor-of-a-binary-search-tree",
+    "title": "Lowest Common Ancestor of a Binary Search Tree",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 238,
+    "slug": "product-of-array-except-self",
+    "title": "Product of Array Except Self",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 239,
+    "slug": "sliding-window-maximum",
+    "title": "Sliding Window Maximum",
+    "difficulty": "hard",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 242,
+    "slug": "valid-anagram",
+    "title": "Valid Anagram",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 252,
+    "slug": "meeting-rooms",
+    "title": "Meeting Rooms",
+    "difficulty": "easy",
+    "tags": [
+      "interval"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 253,
+    "slug": "meeting-rooms-ii",
+    "title": "Meeting Rooms II",
+    "difficulty": "medium",
+    "tags": [
+      "interval"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 261,
+    "slug": "graph-valid-tree",
+    "title": "Graph Valid Tree",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 268,
+    "slug": "missing-number",
+    "title": "Missing Number",
+    "difficulty": "easy",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 269,
+    "slug": "alien-dictionary",
+    "title": "Alien Dictionary",
+    "difficulty": "hard",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 271,
+    "slug": "encode-and-decode-strings",
+    "title": "Encode and Decode Strings",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 279,
+    "slug": "perfect-squares",
+    "title": "Perfect Squares",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 283,
+    "slug": "move-zeroes",
+    "title": "Move Zeroes",
+    "difficulty": "easy",
+    "tags": [
+      "two-pointers"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 286,
+    "slug": "walls-and-gates",
+    "title": "Walls And Gates",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 287,
+    "slug": "find-the-duplicate-number",
+    "title": "Find The Duplicate Number",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 295,
+    "slug": "find-median-from-data-stream",
+    "title": "Find Median From Data Stream",
+    "difficulty": "hard",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 297,
+    "slug": "serialize-and-deserialize-binary-tree",
+    "title": "Serialize And Deserialize Binary Tree",
+    "difficulty": "hard",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 300,
+    "slug": "longest-increasing-subsequence",
+    "title": "Longest Increasing Subsequence",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 309,
+    "slug": "best-time-to-buy-and-sell-stock-with-cooldown",
+    "title": "Best Time to Buy And Sell Stock With Cooldown",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 312,
+    "slug": "burst-balloons",
+    "title": "Burst Balloons",
+    "difficulty": "hard",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 322,
+    "slug": "coin-change",
+    "title": "Coin Change",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 323,
+    "slug": "number-of-connected-components-in-an-undirected-graph",
+    "title": "Number of Connected Components In An Undirected Graph",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 329,
+    "slug": "longest-increasing-path-in-a-matrix",
+    "title": "Longest Increasing Path In a Matrix",
+    "difficulty": "hard",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 331,
+    "slug": "verify-preorder-serialization-of-a-binary-tree",
+    "title": "Verify Preorder Serialization of a Binary Tree",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 332,
+    "slug": "reconstruct-itinerary",
+    "title": "Reconstruct Itinerary",
+    "difficulty": "hard",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 338,
+    "slug": "counting-bits",
+    "title": "Counting Bits",
+    "difficulty": "easy",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 343,
+    "slug": "integer-break",
+    "title": "Integer Break",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 347,
+    "slug": "top-k-frequent-elements",
+    "title": "Top K Frequent Elements",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 350,
+    "slug": "intersection-of-two-arrays-ii",
+    "title": "Intersection of Two Arrays II",
+    "difficulty": "easy",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 355,
+    "slug": "design-twitter",
+    "title": "Design Twitter",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 366,
+    "slug": "find-leaves-of-binary-tree",
+    "title": "Find Leaves of Binary Tree",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 371,
+    "slug": "sum-of-two-integers",
+    "title": "Sum of Two Integers",
+    "difficulty": "medium",
+    "tags": [
+      "bit"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 378,
+    "slug": "kth-smallest-element-in-a-sorted-matrix",
+    "title": "Kth Smallest Element in a Sorted Matrix",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 392,
+    "slug": "is-subsequence",
+    "title": "Is Subsequence",
+    "difficulty": "easy",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 394,
+    "slug": "decode-string",
+    "title": "Decode String",
+    "difficulty": "medium",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 399,
+    "slug": "evaluate-division",
+    "title": "Evaluate Division",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 406,
+    "slug": "queue-reconstruction-by-height",
+    "title": "Queue Reconstruction by Height",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 413,
+    "slug": "arithmetic-slices",
+    "title": "Arithmetic Slices",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 416,
+    "slug": "partition-equal-subset-sum",
+    "title": "Partition Equal Subset Sum",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 417,
+    "slug": "pacific-atlantic-water-flow",
+    "title": "Pacific Atlantic Water Flow",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 424,
+    "slug": "longest-repeating-character-replacement",
+    "title": "Longest Repeating Character Replacement",
+    "difficulty": "medium",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 430,
+    "slug": "flatten-a-multilevel-doubly-linked-list",
+    "title": "Flatten a Multilevel Doubly Linked List",
+    "difficulty": "medium",
+    "tags": [
+      "linked-list"
+    ],
+    "lists": [
+      "top200"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 435,
+    "slug": "non-overlapping-intervals",
+    "title": "Non Overlapping Intervals",
+    "difficulty": "medium",
+    "tags": [
+      "interval"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 438,
+    "slug": "find-all-anagrams-in-a-string",
+    "title": "Find All Anagrams in a String",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 445,
+    "slug": "add-two-numbers-ii",
+    "title": "Add Two Numbers II",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 449,
+    "slug": "serialize-and-deserialize-bst",
+    "title": "Serialize and Deserialize BST",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 494,
+    "slug": "target-sum",
+    "title": "Target Sum",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 503,
+    "slug": "next-greater-element-ii",
+    "title": "Next Greater Element II",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 505,
+    "slug": "the-maze-ii",
+    "title": "The Maze II",
+    "difficulty": "medium",
+    "tags": [
+      "array"
+    ],
+    "lists": [
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": true,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 513,
+    "slug": "find-bottom-left-tree-value",
+    "title": "Find Bottom Left Tree Value",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "top200",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 518,
+    "slug": "coin-change-ii",
+    "title": "Coin Change II",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 543,
+    "slug": "diameter-of-binary-tree",
+    "title": "Diameter of Binary Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 560,
+    "slug": "subarray-sum-equals-k",
+    "title": "Subarray Sum Equals K",
+    "difficulty": "medium",
+    "tags": [
+      "array",
+      "hash"
+    ],
+    "lists": [
+      "hot100",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 567,
+    "slug": "permutation-in-string",
+    "title": "Permutation In String",
+    "difficulty": "medium",
+    "tags": [
+      "sliding-window"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 572,
+    "slug": "subtree-of-another-tree",
+    "title": "Subtree of Another Tree",
+    "difficulty": "easy",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 621,
+    "slug": "task-scheduler",
+    "title": "Task Scheduler",
+    "difficulty": "medium",
+    "tags": [
+      "heap"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 647,
+    "slug": "palindromic-substrings",
+    "title": "Palindromic Substrings",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "blind75",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 678,
+    "slug": "valid-parenthesis-string",
+    "title": "Valid Parenthesis String",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "neetcode150",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 684,
+    "slug": "redundant-connection",
+    "title": "Redundant Connection",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 695,
+    "slug": "max-area-of-island",
+    "title": "Max Area of Island",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 703,
+    "slug": "kth-largest-element-in-a-stream",
+    "title": "Kth Largest Element In a Stream",
+    "difficulty": "easy",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "neetcode150",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 704,
+    "slug": "binary-search",
+    "title": "Binary Search",
+    "difficulty": "easy",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 739,
+    "slug": "daily-temperatures",
+    "title": "Daily Temperatures",
+    "difficulty": "medium",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 743,
+    "slug": "network-delay-time",
+    "title": "Network Delay Time",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 746,
+    "slug": "min-cost-climbing-stairs",
+    "title": "Min Cost Climbing Stairs",
+    "difficulty": "easy",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "neetcode150",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 763,
+    "slug": "partition-labels",
+    "title": "Partition Labels",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 778,
+    "slug": "swim-in-rising-water",
+    "title": "Swim In Rising Water",
+    "difficulty": "hard",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 787,
+    "slug": "cheapest-flights-within-k-stops",
+    "title": "Cheapest Flights Within K Stops",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 846,
+    "slug": "hand-of-straights",
+    "title": "Hand of Straights",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "neetcode150"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 853,
+    "slug": "car-fleet",
+    "title": "Car Fleet",
+    "difficulty": "medium",
+    "tags": [
+      "stack"
+    ],
+    "lists": [
+      "neetcode150"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 875,
+    "slug": "koko-eating-bananas",
+    "title": "Koko Eating Bananas",
+    "difficulty": "medium",
+    "tags": [
+      "binary-search"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 973,
+    "slug": "k-closest-points-to-origin",
+    "title": "K Closest Points to Origin",
+    "difficulty": "medium",
+    "tags": [
+      "heap"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 981,
+    "slug": "time-based-key-value-store",
+    "title": "Time Based Key Value Store",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 994,
+    "slug": "rotting-oranges",
+    "title": "Rotting Oranges",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "hot100",
+      "neetcode150",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 1046,
+    "slug": "last-stone-weight",
+    "title": "Last Stone Weight",
+    "difficulty": "easy",
+    "tags": [
+      "heap"
+    ],
+    "lists": [
+      "neetcode150"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 1143,
+    "slug": "longest-common-subsequence",
+    "title": "Longest Common Subsequence",
+    "difficulty": "medium",
+    "tags": [
+      "dp"
+    ],
+    "lists": [
+      "hot100",
+      "blind75",
+      "neetcode150",
+      "top200",
+      "pattern500",
+      "codetop"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 1448,
+    "slug": "count-good-nodes-in-binary-tree",
+    "title": "Count Good Nodes In Binary Tree",
+    "difficulty": "medium",
+    "tags": [
+      "tree"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 1584,
+    "slug": "min-cost-to-connect-all-points",
+    "title": "Min Cost to Connect All Points",
+    "difficulty": "medium",
+    "tags": [
+      "graph"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 1851,
+    "slug": "minimum-interval-to-include-each-query",
+    "title": "Minimum Interval to Include Each Query",
+    "difficulty": "hard",
+    "tags": [
+      "interval"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 1899,
+    "slug": "merge-triplets-to-form-target-triplet",
+    "title": "Merge Triplets to Form Target Triplet",
+    "difficulty": "medium",
+    "tags": [
+      "greedy"
+    ],
+    "lists": [
+      "neetcode150",
+      "top200"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  },
+  {
+    "id": 2013,
+    "slug": "detect-squares",
+    "title": "Detect Squares",
+    "difficulty": "medium",
+    "tags": [
+      "design"
+    ],
+    "lists": [
+      "neetcode150",
+      "pattern500"
+    ],
+    "tier": "core",
+    "premium": false,
+    "langs": [
+      "python"
+    ]
+  }
+]

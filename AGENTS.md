@@ -26,6 +26,8 @@
 文档 DocsDrawer
   → scripts/docs/render.ts 预渲染 docs/
   → useRunFromDoc 把示例装进编辑器再 Run
+工具栏「快速入门 | LeetCode」共用这扇抽屉（`data-mode`）。模式在 `stores/study.ts`。
+题库在 `docs/leetcode/`，英文题名和摘要在 `docs/en/leetcode/`，不算一本快速入门。
 ```
 
 资源在 `wasm/`。`scripts/languages.config.mjs` 列出资产和语言。`scripts/write-manifest.mjs` 按磁盘文件生成 `wasm/manifest.json`（`size`、`sha256`）。该文件 gitignore，不提交。`src/core/wasmLoader.ts` 用 Cache API（`simplecode-wasm-v1`）缓存，并用清单里的 `size` 核对。
@@ -45,7 +47,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
-| `test` | 文档单元测试、`tests/i18n-unit.test.ts`、`tests/terminal-log.test.ts`、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/learn.spec.mjs`、`tests/ui-chrome.spec.mjs`、`tests/terminal-switch.spec.mjs` |
+| `test` | 文档单元测试、`tests/i18n-unit.test.ts`、`tests/leetcode-unit.test.ts`、`tests/terminal-log.test.ts`、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/leetcode-smoke.mjs`、`tests/learn.spec.mjs`、`tests/ui-chrome.spec.mjs`、`tests/terminal-switch.spec.mjs` |
 | `clean` | 删 `dist/`。`--all` 再删 `node_modules/` 和 `wasm/` |
 
 缺 wasm 时，`dev` / `build` 会先尝试只重写清单；清单对不上文件才会 vendor。

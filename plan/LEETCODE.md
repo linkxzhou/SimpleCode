@@ -1,7 +1,7 @@
 # LeetCode 题库模式
 
-> 状态：只规划。本文件所在的 PR 不改运行时代码、不改抽屉行为、不导入题目。
-> 基线：`main` @ `2bd4d51`。
+> 状态：阶段 2 已落地。核心题 200 道（简单 41、中等 135、困难 24），全部有 Python 题解。其他语言的题解文件还没有。`extended` 未入库。
+> 基线：`main` @ `e9fa758`。
 > 已定（不再作为待确认问题）：选题来源、中英标题与难度、只选已下载语言、题解默认隐藏、题解从宽松许可证仓库拷贝并署名。题面仍只放链接和自写短摘要。
 
 相关文档：[plan/LEARN.md](LEARN.md) 的抽屉、[plan/DESIGN.md](DESIGN.md) 的工具栏、[plan/LANGUAGES.md](LANGUAGES.md) 的运行时限制。题库数据和十三本书放在一起：中文在 `docs/leetcode/`，英文对照在 `docs/en/leetcode/`。十三本书的目录、篇幅和 `docs-smoke` 不把这个目录当成一本新书。
@@ -493,6 +493,8 @@ docs/en/leetcode/
 
 `plan/LEARN.md` 记过：JS 书的例子不依赖 stdin，因为 wasmedge-quickjs 的 `std` / `os` 当时没验证。题库在导入任何 `javascript.js` 之前，用一条 10 行程序在 `tests/smoke.mjs` 同款路径上读一行并打印。读得到，才允许 JS 题解，包装使用探测时确定的 API。读不到，JS 留在选择器里（用户已下载就可以写自己的代码），但导入脚本不生成 `javascript.js`，`langs` 里不出现 `quickjs`。探测结果写回本文件 §7.3 的实现记录，不在规划 PR 里猜。
 
+实现记录：这一批没有 `javascript.js`，所以没有做 QuickJS stdin 探测，`langs` 里也不出现 `quickjs`。选择器在运行时已下载时仍可点 JS/TS，题目页显示「这门语言还没有题解」。
+
 ### 7.4 包装
 
 上游文件几乎都是 `class Solution` 的一个方法，没有 `main`，也不读标准输入。我们在文件末尾追加包装，从 stdin 读入，调用该方法，把结果打印到 stdout。
@@ -626,3 +628,19 @@ Java 的提交文件是一整份 `Main.java`：上游的 `Solution` 改成包内
 | `build.sh` | 帮助文字里的两个环境变量 |
 
 阶段 0 只改计划索引：`plan/LEETCODE.md`、`AGENTS.md` 的计划表、`README.md` 的文档链接、`plan/LEARN.md` §1.2 的互指。
+
+---
+
+## 11. 实现记录
+
+阶段 1 和阶段 2 在同一次改动里完成。阶段 3（其他语言的题解）和阶段 4（`extended`）还没有做。
+
+- 入口是 `StudyModeSwitch.vue`，放在方言胶囊和 Run 之间。`LearnButton.vue` 已删除。抽屉 `data-mode` 为 `learn` 或 `leetcode`。`Ctrl/Cmd+J` 只开关抽屉。
+- 目录一次列出全部 200 题，分组为简单 41、中等 135、困难 24。会员题 9 道。Blind 75 的 75 道都在。
+- 六份题单按 §4.2 合并后，原始并集大于 220。截到 200 时保留全部 Blind 75，并让 NeetCode 150 优先于只出现一次的题。三处来源都没有难度或英文题名的题号不猜测、不入库，用下一名符合条件的题号补上，所以这一批仍是 200。
+- 力扣学习计划页返回 403。热题 100 的题号用 kernelvale/leetcode-hot100 的文件名核对，只存题号。
+- Python 题解顺序按 §7.1：kamyu104，然后 neetcode，然后 pattern-500，然后 doocs。doocs 只有 118、129、223 三份，许可证保持 CC BY-SA 4.0。
+- 样例在本机 CPython 上对照通过。浏览器冒烟是 `tests/leetcode-smoke.mjs`，默认只跑 Python `core`。Java 要 `SIMPLECODE_JAVA_LEETCODE=1`，Rust 要 `SIMPLECODE_RUST_LEETCODE=1`。
+- QuickJS 没有题解文件，§7.3 的 stdin 探测没有跑。
+- 题解按题动态导入。`./build.sh build` 在日志里打印 `js chunks` 的数量。这次是 1544。
+- `./build.sh test` 含 `leetcode-smoke` 的 200 道 Python。没有把 Python 挪出默认列表。Java / Rust 题解文件不存在，仍由 `SIMPLECODE_JAVA_LEETCODE` 和 `SIMPLECODE_RUST_LEETCODE` 打开。

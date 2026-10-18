@@ -40,6 +40,10 @@ blob-report/
 playwright/.cache/
 coverage/
 
+# python
+__pycache__/
+*.pyc
+
 # logs
 *.log
 npm-debug.log*

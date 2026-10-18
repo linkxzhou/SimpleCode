@@ -1,0 +1,35 @@
+{
+  "id": 875,
+  "slug": "koko-eating-bananas",
+  "summary": "公开题名是「爱吃香蕉的珂珂」。从标准输入读取整数个数、同一行上的各个整数，以及最后的目标整数，只根据这些值完成题名所说的计算，把结果写成一个整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "5 5 4 4 3 4 7\n",
+      "stdout": "4\n",
+      "note": "对照时去掉末尾换行后再比较。输入是整数个数、同一行上的各个整数，以及最后的目标整数。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/koko-eating-bananas/",
+    "en": "https://leetcode.com/problems/koko-eating-bananas/"
+  },
+  "io": {
+    "kind": "int-array-and-int",
+    "out": "int"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "kamyu104/LeetCode-Solutions",
+      "sourceUrl": "https://github.com/kamyu104/LeetCode-Solutions/blob/8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3/Python/koko-eating-bananas.py",
+      "sourceRevision": "8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

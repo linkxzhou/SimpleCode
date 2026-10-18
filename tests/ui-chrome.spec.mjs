@@ -78,7 +78,7 @@ try {
   const stored = await page.evaluate(() => localStorage.getItem("simplecode:locale"));
   check(pressed === "true" && stored === "en", `locale persisted (${pressed}, ${stored})`);
 
-  await page.getByTestId("learn-button").click();
+  await page.getByTestId("study-mode-learn").click();
   await page.getByTestId("docs-search").waitFor();
   check((await page.getByTestId("docs-en-placeholder").count()) === 0, "English Python book has no placeholder");
   const toc = await page.getByTestId("docs-drawer").innerText();

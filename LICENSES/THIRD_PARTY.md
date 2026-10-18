@@ -141,6 +141,23 @@ Not part of the default `./build.sh vendor`. `./build.sh vendor --java` download
 - The TeaVM class library includes portions of Apache Harmony (Apache-2.0), Joda-Time (Apache-2.0), and jzlib (BSD-style).
 - `src/teavm/bridge/` is source written for this repository: a replacement `TConsoleInputStream`, a small `TScanner`, and a `TInputStreamReader` that does not touch `java.nio`. The `Scanner` stub appended to the SDK archive in memory is the same small class, compiled with `--patch-module java.base`. `org.teavm.interop.Import` is used only when rebuilding that bridge with a host `javac`. It is not a separate download.
 
+## LeetCode solutions
+
+Problem numbers in `docs/leetcode/` come from public lists. Statements are not copied. Solution source files are copied from four repositories pinned in `docs/leetcode/sources.lock.json` (retrieved 2026-10-18). Each file records the upstream URL, commit, and modifications. The same-origin license texts are `docs/leetcode/LICENSES/MIT.txt` and `docs/leetcode/LICENSES/CC-BY-SA-4.0.txt`.
+
+| Repository | Commit | License |
+|---|---|---|
+| [neetcode-gh/leetcode](https://github.com/neetcode-gh/leetcode) | `d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb` | MIT. Copyright (c) 2022 neetcode-gh |
+| [kamyu104/LeetCode-Solutions](https://github.com/kamyu104/LeetCode-Solutions) | `8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3` | MIT. Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions |
+| [tiationg-kho/leetcode-pattern-500](https://github.com/tiationg-kho/leetcode-pattern-500) | `c3ee9ee6e40d386600e0a3545844350a264c5b56` | MIT. Copyright (c) 2023 Tiationg Kho |
+| [doocs/leetcode](https://github.com/doocs/leetcode) | `88c8c2c29f19c186d7cc05c9db17245d9ae3df43` | CC BY-SA 4.0. Copyright Doocs contributors |
+
+Adaptations of a doocs file stay under CC BY-SA 4.0. That share-alike duty covers the adapted solution file only. It does not cover the Vue UI, the language runtimes, or the thirteen Quick Start books.
+
+本项目著作权归 GitHub 开源社区 Doocs 所有，商业转载请联系 @yanglbme 获得授权，非商业转载请注明出处。
+
+List-only sources, with no solution text copied: [kernelvale/leetcode-hot100](https://github.com/kernelvale/leetcode-hot100) (`e55875275c6ce2d55141196cb1a025a112f43684`, ids used to cross-check Top 100 Liked), [afatcoder/LeetcodeTop](https://github.com/afatcoder/LeetcodeTop) (`7105c17a4d3f61baa242f8a36a7056b5bbd0baf0`, ids only; the repository has no SPDX license), and [hoangcaobao/LeetCode](https://github.com/hoangcaobao/LeetCode) (`64660b9f3a001aa840ec173ceb0b90dfd2f93b41`, MIT, ids and difficulty column only).
+
 ## Linux guest (v86 + Buildroot image)
 
 The sidebar language Linux is not a WASI module. `./build.sh vendor` downloads pinned files and writes `wasm/linux-state.zst`, a zstd frame of the v86 snapshot. The browser stores that frame in the Cache API and hands it to v86, which decompresses it with the zstd already linked into `v86.wasm`. The `zstd` CLI used at vendor time is build-only (BSD-3-Clause or GPL-2.0, https://github.com/facebook/zstd); it is not shipped to the page.

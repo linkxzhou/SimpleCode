@@ -1,0 +1,35 @@
+{
+  "id": 129,
+  "slug": "sum-root-to-leaf-numbers",
+  "summary": "公开题名是「求根节点到叶节点数字之和」。从标准输入读取层序结点个数，空孩子用点号表示，只根据这些值完成题名所说的计算，把结果写成一个整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "5 7 6 1 9 8\n",
+      "stdout": "1608\n",
+      "note": "对照时去掉末尾换行后再比较。输入是层序结点个数，空孩子用点号表示。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/sum-root-to-leaf-numbers/",
+    "en": "https://leetcode.com/problems/sum-root-to-leaf-numbers/"
+  },
+  "io": {
+    "kind": "tree",
+    "out": "int"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "doocs/leetcode",
+      "sourceUrl": "https://github.com/doocs/leetcode/blob/88c8c2c29f19c186d7cc05c9db17245d9ae3df43/solution/0100-0199/0129.Sum%20Root%20to%20Leaf%20Numbers/Solution.py",
+      "sourceRevision": "88c8c2c29f19c186d7cc05c9db17245d9ae3df43",
+      "license": "CC-BY-SA-4.0",
+      "spdx": "CC-BY-SA-4.0",
+      "attribution": "Copyright Doocs contributors",
+      "shareAlike": true,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

@@ -106,20 +106,81 @@ function monoRatio(path) {
 async function setTheme(page, mode) {
   await page.evaluate((value) => localStorage.setItem("simplecode:theme", value), mode);
   await page.reload();
-  await page.waitForSelector('[data-testid="learn-button"]');
+  await page.waitForSelector('[data-testid="study-mode-learn"]');
 }
 
 async function openLearn(page) {
-  if ((await page.getAttribute('[data-testid="learn-button"]', "aria-expanded")) !== "true") {
-    await page.click('[data-testid="learn-button"]');
+  if ((await page.getAttribute('[data-testid="study-mode-learn"]', "aria-expanded")) !== "true") {
+    await page.click('[data-testid="study-mode-learn"]');
   }
   await page.waitForSelector('[data-testid="docs-drawer"]');
+}
+
+async function assertLeetCode(page) {
+  await page.click('[data-testid="docs-close"]');
+  await saveShot(page, "leetcode-switch.png");
+  const before = await page.evaluate(() =>
+    [...document.querySelectorAll("[data-testid^=lang-]")].map((el) => ({
+      id: el.getAttribute("data-testid").replace(/^lang-/, ""),
+      status: el.getAttribute("data-status"),
+    })),
+  );
+  await page.click('[data-testid="study-mode-leetcode"]');
+  await page.waitForSelector('[data-testid="leetcode-heading-easy"]');
+  await page.waitForSelector('[data-testid="leetcode-heading-hard"]');
+  const mode = await page.getAttribute('[data-testid="docs-drawer"]', "data-mode");
+  const title = await page.textContent('[data-testid="docs-title"]');
+  const headings = await page.locator("[data-testid^=leetcode-heading-]").allTextContents();
+  const offered = await page.$$eval("[data-testid=leetcode-lang]", (els) => els.map((el) => el.getAttribute("data-lang")));
+  const after = await page.evaluate(() =>
+    [...document.querySelectorAll("[data-testid^=lang-]")].map((el) => ({
+      id: el.getAttribute("data-testid").replace(/^lang-/, ""),
+      status: el.getAttribute("data-status"),
+    })),
+  );
+  const runnable = new Set(["python", "ruby", "quickjs", "clang", "clangpp", "lua", "go", "rust", "java"]);
+  const downloaded = new Set(before.filter((row) => row.status === "cached" || row.status === "ready").map((row) => row.id));
+  const flipped = before.filter((row) => {
+    const next = after.find((item) => item.id === row.id);
+    return row.status !== "downloading" && next?.status === "downloading";
+  });
+  check(mode === "leetcode" && title?.trim() === "LeetCode", `leetcode drawer ${mode} ${title}`);
+  check(headings.some((text) => text.includes("简单")) && headings.some((text) => text.includes("中等")) && headings.some((text) => text.includes("困难")), `zh groups ${headings.join(" | ")}`);
+  check(offered.includes("python") && offered.every((id) => runnable.has(id) && downloaded.has(id)), `langs ${offered.join(",")}`);
+  check(flipped.length === 0, `leetcode click started a download ${flipped.map((row) => row.id).join(",")}`);
+  check((await page.locator('[data-testid=leetcode-problem]').count()) >= 200, "problem list includes the catalog");
+  await saveShot(page, "leetcode-toc-zh.png");
+  await saveShot(page, "leetcode-langs.png", page.locator('[data-testid="docs-drawer"]'));
+
+  await page.locator('[data-testid="leetcode-problem"][data-id="1"]').click();
+  await page.waitForSelector('[data-testid="leetcode-problem-page"]');
+  check((await page.locator('[data-testid=leetcode-solution]').count()) === 0, "solution stays hidden");
+  check((await page.textContent('[data-testid=leetcode-reveal]'))?.includes("查看题解"), "reveal label");
+  await saveShot(page, "leetcode-problem-hidden.png", page.locator('[data-testid="docs-drawer"]'));
+  await page.click('[data-testid="leetcode-reveal"]');
+  await page.waitForFunction(() => document.querySelector('[data-testid="leetcode-solution"]')?.textContent?.includes("twoSum"));
+  const solution = await page.textContent('[data-testid="leetcode-solution"]');
+  check(solution?.includes("twoSum") && solution?.includes("kamyu104"), "revealed python solution");
+  await saveShot(page, "leetcode-problem-revealed.png", page.locator('[data-testid="docs-drawer"]'));
+
+  await page.getByRole("button", { name: "返回目录" }).click();
+  await page.waitForSelector('[data-testid="leetcode-list"]');
+  await page.getByTestId("locale-en").click();
+  await page.waitForFunction(() => document.querySelector('[data-testid="leetcode-heading-easy"]')?.textContent?.includes("Easy"));
+  const enHeadings = await page.locator("[data-testid^=leetcode-heading-]").allTextContents();
+  const enTitle = await page.locator('[data-testid="leetcode-problem"][data-id="1"]').innerText();
+  check(enHeadings.some((text) => text.includes("Easy")) && enHeadings.some((text) => text.includes("Medium")) && enHeadings.some((text) => text.includes("Hard")) && enTitle.includes("Two Sum"), `en groups ${enTitle}`);
+  await saveShot(page, "leetcode-toc-en.png");
+  await page.getByTestId("locale-zh").click();
+  await page.waitForFunction(() => document.querySelector('[data-testid="leetcode-heading-easy"]')?.textContent?.includes("简单"));
+  await page.click('[data-testid="study-mode-learn"]');
+  await page.waitForFunction(() => document.querySelector('[data-testid="docs-title"]')?.textContent?.includes("Python 快速入门"));
 }
 
 async function assertToolbarClear(page) {
   const boxes = await page.evaluate(() => {
     const drawer = document.querySelector('[data-testid="docs-drawer"]').getBoundingClientRect();
-    return ["run", "learn-button"].map((id) => {
+    return ["run", "study-mode-learn", "study-mode-leetcode"].map((id) => {
       const el = document.querySelector(`[data-testid="${id}"]`);
       const r = el.getBoundingClientRect();
       const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
@@ -196,6 +257,7 @@ try {
   const transcript = stripAnsi(await page.evaluate(() => globalThis.__simplecodeTerminal.transcript));
   check(status === "done" && editorValue === code && transcript.includes(expectText), `run from doc status=${status}`);
   await saveShot(page, "learn-after-run.png");
+  await assertLeetCode(page);
 
   await page.click('[data-testid="docs-close"]');
   await page.click('[data-testid="lang-ruby"]');
@@ -404,8 +466,8 @@ try {
   });
   const fresh = await context.newPage();
   await fresh.goto(BASE);
-  await fresh.waitForSelector('[data-testid="learn-button"]');
-  await fresh.click('[data-testid="learn-button"]');
+  await fresh.waitForSelector('[data-testid="study-mode-learn"]');
+  await fresh.click('[data-testid="study-mode-learn"]');
   await fresh.click('[data-testid="chapter-link"][data-chapter="0"]');
   await fresh.waitForSelector('[data-lang="ruby"] [data-testid="doc-run"]');
   const ruby = fresh.locator('[data-lang="ruby"]').first();

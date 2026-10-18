@@ -1,0 +1,36 @@
+{
+  "id": 17,
+  "slug": "letter-combinations-of-a-phone-number",
+  "summary": "公开题名是「电话号码的字母组合」。从标准输入读取一段不含空格的文本，只根据这些值完成题名所说的计算，把结果写成每行一个字符串。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "49\n",
+      "stdout": "gw gx gy gz hw hx hy hz iw ix iy iz\n",
+      "note": "对照时去掉末尾换行后再比较。输入是一段不含空格的文本。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/letter-combinations-of-a-phone-number/",
+    "en": "https://leetcode.com/problems/letter-combinations-of-a-phone-number/"
+  },
+  "io": {
+    "kind": "string",
+    "out": "string-array"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "kamyu104/LeetCode-Solutions",
+      "sourceUrl": "https://github.com/kamyu104/LeetCode-Solutions/blob/8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3/Python/letter-combinations-of-a-phone-number.py",
+      "sourceRevision": "8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions",
+      "shareAlike": false,
+      "modifications": [
+        "replaced xrange with range",
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

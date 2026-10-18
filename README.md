@@ -30,6 +30,8 @@ python3 -m http.server 4173 -d dist   # http://localhost:4173
 
 部署在子目录时，把 Vite 的 `base` 设成该路径。Service Worker 的地址和 `wasm/` 都相对 `base`。`.wasm` 仍以 `application/wasm` 提供。设计文档见 [plan/DESIGN.md](plan/DESIGN.md)，语言方案见 [plan/LANGUAGES.md](plan/LANGUAGES.md)，题库方案见 [plan/LEETCODE.md](plan/LEETCODE.md)。
 
+工具栏右侧是「快速入门 | LeetCode」。两段共用同一扇抽屉。LeetCode 只列出已经下载的运行时，题解默认收起。题目数据在 `docs/leetcode/`，不是第十四本快速入门。
+
 侧栏里的 **JS/TS** 仍使用同一份 wasmedge-quickjs（只执行 JavaScript）。工具栏可在 JS 与 TS 之间切换：Monaco 分别用 `javascript` / `typescript` 高亮，两份示例和草稿分开保存，选择记在本机。运行 TypeScript 时，浏览器才懒加载 [Sucrase](https://github.com/alangpierce/sucrase)，把类型标注和 `interface` 剥掉后再交给 QuickJS。这不是完整类型检查。转译失败时错误写在终端，不会启动 wasm。
 
 Lua 5.4.9 用 wasi-sdk 33 从源码编译，`pcall` / `error` 可用（依赖浏览器的 Wasm 异常处理）。Go 是 Yaegi 0.16.1 解释器（`GOOS=wasip1`），只解释标准库，不能 `go get` 第三方模块。Shell 是同一套工具链编出的 `wasi-sh`（MIT）：`echo` / `printf` / `read` / `cat` / `test`、`if` / `while` / `for`，以及内建命令之间的管道和重定向。没有 `fork`，所以 `ls` 这类外部命令会失败。限制见 plan/LANGUAGES.md §8。
