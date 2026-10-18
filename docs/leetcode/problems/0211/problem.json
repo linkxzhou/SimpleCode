@@ -1,0 +1,35 @@
+{
+  "id": 211,
+  "slug": "design-add-and-search-words-data-structure",
+  "summary": "公开题名是「添加与搜索单词 - 数据结构设计」。从标准输入读取若干条操作，每条一行，只根据这些值完成题名所说的计算，把结果写成每条操作的结果各占一行。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "addWord bad\naddWord dad\naddWord mad\nsearch pad\nsearch bad\nsearch .ad\nsearch b..\n",
+      "stdout": "null\nnull\nnull\nfalse\ntrue\ntrue\ntrue\n",
+      "note": "对照时去掉末尾换行后再比较。输入是若干条操作，每条一行。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/design-add-and-search-words-data-structure/",
+    "en": "https://leetcode.com/problems/design-add-and-search-words-data-structure/"
+  },
+  "io": {
+    "kind": "design",
+    "out": "design"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "neetcode-gh/leetcode",
+      "sourceUrl": "https://github.com/neetcode-gh/leetcode/blob/d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb/python/0211-design-add-and-search-words-data-structure.py",
+      "sourceRevision": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2022 neetcode-gh",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

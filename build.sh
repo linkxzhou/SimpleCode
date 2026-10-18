@@ -66,6 +66,11 @@ cmd_build() {
   yarn vue-tsc --noEmit
   info "Building → dist/"
   yarn vite build "$@"
+  if [ -d dist/assets ]; then
+    local js_chunks
+    js_chunks=$(find dist/assets -name '*.js' | wc -l | tr -d ' ')
+    echo "js chunks: ${js_chunks}"
+  fi
   echo "${c_green}✓ build complete:${c_off} $(du -sh dist | cut -f1) in dist/"
 }
 
@@ -91,7 +96,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts tests/leetcode-unit.test.ts
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -112,6 +117,7 @@ cmd_test() {
   node tests/rust-static-download.spec.mjs
   node tests/coi-static.mjs
   node --experimental-strip-types tests/docs-smoke.mjs
+  node tests/leetcode-smoke.mjs
   node tests/learn.spec.mjs
   node tests/ui-chrome.spec.mjs
   node tests/terminal-switch.spec.mjs
@@ -144,12 +150,15 @@ Usage: ./build.sh <command> [args]
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)
   preview | run      Serve dist/ with COOP/COEP headers (http://localhost:4173)
-  test [--docs|--smoke]  Headless tests. Default: unit + mono + smoke + static COI + docs-smoke + learn UI.
+  test [--docs|--smoke]  Headless tests. Default: unit + mono + smoke + static COI + docs-smoke + leetcode-smoke + learn UI.
                      --docs runs the tutorial smoke test; --smoke runs the language hello-world smoke test.
+                     LeetCode smoke runs shipped Python solutions. SIMPLECODE_JAVA_LEETCODE=1 also runs Java.
+                     SIMPLECODE_RUST_LEETCODE=1 also runs Rust. SIMPLECODE_LEETCODE_LANGS limits the list (python,go).
   clean [--all]      Remove dist/ (and node_modules/, wasm/ with --all)
   help               Show this help
 
 Environment: HOST (default localhost), PORT
+             SIMPLECODE_JAVA_LEETCODE, SIMPLECODE_RUST_LEETCODE, SIMPLECODE_LEETCODE_LANGS
 USAGE
 }
 

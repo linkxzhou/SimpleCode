@@ -1,0 +1,35 @@
+{
+  "id": 143,
+  "slug": "reorder-list",
+  "summary": "公开题名是「重排链表」。从标准输入读取结点个数和每个结点上的整数，只根据这些值完成题名所说的计算，把结果写成被改过的那份输入。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "3 0 8 7\n",
+      "stdout": "0 7 8\n",
+      "note": "对照时去掉末尾换行后再比较。输入是结点个数和每个结点上的整数。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/reorder-list/",
+    "en": "https://leetcode.com/problems/reorder-list/"
+  },
+  "io": {
+    "kind": "linked-list",
+    "out": "none"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "neetcode-gh/leetcode",
+      "sourceUrl": "https://github.com/neetcode-gh/leetcode/blob/d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb/python/0143-reorder-list.py",
+      "sourceRevision": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2022 neetcode-gh",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

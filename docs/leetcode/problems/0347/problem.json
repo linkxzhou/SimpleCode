@@ -1,0 +1,35 @@
+{
+  "id": 347,
+  "slug": "top-k-frequent-elements",
+  "summary": "公开题名是「前 K 个高频元素」。从标准输入读取整数个数、同一行上的各个整数，以及最后的目标整数，只根据这些值完成题名所说的计算，把结果写成一行里用空格隔开的下标。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "4 6 2 3 7 4\n",
+      "stdout": "6 2 3 7\n",
+      "note": "对照时去掉末尾换行后再比较。输入是整数个数、同一行上的各个整数，以及最后的目标整数。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/top-k-frequent-elements/",
+    "en": "https://leetcode.com/problems/top-k-frequent-elements/"
+  },
+  "io": {
+    "kind": "int-array-and-int",
+    "out": "int-pair"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "neetcode-gh/leetcode",
+      "sourceUrl": "https://github.com/neetcode-gh/leetcode/blob/d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb/python/0347-top-k-frequent-elements.py",
+      "sourceRevision": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2022 neetcode-gh",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

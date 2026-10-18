@@ -1,0 +1,35 @@
+{
+  "id": 366,
+  "slug": "find-leaves-of-binary-tree",
+  "summary": "公开题名是「寻找二叉树的叶子节点」。从标准输入读取层序结点个数，空孩子用点号表示，只根据这些值完成题名所说的计算，把结果写成先写行数，再逐行写整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "3 0 2 8\n",
+      "stdout": "2\n2 8\n0\n",
+      "note": "对照时去掉末尾换行后再比较。输入是层序结点个数，空孩子用点号表示。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/find-leaves-of-binary-tree/",
+    "en": "https://leetcode.com/problems/find-leaves-of-binary-tree/"
+  },
+  "io": {
+    "kind": "tree",
+    "out": "int-matrix"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "kamyu104/LeetCode-Solutions",
+      "sourceUrl": "https://github.com/kamyu104/LeetCode-Solutions/blob/8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3/Python/find-leaves-of-binary-tree.py",
+      "sourceRevision": "8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

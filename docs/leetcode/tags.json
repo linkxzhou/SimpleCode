@@ -1,0 +1,19 @@
+{
+  "array": "数组",
+  "hash": "哈希",
+  "two-pointers": "双指针",
+  "sliding-window": "滑动窗口",
+  "stack": "栈",
+  "binary-search": "二分查找",
+  "linked-list": "链表",
+  "tree": "树",
+  "graph": "图",
+  "heap": "堆",
+  "backtracking": "回溯",
+  "dp": "动态规划",
+  "greedy": "贪心",
+  "interval": "区间",
+  "bit": "位运算",
+  "math": "数学",
+  "design": "设计"
+}

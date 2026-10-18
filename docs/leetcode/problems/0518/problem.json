@@ -1,0 +1,35 @@
+{
+  "id": 518,
+  "slug": "coin-change-ii",
+  "summary": "公开题名是「零钱兑换 II」。从标准输入读取按参数顺序排列的若干记号，只根据这些值完成题名所说的计算，把结果写成一个整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "3 0\n",
+      "stdout": "0\n",
+      "note": "对照时去掉末尾换行后再比较。输入是按参数顺序排列的若干记号。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/coin-change-ii/",
+    "en": "https://leetcode.com/problems/coin-change-ii/"
+  },
+  "io": {
+    "kind": "int+list[int]",
+    "out": "int"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "neetcode-gh/leetcode",
+      "sourceUrl": "https://github.com/neetcode-gh/leetcode/blob/d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb/python/0518-coin-change-ii.py",
+      "sourceRevision": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2022 neetcode-gh",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

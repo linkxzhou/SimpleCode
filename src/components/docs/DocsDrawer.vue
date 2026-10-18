@@ -1,13 +1,26 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { Button } from "@/components/ui/button";
 import DocsHeader from "./DocsHeader.vue";
 import ChapterList from "./ChapterList.vue";
 import ChapterView from "./ChapterView.vue";
+import LeetCodeList from "@/components/study/LeetCodeList.vue";
+import LeetCodeProblem from "@/components/study/LeetCodeProblem.vue";
 import { useDocsStore } from "@/stores/docs";
+import { useLeetCodeStore } from "@/stores/leetcode";
+import { useStudyStore } from "@/stores/study";
 import { locale, t } from "@/i18n";
 
 const docs = useDocsStore();
+const study = useStudyStore();
+const leet = useLeetCodeStore();
+const leetMode = computed(() => study.mode === "leetcode");
+const headerTitle = computed(() => {
+  if (!leetMode.value) return docs.title;
+  const row = leet.problem;
+  return row ? `${row.id}. ${row.title}` : t("leetcodeTitle");
+});
+const showBack = computed(() => (leetMode.value ? !!leet.problem : docs.view === "chapter"));
 const mobile = ref(window.matchMedia("(max-width: 767px)").matches);
 const mq = window.matchMedia("(max-width: 767px)");
 function onMq() {
@@ -35,7 +48,10 @@ watch(
   () => docs.open,
   (open) => {
     document.body.style.overflow = open && mobile.value ? "hidden" : "";
-    if (!open) document.querySelector<HTMLButtonElement>("[data-testid=learn-button]")?.focus();
+    if (!open) {
+      const id = study.mode === "leetcode" ? "study-mode-leetcode" : "study-mode-learn";
+      document.querySelector<HTMLButtonElement>(`[data-testid=${id}]`)?.focus();
+    }
   },
 );
 
@@ -62,7 +78,8 @@ onBeforeUnmount(() => {
         data-testid="docs-drawer"
         role="dialog"
         :aria-modal="mobile ? 'true' : 'false'"
-        :aria-label="t('tutorialLabel', { title: docs.title })"
+        :aria-label="leetMode ? headerTitle : t('tutorialLabel', { title: docs.title })"
+        :data-mode="study.mode"
         class="doc-drawer fixed z-40 flex flex-col bg-background shadow-sm"
         :class="mobile ? 'inset-x-0 bottom-0 top-[var(--editor-toolbar-h)] rounded-t-lg border-t border-border' : 'bottom-0 right-0 top-[var(--editor-toolbar-h)] border-l border-border'"
         :data-side="mobile ? 'bottom' : 'right'"
@@ -75,14 +92,17 @@ onBeforeUnmount(() => {
           @pointerdown="onResizeStart"
         />
         <DocsHeader
-          :title="docs.title"
-          :show-back="docs.view === 'chapter'"
-          @back="docs.backToToc()"
+          :title="headerTitle"
+          :show-back="showBack"
+          :show-search="!leetMode && docs.view === 'chapter'"
+          @back="leetMode ? leet.backToList() : docs.backToToc()"
           @close="docs.close()"
           @search="docs.openSearch()"
         />
         <div class="flex min-h-0 flex-1 flex-col">
-          <div v-if="docs.gap" class="flex flex-1 flex-col items-start gap-3 px-5 py-8" data-testid="docs-en-placeholder" :data-gap="docs.gap">
+          <LeetCodeProblem v-if="leetMode && leet.problem" />
+          <LeetCodeList v-else-if="leetMode" />
+          <div v-else-if="docs.gap" class="flex flex-1 flex-col items-start gap-3 px-5 py-8" data-testid="docs-en-placeholder" :data-gap="docs.gap">
             <p class="text-sm font-medium">{{ t("enPlaceholderTitle") }}</p>
             <p class="text-sm leading-6 text-muted-foreground">{{ docs.gap === "chapter" ? t("enPlaceholderChapter") : t("enPlaceholderBody") }}</p>
             <Button type="button" size="sm" data-testid="docs-view-zh" @click="docs.revealChinese()">{{ t("viewChinese") }}</Button>

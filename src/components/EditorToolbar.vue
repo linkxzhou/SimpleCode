@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { RotateCcw, Square, X } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import LearnButton from "./docs/LearnButton.vue";
+import StudyModeSwitch from "./study/StudyModeSwitch.vue";
 import RunButton from "./RunButton.vue";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
@@ -66,7 +66,7 @@ function reset() {
         TS
       </button>
     </div>
-    <LearnButton />
+    <StudyModeSwitch />
     <template v-if="downloading && langs.selected">
       <Button variant="ghost" size="xs" @click="langs.cancel(langs.selected.id)"><X />{{ t("cancelDownload") }}</Button>
     </template>

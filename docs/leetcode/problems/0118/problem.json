@@ -1,0 +1,35 @@
+{
+  "id": 118,
+  "slug": "pascals-triangle",
+  "summary": "公开题名是「杨辉三角」。从标准输入读取按参数顺序排列的若干记号，只根据这些值完成题名所说的计算，把结果写成先写行数，再逐行写整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "0\n",
+      "stdout": "1\n1\n",
+      "note": "对照时去掉末尾换行后再比较。输入是按参数顺序排列的若干记号。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/pascals-triangle/",
+    "en": "https://leetcode.com/problems/pascals-triangle/"
+  },
+  "io": {
+    "kind": "int",
+    "out": "int-matrix"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "doocs/leetcode",
+      "sourceUrl": "https://github.com/doocs/leetcode/blob/88c8c2c29f19c186d7cc05c9db17245d9ae3df43/solution/0100-0199/0118.Pascal%27s%20Triangle/Solution.py",
+      "sourceRevision": "88c8c2c29f19c186d7cc05c9db17245d9ae3df43",
+      "license": "CC-BY-SA-4.0",
+      "spdx": "CC-BY-SA-4.0",
+      "attribution": "Copyright Doocs contributors",
+      "shareAlike": true,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

@@ -914,13 +914,13 @@ print(f"你好，{name}！")
 - 按钮均为 `<button>`，`aria-label`：复制 → “复制 Python 代码”；运行 → “运行此 Python 示例（会替换编辑器内容）”；下载中 `aria-busy="true"` + `aria-valuenow`。
 - 代码块容器 `role="group" aria-label="代码示例 3：问候"`，`tabindex="0"`；焦点在代码块上时：`⌘/Ctrl+Enter` = 运行，`⌘/Ctrl+Shift+C` = 复制，`Esc` = 停止（运行中）。
 - 状态变化通过 `aria-live="polite"` 区域播报（“正在下载 Ruby 38%”“运行结束，退出码 0”“已替换编辑器内容，可撤销”）。
-- 焦点管理：运行后焦点移到终端（xterm `textarea`）；Toast 的“撤销”可用 `⌘/Ctrl+Z`（焦点在抽屉内时）触发；关闭抽屉后焦点回到 LearnButton。
+- 焦点管理：运行后焦点移到终端（xterm `textarea`）；Toast 的“撤销”可用 `⌘/Ctrl+Z`（焦点在抽屉内时）触发；关闭抽屉后焦点回到当前模式按钮（`study-mode-learn` 或 `study-mode-leetcode`）。
 - 对比度：所有前景/背景组合 ≥ 4.5:1（#737373 on #FFFFFF = 4.74:1 ✓；#A3A3A3 on #0A0A0A ≈ 8.3:1 ✓）。
 
 ### 14.9 测试
 **单元（Vitest）**：`parseFenceInfo`（引号、转义、未知属性）、`resolveRuntime`（全部别名、未知语言）、`useRunFromDoc` 的分支（mock stores）：跨语言切换、ensure 失败、运行中确认/取消、备份与撤销、TS 转译成功/失败、stdin 预填调用顺序。
 **E2E（Playwright，复用 tests/smoke.mjs 的 preview 服务器与系统 Chrome）** `tests/learn.spec.mjs`：
-1. 打开应用 → 点击 `[data-testid=learn-button]` → 抽屉出现，标题含 “Python 快速入门”。
+1. 打开应用 → 点击 `[data-testid=study-mode-learn]` → 抽屉出现，标题含 “Python 快速入门”。
 2. 打开第 3 章 → 定位第 1 个 `[data-testid=doc-code-block]`，读取其 `data-code`。
 3. 点击块内 `[data-testid=doc-run]` → 等待 `[data-testid=run-status][data-status=done]`。
 4. 断言：`__simplecodeEditor.getValue() === data-code`；`__simplecodeTerminal.transcript` 包含块的 `data-expect`；终端可见。
@@ -1041,7 +1041,7 @@ print(f"你好，{name}！")
 - 在 `:root` 定义 `--editor-toolbar-h: 2.5rem`。`EditorToolbar` 用这个高度，不再单独写死一个会漂的数。
 - 桌面抽屉去掉 `inset-y-0`，改为 `top: var(--editor-toolbar-h); right: 0; bottom: 0`。
 - 拖拽改变宽度的手柄从抽屉左缘开始，范围也在工具栏之下。
-- `tests/learn.spec.mjs` 断言：抽屉打开时 `[data-testid=run]`、`[data-testid=learn-button]` 的矩形与 `[data-testid=docs-drawer]` 不相交，并且按钮中心点的 `elementFromPoint` 不是抽屉。
+- `tests/learn.spec.mjs` 断言：抽屉打开时 `[data-testid=run]`、`[data-testid=study-mode-learn]`、`[data-testid=study-mode-leetcode]` 的矩形与 `[data-testid=docs-drawer]` 不相交，并且按钮中心点的 `elementFromPoint` 不是抽屉。
 
 ### 16.4 代码行距
 

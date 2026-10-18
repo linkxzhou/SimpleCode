@@ -1,0 +1,36 @@
+{
+  "id": 39,
+  "slug": "combination-sum",
+  "summary": "公开题名是「组合总和」。从标准输入读取整数个数、同一行上的各个整数，以及最后的目标整数，只根据这些值完成题名所说的计算，把结果写成先写行数，再逐行写整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "2 4 2 6\n",
+      "stdout": "2\n4 2\n2 2 2\n",
+      "note": "对照时去掉末尾换行后再比较。输入是整数个数、同一行上的各个整数，以及最后的目标整数。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/combination-sum/",
+    "en": "https://leetcode.com/problems/combination-sum/"
+  },
+  "io": {
+    "kind": "int-array-and-int",
+    "out": "int-matrix"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "neetcode-gh/leetcode",
+      "sourceUrl": "https://github.com/neetcode-gh/leetcode/blob/d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb/python/0039-combination-sum.py",
+      "sourceRevision": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2022 neetcode-gh",
+      "shareAlike": false,
+      "modifications": [
+        "added import copy",
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

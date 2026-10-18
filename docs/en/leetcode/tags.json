@@ -1,0 +1,19 @@
+{
+  "array": "Array",
+  "hash": "Hash",
+  "two-pointers": "Two pointers",
+  "sliding-window": "Sliding window",
+  "stack": "Stack",
+  "binary-search": "Binary search",
+  "linked-list": "Linked list",
+  "tree": "Tree",
+  "graph": "Graph",
+  "heap": "Heap",
+  "backtracking": "Backtracking",
+  "dp": "Dynamic programming",
+  "greedy": "Greedy",
+  "interval": "Interval",
+  "bit": "Bit",
+  "math": "Math",
+  "design": "Design"
+}

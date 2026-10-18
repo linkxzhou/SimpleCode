@@ -5,6 +5,7 @@ import { join, relative } from "node:path";
 
 const roots = [
   "src/components/docs",
+  "src/components/study",
   "src/components/AboutDialog.vue",
   "src/components/LocaleToggle.vue",
   "src/components/ui/dialog",

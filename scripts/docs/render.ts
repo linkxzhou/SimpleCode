@@ -383,7 +383,7 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   for (const name of entries) {
     const dir = join(docsDir, name);
     if (!statSync(dir).isDirectory()) continue;
-    if (name.startsWith("_") || name === "en") continue;
+    if (name.startsWith("_") || name === "en" || name === "leetcode") continue;
     if (!isBookId(name)) {
       errors.push(`未知文档目录 docs/${name}`);
       continue;

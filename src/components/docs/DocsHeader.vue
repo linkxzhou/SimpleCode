@@ -3,7 +3,7 @@ import { Search, X, ChevronLeft } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { t } from "@/i18n";
 
-defineProps<{ title: string; showBack: boolean }>();
+defineProps<{ title: string; showBack: boolean; showSearch?: boolean }>();
 const emit = defineEmits<{ back: []; close: []; search: [] }>();
 </script>
 
@@ -13,7 +13,7 @@ const emit = defineEmits<{ back: []; close: []; search: [] }>();
       <ChevronLeft />
     </Button>
     <h2 data-testid="docs-title" class="min-w-0 flex-1 truncate px-1 text-sm font-semibold leading-5">{{ title }}</h2>
-    <Button v-if="showBack" type="button" variant="ghost" size="icon" class="h-7 w-7" :aria-label="t('searchBook')" @click="emit('search')">
+    <Button v-if="showSearch" type="button" variant="ghost" size="icon" class="h-7 w-7" :aria-label="t('searchBook')" @click="emit('search')">
       <Search />
     </Button>
     <Button type="button" variant="ghost" size="icon" class="h-7 w-7" :aria-label="t('closeTutorial')" data-testid="docs-close" @click="emit('close')">

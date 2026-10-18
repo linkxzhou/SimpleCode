@@ -1,0 +1,36 @@
+{
+  "id": 746,
+  "slug": "min-cost-climbing-stairs",
+  "summary": "公开题名是「使用最小花费爬楼梯」。从标准输入读取按参数顺序排列的若干记号，只根据这些值完成题名所说的计算，把结果写成一个整数。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "3 5 2 4\n",
+      "stdout": "2\n",
+      "note": "对照时去掉末尾换行后再比较。输入是按参数顺序排列的若干记号。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/min-cost-climbing-stairs/",
+    "en": "https://leetcode.com/problems/min-cost-climbing-stairs/"
+  },
+  "io": {
+    "kind": "list[int]",
+    "out": "int"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "kamyu104/LeetCode-Solutions",
+      "sourceUrl": "https://github.com/kamyu104/LeetCode-Solutions/blob/8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3/Python/min-cost-climbing-stairs.py",
+      "sourceRevision": "8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions",
+      "shareAlike": false,
+      "modifications": [
+        "replaced xrange with range",
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

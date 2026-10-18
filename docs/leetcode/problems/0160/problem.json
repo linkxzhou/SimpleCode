@@ -1,0 +1,35 @@
+{
+  "id": 160,
+  "slug": "intersection-of-two-linked-lists",
+  "summary": "公开题名是「相交链表」。从标准输入读取按参数顺序排列的若干记号，只根据这些值完成题名所说的计算，把结果写成一行里用空格隔开的结点值。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "2 1 0 4 2 2 6 4\n",
+      "stdout": "null\n",
+      "note": "对照时去掉末尾换行后再比较。输入是按参数顺序排列的若干记号。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/intersection-of-two-linked-lists/",
+    "en": "https://leetcode.com/problems/intersection-of-two-linked-lists/"
+  },
+  "io": {
+    "kind": "ListNode+ListNode",
+    "out": "linked-list"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "neetcode-gh/leetcode",
+      "sourceUrl": "https://github.com/neetcode-gh/leetcode/blob/d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb/python/0160-intersection-of-two-linked-lists.py",
+      "sourceRevision": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2022 neetcode-gh",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

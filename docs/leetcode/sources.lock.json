@@ -1,0 +1,55 @@
+{
+  "retrieved": "2026-10-18",
+  "lists": {
+    "hot100": {
+      "repo": "kernelvale/leetcode-hot100",
+      "commit": "e55875275c6ce2d55141196cb1a025a112f43684",
+      "note": "problem ids only, cross-check of the public Top 100 Liked plan"
+    },
+    "blind75": {
+      "repo": "neetcode-gh/leetcode",
+      "commit": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "file": ".problemSiteData.json",
+      "field": "blind75"
+    },
+    "neetcode150": {
+      "repo": "neetcode-gh/leetcode",
+      "commit": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "file": ".problemSiteData.json",
+      "field": "neetcode150"
+    },
+    "codetop": {
+      "repo": "afatcoder/LeetcodeTop",
+      "commit": "7105c17a4d3f61baa242f8a36a7056b5bbd0baf0",
+      "note": "problem ids only"
+    },
+    "top200": {
+      "repo": "hoangcaobao/LeetCode",
+      "commit": "64660b9f3a001aa840ec173ceb0b90dfd2f93b41",
+      "file": "README.md"
+    },
+    "pattern500": {
+      "repo": "tiationg-kho/leetcode-pattern-500",
+      "commit": "c3ee9ee6e40d386600e0a3545844350a264c5b56",
+      "file": "README.md"
+    }
+  },
+  "solutions": {
+    "kamyu104/LeetCode-Solutions": {
+      "commit": "8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3",
+      "license": "MIT"
+    },
+    "neetcode-gh/leetcode": {
+      "commit": "d5ebb3ea8bd4b52d605bc7aa179e22af684d31bb",
+      "license": "MIT"
+    },
+    "tiationg-kho/leetcode-pattern-500": {
+      "commit": "c3ee9ee6e40d386600e0a3545844350a264c5b56",
+      "license": "MIT"
+    },
+    "doocs/leetcode": {
+      "commit": "88c8c2c29f19c186d7cc05c9db17245d9ae3df43",
+      "license": "CC-BY-SA-4.0"
+    }
+  }
+}

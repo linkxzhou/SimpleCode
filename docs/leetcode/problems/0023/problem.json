@@ -1,0 +1,35 @@
+{
+  "id": 23,
+  "slug": "merge-k-sorted-lists",
+  "summary": "公开题名是「合并 K 个升序链表」。从标准输入读取按参数顺序排列的若干记号，只根据这些值完成题名所说的计算，把结果写成一行里用空格隔开的结点值。下面的样例是我们另拟的一小段数据，用来在编辑器里对照输出，不是官网示例的原文。数据规模不超过一百，方便在浏览器里很快跑完。",
+  "samples": [
+    {
+      "stdin": "2 3 4 5 1 1 2\n",
+      "stdout": "2 4 5 1\n",
+      "note": "对照时去掉末尾换行后再比较。输入是按参数顺序排列的若干记号。"
+    }
+  ],
+  "links": {
+    "cn": "https://leetcode.cn/problems/merge-k-sorted-lists/",
+    "en": "https://leetcode.com/problems/merge-k-sorted-lists/"
+  },
+  "io": {
+    "kind": "list[ListNode]",
+    "out": "linked-list"
+  },
+  "solutions": {
+    "python": {
+      "file": "python.py",
+      "sourceRepo": "kamyu104/LeetCode-Solutions",
+      "sourceUrl": "https://github.com/kamyu104/LeetCode-Solutions/blob/8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3/Python/merge-k-sorted-lists.py",
+      "sourceRevision": "8e29ccd49e73439f0dc36b6bdd0f3bded259c7b3",
+      "license": "MIT",
+      "spdx": "MIT",
+      "attribution": "Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions",
+      "shareAlike": false,
+      "modifications": [
+        "appended the stdin harness"
+      ]
+    }
+  }
+}

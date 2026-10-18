@@ -5,12 +5,14 @@ import LanguageSidebar from "./LanguageSidebar.vue";
 import MainArea from "./MainArea.vue";
 import DocsDrawer from "./docs/DocsDrawer.vue";
 import { useDocsStore } from "@/stores/docs";
+import { useStudyStore } from "@/stores/study";
 import { useRunFromDoc } from "@/composables/useRunFromDoc";
 
 const COLLAPSE_KEY = "simplecode:sidebar-collapsed";
 const sidebar = ref<InstanceType<typeof ResizablePanel>>();
 const collapsed = ref(localStorage.getItem(COLLAPSE_KEY) === "1");
 const docs = useDocsStore();
+const study = useStudyStore();
 const learn = useRunFromDoc();
 
 function setCollapsed(v: boolean) {
@@ -32,7 +34,7 @@ function onKey(e: KeyboardEvent) {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "j") {
     e.preventDefault();
     e.stopPropagation();
-    docs.toggle();
+    study.toggleDrawer();
     return;
   }
   if (!docs.open) return;
@@ -44,6 +46,7 @@ function onKey(e: KeyboardEvent) {
     return;
   }
   if (!inDrawer || target?.closest("input, textarea, [contenteditable='true']")) return;
+  if (study.mode !== "learn") return;
   if (e.key === "[") {
     e.preventDefault();
     docs.prev();
