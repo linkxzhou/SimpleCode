@@ -116,6 +116,45 @@ async function openLearn(page) {
   await page.waitForSelector('[data-testid="docs-drawer"]');
 }
 
+async function actionMetrics(page, ids) {
+  return page.evaluate((ids) => {
+    return ids.map((id) => {
+      const el = document.querySelector(`[data-testid="${id}"]`);
+      if (!el) return null;
+      const box = el.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const text = range.getBoundingClientRect();
+      const style = getComputedStyle(el);
+      return {
+        id,
+        h: box.height,
+        top: box.top,
+        mid: box.top + box.height / 2,
+        textMid: text.top + text.height / 2,
+        fontSize: style.fontSize,
+        radius: style.borderRadius,
+      };
+    });
+  }, ids);
+}
+
+function actionsAligned(metrics) {
+  const base = metrics[0];
+  if (!base) return false;
+  return metrics.every(
+    (item) =>
+      item &&
+      Math.abs(item.h - base.h) <= 1 &&
+      Math.abs(item.top - base.top) <= 1 &&
+      Math.abs(item.textMid - item.mid) <= 2 &&
+      item.fontSize === base.fontSize &&
+      item.radius === base.radius &&
+      item.h >= 27 &&
+      item.h <= 29,
+  );
+}
+
 async function assertLeetCode(page) {
   await page.click('[data-testid="docs-close"]');
   await saveShot(page, "leetcode-switch.png");
@@ -162,6 +201,23 @@ async function assertLeetCode(page) {
   const solution = await page.textContent('[data-testid="leetcode-solution"]');
   check(solution?.includes("twoSum") && solution?.includes("kamyu104"), "revealed python solution");
   await saveShot(page, "leetcode-problem-revealed.png", page.locator('[data-testid="docs-drawer"]'));
+  const withSolution = await actionMetrics(page, ["leetcode-reveal", "leetcode-run-sample", "leetcode-load-run"]);
+  check(actionsAligned(withSolution), `solution actions share a line (${JSON.stringify(withSolution)})`);
+
+  await page.click('[data-testid="lang-quickjs"]');
+  await page.waitForSelector('[data-testid="lang-quickjs"][data-status="ready"]', { timeout: 180_000 });
+  await page.waitForSelector('[data-testid="leetcode-no-solution"]');
+  const withoutSolution = await actionMetrics(page, ["leetcode-no-solution", "leetcode-run-sample"]);
+  check(actionsAligned(withoutSolution), `missing-solution row shares a line (${JSON.stringify(withoutSolution)})`);
+  check((await page.textContent('[data-testid="leetcode-no-solution"]'))?.includes("这门语言还没有题解"), "Chinese missing-solution notice");
+  await page.getByTestId("locale-en").click();
+  await page.waitForFunction(() => (document.querySelector('[data-testid="leetcode-no-solution"]')?.textContent || "").includes("No solution"));
+  const englishRow = await actionMetrics(page, ["leetcode-no-solution", "leetcode-run-sample"]);
+  check(actionsAligned(englishRow), `English missing-solution row shares a line (${JSON.stringify(englishRow)})`);
+  await page.getByTestId("locale-zh").click();
+  await page.waitForFunction(() => (document.querySelector('[data-testid="leetcode-no-solution"]')?.textContent || "").includes("这门语言还没有题解"));
+  await page.click('[data-testid="lang-python"]');
+  await page.waitForSelector('[data-testid="leetcode-reveal"]');
 
   await page.getByRole("button", { name: "返回目录" }).click();
   await page.waitForSelector('[data-testid="leetcode-list"]');

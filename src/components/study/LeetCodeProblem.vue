@@ -102,6 +102,11 @@ function toggleSolution() {
   if (!row || !runtime) return;
   study.toggleReveal(row.id, runtime);
 }
+
+const actionButtonClass =
+  "inline-flex h-7 shrink-0 items-center rounded border border-border px-2 py-0 text-xs leading-none hover:bg-accent";
+const actionNoticeClass =
+  "m-0 inline-flex h-7 shrink-0 items-center whitespace-nowrap rounded border border-border bg-muted/40 px-2 py-0 text-xs leading-none text-muted-foreground";
 </script>
 
 <template>
@@ -127,26 +132,26 @@ function toggleSolution() {
         <a :href="problem.links.cn" target="_blank" rel="noreferrer" class="underline underline-offset-2">{{ t("leetcodeLinkCn") }}</a>
         <a :href="problem.links.en" target="_blank" rel="noreferrer" class="underline underline-offset-2">{{ t("leetcodeLinkEn") }}</a>
       </p>
-      <div class="mt-4 flex flex-wrap gap-2">
+      <div class="mt-4 flex flex-wrap items-center gap-2" data-testid="leetcode-actions">
         <button
           v-if="solution"
           type="button"
           data-testid="leetcode-reveal"
-          class="h-7 rounded border border-border px-2 text-xs hover:bg-accent"
+          :class="actionButtonClass"
           :aria-expanded="revealed"
           @click="toggleSolution"
         >
           {{ revealed ? t("leetcodeHideSolution") : t("leetcodeShowSolution") }}
         </button>
-        <p v-else class="text-sm text-muted-foreground" data-testid="leetcode-no-solution">{{ t("leetcodeNoSolution") }}</p>
-        <button type="button" data-testid="leetcode-run-sample" class="h-7 rounded border border-border px-2 text-xs hover:bg-accent" @click="runSample">
+        <p v-else :class="actionNoticeClass" data-testid="leetcode-no-solution">{{ t("leetcodeNoSolution") }}</p>
+        <button type="button" data-testid="leetcode-run-sample" :class="actionButtonClass" @click="runSample">
           {{ t("leetcodeRunSample") }}
         </button>
         <button
           v-if="solution && revealed"
           type="button"
           data-testid="leetcode-load-run"
-          class="h-7 rounded border border-border px-2 text-xs hover:bg-accent"
+          :class="actionButtonClass"
           @click="loadAndRun"
         >
           {{ t("leetcodeLoadRun") }}
