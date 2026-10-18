@@ -4,7 +4,7 @@
 > 基线：`main` @ `2bd4d51`。
 > 已定（不再作为待确认问题）：选题来源、中英标题与难度、只选已下载语言、题解默认隐藏、题解从宽松许可证仓库拷贝并署名。题面仍只放链接和自写短摘要。
 
-相关文档：[plan/LEARN.md](LEARN.md) 的抽屉、[plan/DESIGN.md](DESIGN.md) 的工具栏、[plan/LANGUAGES.md](LANGUAGES.md) 的运行时限制。十三本快速入门的目录、篇幅和 `docs-smoke` 不因题库改动。
+相关文档：[plan/LEARN.md](LEARN.md) 的抽屉、[plan/DESIGN.md](DESIGN.md) 的工具栏、[plan/LANGUAGES.md](LANGUAGES.md) 的运行时限制。题库数据和十三本书放在一起：中文在 `docs/leetcode/`，英文对照在 `docs/en/leetcode/`。十三本书的目录、篇幅和 `docs-smoke` 不把这个目录当成一本新书。
 
 ## 目录
 
@@ -31,6 +31,7 @@
 5. 题解代码默认不出现。用户点「查看题解」才展开。
 6. 题解代码从 GitHub 上许可证允许再分发的仓库拷贝。每一份拷贝在数据里记下上游仓库、commit、许可证和署名。CC BY-SA 4.0 的文件保持相同方式共享。
 7. 题面不入库。抽屉里是我们写的短摘要、我们写的小样例，以及指向 `leetcode.cn` / `leetcode.com` 的链接。
+8. 题目元数据、摘要和题解都在 `docs/leetcode/`。英文标题、摘要和样例说明在 `docs/en/leetcode/`，与 `docs/en/<book>/` 的对照方式相同。GitHub 上的 [doocs/leetcode](https://github.com/doocs/leetcode) 仍是题解来源之一，它不是本仓库的目录。
 
 ### 1.2 非目标
 
@@ -213,7 +214,7 @@ stateDiagram-v2
 
 题单只贡献**题号**（力扣前端题号，整数）。题面段落、官方示例、配图、频度数字、公司部门表都不入库。
 
-检索日期：2026-10-18。导入时把当时的 commit SHA 写进 `content/leetcode/sources.lock.json`，不在运行时访问 GitHub。
+检索日期：2026-10-18。导入时把当时的 commit SHA 写进 `docs/leetcode/sources.lock.json`，不在运行时访问 GitHub。
 
 ### 4.1 六份题单
 
@@ -258,7 +259,7 @@ CodeTop 没有 SPDX 许可，仍然按已定结论进入**题号**合并：我�
 
 英文标题取自同一优先顺序里的英文名称（NeetCode 的 `problem`、top200 的 Title、pattern500 的 Name）。中文标题由导入者按力扣公开题名写入 `title.zh`，只写题名，不写题面。两套标题都缺一不可。
 
-标签用我们自己的一组 id（`array`、`hash`、`two-pointers`、`sliding-window`、`stack`、`binary-search`、`linked-list`、`tree`、`graph`、`heap`、`backtracking`、`dp`、`greedy`、`interval`、`bit`、`math`、`design`）。NeetCode 的 `pattern` 只在导入时当提示，不原样显示。中英标签文案在 `content/leetcode/tags.json`。
+标签用我们自己的一组 id（`array`、`hash`、`two-pointers`、`sliding-window`、`stack`、`binary-search`、`linked-list`、`tree`、`graph`、`heap`、`backtracking`、`dp`、`greedy`、`interval`、`bit`、`math`、`design`）。NeetCode 的 `pattern` 只在导入时当提示，不原样显示。中文标签在 `docs/leetcode/tags.json`，英文标签在 `docs/en/leetcode/tags.json`，键相同。
 
 ---
 
@@ -277,7 +278,7 @@ CodeTop 没有 SPDX 许可，仍然按已定结论进入**题号**合并：我�
 | 3 | [tiationg-kho/leetcode-pattern-500](https://github.com/tiationg-kho/leetcode-pattern-500) | MIT | Python、Java | 同上。不拷贝 17 篇概念笔记 |
 | 4 | [doocs/leetcode](https://github.com/doocs/leetcode) `solution/<range>/<id>.<Title>/Solution.*` | **CC BY-SA 4.0**（根目录 `LICENSE`） | 上面三家没有、或有但不能在我们的运行时里跑的语言。doocs 的 `Solution.py`、`Solution.java`、`Solution.cpp`、`Solution.go`、`Solution.js`、`Solution.ts`、`Solution.rs`、`Solution.rb` 都在范围内 | 见 §5.2 |
 
-doocs 的 README 另有一句：著作权归 Doocs，商业转载联系 [@yanglbme](mailto:contact@yanglibin.info)，非商业转载注明出处。文件头的许可仍是 CC BY-SA 4.0。本计划按 LICENSE 文件执行：署名、标明修改、演绎作品继续使用 CC BY-SA 4.0。README 的那句商业转载说明原样抄进 `LICENSES/THIRD_PARTY.md` 和 `content/leetcode/SOURCES.md`，不省略。
+doocs 的 README 另有一句：著作权归 Doocs，商业转载联系 [@yanglbme](mailto:contact@yanglibin.info)，非商业转载注明出处。文件头的许可仍是 CC BY-SA 4.0。本计划按 LICENSE 文件执行：署名、标明修改、演绎作品继续使用 CC BY-SA 4.0。README 的那句商业转载说明原样抄进 `LICENSES/THIRD_PARTY.md` 和 `docs/leetcode/SOURCES.md`，不省略。
 
 ### 5.2 CC BY-SA 4.0 要做的事
 
@@ -286,7 +287,7 @@ doocs 的 README 另有一句：著作权归 Doocs，商业转载联系 [@yanglb
 1. 文件许可证保持 CC BY-SA 4.0。不能改成 MIT，也不能放进 `docs/` 里「代码示例以 MIT 授权」的那一类。
 2. 文件头写上：上游 URL（含 commit SHA）、原作者表述「Copyright Doocs contributors」、许可证链接 <https://creativecommons.org/licenses/by-sa/4.0/>、以及修改清单。
 3. 修改至少包括：删掉复述题面的注释；为了能在 SimpleCode 里跑而做的改动（见 §7）。修改清单用英文写在文件头，一行一条。
-4. 包装代码若和题解正文处在同一个提交文件里，**整个文件**按 CC BY-SA 4.0 再分发。包装模板本身（不含题解正文）放在 `content/leetcode/harness/`，许可证 MIT，与 `docs/LICENSE` 的代码示例一致。
+4. 包装代码若和题解正文处在同一个提交文件里，**整个文件**按 CC BY-SA 4.0 再分发。包装模板本身（不含题解正文）放在 `docs/leetcode/harness/`，许可证 MIT，与 `docs/LICENSE` 的代码示例一致。
 5. 相同方式共享覆盖这个改编后的题解文件，不覆盖 Vue 界面、运行时和十三本书。那些文件不含 doocs 正文。
 6. 抽屉展开题解时，代码块下方一行固定文案，链到该文件头里的 URL 和许可证。CC BY-SA 用「题解改编自 doocs/leetcode，CC BY-SA 4.0」。MIT 用「题解来自 {repo}，MIT」。
 7. `LICENSES/THIRD_PARTY.md` 增加一节，列出四个上游仓库、许可证、commit。
@@ -298,7 +299,7 @@ SPDX-License-Identifier: MIT
 Source: https://github.com/kamyu104/LeetCode-Solutions/blob/<40-char-sha>/<path>
 Copyright (c) 2018 https://github.com/kamyu104/LeetCode-Solutions
 Modifications by SimpleCode: removed problem-statement comments; appended the stdin harness.
-The MIT license text is in content/leetcode/LICENSES/MIT.txt
+The MIT license text is in docs/leetcode/LICENSES/MIT.txt
 ```
 
 CC BY-SA 文件头：
@@ -319,7 +320,7 @@ The Doocs README also asks commercial reprints to contact contact@yanglibin.info
 
 - doocs 的 `README.md`、`README_EN.md`、配图、`lcof/`、`lcof2/`、`lcci/`。
 - 任何粘在代码注释里的题面、官方示例、约束段落。算法注释可以留。
-- 非 ASCII 的标识符和字符串。注释可以是中文或英文，与上游一致，不另做一套翻译文件。标题和摘要才分中英。这是相对 `plan/LEARN.md` §22 的一处收窄：题解是上游副本，评论语言跟上游，可执行记号仍是 ASCII。
+- 非 ASCII 的标识符和字符串。题解只存一份，放在 `docs/leetcode/problems/<id>/`，注释保持上游语言，不在 `docs/en/leetcode/` 再放一份代码。标题、摘要和样例说明才做英文对照。可执行记号仍是 ASCII。
 - 第三方包、`#include` 私有头、crates.io、npm。SimpleCode 没有这些。
 
 一个题、一种语言，在四个仓库里都找不到能跑的文件：该语言不写 `solutions` 项。题目仍在目录里。
@@ -328,17 +329,19 @@ The Doocs README also asks commercial reprints to contact contact@yanglibin.info
 
 ## 6. 数据放哪、长什么样
 
-不放进 `docs/<book>/`。`tests/docs-smoke.mjs`、短节长度和 60 字不重复会把题库当成书。也不把全部题解打进主 bundle。
+题目元数据、摘要和题解都在 `docs/leetcode/`，和 `docs/python/`、`docs/rust/` 一样放在 `docs/` 下。英文对照放在 `docs/en/leetcode/`，和 `docs/en/python/` 同一层。GitHub 仓库 [doocs/leetcode](https://github.com/doocs/leetcode) 只作为题解来源出现，不表示本仓库还有别的题库目录。
+
+不把 `leetcode` 写进 `BOOKS` 或 `SHIPPED_BOOKS`。`scripts/docs/render.ts` 现在会把 `docs/` 下不认识的目录报成「未知文档目录」；实现时要像跳过 `en` 一样跳过 `leetcode`，并且不要把 `docs/leetcode/**/*.md` 收成快速入门章节。短节长度、60 个汉字不重复、`docs-ascii` 和 `docs-smoke` 都按十三本书的 id 遍历，JSON 和题解源文件不会走进那些检查。题解冒烟仍走 §8 的 `tests/leetcode-smoke.mjs`。题解按题动态导入，不打进首屏包。
 
 ```
-content/leetcode/
+docs/leetcode/
   README.md                 # 写入规则、许可、怎样加一题
   SOURCES.md                # 六个题单 + 四个题解仓库的许可证和义务
   sources.lock.json         # 每个上游的仓库、commit、检索日期
   LICENSES/MIT.txt
-  LICENSES/CC-BY-SA-4.0.txt # 许可证全文副本
-  tags.json
-  index.json                # 只有元数据，构建时打进索引 chunk
+  LICENSES/CC-BY-SA-4.0.txt
+  tags.json                 # 标签 id → 中文
+  index.json                # 中文标题和与语言无关的元数据
   harness/                  # 我们的包装模板，MIT
     python.py.tpl
     ruby.rb.tpl
@@ -351,18 +354,27 @@ content/leetcode/
     java.java.tpl
   problems/
     0001/
-      problem.json
-      python.py             # 题解正文 + 文件头；许可见 JSON
+      problem.json          # 中文摘要、样例、题解出处
+      python.py             # 题解只此一份
       javascript.js         # 有文件才有
+
+docs/en/leetcode/
+  tags.json                 # 同一批标签 id → 英文
+  index.json                # 同一批题号，英文标题
+  problems/
+    0001/
+      problem.json          # 英文摘要和样例说明
 ```
 
-`index.json` 一条：
+`docs/en/leetcode/` 不放题解源文件、包装模板、许可证全文和 `sources.lock.json`。那些只有一份，在 `docs/leetcode/`。
+
+`docs/leetcode/index.json` 一条：
 
 ```json
 {
   "id": 1,
   "slug": "two-sum",
-  "title": { "zh": "两数之和", "en": "Two Sum" },
+  "title": "两数之和",
   "difficulty": "easy",
   "tags": ["array", "hash"],
   "lists": ["hot100", "blind75", "neetcode150", "top200", "pattern500"],
@@ -372,30 +384,27 @@ content/leetcode/
 }
 ```
 
-`problem.json`：
+同一题在 `docs/en/leetcode/index.json` 里 `id`、`slug`、`difficulty`、`tags`、`lists`、`tier`、`premium`、`langs` 与中文文件相同，`title` 为 `"Two Sum"`。
+
+`docs/leetcode/problems/0001/problem.json`：
 
 ```json
 {
   "id": 1,
   "slug": "two-sum",
-  "summary": {
-    "zh": "给出一个整数数组和目标值。在数组里找两个下标，使对应元素之和等于目标值。同一个下标不能用两次。把下标按从小到大输出，中间一个空格。",
-    "en": "You are given an integer array and a target. Find two indices whose values sum to the target. An index may be used once. Print the two indices in ascending order, separated by one space."
-  },
+  "summary": "给出一个整数数组和目标值。在数组里找两个下标，使对应元素之和等于目标值。同一个下标不能用两次。把下标按从小到大输出，中间一个空格。",
   "samples": [
     {
       "stdin": "3\n1 4 8\n9\n",
       "stdout": "0 2\n",
-      "note": {
-        "zh": "1 与 8 的和是 9，下标是 0 和 2。",
-        "en": "1 and 8 sum to 9. The indices are 0 and 2."
-      }
+      "note": "1 与 8 的和是 9，下标是 0 和 2。"
     }
   ],
   "links": {
     "cn": "https://leetcode.cn/problems/two-sum/",
     "en": "https://leetcode.com/problems/two-sum/"
   },
+  "io": { "kind": "int-array-and-int", "out": "int-pair" },
   "solutions": {
     "python": {
       "file": "python.py",
@@ -412,19 +421,31 @@ content/leetcode/
 }
 ```
 
-`shareAlike: true` 只用于 CC BY-SA。界面用它决定展开区的那一行文案。
+`docs/en/leetcode/problems/0001/problem.json` 只写对照文字，样例的输入输出仍以中文目录里的 `stdin` / `stdout` 为准：
+
+```json
+{
+  "id": 1,
+  "summary": "You are given an integer array and a target. Find two indices whose values sum to the target. An index may be used once. Print the two indices in ascending order, separated by one space.",
+  "notes": ["1 and 8 sum to 9. The indices are 0 and 2."]
+}
+```
+
+`notes` 与中文 `samples` 逐条对齐。缺英文文件的题不进入索引。
+
+`shareAlike: true` 只用于 CC BY-SA。界面用它决定展开区的那一行文案。来自 doocs/leetcode 的文件这里为 `true`。
 
 样例数字我们自己写。上面的 `1 4 8` / `9` 是计划里的例子，用来代替官网上常见的那组示例。导入时每题至少一则、至多三则样例，`n ≤ 100`，这样 Yaegi 和 QuickJS 不会在冒烟里跑到超时。
 
-摘要我们自己写。中文去掉代码后 40 到 180 个汉字。英文 30 到 120 个词。不翻译上游 README，不粘贴题面。
+摘要我们自己写。中文 40 到 180 个汉字。英文 30 到 120 个词。不翻译上游 README，不粘贴题面。
 
 加载：
 
-- `index.json` 与 `tags.json` 由 Vite 静态导入。500 条元数据大约 100 KB。
-- 单题 `problem.json` 和各语言源文件用 `import.meta.glob` 的非 eager 动态导入，打开题目时才取。路径在实现里集中在 `src/leetcode/load.ts` 的 `loadProblem(id: number): Promise<Problem>`。
+- 两份 `index.json` 与两份 `tags.json` 由 Vite 静态导入。500 条元数据两份合计大约 150 KB。
+- 单题的两份 `problem.json` 和 `docs/leetcode/problems/<id>/` 下的源文件用 `import.meta.glob` 的非 eager 动态导入，打开题目时才取。读取集中在 `src/docs/leetcode.ts` 的 `loadProblem(id: number, edition: "zh" | "en"): Promise<Problem>`。界面语言是 EN 时用英文标题、摘要和 `notes`，题解字节仍从 `docs/leetcode/problems/` 读。
 - 构建产物里这些 chunk 走普通 JS 资源，不进 `wasm/`，不写进 `wasm/manifest.json`。
 
-`src/leetcode/types.ts` 导出 `Difficulty`、`ProblemIndexEntry`、`Problem`、`SolutionRef`，字段与上面的 JSON 一致。校验脚本读这些类型做运行时检查（题号唯一、`langs` 与磁盘文件一致、`license` 只能是 `MIT` 或 `CC-BY-SA-4.0`、`shareAlike` 与许可证一致、摘要长度、样例非空、链接主机只能是 `leetcode.cn` 或 `leetcode.com`）。
+`src/docs/leetcode.ts` 导出 `Difficulty`、`ProblemIndexEntry`、`Problem`、`SolutionRef`，字段与上面的 JSON 一致。校验脚本读这些类型做运行时检查：题号唯一；中英索引的题号集合相同；`langs` 与 `docs/leetcode/problems/` 里的文件一致；`docs/en/leetcode/problems/<id>/problem.json` 存在且 `notes` 条数等于样例条数；`license` 只能是 `MIT` 或 `CC-BY-SA-4.0`；`shareAlike` 与许可证一致；摘要长度；样例非空；链接主机只能是 `leetcode.cn` 或 `leetcode.com`；`docs/en/leetcode/` 下没有 `*.py`、`*.js`、`*.go`、`*.java`、`*.rs`、`*.c`、`*.cpp`、`*.lua`、`*.rb`。
 
 ---
 
@@ -500,7 +521,7 @@ def __sc_main():
 __sc_main()
 ```
 
-每种语言一份模板，放在 `content/leetcode/harness/`。导入脚本按题解方法的参数个数和样例的 stdin 形状套模板。stdin 形状记在 `problem.json` 的 `samples` 里，第一行是元素个数这种约定写在该题 `problem.json` 的 `io` 字段：
+每种语言一份模板，放在 `docs/leetcode/harness/`。导入脚本按题解方法的参数个数和样例的 stdin 形状套模板。stdin 形状记在 `docs/leetcode/problems/<id>/problem.json` 的 `samples` 里。元素个数这种约定写在同一文件的 `io` 字段：
 
 ```json
 "io": { "kind": "int-array-and-int", "out": "int-pair" }
@@ -569,7 +590,7 @@ Java 的提交文件是一整份 `Main.java`：上游的 `Solution` 改成包内
 |---|---|
 | 力扣题面受版权保护。力扣服务协议（leetcode.cn，更新日期 2025-01-07）第 5.2 条把平台文字、图片等的权利留在力扣，未经书面授权不得复制或做派生作品 | 题面、官方示例、配图不入库。抽屉给自写摘要、自写样例和链接。标题按已定结论保存，且只保存题名 |
 | doocs 是 CC BY-SA 4.0，README 又要求商业转载另行联系 | 题解文件保持 CC BY-SA，文件头和 `THIRD_PARTY.md` 同时写上许可证链接和 README 的联系句。不把这些文件改标成 MIT |
-| 相同方式共享被理解成「整个应用都要 SA」 | SA 文件只在 `content/leetcode/problems/`，文件头写明改编范围。界面代码不复制 doocs 正文 |
+| 相同方式共享被理解成「整个应用都要 SA」 | SA 文件只在 `docs/leetcode/problems/`，文件头写明改编范围。界面代码不复制 doocs 正文 |
 | CodeTop 仓库没有 SPDX 许可，README 对频度数据主张权利 | 只用题号，`SOURCES.md` 注明仓库地址，不保存出现次数和面经 |
 | 无许可或 NC-ND 仓库（代码随想录、azl397985856、CS-Notes）被顺手拷进题解 | 导入脚本的仓库白名单只有 §5.1 的四个。其他路径直接失败 |
 | GPL 题解被当成「也能用」 | 白名单没有 GPL |
@@ -595,7 +616,7 @@ Java 的提交文件是一整份 `Main.java`：上游的 `Solution` 改成包内
 | `src/components/study/LeetCodeProblem.vue` | 摘要、样例、查看题解、运行 |
 | `src/stores/study.ts` | `mode`、`revealed`、`solved` |
 | `src/stores/leetcode.ts` | 索引、当前题、按已下载语言过滤 |
-| `src/leetcode/types.ts`、`src/leetcode/load.ts` | 类型和动态加载 |
+| `src/docs/leetcode.ts` | 类型，以及从 `docs/leetcode/`、`docs/en/leetcode/` 动态加载 |
 | `src/i18n/messages.ts` | 中英键 |
 | `src/composables/useRunFromDoc.ts` | 复用备份、stdin、期望输出对照 |
 | `scripts/leetcode/import.mjs` | 白名单拷贝、文件头、包装、索引 |
