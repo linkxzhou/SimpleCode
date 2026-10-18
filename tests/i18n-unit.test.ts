@@ -94,6 +94,8 @@ describe("i18n catalog", () => {
     assert.match(t("javaShort", { file: "compiler.wasm", expected: 10, got: 0, sha: "e3b0" }), /incomplete \(got 0 bytes, expected 10/);
     assert.match(t("rustDigest", { kind: "rustc", expected: 3, got: 3, sha: "abc" }), /expected 3 bytes, got 3/);
     assert.match(t("rustShort", { kind: "rustc", expected: 3, got: 1, sha: "abc" }), /incomplete \(got 1 bytes, expected 3/);
+    assert.match(t("rustMissing", { kind: "rustc", file: "/wasm/rust/rustc.wasm" }), /wasm\/rust\/rustc\.wasm was not found/);
+    assert.match(t("rustMissing", { kind: "rustc", file: "/wasm/rust/rustc.wasm" }), /wasm\/rust/);
     assert.match(t("assetMissing", { file: "linux.wasm" }), /linux\.wasm was not found/);
   });
 });

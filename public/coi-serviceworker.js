@@ -4,7 +4,9 @@
 // fetch() inside the worker already decompresses the body. Copying
 // Content-Encoding onto the rebuilt response makes the page decode it again,
 // which yields an empty buffer that DevTools shows as 0 kB transferred.
-// A 200 with no body is fetched once more with cache reload.
+// The body is streamed through, including the committed Rust toolchain
+// (rustc.wasm is about 84 MiB). A 200 with no body is fetched once more
+// with cache reload.
 self.addEventListener("install", () => {
   self.skipWaiting();
 });

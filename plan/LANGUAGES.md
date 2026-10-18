@@ -852,15 +852,36 @@ evcxr（https://github.com/evcxr/evcxr）是本机求值器，内部还是启动
 
 `WASIWorkerHost` 把 `WebAssembly.RuntimeError` 记成退出码 134。panic 因此是失败，不是另写一套宿主。
 
-**下载。** 带 COEP 的页面 `fetch` GitHub Release 失败：`release-assets.githubusercontent.com` 没有 `Access-Control-Allow-Origin`。同一页面能读 `https://weblings.forest-anderson.ca/rustc/assets-meta.json`，体积与上面两份解包一致。2026-10-16 用浏览器 UA 把演示站的 `rustc.wasm` 和 `sysroot-wasip1.bundle` 下到本机，sha256 与 lock 相同。页面先找同源 `wasm/rust/`，再找这两条演示 URL，然后核对 sha256。缓存名 `simplecode-rustc-v1`，与 `simplecode-wasm-v1` 分开。Node 侧的 `vendor --rust` 仍从 GitHub 下 zstd，不受页面 COEP 限制。
+**下载。** 2026-10-16 的页面在同源 404 之后还会请求演示站。§11.11 把这个运行时依赖拿掉了。带 COEP 的页面仍然不能 `fetch` GitHub Release：`release-assets.githubusercontent.com` 没有 `Access-Control-Allow-Origin`。`https://weblings.forest-anderson.ca/rustc/assets-meta.json` 只有两个数字（`rustcWasm` 87,871,387，`bundle` 71,313,335），页面不下载它。缓存名仍是 `simplecode-rustc-v1`，与 `simplecode-wasm-v1` 分开。Node 侧的 `vendor --rust` 从 GitHub 下 zstd，不受页面 COEP 限制。
 
-同源 404 不再走 `fetchPinned` 的第二次 `cache: "reload"`。那次重试是为了空正文和被缓存成首页的 200；文件确实不存在时再请求一次，静态服务器的日志里同一条 `?v=` 会出现两次，而且读 404 正文时服务工作线程可能把请求收成 `AbortError: signal is aborted without reason`。`loadOne` 以前把任何 `AbortError` 原样抛出，上游一次都不会开始，侧栏的 `select` 事件把这个拒绝交给 Vue。现在 404 只请求一次就换上游；调用方的 `AbortSignal` 已经 abort 才算用户换了语言，这个错误在 `select` 里吞掉，不冒到点击处理函数。信号还活着的 `AbortError` 当成这次地址失败，继续下一条。
+换语言时调用方的 `AbortSignal` abort，`select` 把 `AbortError` 吞掉，不冒到点击处理函数。旧的完成回调不能再写终端，也不能把下载进度写回已经离开的语言。
 
 **运行段。** 编译器留在自己的 Worker：它要整份 sysroot 和 `CLIF2WASM_OBJECT=1`，不是一条交给现有宿主的命令。成功后的字节写到 `/program.wasm`，`RunSession` 用原来的 `fsPath` 执行。编译错误打到终端。侧栏文案是 Rust，图标是单色 `Rs`，默认文件 `main.rs`。
 
-**书。** `docs/rust/` 28 章，目录形状对照菜鸟教程，正文原创。`docs-smoke` 默认跳过 Rust，避免 CI 每次都拉这 152 MB。`SIMPLECODE_RUST_DOCS=1` 才跑书里的块。
+**书。** `docs/rust/` 28 章，目录形状对照菜鸟教程，正文原创。`docs-smoke` 默认跳过 Rust，避免每次都在浏览器里编译。`SIMPLECODE_RUST_DOCS=1` 才跑书里的块。
 
 **还做不到。** 没有 Cargo、crates.io、过程宏、多文件、`std::thread`。`sleep` 会卡在宿主 `poll_oneoff` 的时钟空转上，可运行块里不写。Safari 没有测。编译器非线程，不靠 `SharedArrayBuffer`；跑用户程序的那一步和别的语言一样要 COOP/COEP。88 MB 的模块在手机上可能被拒绝。subrust 没有接进侧栏。
+
+### 11.11 工具链入库（2026-10-18）
+
+§11.10 的页面在同源 `wasm/rust/` 缺失时，再向 `https://weblings.forest-anderson.ca` 要同一对解包文件。这个运行时依赖现在取消。两份文件提交在仓库里，浏览器只 `fetch` 同源副本。
+
+演示站在运行时被请求的只有这两份。`assets-meta.json` 不是下载目标。
+
+| 文件 | 字节 | sha256 | 归档来源 | 许可证 |
+|---|---:|---|---|---|
+| `wasm/rust/rustc.wasm` | 87,871,387 | `41412081eefc3e08ec5664ed0748902a7e575e1f267898dcc64d412702df7e83` | `https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/rustc-wasm.tar.zst`（sha256 `a96f6d53afff3c95d6387def27f6ddb53a02575679dc6c981d60797c32dcd022`）。解包后与 `https://weblings.forest-anderson.ca/rustc/rustc.wasm` 相同 | rustc / Cranelift：MIT OR Apache-2.0。weblings 胶水：MIT |
+| `wasm/rust/sysroot-wasip1.bundle` | 71,313,335 | `6dba13d6077cb7936ed6661cd1087bc9e92dc1d8b35903ecf22881c97ac3980b` | `https://github.com/AngelOnFira/wasm-rustc/releases/download/artifacts-test-7/wasip1-sysroot.tar.zst`（sha256 `4eedff7b0cd4330bfe226734b67751a97fac5572ac55392e93f9d3e4886a277d`）。解包后与 `https://weblings.forest-anderson.ca/rustc/sysroot-wasip1.bundle` 相同 | 随 rustc sysroot，MIT OR Apache-2.0 |
+
+合计 159,184,722 字节。GitHub 单文件上限是 100 MB。87,871,387 字节是 87.9 MB，71,313,335 字节是 71.3 MB，都没有超过，所以整文件提交，不切块，也不用 Git LFS。超过 50 MB 时 GitHub 会警告，推送仍然接受。静态站直接给出这两个路径，加载器不用再拼接分块。
+
+它们不进 `wasm/manifest.json`。那份清单仍由 `scripts/write-manifest.mjs` 按 `scripts/languages.config.mjs` 的 WASI 和 Linux 资产生成，并且 gitignore。sysroot 的魔数是 `RIWB1`，不是 gzip；`rustc.wasm` 也不是交给 `WASIWorkerHost` 的命令。把它们写进默认资产表会让 `./build.sh vendor` 到 Runno 的 `langs/` 里去拷。页面对照 `scripts/sources.lock.json` 的字节数和 sha256。lock 里不再放演示站 URL，避免 `toolchain.ts` 把整份 JSON 打进浏览器包。来源和许可证写在 `wasm/rust/SOURCES.md` 和 `LICENSES/THIRD_PARTY.md`。
+
+`.gitignore` 忽略 `wasm/*`，再把 `wasm/rust/rustc.wasm`、`wasm/rust/sysroot-wasip1.bundle`、`wasm/rust/SOURCES.md` 放回索引。`wasm/manifest.json` 仍然不入库。
+
+`./build.sh vendor --rust` 在磁盘文件已经对上 lock 时跳过。`./build.sh vendor --rust --refresh` 删掉临时 zstd，重新从上面的 GitHub Release 下载、校验、解包，覆盖 `wasm/rust/`。刷新不访问演示站。`./build.sh clean --all` 删掉生成的 wasm，留下这三份已跟踪文件。
+
+加载仍走 Cache API `simplecode-rustc-v1`，进度条贴在语言按钮底边。换语言 abort 掉进行中的 `fetch`。缺文件时终端说明仓库里应有 `wasm/rust/`，页面来自 dist 时再运行 `./build.sh build`。dev 和 preview 对缺失的 `/wasm/**` 仍是 404。`coi-serviceworker.js` 继续流式转发正文，并在复制头之前删掉 `Content-Encoding`，大文件不会被第二次解压成空正文。
 
 ---
 
