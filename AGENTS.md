@@ -101,7 +101,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 ## 工作顺序
 
-1. 多步改动先写进 `plan/DESIGN.md`、`plan/LANGUAGES.md` 或 `plan/LEARN.md`。
+1. 多步改动先写进 `plan/DESIGN.md`、`plan/LANGUAGES.md`、`plan/LEARN.md` 或 `plan/LEETCODE.md`。
 2. 从最新的 `origin/main` 拉分支，提交，推上去，开 PR。
 3. 合并前跑 `./build.sh build` 和 `./build.sh test`。草稿 PR 不能合并，准备好就标成可评审。
 4. 一次 PR 里不要混无关的重构。文档书按语言分提交，方便看 diff。
@@ -167,6 +167,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 | `plan/DESIGN.md` | 布局、COOP/COEP、缓存、单色、侧栏 |
 | `plan/LANGUAGES.md` | 语言评估、Lua/Go/Shell 的实现记录、Linux §10 的落地结果 |
 | `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书在 §20、Java 书在 §23 |
+| `plan/LEETCODE.md` | 题库模式：入口、题单合并、题解许可证、已下载语言、隐藏题解 |
 | `plan/learn-research.md` | 教程取材笔记 |
 
 当前书在短节改写之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案，#13 Rust 调研，#14 Linux 运行时）。Rust 的实现记录在 `plan/LANGUAGES.md` §11.10。Linux 的落地记录在 §10。Java 的调研在 §12，侧栏实现按 §12.12。
