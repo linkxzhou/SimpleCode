@@ -1,0 +1,44 @@
+version 1
+host linux-x86_64
+format ustar+gzip
+partBytes 90000000
+
+Canonical vendor snapshot used when ./build.sh vendor cannot build. Wasm bytes are portable. Lua and Shell may differ on darwin-arm64 because that wasi-sdk compiler-rt differs; this archive is the linux-x86_64 reference when packed there. linux-state.zst is one save_state() snapshot and is not stable across regenerations. Rust is committed under wasm/rust/ and is not in these archives.
+
+[runtime]
+7ed12063619882e4dfa710ab371fc91848b256f85a4075747e8bd5c167902b50     1790862  clang-fs.tar.gz
+2a466f0e990329d3230b869d04fc20803eae96a7feb3a3f6c93e25a77b8aed1d    31214472  clang.wasm
+c4e0281ed9566edfcff54e4660c635f14d32e136104b475763b19ac87b891dc1      359801  libv86.mjs
+507a759c70ab7a490a233be454d0b5b88bc667956a410b531cb4edc091e2eb1c    10068480  linux-bzimage.bin
+09c380226065527a2c448f437d127be1ee216afbcbc3b6265a63671b6be88166    18201083  linux-state.zst
+06a6f1aa34d854386f962b270720373bd5a3951aac441e22323295b720ad1adb      720144  lua-5.4.9.wasm
+68c96239a9b8095f21dd80af1714e5f270e4e08ef516821d90290da72d829a0e    13128903  php-cgi-8.2.0.wasm
+8c42694e45f2f1162114c70507c3da4c7cf983663e2b95660af521a9685d2a0c     4066590  python-3.11.3.tar.gz
+658cb6add2bbf8dfe84d67fb85430956d5a8b2b1d694d33432d654cdf048f813    20538911  python-3.11.3.wasm
+6185476bef279d3a00d9909fa7ba5fb39279f8650a6f723e956b879a12535da2         174  ruby-3.2.0.tar.gz
+abe348fba157a756f86194be445c77c99e8ed64ca76495ea07ed984f09eb66ae    24496513  ruby-3.2.0.wasm
+73e3f359102e3a9982c35fce98eb7cd08f18303ac7f1ba6ebfbe6cdc1c244d98      131072  seabios.bin
+992205b67977f9c7a0d1ea7568d745e055fa3015d1ab70428feed6d8da60d060     3573220  sqlite.wasm
+2fc5609ae837fcbc77147155de6f1014677ecab5369f5584ebc670e9d56e6510     2007347  v86.wasm
+a4bc0d80cc3ca028c73dafa8fee396b8d054ce87ebd8abfbd31b06b437607880       36352  vgabios.bin
+0dcaeccb81ad6ae506674171cfae935697ea2e6b5687067357bf38fd6d4e3807       55023  wasi-sh.wasm
+36419ed202011765222098d7701218378b67f634d50f0a4625059ae2c9860f48    19490094  wasm-ld.wasm
+85922baafd4385bc908d766989948df9ab28f8f0c8afd2ab6b35a4950570d0f6     3974159  wasmedge_quickjs.wasm
+570999c368119300b76785385555683355fb1a474819f30c603675070ee9db7d    36736740  yaegi-0.16.1.wasm
+
+[runtime archives]
+4024e28617936b3a6eb2acd917d19e89903a73f62025a8d557c351b5f6781a62    84413866  wasm-vendor-1.tar.gz
+
+[java]
+e80ae10423a39290c5f20b6bb6da34d21c3ad0a75cd8dbdda4998d2813045e15      200623  java/compile-classlib-teavm.bin
+7f3828e4b7bddf5504dadebfc4016e40f4441e15ee0519071781813ba2ed3a4c     4294850  java/compiler.wasm
+9ff6a6771f698be00ab9d5c7b46d904350a8d4115dc0b409553f31ed66688a55       13573  java/compiler.wasm-runtime.js
+ea670e71967eda93828cb894c1741a8ed2e94b3422eb99cb9eccec0de67daaa8     2387011  java/runtime-classlib-teavm.bin
+
+[java archives]
+f2046e9a051480eb79924cff4359949a5cb0df676185fb41b4004584de881dd4     4234311  wasm-vendor-1-java.tar.gz
+
+Reassemble a split archive with cat, then tar. Example:
+  cat wasm-vendor-1.tar.gz.part-* | tar -xzf - -C wasm
+Check archive digests from this directory:
+  sha256sum -c SHA256SUMS

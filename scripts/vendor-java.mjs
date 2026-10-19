@@ -2,7 +2,7 @@
 // Opt-in: download the four pinned TeaVM playground files into wasm/java/.
 // Not part of the default manifest. The browser never fetches teavm.org.
 import { createHash } from "node:crypto";
-import { createWriteStream, existsSync, mkdirSync, readFileSync } from "node:fs";
+import { createWriteStream, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
@@ -22,9 +22,16 @@ function fail(message) {
 }
 
 async function download(url, dest) {
-  const res = await fetch(url);
-  if (!res.ok || !res.body) fail(`下载 ${url} 失败：HTTP ${res.status}`);
-  await pipeline(Readable.fromWeb(res.body), createWriteStream(dest));
+  let res;
+  try {
+    res = await fetch(url, { signal: AbortSignal.timeout(60_000) });
+    if (!res.ok || !res.body) fail(`download ${url} failed: HTTP ${res.status}`);
+    await pipeline(Readable.fromWeb(res.body), createWriteStream(dest));
+  } catch (err) {
+    rmSync(dest, { force: true });
+    const reason = err && err.name === "TimeoutError" ? "timed out after 60s" : (err && err.message) || String(err);
+    fail(`download ${url} failed: ${reason}`);
+  }
 }
 
 function matches(name, pin) {

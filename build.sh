@@ -13,6 +13,7 @@ die() { echo "${c_red}✗ $*${c_off}" >&2; exit 1; }
 need_deps() { [ -d node_modules ] || cmd_install; }
 # Fingerprint whatever binaries are on disk. Missing files (exit 2) trigger a
 # full vendor; a bad file fails instead of being rebuilt over a warning.
+# vendor itself falls back to vendor/prebuilt when the build cannot finish.
 need_wasm() {
   if node scripts/write-manifest.mjs; then
     return 0
@@ -23,6 +24,15 @@ need_wasm() {
     return 0
   fi
   exit "$status"
+}
+need_java() {
+  local f
+  for f in compiler.wasm compiler.wasm-runtime.js compile-classlib-teavm.bin runtime-classlib-teavm.bin; do
+    if [ ! -f "wasm/java/$f" ]; then
+      cmd_vendor --java
+      return 0
+    fi
+  done
 }
 sync_dist_wasm() {
   [ -d dist ] || return 0
@@ -37,6 +47,11 @@ cmd_install() {
 }
 
 cmd_vendor() {
+  if [ "${1:-}" = "--pack" ]; then
+    info "Packing wasm/ into vendor/prebuilt/ (deterministic tar.gz, split above 90 MB)"
+    node scripts/vendor-prebuilt.mjs pack
+    return
+  fi
   if [ "${1:-}" = "--rust" ]; then
     shift
     info "Vendoring the weblings Rust toolchain → wasm/rust/ (committed; not the default manifest)"
@@ -45,21 +60,21 @@ cmd_vendor() {
   fi
   if [ "${1:-}" = "--java" ]; then
     info "Vendoring the TeaVM Java toolchain → wasm/java/ (not the default manifest)"
-    node scripts/vendor-java.mjs
+    node scripts/vendor-prebuilt.mjs run --java
     return
   fi
   info "Vendoring wasm binaries → wasm/"
-  node scripts/vendor-wasm.mjs "$@"
+  node scripts/vendor-prebuilt.mjs run "$@"
 }
 
 cmd_dev() {
-  need_deps; need_wasm
+  need_deps; need_wasm; need_java
   info "Starting dev server (COOP/COEP enabled)"
   exec yarn vite --host "$HOST" ${PORT:+--port "$PORT"} "$@"
 }
 
 cmd_build() {
-  need_deps; need_wasm
+  need_deps; need_wasm; need_java
   if [ ! -f wasm/java/compiler.wasm ]; then
     echo "${c_bold}⚠ wasm/java is missing — run ./build.sh vendor --java, then rebuild dist${c_off}" >&2
   fi
@@ -82,6 +97,7 @@ cmd_preview() {
   need_deps
   [ -f dist/index.html ] || cmd_build
   need_wasm
+  need_java
   info "Syncing wasm/ into dist/wasm"
   sync_dist_wasm
   info "Serving dist/ with COOP/COEP headers"
@@ -100,7 +116,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/rust-no-remote.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts tests/leetcode-unit.test.ts
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/rust-no-remote.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts tests/leetcode-unit.test.ts tests/vendor-prebuilt.test.mjs
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -151,14 +167,19 @@ ${c_bold}SimpleCode build helper${c_off}
 Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
-  vendor [--link|--rust|--java]  Copy wasm runtimes from thirdparty/runno/langs into wasm/,
+  vendor [--link|--rust|--java|--pack]
+                     Copy wasm runtimes from thirdparty/runno/langs into wasm/,
+                     build Lua, Go, and Shell, download the Linux guest, and
+                     write wasm/manifest.json (--link: symlink Runno files,
+                     --source <dir>: alternative Runno directory).
+                     If that fails, extract vendor/prebuilt/*.tar.gz, check sha256,
+                     and rewrite the manifest from the extracted files.
+                     --pack rewrites those archives from the current wasm/ tree.
                      --rust checks the pinned weblings toolchain in wasm/rust/ (committed).
                      --rust --refresh re-downloads those archives from GitHub and overwrites wasm/rust/.
+                     Rust is not part of the prebuilt archives or the default manifest.
                      --java downloads the pinned TeaVM files into wasm/java/.
-                     Neither flag adds those files to the default manifest.
-                     build Lua and Go (scripts/builders; Linux or macOS, x86_64 or arm64), and
-                     write wasm/manifest.json from those files (--link: symlink Runno files,
-                     --source <dir>: alternative Runno directory).
+                     If the download fails, the java archive in vendor/prebuilt is extracted.
                      manifest.json is generated and not committed.
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)
