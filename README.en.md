@@ -6,7 +6,7 @@
 
 **[Open the live demo](https://simple-code-liard.vercel.app)**
 
-![SimpleCode: a Python program has finished in the Monaco editor, and the terminal shows Hello from SimpleCode plus squares from 1 to 5](docs/screenshots/editor-run.png)
+![SimpleCode: a Python program has finished in the Monaco editor, and the terminal shows Hello from SimpleCode plus squares from 1 to 5](assets/screenshots/editor-run.png)
 
 Pick a language on the left, edit in Monaco, read output in the terminal. Run stays in this tab. A language runtime downloads the first time you select it, with the progress bar on the bottom edge of that button. After that it lives in the browser cache.
 
@@ -33,15 +33,15 @@ Once a runtime is cached, the open tab can run that language with no further dow
 
 ## Screenshots
 
-![Sidebar: one language cached, one downloading with a progress bar on the button, the others showing download size](docs/screenshots/languages.png)
+![Sidebar: one language cached, one downloading with a progress bar on the button, the others showing download size](assets/screenshots/languages.png)
 
-![The Python Quick Start drawer, listing chapters](docs/screenshots/quickstart.png)
+![The Python Quick Start drawer, listing chapters](assets/screenshots/quickstart.png)
 
-![LeetCode mode, problems grouped into Easy, Medium, and Hard](docs/screenshots/leetcode-list.png)
+![LeetCode mode, problems grouped into Easy, Medium, and Hard](assets/screenshots/leetcode-list.png)
 
-![Problem 1 with 查看题解 expanded, showing the Python solution and its source](docs/screenshots/leetcode-solution.png)
+![Problem 1 with 查看题解 expanded, showing the Python solution and its source](assets/screenshots/leetcode-solution.png)
 
-![English UI: Quick Start in the toolbar, English comments in the sample](docs/screenshots/english.png)
+![English UI: Quick Start in the toolbar, English comments in the sample](assets/screenshots/english.png)
 
 ## Features
 
@@ -144,6 +144,7 @@ src/i18n/            UI copy, zh / en
 docs/<book>/         Chinese Quick Starts
 docs/en/<book>/      English Quick Starts
 docs/leetcode/       200 problems, solutions, licenses
+assets/screenshots/  README images, rendered by GitHub
 wasm/rust/           committed rustc and sysroot
 vendor/prebuilt/     wasm tarballs used when vendor cannot build
 scripts/             build, manifest, docs prerender, problem import

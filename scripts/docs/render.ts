@@ -5,7 +5,8 @@ import MarkdownIt from "markdown-it";
 import type { Token as MdToken } from "markdown-it";
 import { createHighlighter, type Highlighter } from "shiki";
 import { parseFenceInfo } from "../../src/docs/fence.ts";
-import { BOOKS, SHIPPED_BOOKS, isBookId, type BookId } from "../../src/docs/runtime.ts";
+import { BOOKS, SHIPPED_BOOKS, type BookId } from "../../src/docs/runtime.ts";
+import { isKnownDocsDir } from "./tree.ts";
 import { collapseShikiLines, escapeHtml } from "../../src/docs/text.ts";
 import type { BookIndex, ChapterDoc, ChapterMeta, CodeBlockData, SearchDoc, Segment } from "../../src/docs/types";
 import { darkTheme, lightTheme } from "./themes.ts";
@@ -383,11 +384,7 @@ export async function renderDocs(root: string): Promise<RenderedDocs> {
   for (const name of entries) {
     const dir = join(docsDir, name);
     if (!statSync(dir).isDirectory()) continue;
-    if (name.startsWith("_") || name === "en" || name === "leetcode") continue;
-    if (!isBookId(name)) {
-      errors.push(`未知文档目录 docs/${name}`);
-      continue;
-    }
+    if (!isKnownDocsDir(name)) errors.push(`未知文档目录 docs/${name}`);
   }
 
   const only = (process.env.DOCS_BOOKS ?? "")

@@ -6,7 +6,7 @@
 
 **[打开在线演示](https://simple-code-liard.vercel.app)**
 
-![SimpleCode 主界面：Monaco 编辑器里一段 Python 已经跑完，终端打印 Hello from SimpleCode 和 1 到 5 的平方](docs/screenshots/editor-run.png)
+![SimpleCode 主界面：Monaco 编辑器里一段 Python 已经跑完，终端打印 Hello from SimpleCode 和 1 到 5 的平方](assets/screenshots/editor-run.png)
 
 左边选语言，中间是 Monaco，下面是终端。点 Run，程序就在这个标签页里执行。第一次点一门语言才下载它的运行时，进度条贴在按钮底边；下载完放进浏览器缓存，再跑不再为这门语言拉 wasm。
 
@@ -33,15 +33,15 @@
 
 ## 界面
 
-![侧栏：一门语言已缓存，一门正在下载并在按钮底边显示进度，其余标出体积](docs/screenshots/languages.png)
+![侧栏：一门语言已缓存，一门正在下载并在按钮底边显示进度，其余标出体积](assets/screenshots/languages.png)
 
-![Python 快速入门抽屉，列出这本书的章节](docs/screenshots/quickstart.png)
+![Python 快速入门抽屉，列出这本书的章节](assets/screenshots/quickstart.png)
 
-![LeetCode 模式的题目列表，按简单、中等、困难分组](docs/screenshots/leetcode-list.png)
+![LeetCode 模式的题目列表，按简单、中等、困难分组](assets/screenshots/leetcode-list.png)
 
-![第 1 题，点「查看题解」之后展开 Python 题解和来源](docs/screenshots/leetcode-solution.png)
+![第 1 题，点「查看题解」之后展开 Python 题解和来源](assets/screenshots/leetcode-solution.png)
 
-![界面切到 English，工具栏是 Quick Start，示例注释是英文](docs/screenshots/english.png)
+![界面切到 English，工具栏是 Quick Start，示例注释是英文](assets/screenshots/english.png)
 
 ## 功能
 
@@ -144,6 +144,7 @@ src/i18n/            界面文案 zh / en
 docs/<book>/         中文快速入门
 docs/en/<book>/      英文快速入门
 docs/leetcode/       200 题、题解、许可证
+assets/screenshots/  README 配图，只给 GitHub 渲染
 wasm/rust/           已提交的 rustc 和 sysroot
 vendor/prebuilt/     vendor 失败时的 wasm 包
 scripts/             构建、清单、文档预渲染、题库导入
