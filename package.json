@@ -5,9 +5,9 @@
   "type": "module",
   "packageManager": "yarn@4.18.0",
   "scripts": {
-    "vendor:wasm": "node scripts/vendor-wasm.mjs",
+    "vendor:wasm": "node scripts/vendor-prebuilt.mjs run",
     "dev": "vite",
-    "build": "vue-tsc --noEmit && vite build",
+    "build": "bash ./build.sh build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
     "smoke": "node tests/smoke.mjs"

@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { docsPlugin } from "./scripts/vite-plugin-docs";
 import { refreshManifest } from "./scripts/write-manifest.mjs";
+import { ensurePrebuilt } from "./scripts/vendor-prebuilt.mjs";
 import { createReadStream, cpSync, existsSync, rmSync, statSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { join, resolve, sep } from "node:path";
@@ -18,8 +19,12 @@ const isolationHeaders = {
 const wasmDir = resolve(__dirname, "wasm");
 
 function syncManifest(warn: (message: string) => void) {
+  const root = resolve(__dirname);
   try {
-    refreshManifest(resolve(__dirname));
+    // build.sh already tried a fresh vendor. This covers `vite build` on its own
+    // (the Vercel framework path) when wasm/ is still empty.
+    ensurePrebuilt(root);
+    refreshManifest(root);
   } catch (err) {
     warn(err instanceof Error ? err.message : String(err));
   }

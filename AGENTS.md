@@ -43,14 +43,14 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 | 子命令 | 作用 |
 |---|---|
 | `install` | `yarn install` |
-| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单。`--rust` 另下 weblings 工具链，`--java` 另下 TeaVM 四份文件，两者都不进这份清单 |
+| `vendor` | 从 `thirdparty/runno/langs` 拷贝运行时，编译 Lua / Go / Shell，并下载 Linux 客户机、生成快照。结束时重写清单。任何一步失败就校验并解开 `vendor/prebuilt/` 里提交的 tar.gz（超过 90 MB 会拆成 part），再按解出来的文件重写清单。`--pack` 用当前 `wasm/` 重打这些包。`--rust` 另下 weblings 工具链（已提交在 `wasm/rust/`，不进这些包）。`--java` 另下 TeaVM 四份文件；下载失败则解开包里的 java 那一份。两者都不进这份清单 |
 | `dev` | Vite 开发服务器，带 COOP/COEP，默认端口 5173 |
 | `build` | `yarn vue-tsc --noEmit`，再 `yarn vite build` 到 `dist/`（含 `dist/wasm`） |
 | `preview` | 用 COOP/COEP 提供 `dist/` |
 | `test` | 文档单元测试、`tests/i18n-unit.test.ts`、`tests/leetcode-unit.test.ts`、`tests/terminal-log.test.ts`、`check-mono`、hello-world 冒烟、`docs-smoke`、`tests/leetcode-smoke.mjs`、`tests/learn.spec.mjs`、`tests/ui-chrome.spec.mjs`、`tests/terminal-switch.spec.mjs` |
 | `clean` | 删 `dist/`。`--all` 再删 `node_modules/` 和 `wasm/` |
 
-缺 wasm 时，`dev` / `build` 会先尝试只重写清单；清单对不上文件才会 vendor。
+缺 wasm 时，`dev` / `build` 会先尝试只重写清单；清单对不上文件才会 vendor。vendor 失败则用 `vendor/prebuilt/`。`build` 还会在 `wasm/java/` 缺文件时走 `vendor --java`（同样可以退回预构建包）。Vercel 的 `yarn build` 就是 `bash ./build.sh build`。
 
 ## 界面规矩
 
@@ -69,7 +69,7 @@ Vue 3、Vite、TypeScript、shadcn-vue、Monaco、xterm、`@runno/wasi`。包管
 1. 在 `plan/LANGUAGES.md` 写清运行时、许可证、体积、做不到的事。
 2. `scripts/languages.config.mjs` 增加资产和语言（`id`、`label`、`short`、`syntax`、`fileName`、`run`）。
 3. 版本和 sha256 写进 `scripts/sources.lock.json`。构建脚本放在 `scripts/builders/<name>/`，bash 3.2，macOS 与 Linux、x86_64 与 arm64 都能走（`uname` 选工具链，或 `prebuiltUrl` 退回已发布文件）。
-4. `./build.sh vendor` 产出 wasm。清单由 `write-manifest.mjs` 从磁盘生成，**不要提交** `wasm/manifest.json`。
+4. `./build.sh vendor` 产出 wasm。清单由 `write-manifest.mjs` 从磁盘生成，**不要提交** `wasm/manifest.json`。换了运行时字节之后再跑 `./build.sh vendor --java`（若 Java 也变了）和 `./build.sh vendor --pack`，把 `vendor/prebuilt/` 一起提交。Rust 仍只提交 `wasm/rust/`，不打进这个包。
 5. 许可证写入 `LICENSES/THIRD_PARTY.md`。
 6. `tests/smoke.mjs` 加一条 hello-world。有书之后再加文档冒烟。
 
@@ -161,6 +161,8 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 **Java 不是 OpenJDK，也不能从 teavm.org 拉文件。** `compiler.wasm` 要 Wasm GC 和 `wasm:js-string`。四份 pin 在 `scripts/sources.lock.json` 的 `java`，合计 6,896,057 字节。浏览器只 `fetch` 同源 `wasm/java/`。缺文件时终端说明去跑 `./build.sh vendor --java`（页面来自 dist 还要再 `./build.sh build`）。不要把 `compiler.wasm` 登记成 WASI 命令，也不要把它写进 `wasm/manifest.json`。`System.in` 盖掉的是 `TConsoleInputStream` 的 class 文件（`@Import` 模块 `simplecode`），在 TeaVM javac 里重编这份带注解的源码会把编译器打栈溢出。`Scanner` 的桩 class 在内存里追加到 SDK gzip 归档的末尾，不改 pin 住的那份 `compile-classlib-teavm.bin`。`main()` 返回之后 Worker 还要等 `teavmAsync` 的计时器，否则 `Thread.sleep` 后面的输出丢了。Stop 不能等这个计时器。javac 编进 `compiler.wasm` 的是 GPLv2 + Classpath Exception，见 `LICENSES/THIRD_PARTY.md`。
 
 **缺失的 `/wasm` 不能回退成首页。** 没跑 `./build.sh vendor --java` 时，如果开发服务器、preview 或静态站点把 `/wasm/java/compiler.wasm` 回成 `index.html`，响应是 200，并带 `Cache-Control: max-age=86400`。浏览器会把这份 HTML 当成 wasm 缓存一天。磁盘上后来有了正确文件，普通 `fetch` 仍读到旧 HTML，终端却报摘要不一致。`/wasm/**` 找不到文件时要直接 404，并且 `Cache-Control: no-store`。这段中间件要在 `configurePreviewServer` 里当场 `use`；钩子返回的函数排在 SPA fallback 之后，挡不住首页。下载地址带 `?v=`（sha256 前 12 位），先 `cache: "no-cache"`，体积、摘要或 HTML 不对再 `cache: "reload"` 一次。状态不是 2xx、`Content-Type` 是 `text/html`，或正文以 `<!doctype` / `<html` 开头，都算文件缺失：中英文终端说明去跑 `./build.sh vendor --java`（dist 再 build 一次）。体积相同但 sha256 不同才算摘要不一致，并写上期望、实际大小和 sha256。得到的字节数对不上（包括 0 字节）是下载不完整：先 `cache: "reload"` 再拉一次，仍失败就写明得到和期望的字节数以及 sha256，不要写成锁文件不一致。Chrome 开发者工具里的 “0 kB transferred” 是 `transferSize === 0`：`Cache-Control: max-age=86400` 的内存缓存命中，或 service worker `new Response` 重建的响应，都会这样，正文仍可能是完整文件。真正读到 0 字节或短正文时按不完整下载报错。dev 和 preview 自己把 `/wasm/**` 流出去（`Cache-Control: no-cache`，不回 304）。静态站点的 service worker 要删掉 `Content-Encoding`（worker 里的 `fetch` 已经解压，页面再解一次会得到空正文）；原来带编码时连 `Content-Length` 一起删。200 且没有 body 时用 `cache: "reload"` 再请求一次。读流时立刻 `slice()` 每个分块，避免缓冲区被复用后摘要算错。Rust 同源文件、清单里的 wasm / Linux 资源，以及 `manifest.json`，走同一套重试。上游 Rust 地址不加 `?v=`。`./build.sh build` 发现没有 `wasm/java/compiler.wasm` 时警告，构建仍继续。
+
+**Vercel 上 `./build.sh vendor` 会失败。** 构建镜像是 Amazon Linux 2023，没有 root 的 `apt`（包管理是 `dnf`，构建脚本也不装编译器）。仓库不包含 `thirdparty/runno/`，所以 vendor 的第一句就是 `missing thirdparty/runno/langs/python-3.11.3.wasm`，后面的 Lua / Go / Shell / Linux 都还没跑。就算先克隆了 Runno，Linux 在没有 `zstd` 时要 `cc` 和 `make` 才能编 zstd 1.5.7；Lua 要 `make`。编失败后的 `prebuiltUrl` 指向 GitHub Release `wasi-runtimes-1`，这个 Release 没有发布，下载也是失败。Linux 快照和 Runno 的那几份 wasm 以前没有备用文件。处理：`vendor/prebuilt/` 提交 linux-x86_64 上打出来的确定性 gzip tar（`sha256sum -c vendor/prebuilt/SHA256SUMS`）。`./build.sh vendor` 先走原来的构建，失败才解开这些包。Wasm 字节可在浏览器里跑，不按宿主各打一份。darwin-arm64 的 Lua（以及可能的 Shell）会因为 wasi-sdk 的 `libclang_rt.builtins.a` 和 Linux 不同而摘要不同；那份本地构建成功时仍用本地字节，失败时退回包里的 linux-x86_64 参考摘要。`linux-state.zst` 每次 `save_state()` 都不保证同字节，包里钉的是一份能启动的快照。刷新：在 linux-x86_64 上 `./build.sh vendor`、`./build.sh vendor --java`、再 `./build.sh vendor --pack`。
 
 ## 计划文件
 

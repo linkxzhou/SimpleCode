@@ -1106,5 +1106,55 @@ jacobin：`GOOS=wasip1 GOARCH=wasm go build -o jacobin.wasm ./src`。产物 **17
 - 没有 Wasm GC 就报错停下，不换 CheerpJ。
 - 书在 `plan/LEARN.md` §23。`docs-smoke` 用 `SIMPLECODE_JAVA_DOCS=1`。`tests/smoke.mjs` 覆盖 hello、stdin、编译错误和 sleep。
 
+---
+
+## 13. 预构建 wasm 包（Vercel 退路，2026-10-19）
+
+`./build.sh vendor` 在 Vercel 上失败，站点构建就没有运行时。构建镜像是 Amazon Linux 2023（[Build image](https://vercel.com/docs/builds/build-image)）。没有 root 的 `apt`；系统包管理是 `dnf`，仓库里的脚本不会去装编译器。
+
+干净检出上先失败的是 Runno，不是编译器。`thirdparty/runno/` 在 `.gitignore` 里，Vercel 只克隆 SimpleCode。`scripts/vendor-wasm.mjs` 复制的第一个文件就不存在：
+
+```
+✗ missing thirdparty/runno/langs/python-3.11.3.wasm
+```
+
+这一步在 Lua、Go、Shell、Linux 之前退出。
+
+就算安装命令里先克隆了 Runno，后面还有这些缺口：
+
+- Linux 客户机优先用 PATH 上的 `zstd`。没有的话用 `cc` 和 `make` 编译锁里的 zstd 1.5.7（`scripts/builders/linux/build.sh`）。两个都没有就退出：`zstd is not installed, and cc/make are missing`。
+- Lua 和 Shell 用下载的 wasi-sdk，Lua 还要系统的 `make`。编译失败后会去下 `prebuiltUrl`。
+- 这三门的 `prebuiltUrl` 指向 GitHub Release `wasi-runtimes-1`。该 Release 没有创建，`gh release view wasi-runtimes-1` 不存在，备用下载也失败。
+- Linux 快照、Runno 的 wasm / tar.gz、BIOS 和 bzImage 以前没有仓库内的备用文件。BIOS 的 URL 还钉在 GitHub `master` 上，上游一变校验就失败。
+- `./build.sh vendor --java` 向 `teavm.org` 拉四份文件，60 秒超时。超时或 HTTP 失败时退回下面的 java 包。默认清单仍不含 Java 和 Rust。
+
+退路是提交的包，不使用 Git LFS。目录是 `vendor/prebuilt/`：
+
+| 文件 | 作用 |
+|---|---|
+| `index.json` | 版本、宿主、每个归档和每个解开文件的字节数与 sha256 |
+| `SHA256SUMS` | `cd vendor/prebuilt && sha256sum -c SHA256SUMS` |
+| `CONTENTS.txt` | 人读的文件清单，以及 `cat` 再 `tar` 的拼法 |
+| `wasm-vendor-1.tar.gz` 或 `wasm-vendor-1.tar.gz.part-NN` | Runno 运行时、Lua、Go、Shell、Linux 六份文件。单段超过 90 MB 才拆 |
+| `wasm-vendor-1-java.tar.gz` | `wasm/java/` 四份 TeaVM 文件 |
+
+打包用 POSIX ustar，mtime / uid / gid 为 0，再 `gzip` level 9 且 mtime 为 0。同一棵 `wasm/` 打两次，归档 sha256 相同。拆开的段用 `cat` 接回一个 gzip，再 `tar -xzf`。脚本是 `scripts/vendor-prebuilt.mjs`。解包只依赖 bash、tar、gzip、`sha256sum` 或 `shasum`、node。
+
+`./build.sh vendor` 先跑原来的 `vendor-wasm.mjs`。退出码 0 时打印 `used fresh outputs`，保留刚构建的文件。非 0（或 `SIMPLECODE_VENDOR_FORCE_FAIL=1`）时打印警告，按 `index.json` 核对每一段的大小和 sha256，解开到临时目录，再核对每个文件，然后写入 `wasm/` 并重写 `wasm/manifest.json`。失败的那一组整组替换，不留半截构建。`--java` 只替换 `wasm/java/`。`--rust` 不走这套包。`--pack` 在 vendor 和 `--java` 都成功之后，用当前 `wasm/` 重写 `vendor/prebuilt/`。
+
+`./build.sh dev`、`build`、`preview` 在缺运行时文件时调用 vendor（因此会先尝试构建，再退回包）。`build` / `dev` / `preview` 在 `wasm/java/` 不齐时同样调用 `vendor --java`。`package.json` 的 `build` 是 `bash ./build.sh build`，Vercel 的 `yarn build` 走这条路。Vite 的 `buildStart` 若仍缺文件，再解一次包，这样单独的 `vite build` 也会把 `dist/wasm` 带上。
+
+宿主：这些 wasm 和 Linux 客户机文件在浏览器里与构建机无关。本仓库的参考摘要是 linux-x86_64（`sources.lock.json` 的 `outputSha256`）。Go 在 linux-x86_64 与 linux-arm64 上摘要相同。Runno 的文件是拷贝，Linux 的下载按 sha256 钉死。darwin-arm64 的 `libclang_rt.builtins.a` 与 Linux 不同，Lua 和 Shell 的 wasm 摘要可能不同；本机编成功就用本机字节，编失败才退回包里的 linux-x86_64 字节，浏览器仍能跑。这里的打包机不是 Mac，所以没有单独的 darwin-arm64 包。`linux-state.zst` 每次 `save_state()` 字节都可能变，包里是一份已经在 snapshot 脚本里启动过的快照。
+
+刷新（linux-x86_64）：
+
+```bash
+./build.sh vendor
+./build.sh vendor --java
+./build.sh vendor --pack
+```
+
+然后提交 `vendor/prebuilt/`。不要提交 `wasm/manifest.json`，也不要把解开的 wasm 从 `.gitignore` 里放出来。Rust 仍只留 `wasm/rust/` 里已跟踪的三份文件。
+
 
 
