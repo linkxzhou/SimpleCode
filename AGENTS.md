@@ -142,6 +142,8 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 
 **SQL 概览被章名盖住。** 生成器用 slug `index` 写文件时，非第 0 章也会写成 `index.md`。只有 `chapter == 0` 才能用这个文件名（`ca3ab0b`）。
 
+**README 配图不要放进 `docs/`。** `renderDocs` 把 `docs/` 下每个目录当成一本书，未知目录会让 Vite 构建失败（Vercel 的 `yarn build` 停在 `[simplecode-docs]`）。配图在 `assets/screenshots/`，文件名保持 `editor-run.png` 这一组。`public/` 会被拷进 `dist`，配图也不放那里。`tests/readme-assets.test.ts` 检查 README 和 `docs/GITHUB_META.md` 里的图片路径存在，并且顶层目录不是 `docs` 或 `public`。
+
 **文档冒烟在章节壳出现时就去点代码块。** `docs-chapter` 先渲染，代码块稍后才到。`tests/learn.spec.mjs` 要等 `[data-testid="docs-chapter"] [data-testid="doc-code-block"]`，不能只等外壳。
 
 **C++ 宿主编译和聚合初始化。** 本机 g++ 的头文件路径可能和选中的编译器版本不一致。教程里的派生类在 C++14 下不是聚合，`Rect{w,h}` 需要构造函数。这些是写示例时的约束，浏览器里的运行时仍是 clang 8。
