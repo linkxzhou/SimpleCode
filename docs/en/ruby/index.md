@@ -41,3 +41,7 @@ puts "kept" # hidden
 ```
 
 The printed line is `kept`.
+
+### After chapter 23
+
+A proc adds 2 and 5 into 7, a short lambda prints arity, Enumerable select and tally handle a short list, Struct stores sku and qty, Comparable sorts by milliliters, method_missing returns the method name, define_method installs sku, a change after freeze prints locked, and instance_eval records a menu name.

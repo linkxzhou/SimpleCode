@@ -43,3 +43,7 @@ uname -r
 ```
 
 The release string is `6.8.12`.
+
+### After chapter 30
+
+find looks up a name under /tmp, xargs turns lines into arguments, sed replaces text, awk adds the second column, sort, uniq, and wc tidy lines, kill -0 only checks the current shell, env sees SKU after export, and tar with gzip packs note.txt. reboot and kill -9 1 stay reading-only.

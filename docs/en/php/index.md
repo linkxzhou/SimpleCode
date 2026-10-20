@@ -45,3 +45,7 @@ The joined arguments appear as `tea18`.
 $line = fgets(STDIN);
 echo $line;
 ```
+
+### After chapter 34
+
+Strict mode adds 2 and 5 into 7, and a string argument prints bad. match labels 2 as cup. The enum case Large exposes its name, and Many has backing value 9. Assigning a readonly quantity again prints locked. An arrow function captures a base. A generator yields tea and cup. A trait collision uses insteadof. CSV lines are split with str_getcsv, and only tea quantities are added.
