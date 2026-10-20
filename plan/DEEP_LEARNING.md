@@ -230,7 +230,7 @@
 
 - 语言 id 是 `numpy`，不是第二份 `python`。`compiler` 为 `pyodide`。`RunSession` 在这条分支上不创建 `WASIWorkerHost`。
 - Worker 是 `src/pyodide/worker.ts`。它动态导入同源 `wasm/pyodide/pyodide.mjs`，`loadPyodide({ indexURL, packageBaseUrl })` 两个地址都是同源目录。`fetch` 被补丁成按文件名返回已下载的 wasm、zip、lock 和 wheel，所以 `loadPackage("numpy")` 不再访问网络。
-- 标准输出和标准错误用 `setStdout` / `setStderr` 的 `batched` 回调送到 xterm。标准输入用一块 `SharedArrayBuffer`：偏移 0 的 `Int32` 是控制字（0 等待，正数是字节长度，-1 是 EOF），偏移 4 起是载荷，容量 65536。Worker 里 `Atomics.wait`，主线程 `Atomics.notify`。页面原有的 COOP/COEP 和 `coi-serviceworker.js` 不变。
+- 标准输出和标准错误用 `setStdout` / `setStderr` 的 `batched` 回调送到 xterm。标准输入用一块 `SharedArrayBuffer`：偏移 0 的 `Int32` 是控制字（0 等待，正数是字节长度，-1 是 EOF），偏移 4 起是载荷，容量 65536。Worker 里 `Atomics.wait`，主线程 `Atomics.notify`。读出字节时先 `slice` 再交给 `TextDecoder`，因为它拒绝共享内存上的视图。页面原有的 COOP/COEP 和 `coi-serviceworker.js` 不变。
 - `src/pyodide/minitorch.py` 随 Worker 以原始文本写入 `/opt/simplecode/minitorch.py`，执行前插入 `sys.path`。提供 `Tensor`（`backward` 只接受标量）、`nn.Linear`、`nn.ReLU`、`nn.Sequential`、`softmax`、`cross_entropy`、`optim.SGD`、`optim.Adam`，以及 `datasets.fashion_mnist`。
 - Fashion-MNIST 子集写成 `/data/fashion-mnist.bin`。小端魔数 `0x314E4D46`，随后两个 uint32 是训练张数 5000 和测试张数 1000，然后是图像和标签。归因在 `/data/FASHION.txt`。
 - 围栏语言 `numpy` 和 `np` 映射到这个运行时。写成 `python` 的围栏仍走 WASI CPython，文档里不用它来导入 NumPy。
