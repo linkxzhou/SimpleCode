@@ -955,7 +955,7 @@ print(f"你好，{name}！")
 |---|---|---|---|
 | Python | ✅ | 40 | 按 §19：Python3 教程到 Python3 文件，另加第 28–39 章进阶 |
 | JavaScript / TypeScript | ✅ | 42 | 按 §19：JavaScript 教程到 TypeScript 类型断言，另加第 30–41 章。类型块用 `ts` 围栏 |
-| Go | ✅ | 29 | 按 §19：正式标题、每章至少 3 个 `###` 短节。不再要求 2500 字 |
+| Go | ✅ | 37 | 按 §19：正式标题、每章至少 3 个 `###` 短节。第 29–36 章是 select、WaitGroup、context、工人池、检查函数、反射、字符串与词频。`time.Sleep` 和 `go test` 不运行 |
 | Ruby | ✅ | 23 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出 |
 | SQL | ✅ | 35 | 按 §19：SQLite 教程到 SQLite 常用函数，另加第 26–34 章。JSON1 未编进运行时 |
 | C | ✅ | 35 | 按 §19：C 语言教程到 C 错误处理，另加第 25–34 章。`fopen` 标为只读，可运行例子用 `sprintf` / `sscanf` |

@@ -46,3 +46,6 @@ The gradient list is 2.0 and 6.0.
 ### Data stays in the tab
 
 Training finishes inside this browser tab. There is no separate compute server. Fashion-MNIST is the small subset shipped with the runtime. Larger weights and full convolutional nets are outside what these chapters run.
+### After chapter 11
+
+Dropout with a fixed mask, batch normalization, a two-step recurrence, attention plus a feed-forward layer of width 2, and early stopping with a halved learning rate follow the attention glance. Masks are fixed. minitorch has no tanh, so that nonlinearity uses NumPy.

@@ -42,3 +42,6 @@ The printed product is 12.
 ### Separate from the other Python
 
 The WASI CPython build does not ship NumPy, so that import fails there. Keep array examples on this row. The teaching package minitorch is preinstalled only in this filesystem.
+### After chapter 11
+
+ufuncs, boolean indexes, fancy indexes, sort and search, einsum, structured arrays, and vectorization follow the copy chapter. Timings jitter, so the vectorization chapter checks results and does not compare speed.

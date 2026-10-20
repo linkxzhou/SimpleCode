@@ -49,3 +49,6 @@ fn main() {
     println!("cargo new will not run here");
 }
 ```
+### After chapter 28
+
+Default trait methods, associated types, dyn, iterator adapters, Box, Rc, RefCell, the question mark, patterns, declarative macros, assertions, unsafe, and a small flag parser follow the async chapter. There is no Cargo, so procedural macros and cargo test are reading-only. Dereferencing a null pointer is reading-only too.
