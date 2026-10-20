@@ -43,3 +43,7 @@ print("tea" .. 18)
 ```
 
 输出里能看到 `tea18`。
+
+### 第 22 章以后
+
+闭包记住外层的 3，table.pack 点数，__index 补上缺的 sku，_ENV 只留下放进去的名字，协程先交出 tea 再交出 cup，模式从 sku=tea 里取出 tea，table.concat 一次接完，三态机器从 idle 走到 done。os.execute 和别的文件的 require 仍然只供阅读。

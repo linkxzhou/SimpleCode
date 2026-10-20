@@ -37,3 +37,7 @@ uname -m
 ```linux run expect="6.8.12" title="内核小版本"
 uname -r
 ```
+
+### 第 30 章以后
+
+find 在 /tmp 里按名字查找，xargs 把多行收成参数，sed 做替换，awk 加第二列，sort、uniq 和 wc 整理行，kill -0 只检查当前壳，export 之后 env 才看得见 SKU，tar 与 gzip 打包 note.txt。reboot 和 kill -9 1 仍然只供阅读。

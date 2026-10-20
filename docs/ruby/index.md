@@ -41,3 +41,7 @@ puts "kept" # 隐藏
 ```
 
 输出里能看到 `kept`。
+
+### 第 23 章以后
+
+Proc 把 2 和 5 加成 7，lambda 少参数时打印 arity，Enumerable 的 select 与 tally 处理短表，Struct 保存 sku 和 qty，Comparable 按毫升排序，method_missing 返回方法名，define_method 装上 sku，freeze 之后再改会得到 locked，instance_eval 写下菜单名。

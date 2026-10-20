@@ -45,3 +45,7 @@ echo "tea", 18, "\n";
 $line = fgets(STDIN);
 echo $line;
 ```
+
+### 第 34 章以后
+
+严格模式把 2 和 5 加成 7，字符串参数打印 bad。match 把 2 标成 cup。枚举 Large 读名字，Many 的底值是 9。readonly 数量再赋值打印 locked。箭头函数捕获基数。生成器交出 tea 和 cup。trait 用 insteadof 选择。CSV 行用 str_getcsv 切开后只加 tea 的数量。

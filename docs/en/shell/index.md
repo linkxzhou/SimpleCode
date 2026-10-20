@@ -43,3 +43,7 @@ ls
 ```
 
 This block is for reading. The shell reports that external commands are not available, because there is no fork.
+
+### After chapter 21
+
+${sku} expands, and ${sku:-mug} does not. case, here-doc, getopts, trap, command substitution, and arithmetic expansion are not syntax in this shell. The runnable stand-ins are if, repeated %s, a for loop that recognizes -n, $?, a pipe, and a string of x marks.

@@ -234,3 +234,27 @@
 - Rust 28–37：`28-trait`、`29-dyn`、`30-iter`、`31-cell`、`32-result`、`33-match`、`34-macro`、`35-assert`、`36-unsafe`、`37-flags`。
 - NumPy 11–16：`11-ufunc`、`12-fancy`、`13-search`、`14-einsum`、`15-struct`、`16-speed`。
 - 深度学习 11–15：`11-dropout`、`12-batchnorm`、`13-rnn`、`14-attn`、`15-train`。
+
+## 9. P4 落地
+
+2026-10-20。Lua、Ruby、PHP、Shell、Linux 的进阶章接在原编号后面。中英同名文件。`renderDocs` 是 `docs: 1042 chapters, 3218 runnable blocks`。这一支基于尚未合并的 P3 分支 `cursor/tutorial-p3-go-rust-numpy-dl-2e22`，P3 又基于尚未合并的 P2。
+
+先复查了 PHP 第 23、28、33 章。`$_POST`、`setcookie` 和 `mysqli_connect` 本来就是 `norun`。能跑的是去掉空白的函数、用数组代替 Cookie、以及 `function_exists` 说明 mysqli 和 curl 不在这份二进制里。这三章没有改代码。
+
+`adapt: true` 沿用已登记的来源，示例按练习场重写：`lxiy-lua`、`lxiy-ruby`、`php-manual`、`wasi-sh`。Linux 章的 `sources` 仍是 `v86-buildroot`（`adapt: false`），写的是这台客户机上试过的命令，不摘录上游文章。
+
+运行时边界（可运行块在页面里跑过）：
+
+- Lua 5.4 可以闭包、`table.pack`、元方法、函数内的 `_ENV`、协程和字符串模式。`os.execute` 和 `require` 别的文件标 `norun`。
+- Ruby 3.2 可以 Proc、lambda、Enumerable、Struct、Comparable、`method_missing`、`define_method`、`freeze` 和 `instance_eval`。`attr_reader :qty` 会盖住同名方法，写入用 `set_qty`。
+- PHP 8.2 可以 `strict_types`、`match`、enum、readonly、箭头函数、生成器、trait 和 `str_getcsv`。生成器声明了返回类型时不能写光秃的 `return`。没有表单、Cookie 和 mysqli。
+- Shell 仍是 wasi-sh。`${name}` 会展开。`case`、here-doc、`getopts`、`trap`、`$(...)` 和 `$((...))` 标 `norun`。计数用一串 `x`，因为没有算术展开。
+- Linux 的 BusyBox 有 find、xargs、sed、awk、sort、uniq、wc、kill、env、tar、gzip。`tar -z` 会打出用法说明，压缩用单独的 gzip。`reboot` 和 `kill -9 1` 标 `norun`。
+
+新章：
+
+- Lua 22–29：`22-closure`、`23-varargs`、`24-meta`、`25-env`、`26-coro`、`27-pattern`、`28-idiom`、`29-machine`。
+- Ruby 23–30：`23-proc`、`24-enum`、`25-struct`、`26-mixin`、`27-missing`、`28-define`、`29-freeze`、`30-dsl`。
+- PHP 34–41：`34-types`、`35-match`、`36-enum`、`37-readonly`、`38-closure`、`39-yield`、`40-trait`、`41-csv`。
+- Shell 21–28：`21-brace`、`22-case`、`23-heredoc`、`24-opts`、`25-status`、`26-pipe`、`27-text`、`28-log`。
+- Linux 30–37：`30-find`、`31-xargs`、`32-sed`、`33-awk`、`34-sort`、`35-signal`、`36-env`、`37-tar`。

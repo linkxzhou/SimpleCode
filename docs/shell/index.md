@@ -41,3 +41,7 @@ echo tea 18
 ```sh norun title="没有 ls"
 ls
 ```
+
+### 第 21 章以后
+
+${sku} 会展开，${sku:-mug} 不会。case、here-doc、getopts、trap、命令替换和算术展开都不是这只壳的语法，对应的可运行写法是 if、重复的 %s、for 认 -n、$?、管道和一串 x 记号。

@@ -43,3 +43,7 @@ print("tea" .. 18)
 ```
 
 The output shows `tea18`.
+
+### After chapter 22
+
+Closures keep the outer 3, table.pack reports how many arguments arrived, __index fills a missing sku, a private _ENV sees only names placed in its table, a coroutine yields tea and then cup, a pattern pulls tea out of sku=tea, table.concat joins pieces once, and a three-state machine walks from idle to done. os.execute and require of a second file stay reading-only.

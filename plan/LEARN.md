@@ -956,14 +956,14 @@ print(f"你好，{name}！")
 | Python | ✅ | 40 | 按 §19：Python3 教程到 Python3 文件，另加第 28–39 章进阶 |
 | JavaScript / TypeScript | ✅ | 42 | 按 §19：JavaScript 教程到 TypeScript 类型断言，另加第 30–41 章。类型块用 `ts` 围栏 |
 | Go | ✅ | 37 | 按 §19：正式标题、每章至少 3 个 `###` 短节。第 29–36 章是 select、WaitGroup、context、工人池、检查函数、反射、字符串与词频。`time.Sleep` 和 `go test` 不运行 |
-| Ruby | ✅ | 23 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出 |
+| Ruby | ✅ | 31 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出，另加第 23–30 章。Proc、Enumerable、Struct、Comparable、method_missing、define_method、freeze 和一段 instance_eval 菜单 |
 | SQL | ✅ | 35 | 按 §19：SQLite 教程到 SQLite 常用函数，另加第 26–34 章。JSON1 未编进运行时 |
 | C | ✅ | 35 | 按 §19：C 语言教程到 C 错误处理，另加第 25–34 章。`fopen` 标为只读，可运行例子用 `sprintf` / `sscanf` |
 | C++ | ✅ | 51 | 按 §19：C++ 教程到 C++ STL 算法，另加第 39–50 章。`std::sort` 因链接缺少 `__lttf2` 标为只读，`throw`、`shared_ptr` 和 `optional` 也不运行 |
-| PHP | ✅ | 34 | 按 §19：PHP 教程到 PHP MySQL。读不到标准输入，`$_GET`、文件、Cookie 和 mysqli 标为只读 |
-| Lua | ✅ | 22 | 按 §19：Lua 教程到 Lua 数据库访问。文件、`require` 和 `os.execute` 标为只读 |
-| Shell | ✅ | 21 | 按 §19：Shell 教程到 Shell 外部命令。只有 wasi-sh 内建，没有函数、数组、算术展开和外部命令 |
-| Linux | ✅ | 30 | 按 §19 与 §20：Linux 教程到 Linux echo。围栏语言 `linux`。客户机是 Buildroot 2024.05.2、内核 6.8.12、BusyBox 1.36.1。每次 Run 从快照恢复，示例各自准备 `/tmp` 里的文件 |
+| PHP | ✅ | 42 | 按 §19：PHP 教程到 PHP MySQL，另加第 34–41 章。读不到标准输入，`$_GET`、文件、Cookie 和 mysqli 标为只读。第 23、28、33 章里的 `$_POST`、`setcookie` 和 `mysqli_connect` 仍是 `norun` |
+| Lua | ✅ | 30 | 按 §19：Lua 教程到 Lua 数据库访问，另加第 22–29 章。文件、`require` 和 `os.execute` 标为只读 |
+| Shell | ✅ | 29 | 按 §19：Shell 教程到 Shell 外部命令，另加第 21–28 章。只有 wasi-sh 内建。`case`、here-doc、`getopts`、`trap`、`$(...)` 和 `$((...))` 标为只读 |
+| Linux | ✅ | 38 | 按 §19 与 §20：Linux 教程到 Linux echo，另加第 30–37 章。围栏语言 `linux`。客户机是 Buildroot 2024.05.2、内核 6.8.12、BusyBox 1.36.1。`tar` 不接受 `-z`。每次 Run 从快照恢复，示例各自准备 `/tmp` 里的文件 |
 
 十本书合计 277 章。加上 Linux 30 章，一共 **307** 章。`SHIPPED_BOOKS` 含这十一本。缺目录时构建才会失败。`scripts/docs/render.ts` 报 `docs: 307 chapters, 887 runnable blocks`（Linux 77 个可运行块）。Shell 仍是 wasi-sh。
 
