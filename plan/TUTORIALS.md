@@ -193,3 +193,23 @@
 - Python 28–39：`28-comp-adv` 推导式进阶、`29-iter-proto` 迭代器协议、`30-with` 上下文管理器、`31-dataclass`、`32-typing` 类型注解、`33-collections`、`34-itertools`、`35-magic` 魔术方法、`36-descriptor` 属性与描述符、`37-asyncio` 协程、`38-unittest`、`39-textstat` 文本统计。
 - JavaScript 30–41：`30-closure` 闭包、`31-prototype` 原型、`32-class`、`33-modules` 模块、`34-generator` 迭代器与生成器、`35-map-set`、`36-destructure` 解构与展开、`37-regex` 正则、`38-event-loop` 微任务、`39-ts-generic` 泛型、`40-ts-utility` 工具类型、`41-todo` 待办列表。
 - Java 28–39：`28-generic` 泛型、`29-collections` 集合、`30-iterator`、`31-lambda`、`32-stream`、`33-optional`、`34-record` record 与 sealed、`35-inner` 内部类、`36-thread` 线程、`37-concurrent` 并发工具、`38-nio` 文件与内存缓冲、`39-grades` 成绩小项目。
+
+## 7. P2 落地
+
+2026-10-20。C、C++、SQLite 的进阶章接在原编号后面。中英同名文件。`renderDocs` 是 `docs: 904 chapters, 2706 runnable blocks`。
+
+`adapt: true`：已有的 `cppreference`、`sqlite-lang`，以及新登记的 `modern-cpp-tutorial`（MIT）、`modern-cpp-features`（MIT）、`quick-sql`（MIT）。示例按练习场重写，没有摘录这些仓库的段落。
+
+`adapt: false`，只出现在延伸阅读链接里：`kr-c`、`c-primer-plus`、`csapp`、`cpp-primer`、`effective-cpp`、`sql-must-know`。
+
+运行时边界（写进可运行块之前在页面里试过）：
+
+- C 是 clang 8，默认 C11。位运算、多维数组、函数指针、`malloc` 链表、数组上的栈和队列、`stdarg`、`qsort` / `bsearch`、`_Static_assert`、`_Generic`、匿名结构体、`_Alignof`、`sscanf` 可以跑。有符号溢出和释放后使用标 `norun`。
+- C++ 是同一份 clang 的 C++14（`__cplusplus` 为 201402）。`auto`、范围 for、lambda、`unique_ptr`、`make_unique`、移动构造、`map`、`unordered_map`、`string_view`、`constexpr`（含循环）、函数特化、参数包、非类型模板参数可以跑。`std::sort` 链接缺少 `__lttf2`。`throw` 因异常被关掉而不能编译。`shared_ptr` 会让这份 clang 在代码生成阶段崩溃。`std::optional` 要 C++17，头文件在这个标准下不声明它。
+- SQLite 是 3.26.0。CTE、递归 CTE、`ROW_NUMBER` / `RANK` / `SUM() OVER`、`ON CONFLICT`、触发器、`RAISE(IGNORE)`、`EXPLAIN QUERY PLAN` 可以跑。JSON1 没编进去，`json` 和 `json_extract` 标 `norun`。
+
+新章：
+
+- C 25–34：`25-bits` 位运算、`26-array2d` 多维数组、`27-fnptr` 函数指针、`28-list` 链表、`29-stackq` 栈与队列、`30-stdarg` 可变参数、`31-qsort`、`32-ub` 未定义行为、`33-c11`、`34-calc` 小计算器。
+- C++ 39–50：`39-auto`、`40-lambda`、`41-unique`、`42-raii`、`43-move`、`44-algo`、`45-map`、`46-view` string_view、`47-constexpr`、`48-tmpl`、`49-safety`、`50-stock` 库存。
+- SQLite 26–34：`26-cte`、`27-recur`、`28-window`、`29-upsert`、`30-json`、`31-trigger`、`32-explain`、`33-normal`、`34-library`。

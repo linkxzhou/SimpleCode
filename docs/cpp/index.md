@@ -56,3 +56,7 @@ int main() {
   return 0;
 }
 ```
+
+### 第 39 章以后
+
+`auto`、范围 for、lambda、`unique_ptr`、RAII、移动、不排序的算法、`map`、`string_view`、`constexpr`、模板特化，以及一份内存里的库存，接在 STL 算法后面。`std::sort` 和 `throw` 仍然不运行。`shared_ptr` 会让这份 clang 在编译期崩溃，`optional` 要 C++17，这两处只阅读。

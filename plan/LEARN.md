@@ -957,9 +957,9 @@ print(f"你好，{name}！")
 | JavaScript / TypeScript | ✅ | 42 | 按 §19：JavaScript 教程到 TypeScript 类型断言，另加第 30–41 章。类型块用 `ts` 围栏 |
 | Go | ✅ | 29 | 按 §19：正式标题、每章至少 3 个 `###` 短节。不再要求 2500 字 |
 | Ruby | ✅ | 23 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出 |
-| SQL | ✅ | 26 | 按 §19：SQLite 教程到 SQLite 常用函数 |
-| C | ✅ | 25 | 按 §19：C 语言教程到 C 错误处理。`fopen` 标为只读，可运行例子用 `sprintf` / `sscanf` |
-| C++ | ✅ | 39 | 按 §19：C++ 教程到 C++ STL 算法。`std::sort` 因链接缺少 `__lttf2` 标为只读，`throw` 和文件流也不运行 |
+| SQL | ✅ | 35 | 按 §19：SQLite 教程到 SQLite 常用函数，另加第 26–34 章。JSON1 未编进运行时 |
+| C | ✅ | 35 | 按 §19：C 语言教程到 C 错误处理，另加第 25–34 章。`fopen` 标为只读，可运行例子用 `sprintf` / `sscanf` |
+| C++ | ✅ | 51 | 按 §19：C++ 教程到 C++ STL 算法，另加第 39–50 章。`std::sort` 因链接缺少 `__lttf2` 标为只读，`throw`、`shared_ptr` 和 `optional` 也不运行 |
 | PHP | ✅ | 34 | 按 §19：PHP 教程到 PHP MySQL。读不到标准输入，`$_GET`、文件、Cookie 和 mysqli 标为只读 |
 | Lua | ✅ | 22 | 按 §19：Lua 教程到 Lua 数据库访问。文件、`require` 和 `os.execute` 标为只读 |
 | Shell | ✅ | 21 | 按 §19：Shell 教程到 Shell 外部命令。只有 wasi-sh 内建，没有函数、数组、算术展开和外部命令 |

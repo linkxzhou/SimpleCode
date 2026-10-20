@@ -42,3 +42,7 @@ SELECT 1;
 .headers on
 .tables
 ```
+
+### 第 26 章以后
+
+公用表表达式、递归、窗口函数、UPSERT、触发器、查询计划和拆表，最后是一个借阅小库。JSON1 没有编进这份 sqlite，`json_extract` 只阅读。每次运行仍是空的内存库。

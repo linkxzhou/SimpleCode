@@ -44,3 +44,7 @@ The query returns `1`.
 ```
 
 Read `.headers` and `.tables` as sqlite3 shell commands.
+
+### After chapter 26
+
+Common table expressions, recursion, window functions, UPSERT, triggers, query plans, and splitting a repeated name into its own table lead to a small lending desk. JSON1 is not compiled into this sqlite, so `json_extract` stays unread. Each run is still an empty in-memory database.
