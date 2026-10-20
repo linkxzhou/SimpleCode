@@ -253,3 +253,49 @@ fashion-mnist:
   url: https://github.com/zalandoresearch/fashion-mnist
   license: MIT
   adapt: true
+
+modern-cpp-tutorial:
+  title: Modern C++ Tutorial
+  url: https://github.com/changkun/modern-cpp-tutorial
+  license: MIT
+  adapt: true
+modern-cpp-features:
+  title: C++11/14/17/20 Features
+  url: https://github.com/AnthonyCalandra/modern-cpp-features
+  license: MIT
+  adapt: true
+quick-sql:
+  title: Quick SQL Cheatsheet
+  url: https://github.com/enochtangg/quick-SQL-cheatsheet
+  license: MIT
+  adapt: true
+kr-c:
+  title: The C Programming Language
+  url: https://book.douban.com/subject/1139336
+  license: All-rights-reserved
+  adapt: false
+c-primer-plus:
+  title: C Primer Plus
+  url: https://book.douban.com/subject/26792521
+  license: All-rights-reserved
+  adapt: false
+csapp:
+  title: Computer Systems: A Programmer's Perspective
+  url: https://book.douban.com/subject/1230413
+  license: All-rights-reserved
+  adapt: false
+cpp-primer:
+  title: C++ Primer
+  url: https://book.douban.com/subject/25708312
+  license: All-rights-reserved
+  adapt: false
+effective-cpp:
+  title: Effective C++
+  url: https://book.douban.com/subject/1842426
+  license: All-rights-reserved
+  adapt: false
+sql-must-know:
+  title: SQL必知必会
+  url: https://book.douban.com/subject/35167240
+  license: All-rights-reserved
+  adapt: false

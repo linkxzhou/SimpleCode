@@ -51,3 +51,7 @@ gcc main.c
 ```
 
 That line belongs in the terminal. The page does not compile it as C.
+
+### After chapter 25
+
+Bitwise operations, two-dimensional arrays, function pointers, linked lists, stacks and queues, variadic arguments, `qsort`, undefined behavior, a few C11 forms, and a calculator limited to add, subtract, and multiply follow the error-handling chapter. The compiler is still this clang, and a warning still fails the build.

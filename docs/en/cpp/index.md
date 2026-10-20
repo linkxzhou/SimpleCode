@@ -56,3 +56,7 @@ int main() {
   return 0;
 }
 ```
+
+### After chapter 39
+
+`auto`, range-for, lambdas, `unique_ptr`, RAII, move, algorithms that do not sort, `map`, `string_view`, `constexpr`, template specialization, and an in-memory inventory follow the STL chapter. `std::sort` and `throw` still do not run. `shared_ptr` crashes this clang while compiling, and `optional` needs C++17, so both stay as reading.
