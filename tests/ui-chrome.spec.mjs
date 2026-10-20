@@ -49,6 +49,18 @@ async function openAbout(page) {
   await page.getByTestId("about-dialog").waitFor();
 }
 
+async function checkRepoLink(page, label) {
+  const link = page.getByTestId("about-repo");
+  const href = await link.getAttribute("href");
+  const target = await link.getAttribute("target");
+  const rel = await link.getAttribute("rel");
+  const text = (await link.innerText()).trim();
+  check(
+    href === "https://github.com/linkxzhou/SimpleCode" && target === "_blank" && rel === "noopener noreferrer" && text === label,
+    `about repo link (${label})`,
+  );
+}
+
 await waitForServer();
 const browser = await launchBrowser();
 try {
@@ -59,6 +71,7 @@ try {
   await openAbout(page);
   const zh = await page.getByTestId("about-dialog").innerText();
   check(zh.includes("Linux") && zh.includes("Rust") && zh.includes("Monaco") && zh.includes("Cache API") && zh.includes("快速入门"), "about dialog in Chinese");
+  await checkRepoLink(page, "GitHub 仓库");
   await page.keyboard.press("Escape");
   await page.getByTestId("about-dialog").waitFor({ state: "hidden" });
   check(true, "about dialog closes");
@@ -70,6 +83,7 @@ try {
     en.includes("Fourteen languages") && en.includes("DeepLearning") && en.includes("Linux") && en.includes("Rust") && en.includes("Java") && en.includes("Monaco") && en.includes("Quick Start"),
     "about dialog in English",
   );
+  await checkRepoLink(page, "GitHub repository");
   await page.keyboard.press("Escape");
 
   await page.reload();

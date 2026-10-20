@@ -77,6 +77,19 @@ describe("i18n catalog", () => {
     assert.match(en.aboutBooks, /Quick Start/);
   });
 
+  it("puts the GitHub repository link in the about dialog", () => {
+    assert.equal(zh.aboutRepo, "GitHub 仓库");
+    assert.equal(en.aboutRepo, "GitHub repository");
+    const src = readFileSync(new URL("../src/components/AboutDialog.vue", import.meta.url), "utf8");
+    assert.match(src, /const repoUrl = "https:\/\/github\.com\/linkxzhou\/SimpleCode"/);
+    assert.match(src, /data-testid="about-repo"/);
+    assert.match(src, /:href="repoUrl"/);
+    assert.match(src, /target="_blank"/);
+    assert.match(src, /rel="noopener noreferrer"/);
+    assert.match(src, /<Github/);
+    assert.match(src, /t\("aboutRepo"\)/);
+  });
+
   it("tells a missing Java file apart from a real digest mismatch", () => {
     const missing = t("javaMissing", { file: "compiler.wasm" });
     assert.match(missing, /找不到 compiler\.wasm/);

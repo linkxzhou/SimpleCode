@@ -40,6 +40,7 @@ export const zh = {
   aboutEditor: "编辑器是 Monaco。",
   aboutTerminal: "终端用来看输出，也可以输入。",
   aboutBooks: "每种语言都有「快速入门」，书里的示例可以直接运行。",
+  aboutRepo: "GitHub 仓库",
 
   dialectGroup: "JavaScript 或 TypeScript",
   tsTitle: "TypeScript（运行前去除类型）",
@@ -261,6 +262,7 @@ export const en: { [K in MessageKey]: string } = {
   aboutEditor: "The editor is Monaco.",
   aboutTerminal: "A terminal shows output and accepts input.",
   aboutBooks: "Each language has a Quick Start book, and the examples in it can be run.",
+  aboutRepo: "GitHub repository",
 
   dialectGroup: "JavaScript or TypeScript",
   tsTitle: "TypeScript (types are stripped before running)",
