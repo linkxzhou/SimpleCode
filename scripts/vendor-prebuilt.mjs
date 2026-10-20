@@ -26,7 +26,7 @@ import { refreshManifest } from "./write-manifest.mjs";
 export const PREBUILT_VERSION = 1;
 // Stay under GitHub's 100 MB file limit and the ~90 MB target. Decimal MB,
 // so an 84 MB gzip stays one file and a larger one splits before 90 MB.
-export const PART_BYTES = 90 * 1000 * 1000;
+export const PART_BYTES = 89 * 1000 * 1000;
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
