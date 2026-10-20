@@ -131,7 +131,7 @@ Digests are also in `scripts/sources.lock.json` and `wasm/rust/SOURCES.md`. The 
 - [browser_wasi_shim](https://github.com/bjorn3/browser_wasi_shim) — Apache-2.0 OR MIT. The copies under `src/rustc/shim/` come from the weblings `app/public/vendor/browser_wasi_shim` tree and are used only to host rustc, not the user's program.
 - [fzstd](https://github.com/101arrowz/fzstd) — MIT. Used by `scripts/vendor-rust.mjs` to decompress the archives. It is not loaded in the browser.
 
-## Deep Learning (Pyodide, NumPy, Fashion-MNIST)
+## DeepLearning (Pyodide, NumPy, Fashion-MNIST)
 
 - [Pyodide](https://pyodide.org/) 314.0.7 — Mozilla Public License 2.0. CPython 3.14.2 and the Pyodide runtime (`pyodide.asm.wasm`, `pyodide.asm.mjs`, `pyodide.mjs`, `python_stdlib.zip`). Vendored under `wasm/pyodide/` by `./build.sh vendor --pyodide`. The page loads those same-origin files only. The upstream `pyodide.mjs` default `packageBaseUrl` points at jsDelivr; the vendored copy removes that default.
 - [NumPy](https://numpy.org/) 2.4.6 — BSD-3-Clause. Wheel `numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl`, loaded with `loadPackage("numpy")` from the same directory.

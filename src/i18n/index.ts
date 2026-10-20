@@ -43,7 +43,7 @@ export function runtimeName(id: string, fallback: string): string {
   return fallback;
 }
 
-/** Drawer title for a book. NumPy and Deep Learning follow the UI language. */
+/** Drawer title for a book. The DeepLearning book uses the same name in both locales. */
 export function bookName(id: string, fallback: string): string {
   if (id === "numpy") return t("bookNumpy");
   if (id === "dl") return t("bookDl");

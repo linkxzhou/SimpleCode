@@ -6,7 +6,7 @@
 
 浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell 的运行时是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。Rust 的编译器是 weblings 的 Cranelift rustc，在另一个 Worker 里编译；编出来的 wasm 再交给同一个 `WASIWorkerHost`。Java 的编译和运行都在 TeaVM 自己的 Worker 里（Wasm GC），产物不交给 `WASIWorkerHost`。Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
 
-教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十五本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`，Java 的书在 `docs/java/`。NumPy 在 `docs/numpy/`，深度学习在 `docs/dl/`，两本都由侧栏「深度学习」打开（运行时 id `numpy`，Pyodide）。细节见 `plan/LANGUAGES.md` §10、§11 和 §12，`plan/DEEP_LEARNING.md`，以及 `plan/LEARN.md` §20 和 §23。
+教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十五本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`，Java 的书在 `docs/java/`。NumPy 在 `docs/numpy/`，深度学习在 `docs/dl/`，两本都由侧栏 DeepLearning 打开（运行时 id `numpy`，Pyodide）。细节见 `plan/LANGUAGES.md` §10、§11 和 §12，`plan/DEEP_LEARNING.md`，以及 `plan/LEARN.md` §20 和 §23。
 
 ## 架构
 

@@ -113,7 +113,7 @@ for epoch in range(3):
 
   await app.getByTestId("locale-en").click();
   await app.getByTestId("lang-numpy").waitFor();
-  await app.waitForFunction(() => (document.querySelector('[data-testid="lang-numpy"]')?.textContent ?? "").includes("Deep Learning"));
+  await app.waitForFunction(() => (document.querySelector('[data-testid="lang-numpy"]')?.textContent ?? "").includes("DeepLearning"));
   await app.screenshot({ path: `${OUT}/dl-english-ui.png` });
   await app.close();
   await main.close();

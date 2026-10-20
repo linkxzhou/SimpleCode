@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Deep Learning sidebar row: label, progress bar on the button edge, book switcher, terminal reset.
+// DeepLearning sidebar row: label, progress bar on the button edge, book switcher, terminal reset.
 import { spawn } from "node:child_process";
 import { chromium } from "playwright";
 
@@ -71,7 +71,7 @@ try {
   const button = page.getByTestId("lang-numpy");
   await button.waitFor();
   const label = await button.innerText();
-  check(label.includes("深度学习") && label.includes("Python (NumPy)"), `sidebar label ${JSON.stringify(label)}`);
+  check(label.includes("DeepLearning") && label.includes("Python (NumPy)"), `sidebar label ${JSON.stringify(label)}`);
   const bar = button.getByTestId("wasm-progress");
   await bar.waitFor({ state: "visible", timeout: 8000 });
   const box = await bar.evaluate((el) => {
@@ -107,20 +107,20 @@ try {
   await page2.getByTestId("lang-numpy").click();
   await page2.waitForFunction(() => {
     const text = globalThis.__simplecodeTerminal?.transcript ?? "";
-    return text.includes("深度学习");
+    return text.includes("DeepLearning");
   });
   await page2.getByTestId("lang-ruby").click();
   await page2.waitForFunction(() => {
     const text = globalThis.__simplecodeTerminal?.transcript ?? "";
-    return text.includes("Ruby") && !text.includes("深度学习");
+    return text.includes("Ruby") && !text.includes("DeepLearning");
   });
-  check(true, "switching away from Deep Learning clears the terminal");
+  check(true, "switching away from DeepLearning clears the terminal");
 
   await page2.getByTestId("lang-numpy").click();
   await page2.getByTestId("study-mode-learn").click();
   await page2.getByTestId("docs-books").waitFor();
   const books = await page2.getByTestId("docs-books").innerText();
-  check(books.includes("深度学习") && books.includes("NumPy"), `book switcher ${JSON.stringify(books)}`);
+  check(books.includes("DeepLearning") && books.includes("NumPy"), `book switcher ${JSON.stringify(books)}`);
   await page2.getByTestId("docs-book-numpy").click();
   await page2.getByTestId("docs-drawer").waitFor();
   const toc = await page2.getByTestId("docs-drawer").innerText();
@@ -128,9 +128,9 @@ try {
 
   await page2.getByTestId("locale-en").click();
   const enLabel = await page2.getByTestId("lang-numpy").innerText();
-  check(enLabel.includes("Deep Learning") && enLabel.includes("Python (NumPy)"), `English label ${JSON.stringify(enLabel)}`);
+  check(enLabel.includes("DeepLearning") && enLabel.includes("Python (NumPy)"), `English label ${JSON.stringify(enLabel)}`);
   const enBooks = await page2.getByTestId("docs-books").innerText();
-  check(enBooks.includes("Deep Learning") && enBooks.includes("NumPy"), `English books ${JSON.stringify(enBooks)}`);
+  check(enBooks.includes("DeepLearning") && enBooks.includes("NumPy"), `English books ${JSON.stringify(enBooks)}`);
   await page2.close();
 } finally {
   await browser.close().catch(() => {});

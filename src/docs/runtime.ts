@@ -116,7 +116,7 @@ export const BOOK_LABEL: Record<BookId, string> = {
   java: "Java",
   linux: "Linux",
   numpy: "NumPy",
-  dl: "Deep Learning",
+  dl: "DeepLearning",
 };
 
 export const LEVEL_LABEL = {

@@ -14,11 +14,11 @@ Pick a language on the left, edit in Monaco, read output in the terminal. Run st
 
 SimpleCode is a playground. It is a static page that executes code, not a hosted IDE and not an official judge.
 
-- **Execution stays in the browser.** WASI languages run in a Web Worker on `@runno/wasi`. C and C++ compile with clang 8, shipped as wasm. Rust compiles with the `rustc.wasm` committed in this repo (weblings, Cranelift rustc); the resulting module runs on the same WASI host. Java's javac and runtime both live in a TeaVM worker. Deep Learning is a separate worker: Pyodide 314 plus NumPy, not the WASI CPython. Linux is a v86 guest on the main thread. Source is not posted to a backend.
+- **Execution stays in the browser.** WASI languages run in a Web Worker on `@runno/wasi`. C and C++ compile with clang 8, shipped as wasm. Rust compiles with the `rustc.wasm` committed in this repo (weblings, Cranelift rustc); the resulting module runs on the same WASI host. Java's javac and runtime both live in a TeaVM worker. DeepLearning is a separate worker: Pyodide 314 plus NumPy, not the WASI CPython. Linux is a v86 guest on the main thread. Source is not posted to a backend.
 - **No account.** Drafts, the selected language, and the UI language sit in `localStorage`.
 - **Runtimes download on demand.** The sidebar shows size, percent, and a cached check. WASI and Linux use the Cache API name `simplecode-wasm-v1`, Rust uses `simplecode-rustc-v1`, Java uses `simplecode-teavm-v1`.
 - **Stdin is real.** Keystrokes cross a `SharedArrayBuffer` into the program, so the page has to be cross-origin isolated.
-- **Practice is built in.** Fifteen Quick Start books, in Chinese and English, including NumPy and Deep Learning, plus 200 LeetCode-style problems. Solutions stay hidden until you open them.
+- **Practice is built in.** Fifteen Quick Start books, in Chinese and English, including NumPy and DeepLearning, plus 200 LeetCode-style problems. Solutions stay hidden until you open them.
 
 Once a runtime is cached, the open tab can run that language with no further download. The site is not an offline app: `coi-serviceworker.js` only injects isolation headers. A reload still needs the static files.
 
@@ -45,10 +45,10 @@ Once a runtime is cached, the open tab can run that language with no further dow
 
 ## Features
 
-- Fourteen languages. Runtimes load lazily. The progress bar is `inset-x-0 bottom-0 h-0.5`, the full width of the button. The Deep Learning row is labeled Python (NumPy) and is not the WASI Python runtime.
+- Fourteen languages. Runtimes load lazily. The progress bar is `inset-x-0 bottom-0 h-0.5`, the full width of the button. The DeepLearning row is labeled Python (NumPy) and is not the WASI Python runtime.
 - Monaco. Body text is 14px; comments are 13px. An untouched sample switches only its comments when you toggle 中 / EN.
 - An xterm terminal. The toolbar and the documentation code blocks share one Run button.
-- Quick Starts: Chinese in `docs/<book>/`, English in `docs/en/<book>/`, same filenames. This build reports 770 chapters (385 each) and 2,186 runnable blocks (1,093 each). NumPy and Deep Learning are 11 chapters each. Their fences use the `numpy` language so they run on Pyodide.
+- Quick Starts: Chinese in `docs/<book>/`, English in `docs/en/<book>/`, same filenames. This build reports 770 chapters (385 each) and 2,186 runnable blocks (1,093 each). NumPy and DeepLearning are 11 chapters each. Their fences use the `numpy` language so they run on Pyodide.
 - LeetCode mode shares the drawer with Quick Start and does not cover Run. 200 problems: 41 Easy, 135 Medium, 24 Hard. Titles and summaries exist in both languages. Official statements are not stored. The drawer shows a short summary written for this repo, a small sample, and links to the official pages.
 - Solutions stay collapsed until 查看题解. The checked-in solutions are Python. Another downloaded language that can run problems shows “No solution for this language yet.” You can run the sample, or load a solution into the editor and run it.
 - JS and TS share one wasmedge-quickjs module. Sucrase loads only when TypeScript runs, strips types, and does not type-check.
@@ -72,7 +72,7 @@ Sizes match the sidebar. `formatMB` is bytes ÷ 1048576, one decimal. Byte count
 | Shell | wasi-sh | 0.1 MB (55,023) | Builtins and pipes. Use Linux for `ls` and `cd` |
 | Rust | weblings rustc (Cranelift) | 151.8 MB (159,184,722) | Same-origin files in `wasm/rust/`; the page does not fetch a remote compiler |
 | Java | TeaVM 0.16.0 javac | 6.6 MB (6,896,057) | Needs Wasm GC. Not OpenJDK. The only public class must be `Main` |
-| Deep Learning | Pyodide 314.0.7 + NumPy 2.4.6 | 20.2 MB (21,201,739) | Sidebar name Deep Learning, version line Python (NumPy). Separate from WASI CPython. Includes a 4,710,012-byte Fashion-MNIST subset |
+| DeepLearning | Pyodide 314.0.7 + NumPy 2.4.6 | 20.2 MB (21,201,739) | Sidebar name is DeepLearning in both locales, version line Python (NumPy). Separate from WASI CPython. Includes a 4,710,012-byte Fashion-MNIST subset |
 | Linux | v86 0.5.471, kernel 6.8.12, BusyBox 1.36.1 | 29.4 MB (30,804,135) | 64 MiB RAM. Includes the prebuilt `linux-state.zst` (18,201,083 bytes). A new snapshot changes that number |
 
 The Rust pair is `rustc.wasm` at 87,871,387 bytes and `sysroot-wasip1.bundle` at 71,313,335 bytes. The four Java files add up to 6,896,057 bytes.

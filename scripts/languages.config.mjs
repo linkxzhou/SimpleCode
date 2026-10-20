@@ -151,7 +151,7 @@ export const languages = [
   },
   {
     id: "numpy",
-    label: "Deep Learning",
+    label: "DeepLearning",
     short: "DL",
     version: "Python (NumPy)",
     syntax: "python",

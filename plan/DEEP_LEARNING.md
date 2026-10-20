@@ -237,7 +237,7 @@
 
 ### 11.2 界面
 
-- 侧栏一行。短标签 `DL`。中文「深度学习」，英文 “Deep Learning”。展开时名称后面跟着灰色的 `Python (NumPy)`，避免和 WASI Python 搞混。
+- 侧栏一行。短标签 `DL`。中英文都写 `DeepLearning`，和 Python、JavaScript 一样不随界面语言改名。展开时名称后面跟着灰色的 `Python (NumPy)`，避免和 WASI Python 搞混。
 - 进度条仍是 `LanguageItem` 里的 `absolute inset-x-0 bottom-0 h-0.5`。资产进 `languages.config.mjs`，懒加载和 Cache API `simplecode-wasm-v1` 与其他 wasm 相同。
 - 换语言时 `releaseRuntime` 调用 `cancelPyodide()`，停掉 Worker，终端按原有路径清屏再绑到新运行时。
 - 快速入门默认打开 `dl`。抽屉里有 `docs-book-dl` 和 `docs-book-numpy` 两个按钮，切到 NumPy 那一本。`RUNTIME_BOOKS.numpy` 是 `["dl", "numpy"]`。
