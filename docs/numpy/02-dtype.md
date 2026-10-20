@@ -30,12 +30,12 @@ print(x.dtype, float(x.mean()))
 
 ### 八位无符号会回绕
 
-uint8 只保留低 8 位。300 写进去会变成 44，因为 300 减 256 等于 44。这不是四舍五入。
+NumPy 2 不允许直接用 uint8 构造 300。先放进 int64，再用 astype 收成 uint8，低 8 位留下来，300 变成 44。这不是四舍五入。
 
 ```numpy run expect="44" title="溢出"
 import numpy as np
 # 300 进 uint8
-bits = np.array([300], dtype=np.uint8)
+bits = np.array([300], dtype=np.int64).astype(np.uint8)
 print(int(bits[0]))
 ```
 

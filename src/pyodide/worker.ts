@@ -84,7 +84,7 @@ function readStdin(): string | null {
     Atomics.wait(ctrl, 0, 0);
     const n = Atomics.load(ctrl, 0);
     if (n < 0) sawEof = true;
-    else pending += decoder.decode(raw.subarray(0, n));
+    else pending += decoder.decode(raw.slice(0, n));
   }
 }
 

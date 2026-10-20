@@ -30,12 +30,12 @@ The average is exactly 2.0.
 
 ### uint8 wraps
 
-uint8 keeps only the low 8 bits. Storing 300 yields 44, because 300 minus 256 is 44. That is modular wrap, not rounding.
+NumPy 2 refuses to construct a uint8 array directly from 300. Store it as int64, then astype to uint8. The low 8 bits remain, so 300 becomes 44. That cast wraps. It does not round.
 
 ```numpy run expect="44" title="Overflow"
 import numpy as np
 # 300 into uint8
-bits = np.array([300], dtype=np.uint8)
+bits = np.array([300], dtype=np.int64).astype(np.uint8)
 print(int(bits[0]))
 ```
 
