@@ -299,3 +299,59 @@ sql-must-know:
   url: https://book.douban.com/subject/35167240
   license: All-rights-reserved
   adapt: false
+
+rust-book:
+  title: The Rust Programming Language
+  url: https://github.com/rust-lang/book
+  license: MIT OR Apache-2.0
+  adapt: true
+rust-by-example:
+  title: Rust By Example
+  url: https://github.com/rust-lang/rust-by-example
+  license: Apache-2.0
+  adapt: true
+numpy-100:
+  title: 100 numpy exercises
+  url: https://github.com/rougier/numpy-100
+  license: MIT
+  adapt: true
+micrograd:
+  title: micrograd
+  url: https://github.com/karpathy/micrograd
+  license: MIT
+  adapt: true
+nn-zero-to-hero:
+  title: Neural Networks: Zero to Hero
+  url: https://github.com/karpathy/nn-zero-to-hero
+  license: MIT
+  adapt: true
+d2l-zh:
+  title: Dive into Deep Learning
+  url: https://github.com/d2l-ai/d2l-zh
+  license: Apache-2.0
+  adapt: true
+gopl:
+  title: The Go Programming Language
+  url: https://book.douban.com/subject/27044219
+  license: All-rights-reserved
+  adapt: false
+rust-programming:
+  title: Programming Rust
+  url: https://book.douban.com/subject/36547630
+  license: All-rights-reserved
+  adapt: false
+rust-course:
+  title: Rust Course
+  url: https://github.com/sunface/rust-course
+  license: No-license-declared
+  adapt: false
+py-data-handbook:
+  title: Python Data Science Handbook
+  url: https://book.douban.com/subject/27667378
+  license: All-rights-reserved
+  adapt: false
+dl-flower:
+  title: Deep Learning
+  url: https://book.douban.com/subject/27087503
+  license: All-rights-reserved
+  adapt: false

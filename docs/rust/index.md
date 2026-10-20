@@ -46,3 +46,6 @@ fn main() {
     println!("cargo new will not run here");
 }
 ```
+### 第 28 章以后
+
+trait 的默认方法与关联类型、dyn、迭代器适配器、Box、Rc、RefCell、问号、模式、声明宏、断言、unsafe 和一条小旗标解析接在异步这一章后面。没有 Cargo，所以过程宏和 cargo test 只供阅读。空指针解引用标成只读。

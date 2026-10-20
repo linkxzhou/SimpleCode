@@ -66,3 +66,6 @@ func main() {
 ```
 
 The helper returns `3`.
+### After chapter 29
+
+select, WaitGroup, cancelable context, a worker pool, handwritten checks, reflect, string sorting, and word counts follow the modules chapter. time.Sleep, time.After, and WithTimeout still cannot run, and go test does not start.
