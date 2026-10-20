@@ -953,8 +953,8 @@ print(f"你好，{name}！")
 
 | 语言 | 状态 | 章数 | 汉字（最少–最多，合计） |
 |---|---|---|---|
-| Python | ✅ | 28 | 按 §19：Python3 教程到 Python3 文件，每章至少 3 个短节 |
-| JavaScript / TypeScript | ✅ | 30 | 按 §19：JavaScript 教程到 TypeScript 类型断言。类型块用 `ts` 围栏 |
+| Python | ✅ | 40 | 按 §19：Python3 教程到 Python3 文件，另加第 28–39 章进阶 |
+| JavaScript / TypeScript | ✅ | 42 | 按 §19：JavaScript 教程到 TypeScript 类型断言，另加第 30–41 章。类型块用 `ts` 围栏 |
 | Go | ✅ | 29 | 按 §19：正式标题、每章至少 3 个 `###` 短节。不再要求 2500 字 |
 | Ruby | ✅ | 23 | 按 §19：Ruby 教程到 Ruby 文件的输入与输出 |
 | SQL | ✅ | 26 | 按 §19：SQLite 教程到 SQLite 常用函数 |
@@ -1720,7 +1720,7 @@ BusyBox 与 GNU coreutils 的旗标和列对齐不同。`expect` 写子串，不
 
 ## 23. Java 快速入门（TeaVM，2026-10-16）
 
-Java 是第十三种语言。书 id 是 `java`，侧栏 id 也是 `java`，编辑器文件是 `Main.java`。运行时按 `plan/LANGUAGES.md` §12：浏览器里的 TeaVM 0.16.0 javac，编译和运行都在单独的 Worker，不交给 `WASIWorkerHost`。正文按 §19 和 §22：正式章名、一节一件事、句子原创、程序只用 ASCII。中英各 28 章（概览加 27 章）。英文在 `docs/en/java/`，文件名与中文相同。
+Java 是第十三种语言。书 id 是 `java`，侧栏 id 也是 `java`，编辑器文件是 `Main.java`。运行时按 `plan/LANGUAGES.md` §12：浏览器里的 TeaVM 0.16.0 javac，编译和运行都在单独的 Worker，不交给 `WASIWorkerHost`。正文按 §19 和 §22：正式章名、一节一件事、句子原创、程序只用 ASCII。中英各 40 章（概览加 39 章，其中第 28–39 章是进阶）。英文在 `docs/en/java/`，文件名与中文相同。
 
 界面不要写成「Java 21」或「OpenJDK」。`java.version` 会打印 `21`，类库仍是 TeaVM（`os.name` 是 `TeaVM`）。书里用得到的说法是：这里的编译器是 TeaVM，类库是它自己的一份。
 

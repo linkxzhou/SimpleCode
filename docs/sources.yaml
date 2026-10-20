@@ -197,6 +197,52 @@ v86-buildroot:
   license: BSD-2-Clause / GPL-2.0
   adapt: false
 
+python-100-days:
+  title: Python-100-Days
+  url: https://github.com/jackfrued/Python-100-Days
+  license: No-license-declared
+  adapt: false
+fluent-python:
+  title: Fluent Python
+  url: https://book.douban.com/subject/27028517
+  license: All-rights-reserved
+  adapt: false
+python-crash-course:
+  title: Python Crash Course
+  url: https://book.douban.com/subject/26829016
+  license: All-rights-reserved
+  adapt: false
+ydkjs:
+  title: You Don't Know JS
+  url: https://github.com/getify/You-Dont-Know-JS
+  license: CC-BY-NC-ND-4.0
+  adapt: false
+js-professional:
+  title: Professional JavaScript for Web Developers (4th ed.)
+  url: https://book.douban.com/subject/35175321
+  license: All-rights-reserved
+  adapt: false
+javaguide:
+  title: JavaGuide
+  url: https://github.com/Snailclimb/JavaGuide
+  license: Apache-2.0
+  adapt: true
+advanced-java:
+  title: advanced-java
+  url: https://github.com/doocs/advanced-java
+  license: CC-BY-SA-4.0
+  adapt: true
+java-core-vol1:
+  title: Core Java Volume I
+  url: https://book.douban.com/subject/35920145
+  license: All-rights-reserved
+  adapt: false
+effective-java:
+  title: Effective Java
+  url: https://book.douban.com/subject/30412517
+  license: All-rights-reserved
+  adapt: false
+
 numpy-manual:
   title: NumPy user guide
   url: https://numpy.org/doc/stable/user/index.html

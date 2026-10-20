@@ -48,7 +48,7 @@ Once a runtime is cached, the open tab can run that language with no further dow
 - Fourteen languages. Runtimes load lazily. The progress bar is `inset-x-0 bottom-0 h-0.5`, the full width of the button. The DeepLearning row is labeled Python (NumPy) and is not the WASI Python runtime.
 - Monaco. Body text is 14px; comments are 13px. An untouched sample switches only its comments when you toggle 中 / EN.
 - An xterm terminal. The toolbar and the documentation code blocks share one Run button.
-- Quick Starts: Chinese in `docs/<book>/`, English in `docs/en/<book>/`, same filenames. This build reports 770 chapters (385 each) and 2,186 runnable blocks (1,093 each). NumPy and DeepLearning are 11 chapters each. Their fences use the `numpy` language so they run on Pyodide.
+- Quick Starts: Chinese in `docs/<book>/`, English in `docs/en/<book>/`, same filenames. This build reports 842 chapters (421 each) and 2,464 runnable blocks (1,232 each). NumPy and DeepLearning are 11 chapters each. Their fences use the `numpy` language so they run on Pyodide.
 - LeetCode mode shares the drawer with Quick Start and does not cover Run. 200 problems: 41 Easy, 135 Medium, 24 Hard. Titles and summaries exist in both languages. Official statements are not stored. The drawer shows a short summary written for this repo, a small sample, and links to the official pages.
 - Solutions stay collapsed until 查看题解. The checked-in solutions are Python. Another downloaded language that can run problems shows “No solution for this language yet.” You can run the sample, or load a solution into the editor and run it.
 - JS and TS share one wasmedge-quickjs module. Sucrase loads only when TypeScript runs, strips types, and does not type-check.

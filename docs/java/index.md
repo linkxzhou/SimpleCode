@@ -47,7 +47,7 @@ public class Main {
 
 ### 这里不是完整 JDK
 
-os.name 在这份类库上是 TeaVM。打印、集合和短暂停顿能用。磁盘文件和反射放到最后一章，只给阅读。
+os.name 在这份类库上是 TeaVM。打印、集合和短暂停顿能用。磁盘文件和反射放在第 27 章，只给阅读。
 
 ```java run expect="TeaVM" title="运行时名字"
 public class Main {
@@ -59,3 +59,7 @@ public class Main {
 ```
 
 先确认运行时的名字。
+
+### 第 28 章以后
+
+泛型、集合、Iterator、lambda、Stream、Optional、record、内部类、线程和原子整数都按这份 TeaVM 来写。CountDownLatch 和磁盘文件仍只供阅读。第 39 章用列表做成绩统计。
