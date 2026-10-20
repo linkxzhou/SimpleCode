@@ -41,3 +41,7 @@ console.log(2 + 3);
 ```
 
 Two plus three logs `5`.
+
+### Language mechanisms begin at chapter 30
+
+Closures, prototypes, class, an in-file module function, iterators, Map, destructuring, regular expressions, and microtasks come first, then TypeScript generics, utility types, and a todo list with no page. The text marks import and setTimeout as unable to run here.

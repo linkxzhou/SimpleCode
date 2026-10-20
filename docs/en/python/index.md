@@ -50,3 +50,7 @@ puts "42 from Ruby"
 ```
 
 The Ruby line prints `42 from Ruby`.
+
+### Later chapters start at 28
+
+Chapters 28 through 39 continue with dict comprehensions, the iterator protocol, with, dataclasses, annotations, collections, itertools, magic methods, descriptors, coroutines, tests, and an in-memory word tally. The interpreter stays this one. No separate project is opened.

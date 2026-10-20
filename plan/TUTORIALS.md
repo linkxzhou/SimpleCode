@@ -173,3 +173,23 @@
 3. `npm run typecheck` 通过；`isKnownDocsDir` 不新增未注册目录。
 4. 每章都有 zh 和 en 两版，frontmatter 完整，`sources` 键都在 `sources.yaml` 里，`adapt: false` 资料只出现在延伸阅读里。
 5. 人工抽查：对照参考书，抽 10% 的新章节确认不存在原文或译文搬运。
+
+## 6. P0（仅 P1 所需）与 P1 落地
+
+2026-10-20。P0 没有做 shell / linux / php 的能力表，那些留到 P4。这一轮只把 Python、JavaScript、Java 会引用的资料补进 `docs/sources.yaml`。
+
+`adapt: true` 且本章可以署名引用：已有的 `byte-of-python`、`lxiy-python`、`mdn-js`、`ts-handbook`、`lxiy-js`，以及新登记的 `javaguide`（Apache-2.0）、`advanced-java`（CC-BY-SA-4.0）。章节示例是按练习场重写的，没有摘录这两份仓库的段落；若以后改编 `advanced-java` 的原文，衍生文字保持 CC-BY-SA-4.0。
+
+`adapt: false`，只出现在延伸阅读链接里：`python-100-days`（仓库未声明许可证）、`fluent-python`、`python-crash-course`、`think-python`、`automate`、`ydkjs`（CC-BY-NC-ND）、`javascript-info`、`eloquent-js`、`js-professional`、`java-core-vol1`、`effective-java`。
+
+运行时边界（写进可运行块之前在页面里试过）：
+
+- Python 是 WASI CPython 3.11。`asyncio.run` 在收尾 `_UnixSelectorEventLoop._ssock` 上失败，协程用一个只 `send` 的小驱动器。`dataclass`、`typing`、`collections`、`itertools`、`functools`、`unittest`、`doctest` 可以跑。
+- QuickJS 单文件脚本。`import` 加载不到邻居文件。`queueMicrotask` 未定义。`setTimeout` 会把这次运行挂住。`Promise.then`、生成器、`Map` / `WeakMap`、`class` 可以跑。TypeScript 经 Sucrase 去类型。
+- Java 是 TeaVM。泛型、`HashSet`、`LinkedList`、lambda、`Stream`、`Optional`、`record`、`sealed`、内部类、`Thread.join`、`AtomicInteger` 可以跑。两条线程都 `start` 后再 `join` 时，宿主可能在打印前结束。`CountDownLatch` 没有这个类。`String.getBytes` 会带上 Wasm GC 不接受的 `ByteBuffer`。`java.nio` 与真实文件仍是 `norun`。
+
+新章（中英同名文件，接在原编号后面）：
+
+- Python 28–39：`28-comp-adv` 推导式进阶、`29-iter-proto` 迭代器协议、`30-with` 上下文管理器、`31-dataclass`、`32-typing` 类型注解、`33-collections`、`34-itertools`、`35-magic` 魔术方法、`36-descriptor` 属性与描述符、`37-asyncio` 协程、`38-unittest`、`39-textstat` 文本统计。
+- JavaScript 30–41：`30-closure` 闭包、`31-prototype` 原型、`32-class`、`33-modules` 模块、`34-generator` 迭代器与生成器、`35-map-set`、`36-destructure` 解构与展开、`37-regex` 正则、`38-event-loop` 微任务、`39-ts-generic` 泛型、`40-ts-utility` 工具类型、`41-todo` 待办列表。
+- Java 28–39：`28-generic` 泛型、`29-collections` 集合、`30-iterator`、`31-lambda`、`32-stream`、`33-optional`、`34-record` record 与 sealed、`35-inner` 内部类、`36-thread` 线程、`37-concurrent` 并发工具、`38-nio` 文件与内存缓冲、`39-grades` 成绩小项目。

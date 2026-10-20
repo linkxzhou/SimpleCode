@@ -47,7 +47,7 @@ The next line only prints the class name.
 
 ### This is not a full JDK
 
-os.name on this class library is TeaVM. Printing, collections, and a short pause work. Disk files and reflection wait in the last chapter as reading-only notes.
+os.name on this class library is TeaVM. Printing, collections, and a short pause work. Disk files and reflection stay in chapter 27 as reading-only notes.
 
 ```java run expect="TeaVM" title="Runtime name"
 public class Main {
@@ -59,3 +59,7 @@ public class Main {
 ```
 
 Confirm the runtime name first.
+
+### After chapter 27
+
+Generics, collections, Iterator, lambdas, Stream, Optional, records, inner classes, threads, and AtomicInteger are written for this TeaVM build. CountDownLatch and disk files remain reading-only. Chapter 39 tallies grades in a list.
