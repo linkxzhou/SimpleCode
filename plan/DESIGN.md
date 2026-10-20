@@ -686,3 +686,21 @@ npm test                # vitest；npm run test:e2e → playwright
 
 - 代码、字符串里的汉字仍是 14px，CJK 回退仍是 `SimpleCode CJK` 的 `size-adjust: 120%`。注释 span 字号变成 13px 之后，同一套回退让汉字大约 15.6px 宽（代码里大约 16.8px）。
 - 文档抽屉的 Shiki 块不走这套类名。
+
+---
+
+## 22. 关于弹层里的 GitHub 仓库（2026-10-20）
+
+关于弹层在功能列表下面加一条仓库链接，地址固定为 `https://github.com/linkxzhou/SimpleCode`。
+
+### 22.1 链接
+
+- 元素是 `<a>`，`data-testid="about-repo"`。`target="_blank"`，`rel="noopener noreferrer"`。
+- 地址写在组件里的英文常量 `repoUrl`。文案不进 URL，避免两种语言各写一份地址。
+- 图标用 lucide-vue-next 的 `Github`，`size-4`，`aria-hidden="true"`。旁边的文字走 `t("aboutRepo")`。
+- 中文是「GitHub 仓库」，英文是 “GitHub repository”。键同时加进 `zh` 和 `en`。
+- 样式只用弹层已有的中性 token：`border-border`、`text-foreground`、`hover:bg-accent`、`focus-visible:ring-ring`。浅色和深色都跟 `bg-background` 走，不另加彩色。
+
+### 22.2 测试
+
+`tests/i18n-unit.test.ts` 断言两种 `aboutRepo` 文案，并在 `AboutDialog.vue` 源码里找到地址、`target`、`rel`、testid 和 `Github`。`tests/ui-chrome.spec.mjs` 在中文和英文弹层里读到同一条链接的 `href`、`target` 和 `rel`。
