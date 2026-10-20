@@ -30,7 +30,12 @@ export const zh = {
 
   aboutTitle: "关于 SimpleCode",
   aboutLead: "SimpleCode 是浏览器里的多语言练习场。代码在这台电脑上运行，不会上传。",
-  aboutLanguages: "十三种语言：Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell、Rust、Java、Linux。",
+  aboutLanguages: "十四种语言：Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell、Rust、Java、Linux，以及深度学习（Python / NumPy，Pyodide）。",
+  langNumpy: "深度学习",
+  bookNumpy: "NumPy",
+  bookDl: "深度学习",
+  pyodideMissing: "找不到 {file}。请运行 ./build.sh vendor --pyodide。若页面来自 dist，还要再运行 ./build.sh build，然后刷新。",
+  pyodideWorker: "Pyodide worker 未就绪",
   aboutWasm: "运行时是 WebAssembly，第一次使用才下载，然后放进 Cache API，下次打开不用重下。",
   aboutEditor: "编辑器是 Monaco。",
   aboutTerminal: "终端用来看输出，也可以输入。",
@@ -245,7 +250,13 @@ export const en: { [K in MessageKey]: string } = {
 
   aboutTitle: "About SimpleCode",
   aboutLead: "SimpleCode is an in-browser playground for several languages. Your code runs on this computer and is not uploaded.",
-  aboutLanguages: "Thirteen languages: Python, Ruby, JS/TS, SQLite, C, C++, PHP, Lua, Go, Shell, Rust, Java, and Linux.",
+  aboutLanguages:
+    "Fourteen languages: Python, Ruby, JS/TS, SQLite, C, C++, PHP, Lua, Go, Shell, Rust, Java, Linux, and Deep Learning (Python / NumPy, Pyodide).",
+  langNumpy: "Deep Learning",
+  bookNumpy: "NumPy",
+  bookDl: "Deep Learning",
+  pyodideMissing: "{file} was not found. Run ./build.sh vendor --pyodide. If this page is served from dist, run ./build.sh build and reload.",
+  pyodideWorker: "The Pyodide worker is not ready",
   aboutWasm: "Runtimes are WebAssembly files. They download the first time you use a language, then stay in the Cache API.",
   aboutEditor: "The editor is Monaco.",
   aboutTerminal: "A terminal shows output and accepts input.",

@@ -31,8 +31,8 @@ export interface LanguageSpec {
   fileName: string;
   license?: string;
   homepage?: string;
-  /** External compiler. `weblings` compiles then runs via WASI. `teavm` compiles and runs in its own worker. */
-  compiler?: "weblings" | "teavm";
+  /** External compiler. `weblings` compiles then runs via WASI. `teavm` compiles and runs in its own worker. `pyodide` runs CPython plus NumPy in its own worker. */
+  compiler?: "weblings" | "teavm" | "pyodide";
   prepare?: CommandSpec[];
   run: CommandSpec;
   autoEOF?: boolean;

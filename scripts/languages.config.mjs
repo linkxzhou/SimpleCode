@@ -24,6 +24,16 @@ export const assets = {
   "linux-vgabios": { file: "vgabios.bin", build: "linux", kind: "bin" },
   "linux-bzimage": { file: "linux-bzimage.bin", build: "linux", kind: "bin" },
   "linux-state": { file: "linux-state.zst", build: "linux", kind: "bin" },
+  // Pyodide 314 + NumPy. Same-origin files under wasm/pyodide/. Not a WASI module.
+  // `./build.sh vendor --pyodide` downloads the pin; the runtime prebuilt archive
+  // is the fallback when that download cannot run.
+  "pyodide-mjs": { file: "pyodide/pyodide.mjs", kind: "bin", download: "pyodide" },
+  "pyodide-asm-mjs": { file: "pyodide/pyodide.asm.mjs", kind: "bin", download: "pyodide" },
+  "pyodide-wasm": { file: "pyodide/pyodide.asm.wasm", kind: "bin", download: "pyodide" },
+  "pyodide-stdlib": { file: "pyodide/python_stdlib.zip", kind: "bin", download: "pyodide" },
+  "pyodide-lock": { file: "pyodide/pyodide-lock.json", kind: "bin", download: "pyodide" },
+  "pyodide-numpy": { file: "pyodide/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl", kind: "bin", download: "pyodide" },
+  "pyodide-fashion": { file: "pyodide/fashion-mnist.bin", kind: "bin", download: "pyodide" },
 };
 
 const clangLink = (extra) => ({
@@ -138,5 +148,27 @@ export const languages = [
     assets: ["v86-wasm", "v86-lib", "linux-bios", "linux-vgabios", "linux-bzimage", "linux-state"],
     // Not a WASI command. RunSession dispatches on runtime === "v86".
     run: { binaryName: "sh", args: [] },
+  },
+  {
+    id: "numpy",
+    label: "Deep Learning",
+    short: "DL",
+    version: "Python (NumPy)",
+    syntax: "python",
+    fileName: "main.py",
+    license: "MPL-2.0",
+    homepage: "https://pyodide.org/",
+    compiler: "pyodide",
+    assets: [
+      "pyodide-mjs",
+      "pyodide-asm-mjs",
+      "pyodide-wasm",
+      "pyodide-stdlib",
+      "pyodide-lock",
+      "pyodide-numpy",
+      "pyodide-fashion",
+    ],
+    // CPython 3.14 plus NumPy, in a worker. Not the WASI CPython used by Python.
+    run: { binaryName: "python", args: [] },
   },
 ];

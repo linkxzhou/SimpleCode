@@ -8,9 +8,14 @@
     "runtime": {
       "archives": [
         {
-          "name": "wasm-vendor-1.tar.gz",
-          "bytes": 84413866,
-          "sha256": "4024e28617936b3a6eb2acd917d19e89903a73f62025a8d557c351b5f6781a62"
+          "name": "wasm-vendor-1.tar.gz.part-00",
+          "bytes": 90000000,
+          "sha256": "d065d0d9b5287f562acc3875fd4bc15f96722d1033f803333fc9d1aefaa238b8"
+        },
+        {
+          "name": "wasm-vendor-1.tar.gz.part-01",
+          "bytes": 6353466,
+          "sha256": "e62203c2a9db6346d5b9dada9e6ba0350e0d1146d620930eb35aafb392176cd1"
         }
       ],
       "files": [
@@ -48,6 +53,41 @@
           "path": "php-cgi-8.2.0.wasm",
           "bytes": 13128903,
           "sha256": "68c96239a9b8095f21dd80af1714e5f270e4e08ef516821d90290da72d829a0e"
+        },
+        {
+          "path": "pyodide/fashion-mnist.bin",
+          "bytes": 4710012,
+          "sha256": "84e3d972cfd3c3dcd7d72e58055e5084366d32d6acf3482d635be2f63e5001de"
+        },
+        {
+          "path": "pyodide/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+          "bytes": 2960568,
+          "sha256": "a292c1f5d7d8a2208cd5e94fc467604c131cabcd2fc14fed6eefde121e7fabdf"
+        },
+        {
+          "path": "pyodide/pyodide-lock.json",
+          "bytes": 119077,
+          "sha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+        },
+        {
+          "path": "pyodide/pyodide.asm.mjs",
+          "bytes": 1250344,
+          "sha256": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635"
+        },
+        {
+          "path": "pyodide/pyodide.asm.wasm",
+          "bytes": 9598218,
+          "sha256": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6"
+        },
+        {
+          "path": "pyodide/pyodide.mjs",
+          "bytes": 17883,
+          "sha256": "76929920a035086b8610a87940da26a46f7b6d216bc95c83f6b9f6be1cf4fed8"
+        },
+        {
+          "path": "pyodide/python_stdlib.zip",
+          "bytes": 2545637,
+          "sha256": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a"
         },
         {
           "path": "python-3.11.3.tar.gz",

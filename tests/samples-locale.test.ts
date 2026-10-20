@@ -18,6 +18,7 @@ const LANG: Record<string, string> = {
   java: "java",
   shell: "sh",
   linux: "linux",
+  numpy: "numpy",
 };
 
 const NON_ASCII = /[^\x00-\x7F]/;

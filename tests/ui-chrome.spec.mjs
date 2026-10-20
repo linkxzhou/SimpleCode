@@ -67,7 +67,7 @@ try {
   await openAbout(page);
   const en = await page.getByTestId("about-dialog").innerText();
   check(
-    en.includes("Thirteen languages") && en.includes("Linux") && en.includes("Rust") && en.includes("Java") && en.includes("Monaco") && en.includes("Quick Start"),
+    en.includes("Fourteen languages") && en.includes("Deep Learning") && en.includes("Linux") && en.includes("Rust") && en.includes("Java") && en.includes("Monaco") && en.includes("Quick Start"),
     "about dialog in English",
   );
   await page.keyboard.press("Escape");

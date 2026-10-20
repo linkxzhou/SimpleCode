@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { formatMB, type LanguageSpec } from "@/core/manifest";
 import type { LangState } from "@/stores/language";
 import LanguageIcon from "./LanguageIcon.vue";
-import { t } from "@/i18n";
+import { runtimeName, t } from "@/i18n";
 
 const props = defineProps<{ lang: LanguageSpec; state?: LangState; size: number; selected: boolean; collapsed: boolean }>();
 defineEmits<{ select: [] }>();
@@ -15,16 +15,17 @@ defineEmits<{ select: [] }>();
 const status = computed(() => props.state?.status ?? "idle");
 const pct = computed(() => (props.state?.total ? Math.round((props.state.loaded / props.state.total) * 100) : 0));
 const sizeLabel = computed(() => formatMB(props.size).replace(".0", ""));
+const label = computed(() => runtimeName(props.lang.id, props.lang.label));
 const tip = computed(() => {
   const s = props.state;
-  const label = props.lang.label;
-  if (status.value === "downloading" && s?.detail === "boot") return t("bootingDetail", { label });
+  const shown = props.lang.id === "numpy" && props.lang.version ? `${label.value} · ${props.lang.version}` : label.value;
+  if (status.value === "downloading" && s?.detail === "boot") return t("bootingDetail", { label: shown });
   if (status.value === "downloading" && s) {
-    return t("downloadingDetail", { label, pct: pct.value, loaded: formatMB(s.loaded), total: formatMB(s.total) });
+    return t("downloadingDetail", { label: shown, pct: pct.value, loaded: formatMB(s.loaded), total: formatMB(s.total) });
   }
-  if (status.value === "error") return t("errorDetail", { label, error: s?.error ?? t("downloadFailed") });
-  if (status.value === "idle") return t("idleDetail", { label, size: formatMB(props.size) });
-  return t("cachedDetail", { label, version: props.lang.version ?? "" });
+  if (status.value === "error") return t("errorDetail", { label: shown, error: s?.error ?? t("downloadFailed") });
+  if (status.value === "idle") return t("idleDetail", { label: shown, size: formatMB(props.size) });
+  return t("cachedDetail", { label: label.value, version: props.lang.version ?? "" });
 });
 </script>
 
@@ -35,7 +36,7 @@ const tip = computed(() => {
         type="button"
         :data-testid="`lang-${lang.id}`"
         :data-status="status"
-        :aria-label="lang.label"
+        :aria-label="label"
         :aria-current="selected ? 'true' : undefined"
         :class="
           cn(
@@ -48,7 +49,9 @@ const tip = computed(() => {
       >
         <LanguageIcon :short="lang.short" :status="status" :selected="selected" :progress="pct" />
         <template v-if="!collapsed">
-          <span class="sidebar-expanded-only min-w-0 flex-1 truncate">{{ lang.label }}</span>
+          <span class="sidebar-expanded-only min-w-0 flex-1 truncate">
+            {{ label }}<span v-if="lang.id === 'numpy'" class="font-normal text-muted-foreground"> · {{ lang.version }}</span>
+          </span>
           <span
             v-if="status === 'downloading'"
             class="sidebar-expanded-only flex shrink-0 items-center gap-1 text-xs tabular-nums text-muted-foreground"

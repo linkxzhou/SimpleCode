@@ -183,5 +183,90 @@
         "sha256": "e7bbe07e96f0bd3df04225090fe1e7852ed33af37c43a23e16edbbb3b90a5b7c"
       }
     }
+  },
+  "pyodide": {
+    "note": "Pyodide 314.0.7 and NumPy 2.4.6. The browser loads only wasm/pyodide/. vendor --pyodide downloads the pins. pyodide.mjs is rewritten to drop the jsDelivr default before it is saved; upstreamSha256 is the file before that rewrite. Fashion-MNIST subset is the first 5000 train rows and 1000 test rows, MIT, Zalando Research.",
+    "version": "314.0.7",
+    "numpy": "2.4.6",
+    "python": "3.14.2",
+    "files": {
+      "pyodide.mjs": {
+        "bytes": 17883,
+        "sha256": "76929920a035086b8610a87940da26a46f7b6d216bc95c83f6b9f6be1cf4fed8",
+        "upstream": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.mjs",
+        "upstreamBytes": 17931,
+        "upstreamSha256": "6f1d60f7bf529beb300f0f47983c921d3982363640ba20af0e38efdddbc66109",
+        "stripCdn": true
+      },
+      "pyodide.asm.mjs": {
+        "bytes": 1250344,
+        "sha256": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635",
+        "upstream": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.mjs",
+        "upstreamBytes": 1250344,
+        "upstreamSha256": "f7cdc8ece80678ceb712f8e65ebe6d3a83203a180c399865f49612a051693635"
+      },
+      "pyodide.asm.wasm": {
+        "bytes": 9598218,
+        "sha256": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6",
+        "upstream": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide.asm.wasm",
+        "upstreamBytes": 9598218,
+        "upstreamSha256": "cc36e3cab04fdfc9a63ff13eb52eae2b911bf46c025cc7b281f394bd3de1d5e6"
+      },
+      "python_stdlib.zip": {
+        "bytes": 2545637,
+        "sha256": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a",
+        "upstream": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/python_stdlib.zip",
+        "upstreamBytes": 2545637,
+        "upstreamSha256": "fa1957e5777068fc4f7437f96d860ae2fbe9c19732ba06c84e004ec16dd7dd7a"
+      },
+      "pyodide-lock.json": {
+        "bytes": 119077,
+        "sha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010",
+        "upstream": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/pyodide-lock.json",
+        "upstreamBytes": 119077,
+        "upstreamSha256": "5dc2fc119108bc148c7457dc86e7675b5c87e1cafd420b9c34c1eaef7b36c010"
+      },
+      "numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl": {
+        "bytes": 2960568,
+        "sha256": "a292c1f5d7d8a2208cd5e94fc467604c131cabcd2fc14fed6eefde121e7fabdf",
+        "upstream": "https://cdn.jsdelivr.net/pyodide/v314.0.7/full/numpy-2.4.6-cp314-cp314-pyemscripten_2026_0_wasm32.whl",
+        "upstreamBytes": 2960568,
+        "upstreamSha256": "a292c1f5d7d8a2208cd5e94fc467604c131cabcd2fc14fed6eefde121e7fabdf"
+      },
+      "fashion-mnist.bin": {
+        "bytes": 4710012,
+        "sha256": "84e3d972cfd3c3dcd7d72e58055e5084366d32d6acf3482d635be2f63e5001de",
+        "fashion": {
+          "train": 5000,
+          "test": 1000,
+          "sources": [
+            {
+              "name": "train-images-idx3-ubyte.gz",
+              "bytes": 26421880,
+              "sha256": "3aede38d61863908ad78613f6a32ed271626dd12800ba2636569512369268a84",
+              "url": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-images-idx3-ubyte.gz"
+            },
+            {
+              "name": "train-labels-idx1-ubyte.gz",
+              "bytes": 29515,
+              "sha256": "a04f17134ac03560a47e3764e11b92fc97de4d1bfaf8ba1a3aa29af54cc90845",
+              "url": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/train-labels-idx1-ubyte.gz"
+            },
+            {
+              "name": "t10k-images-idx3-ubyte.gz",
+              "bytes": 4422102,
+              "sha256": "346e55b948d973a97e58d2351dde16a484bd415d4595297633bb08f03db6a073",
+              "url": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-images-idx3-ubyte.gz"
+            },
+            {
+              "name": "t10k-labels-idx1-ubyte.gz",
+              "bytes": 5148,
+              "sha256": "67da17c76eaffca5446c3361aaab5c3cd6d1c2608764d35dfb1850b086bf8dd5",
+              "url": "http://fashion-mnist.s3-website.eu-central-1.amazonaws.com/t10k-labels-idx1-ubyte.gz"
+            }
+          ]
+        }
+      }
+    }
   }
 }

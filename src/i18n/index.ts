@@ -37,6 +37,19 @@ function fill(template: string, vars?: Record<string, string | number>) {
   return out;
 }
 
+/** Sidebar name for the Pyodide entry. Other languages keep the manifest label. */
+export function runtimeName(id: string, fallback: string): string {
+  if (id === "numpy") return t("langNumpy");
+  return fallback;
+}
+
+/** Drawer title for a book. NumPy and Deep Learning follow the UI language. */
+export function bookName(id: string, fallback: string): string {
+  if (id === "numpy") return t("bookNumpy");
+  if (id === "dl") return t("bookDl");
+  return fallback;
+}
+
 /** Reads `locale` so Vue templates and computeds refresh after a toggle. */
 export function t(key: MessageKey, vars?: Record<string, string | number>): string {
   const pack = locale.value === "en" ? en : zh;

@@ -63,6 +63,11 @@ cmd_vendor() {
     node scripts/vendor-prebuilt.mjs run --java
     return
   fi
+  if [ "${1:-}" = "--pyodide" ]; then
+    info "Vendoring Pyodide, NumPy, and the Fashion-MNIST subset → wasm/pyodide/"
+    node scripts/vendor-prebuilt.mjs run --pyodide
+    return
+  fi
   info "Vendoring wasm binaries → wasm/"
   node scripts/vendor-prebuilt.mjs run "$@"
 }
@@ -116,7 +121,7 @@ cmd_test() {
     esac
   done
   info "Docs unit tests"
-  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/readme-assets.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/rust-no-remote.test.ts tests/wasm-static.test.mjs tests/comment-font.test.ts tests/leetcode-unit.test.ts tests/vendor-prebuilt.test.mjs
+  node --experimental-strip-types --test tests/docs-unit.test.ts tests/docs-length.test.ts tests/docs-ascii.test.ts tests/readme-assets.test.ts tests/samples-locale.test.ts tests/manifest-refresh.test.mjs tests/i18n-unit.test.ts tests/terminal-log.test.ts tests/coi-unit.test.ts tests/pinned-fetch.test.ts tests/rust-toolchain.test.ts tests/rust-no-remote.test.ts tests/pyodide-no-remote.test.ts tests/minitorch.test.mjs tests/wasm-static.test.mjs tests/comment-font.test.ts tests/leetcode-unit.test.ts tests/vendor-prebuilt.test.mjs
   info "Monochrome check"
   node scripts/check-mono.mjs
   if [ "$docs_only" = 1 ]; then
@@ -140,6 +145,7 @@ cmd_test() {
   node tests/leetcode-smoke.mjs
   node tests/learn.spec.mjs
   node tests/ui-chrome.spec.mjs
+  node tests/numpy-ui.spec.mjs
   node tests/terminal-switch.spec.mjs
 }
 
@@ -167,7 +173,7 @@ ${c_bold}SimpleCode build helper${c_off}
 Usage: ./build.sh <command> [args]
 
   install            Install dependencies with yarn
-  vendor [--link|--rust|--java|--pack]
+  vendor [--link|--rust|--java|--pyodide|--pack]
                      Copy wasm runtimes from thirdparty/runno/langs into wasm/,
                      build Lua, Go, and Shell, download the Linux guest, and
                      write wasm/manifest.json (--link: symlink Runno files,
@@ -180,6 +186,9 @@ Usage: ./build.sh <command> [args]
                      Rust is not part of the prebuilt archives or the default manifest.
                      --java downloads the pinned TeaVM files into wasm/java/.
                      If the download fails, the java archive in vendor/prebuilt is extracted.
+                     --pyodide downloads Pyodide 314, the NumPy wheel, and a Fashion-MNIST
+                     subset into wasm/pyodide/. Those files are in the runtime manifest.
+                     If the download fails, the runtime archive in vendor/prebuilt is extracted.
                      manifest.json is generated and not committed.
   dev                Start the Vite dev server (http://localhost:5173)
   build              Type-check and build production bundle into dist/ (incl. dist/wasm)

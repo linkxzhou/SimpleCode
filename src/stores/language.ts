@@ -5,6 +5,8 @@ import { LinuxKilled, attachLinuxConsole, linuxMachine } from "@/core/linux";
 import { cancelRustCompile } from "@/rustc/compile";
 import { clearRustCache, ensureRustToolchain, rustCacheBytes, rustDownloadBytes, rustIsCached, rustReady } from "@/rustc/toolchain";
 import { cancelJavaRun } from "@/teavm/run";
+import { cancelPyodide } from "@/pyodide/run";
+import { runtimeName } from "@/i18n";
 import { clearJavaCache, ensureJavaToolchain, javaCacheBytes, javaDownloadBytes, javaIsCached, javaReady } from "@/teavm/toolchain";
 import { cacheUsage, clearCache as clearWasmCache, ensureAsset, getLoaded, isCached, pruneCache } from "@/core/wasmLoader";
 import { terminal } from "@/core/terminal";
@@ -113,6 +115,7 @@ export const useLanguageStore = defineStore("language", () => {
     useRunStore().abandon();
     cancelRustCompile();
     cancelJavaRun();
+    cancelPyodide();
     for (const [cid, ctrl] of [...controllers]) {
       invalidate(cid);
       ctrl.abort();
@@ -165,6 +168,7 @@ export const useLanguageStore = defineStore("language", () => {
     if (!states[id]) states[id] = { status: "idle", loaded: 0, total: sizeOf(lang) };
     const st = states[id];
     if (st.status === "ready") return true;
+    const label = runtimeName(lang.id, lang.label);
     const note = (key: MessageKey, vars?: Record<string, string | number>, color = "2") => {
       if (live(id, token)) terminal.system(key, vars, color);
     };
@@ -179,7 +183,7 @@ export const useLanguageStore = defineStore("language", () => {
       st.loaded = 0;
       const ctrl = new AbortController();
       controllers.set(id, ctrl);
-      if (fromNetwork) note("downloadingToolchain", { label: lang.label, size: formatMB(st.total) });
+      if (fromNetwork) note("downloadingToolchain", { label, size: formatMB(st.total) });
       try {
         await ensure((loaded, total) => {
           if (!live(id, token)) return;
@@ -189,7 +193,7 @@ export const useLanguageStore = defineStore("language", () => {
         if (!live(id, token)) return false;
         st.status = "ready";
         st.loaded = st.total;
-        if (fromNetwork) note("readyCached", { label: lang.label }, "32");
+        if (fromNetwork) note("readyCached", { label }, "32");
         await refreshStatuses();
         void refreshUsage();
         return true;
@@ -200,7 +204,7 @@ export const useLanguageStore = defineStore("language", () => {
         st.error = aborted ? undefined : (e as Error).message;
         note(
           aborted ? "canceledDownload" : "downloadFailedLabel",
-          aborted ? { label: lang.label } : { label: lang.label, error: (e as Error).message },
+          aborted ? { label } : { label, error: (e as Error).message },
           aborted ? "2" : "31",
         );
         return false;
@@ -218,7 +222,7 @@ export const useLanguageStore = defineStore("language", () => {
     st.loaded = 0;
     const ctrl = new AbortController();
     controllers.set(id, ctrl);
-    if (fromNetwork) note("downloadingRuntime", { label: lang.label, size: formatMB(st.total) });
+    if (fromNetwork) note("downloadingRuntime", { label, size: formatMB(st.total) });
     try {
       await Promise.all(
         ids.map((assetId) =>
@@ -250,7 +254,7 @@ export const useLanguageStore = defineStore("language", () => {
       st.detail = undefined;
       st.status = "ready";
       st.loaded = st.total;
-      if (fromNetwork && lang.runtime !== "v86") note("readyCached", { label: lang.label }, "32");
+      if (fromNetwork && lang.runtime !== "v86") note("readyCached", { label }, "32");
       await refreshStatuses();
       void refreshUsage();
       return true;
@@ -269,7 +273,7 @@ export const useLanguageStore = defineStore("language", () => {
       st.error = aborted ? undefined : (e as Error).message;
       note(
         aborted ? (booting ? "canceledBoot" : "canceledDownload") : booting ? "failedBoot" : "downloadFailedLabel",
-        aborted ? { label: lang.label } : { label: lang.label, error: (e as Error).message },
+        aborted ? { label } : { label, error: (e as Error).message },
         aborted ? "2" : "31",
       );
       return false;
