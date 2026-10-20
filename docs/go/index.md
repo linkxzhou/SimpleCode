@@ -66,3 +66,6 @@ func main() {
 ```
 
 输出是 `3`。
+### 第 29 章以后
+
+select、WaitGroup、可取消的 context、工人池、手写检查、反射、字符串排序和词频接在模块这一章后面。time.Sleep、time.After 和 WithTimeout 仍然不能运行，go test 也不会启动。

@@ -213,3 +213,24 @@
 - C 25–34：`25-bits` 位运算、`26-array2d` 多维数组、`27-fnptr` 函数指针、`28-list` 链表、`29-stackq` 栈与队列、`30-stdarg` 可变参数、`31-qsort`、`32-ub` 未定义行为、`33-c11`、`34-calc` 小计算器。
 - C++ 39–50：`39-auto`、`40-lambda`、`41-unique`、`42-raii`、`43-move`、`44-algo`、`45-map`、`46-view` string_view、`47-constexpr`、`48-tmpl`、`49-safety`、`50-stock` 库存。
 - SQLite 26–34：`26-cte`、`27-recur`、`28-window`、`29-upsert`、`30-json`、`31-trigger`、`32-explain`、`33-normal`、`34-library`。
+
+## 8. P3 落地
+
+2026-10-20。Go、Rust、NumPy、深度学习的进阶章接在原编号后面。中英同名文件。`renderDocs` 是 `docs: 962 chapters, 2934 runnable blocks`。这一支基于尚未合并的 P2 分支 `cursor/tutorial-p2-cpp-c-sqlite-2e22`。
+
+`adapt: true`：已有的 `gobyexample`、`learn-go-tests`，以及新登记的 `rust-book`（MIT OR Apache-2.0）、`rust-by-example`（Apache-2.0）、`numpy-100`（MIT）、`micrograd`（MIT）、`nn-zero-to-hero`（MIT）、`d2l-zh`（Apache-2.0）。示例按练习场重写，没有摘录这些仓库的段落。
+
+`adapt: false`，只出现在延伸阅读链接里：`gopl`、`effective-go`、`rust-programming`、`rust-course`、`py-data-handbook`、`dl-flower`。
+
+运行时边界（Go 的可运行块在页面里试过）：
+
+- Go 是 Yaegi。带缓冲通道、`select` 的 `default`、`WaitGroup`、`context.WithCancel`、`reflect`、`sort`、`strings` 可以跑。`time.Sleep`、`time.After`、`context.WithTimeout` 停在 `poll_oneoff` 上，标 `norun`。没有 `go test`。
+- Rust 仍是单个 `main.rs`。trait、`dyn`、迭代器、`Box`、`Rc`、`RefCell`、`?`、声明宏和有限的 `unsafe` 按这个编译器来写。过程宏、`cargo test` 和空指针解引用标 `norun`。`docs-smoke` 要 `SIMPLECODE_RUST_DOCS=1`。
+- NumPy 与深度学习走 Pyodide。丢弃掩码写死。minitorch 没有 `tanh`，循环单元的非线性用 NumPy。
+
+新章：
+
+- Go 29–36：`29-select`、`30-wait`、`31-context`、`32-pool`、`33-check`、`34-reflect`、`35-text`、`36-freq`。
+- Rust 28–37：`28-trait`、`29-dyn`、`30-iter`、`31-cell`、`32-result`、`33-match`、`34-macro`、`35-assert`、`36-unsafe`、`37-flags`。
+- NumPy 11–16：`11-ufunc`、`12-fancy`、`13-search`、`14-einsum`、`15-struct`、`16-speed`。
+- 深度学习 11–15：`11-dropout`、`12-batchnorm`、`13-rnn`、`14-attn`、`15-train`。
