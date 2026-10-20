@@ -3,7 +3,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
 import { codeOutsideComments, isProgrammingLang, splitCode } from "../src/docs/code-text.ts";
 
-const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "java", "linux"];
+const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "java", "linux", "numpy", "dl"];
 const NON_ASCII = /[^\x00-\x7F]/;
 
 function chapters(root: string) {

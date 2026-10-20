@@ -1,4 +1,4 @@
-export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "rust" | "java" | "linux";
+export type RuntimeId = "python" | "ruby" | "quickjs" | "sqlite" | "clang" | "clangpp" | "php-cgi" | "lua" | "go" | "shell" | "rust" | "java" | "linux" | "numpy";
 
 export type DocLang =
   | "python"
@@ -23,7 +23,9 @@ export type DocLang =
   | "rust"
   | "rs"
   | "java"
-  | "linux";
+  | "linux"
+  | "numpy"
+  | "np";
 
 export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   python: "python",
@@ -49,13 +51,15 @@ export const DOC_LANG_TO_RUNTIME: Record<DocLang, RuntimeId> = {
   rs: "rust",
   java: "java",
   linux: "linux",
+  numpy: "numpy",
+  np: "numpy",
 };
 
-export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "java", "linux"] as const;
+export const BOOKS = ["python", "ruby", "js", "sqlite", "c", "cpp", "php", "lua", "go", "shell", "rust", "java", "linux", "numpy", "dl"] as const;
 export type BookId = (typeof BOOKS)[number];
 
 /** Books with a full curriculum in this release. Other ids stay in the map and show “即将推出”. */
-export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "rust", "java", "linux"] as const;
+export const SHIPPED_BOOKS = ["python", "js", "go", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "rust", "java", "linux", "numpy", "dl"] as const;
 
 export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   python: "python",
@@ -71,6 +75,7 @@ export const RUNTIME_TO_BOOK: Record<RuntimeId, BookId> = {
   rust: "rust",
   java: "java",
   linux: "linux",
+  numpy: "dl",
 };
 
 export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
@@ -87,6 +92,13 @@ export const BOOK_TO_RUNTIME: Record<BookId, RuntimeId> = {
   rust: "rust",
   java: "java",
   linux: "linux",
+  numpy: "numpy",
+  dl: "numpy",
+};
+
+/** The Pyodide runtime hosts two Quick Starts. The sidebar opens the deep learning book. */
+export const RUNTIME_BOOKS: Partial<Record<RuntimeId, readonly BookId[]>> = {
+  numpy: ["dl", "numpy"],
 };
 
 export const BOOK_LABEL: Record<BookId, string> = {
@@ -103,6 +115,8 @@ export const BOOK_LABEL: Record<BookId, string> = {
   rust: "Rust",
   java: "Java",
   linux: "Linux",
+  numpy: "NumPy",
+  dl: "DeepLearning",
 };
 
 export const LEVEL_LABEL = {
@@ -125,6 +139,7 @@ const RUNTIME_LABEL: Record<RuntimeId, string> = {
   rust: "Rust",
   java: "Java",
   linux: "Linux",
+  numpy: "Python (NumPy)",
 };
 
 export function resolveRuntime(lang: string): RuntimeId | undefined {

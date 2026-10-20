@@ -4,6 +4,7 @@ import { WASIWorkerHost, WASIWorkerHostKilledError, type WASIFS } from "@runno/w
 import { LinuxKilled, linuxMachine } from "./linux";
 import { cancelRustCompile, compileRust } from "@/rustc/compile";
 import { cancelJavaRun, pushJavaEOF, pushJavaStdin, runJava } from "@/teavm/run";
+import { cancelPyodide, pushPyodideEOF, pushPyodideStdin, runPyodide } from "@/pyodide/run";
 import type { CommandSpec, LanguageSpec } from "./manifest";
 import { getLoaded } from "./wasmLoader";
 import { t } from "@/i18n";
@@ -55,6 +56,10 @@ export class RunSession {
       pushJavaStdin(data);
       return;
     }
+    if (this.lang.compiler === "pyodide") {
+      pushPyodideStdin(data);
+      return;
+    }
     if (!this.host) return;
     // WASIWorkerHost uses an 8KB SharedArrayBuffer; push in small chunks
     const enc = new TextEncoder();
@@ -74,6 +79,10 @@ export class RunSession {
       pushJavaEOF();
       return;
     }
+    if (this.lang.compiler === "pyodide") {
+      pushPyodideEOF();
+      return;
+    }
     await this.host?.pushEOF();
   }
 
@@ -81,6 +90,7 @@ export class RunSession {
     this.killed = true;
     cancelRustCompile();
     cancelJavaRun();
+    if (this.lang.compiler === "pyodide") cancelPyodide();
     if (this.lang.runtime === "v86") {
       linuxMachine.shutdown();
       return;
@@ -158,6 +168,7 @@ export class RunSession {
   async run(code: string): Promise<RunOutcome> {
     if (this.lang.runtime === "v86") return this.runV86(code);
     if (this.lang.compiler === "teavm") return this.runTeaVM(code);
+    if (this.lang.compiler === "pyodide") return this.runPyodide(code);
     let fs: WASIFS = {
       [ENTRY]: {
         path: "program",
@@ -200,6 +211,31 @@ export class RunSession {
         message: err?.message ?? String(e),
         errorType: err?.type ?? (e instanceof Error ? e.constructor.name : "Error"),
       };
+    }
+  }
+
+  private async runPyodide(code: string): Promise<RunOutcome> {
+    this.cb.phase("compile");
+    try {
+      const exitCode = await runPyodide(code, {
+        stdin: this.opts.stdin,
+        stdinEOF: this.opts.stdin !== undefined && this.opts.stdinEOF !== false,
+        stdout: (text) => {
+          if (!this.killed) this.cb.stdout(text);
+        },
+        stderr: (text) => {
+          if (!this.killed) this.cb.stderr(text);
+        },
+        onRunning: () => {
+          if (!this.killed) this.cb.phase("run");
+        },
+      });
+      if (this.killed) return { type: "terminated" };
+      return { type: "complete", exitCode, phase: "run" };
+    } catch (e) {
+      if (this.killed || (e as Error).name === "AbortError") return { type: "terminated" };
+      const err = e as Error;
+      return { type: "crash", message: err.message ?? String(e), errorType: err.name || "Error" };
     }
   }
 

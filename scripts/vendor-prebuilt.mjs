@@ -26,7 +26,7 @@ import { refreshManifest } from "./write-manifest.mjs";
 export const PREBUILT_VERSION = 1;
 // Stay under GitHub's 100 MB file limit and the ~90 MB target. Decimal MB,
 // so an 84 MB gzip stays one file and a larger one splits before 90 MB.
-export const PART_BYTES = 90 * 1000 * 1000;
+export const PART_BYTES = 89 * 1000 * 1000;
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -411,13 +411,16 @@ function verifyDefault() {
 
 function runDefault(argv) {
   const java = argv.includes("--java");
-  const label = java ? "./build.sh vendor --java" : "./build.sh vendor";
-  const forward = argv.filter((arg) => arg !== "--java" && arg !== "--");
+  const pyodide = argv.includes("--pyodide");
+  if (java && pyodide) fail("pass only one of --java and --pyodide");
+  const label = java ? "./build.sh vendor --java" : pyodide ? "./build.sh vendor --pyodide" : "./build.sh vendor";
+  const script = java ? "scripts/vendor-java.mjs" : pyodide ? "scripts/vendor-pyodide.mjs" : "scripts/vendor-wasm.mjs";
+  const forward = argv.filter((arg) => arg !== "--java" && arg !== "--pyodide" && arg !== "--");
   const force = process.env.SIMPLECODE_VENDOR_FORCE_FAIL === "1" ? "SIMPLECODE_VENDOR_FORCE_FAIL=1" : "";
   runVendor({
     label,
     force,
-    status: force ? 1 : childStatus(java ? "scripts/vendor-java.mjs" : "scripts/vendor-wasm.mjs", java ? [] : forward),
+    status: force ? 1 : childStatus(script, java || pyodide ? [] : forward),
     extract: () => extractDefault(java ? "java" : "runtime"),
   });
 }

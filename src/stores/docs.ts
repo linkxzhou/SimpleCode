@@ -4,8 +4,8 @@ import MiniSearch from "minisearch";
 import { books, booksEn, loadChapter, searchDocs, searchDocsEn } from "virtual:docs-index";
 import { chapterSlug, englishGap } from "@/docs/edition";
 import type { ChapterDoc } from "@/docs/types";
-import { BOOK_LABEL, isBookId, RUNTIME_TO_BOOK, type BookId } from "@/docs/runtime";
-import { locale, t } from "@/i18n";
+import { BOOK_LABEL, isBookId, RUNTIME_BOOKS, RUNTIME_TO_BOOK, type BookId, type RuntimeId } from "@/docs/runtime";
+import { bookName, locale, t } from "@/i18n";
 import { useLanguageStore } from "./language";
 
 const PROGRESS_KEY = "simplecode:learn:progress";
@@ -47,8 +47,9 @@ export const useDocsStore = defineStore("docs", () => {
   const pending = computed(() => (pendingId.value ? !bookIds.includes(pendingId.value) : false));
   const title = computed(() => {
     const id = bookId.value ?? pendingId.value;
-    return id ? t("quickStartNamed", { label: BOOK_LABEL[id] }) : t("quickStart");
+    return id ? t("quickStartNamed", { label: bookName(id, BOOK_LABEL[id]) }) : t("quickStart");
   });
+  const bookChoices = computed(() => RUNTIME_BOOKS[langs.selectedId as RuntimeId] ?? []);
   const current = computed(() => chapters.value.find((c) => c.id === chapterId.value));
   const gap = computed(() =>
     englishGap({
@@ -121,6 +122,12 @@ export const useDocsStore = defineStore("docs", () => {
     }
     pendingId.value = undefined;
     if (bookId.value !== id || view.value !== "chapter") goBook(id, preferChapter);
+  }
+
+  function chooseBook(id: BookId) {
+    if (!bookIds.includes(id)) return;
+    pendingId.value = undefined;
+    goBook(id, false);
   }
 
   function show() {
@@ -243,6 +250,8 @@ export const useDocsStore = defineStore("docs", () => {
     chapters,
     visibleChapters,
     title,
+    bookChoices,
+    chooseBook,
     current,
     cache,
     show,

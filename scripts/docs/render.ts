@@ -59,6 +59,8 @@ const CALLOUTS = ["tip", "note", "warning", "answer"] as const;
 const SHIKI_LANG: Record<string, string> = {
   python: "python",
   py: "python",
+  numpy: "python",
+  np: "python",
   ruby: "ruby",
   rb: "ruby",
   js: "javascript",

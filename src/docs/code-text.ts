@@ -9,7 +9,7 @@ type Style = "hash" | "ruby" | "shell" | "php" | "slash" | "sql" | "lua" | "none
 
 function styleOf(lang: string): Style {
   const key = lang.trim().toLowerCase();
-  if (key === "python" || key === "py") return "hash";
+  if (key === "python" || key === "py" || key === "numpy" || key === "np") return "hash";
   if (key === "ruby" || key === "rb") return "ruby";
   if (key === "sh" || key === "shell" || key === "bash" || key === "linux") return "shell";
   if (key === "php") return "php";

@@ -3,7 +3,7 @@ import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { describe, it } from "node:test";
 import { assets } from "../scripts/languages.config.mjs";
 import { fingerprint, manifestFromDir, refreshManifest } from "../scripts/write-manifest.mjs";
@@ -14,6 +14,7 @@ const GZIP = Buffer.from([0x1f, 0x8b, 0x08, 0x00]);
 function plant(dir, extra = 0) {
   mkdirSync(dir, { recursive: true });
   for (const spec of Object.values(assets)) {
+    mkdirSync(dirname(join(dir, spec.file)), { recursive: true });
     const head = spec.kind === "bin" ? Buffer.from([0x7f]) : spec.file.endsWith(".wasm") ? WASM : GZIP;
     const body = Buffer.alloc(extra + spec.file.length, spec.file.charCodeAt(0));
     writeFileSync(join(dir, spec.file), Buffer.concat([head, body]));

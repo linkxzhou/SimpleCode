@@ -1,6 +1,6 @@
 # LeetCode 题库数据
 
-这里不是第十四本快速入门。`scripts/docs/render.ts` 跳过 `leetcode/`，`BOOKS` 也不含它。十三本书的篇幅、ASCII 和 `docs-smoke` 不读这些 JSON。
+这里不是一本快速入门。`scripts/docs/render.ts` 跳过 `leetcode/`，`BOOKS` 也不含它。十五本快速入门的篇幅、ASCII 和 `docs-smoke` 不读这些 JSON。
 
 中文题名、摘要、样例和题解在本目录。英文题名、摘要和样例说明在 `docs/en/leetcode/`，文件名与题号相同。题解只有一份，不复制到英文目录。
 

@@ -13,6 +13,9 @@ const ABSOLUTE: string[] = [];
 /** plan/LEARN.md §19. Short tutorial sections, Runoob-style. The 2500-character essay rule is retired. */
 const TUTORIAL = ["go", "python", "js", "ruby", "sqlite", "c", "cpp", "php", "lua", "shell", "linux", "rust", "java"];
 
+/** NumPy and deep learning follow the same section rules, without the 20-chapter floor. */
+const PYODIDE = ["numpy", "dl"];
+
 function bodyOf(text: string) {
   const parts = text.split("---");
   assert.ok(parts.length >= 3, "frontmatter");
@@ -98,9 +101,9 @@ describe("chapter length", () => {
     }
   }
 
-  for (const book of TUTORIAL) {
+  for (const book of [...TUTORIAL, ...PYODIDE]) {
     const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md")).sort();
-    assert.ok(files.length >= 20, `${book} chapters ${files.length}`);
+    if (TUTORIAL.includes(book)) assert.ok(files.length >= 20, `${book} chapters ${files.length}`);
     for (const name of files) {
       const file = `${book}/${name}`;
       it(file, () => {
@@ -124,7 +127,7 @@ describe("chapter length", () => {
 
   it("chapters do not share a 60-character run", () => {
     const seen = new Map<string, string>();
-    for (const book of TUTORIAL) {
+    for (const book of [...TUTORIAL, ...PYODIDE]) {
       const files = readdirSync(`docs/${book}`).filter((name) => name.endsWith(".md"));
       for (const name of files) {
         const file = `${book}/${name}`;
@@ -141,7 +144,7 @@ describe("chapter length", () => {
 });
 
 describe("english chapters", () => {
-  for (const book of TUTORIAL) {
+  for (const book of [...TUTORIAL, ...PYODIDE]) {
     const dir = `docs/en/${book}`;
     if (!existsSync(dir)) continue;
     const files = readdirSync(dir).filter((name) => name.endsWith(".md")).sort();
@@ -172,7 +175,7 @@ describe("english chapters", () => {
 
   it("chapters do not share a 16-word run", () => {
     const seen = new Map<string, string>();
-    for (const book of TUTORIAL) {
+    for (const book of [...TUTORIAL, ...PYODIDE]) {
       const dir = `docs/en/${book}`;
       if (!existsSync(dir)) continue;
       for (const name of readdirSync(dir).filter((file) => file.endsWith(".md"))) {

@@ -34,4 +34,4 @@ doocs 的 `solution/*/README.md` 与 `README_EN.md` 不拷贝。`lcof/`、`lcof2
 
 本项目著作权归 GitHub 开源社区 Doocs 所有，商业转载请联系 @yanglbme 获得授权，非商业转载请注明出处。
 
-从 doocs 改编的文件保持 CC BY-SA 4.0，不能改标成 MIT。文件头包含许可证 URL、改编仍须使用 CC BY-SA 4.0，以及 `contact@yanglibin.info`。相同方式共享只覆盖这些题解文件，不覆盖界面、运行时和十三本书。
+从 doocs 改编的文件保持 CC BY-SA 4.0，不能改标成 MIT。文件头包含许可证 URL、改编仍须使用 CC BY-SA 4.0，以及 `contact@yanglibin.info`。相同方式共享只覆盖这些题解文件，不覆盖界面、运行时和十五本快速入门。

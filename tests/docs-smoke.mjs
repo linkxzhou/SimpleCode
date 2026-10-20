@@ -28,6 +28,8 @@ const BOOKS = [
   "lua",
   "shell",
   "linux",
+  "numpy",
+  "dl",
   ...(process.env.SIMPLECODE_RUST_DOCS === "1" ? ["rust"] : []),
   ...(process.env.SIMPLECODE_JAVA_DOCS === "1" ? ["java"] : []),
 ];

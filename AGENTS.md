@@ -6,7 +6,7 @@
 
 浏览器里的多语言练习场：左边选语言，中间 Monaco 编辑，下面 xterm 看输出，工具栏 Run 在本机执行。Python、Ruby、JS/TS、SQLite、C、C++、PHP、Lua、Go、Shell 的运行时是 WASI preview1 命令模块，由 `@runno/wasi` 的 `WASIWorkerHost` 在 Web Worker 里跑。标准输入走 `SharedArrayBuffer`，所以页面必须跨源隔离。Rust 的编译器是 weblings 的 Cranelift rustc，在另一个 Worker 里编译；编出来的 wasm 再交给同一个 `WASIWorkerHost`。Java 的编译和运行都在 TeaVM 自己的 Worker 里（Wasm GC），产物不交给 `WASIWorkerHost`。Linux 是 v86 客户机，跑在主线程，串口接到同一份 xterm。
 
-教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十三本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`，Java 的书在 `docs/java/`。细节见 `plan/LANGUAGES.md` §10、§11 和 §12，以及 `plan/LEARN.md` §20 和 §23。
+教学抽屉叫「{语言} 快速入门」。Markdown 在构建时预渲染。十五本书都已按菜鸟教程的短节写成，内部 id 不变。Linux 的书在 `docs/linux/`，Rust 的书在 `docs/rust/`，Java 的书在 `docs/java/`。NumPy 在 `docs/numpy/`，深度学习在 `docs/dl/`，两本都由侧栏 DeepLearning 打开（运行时 id `numpy`，Pyodide）。细节见 `plan/LANGUAGES.md` §10、§11 和 §12，`plan/DEEP_LEARNING.md`，以及 `plan/LEARN.md` §20 和 §23。
 
 ## 架构
 
@@ -84,10 +84,10 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 - 每章至少两个可运行块：info 里有 `run`，并有 `expect="子串"`。
 - `norun` 只供阅读，旁边写原因。`smoke=skip` 仍算结构测试里的可运行块，`docs-smoke` 不执行它（Python 的 `while True` 用了这个）。
 - 不要再写固定的「常见错误 / 最佳实践 / 小结 / 练习」四节。
-- 十三本书一起检查连续 60 个汉字不重复。
+- 十五本书一起检查连续 60 个汉字不重复。NumPy 和深度学习不套用「至少 20 章」那一档，但仍走同一套节长、可运行块和跨书去重。
 - 围栏属性见 `src/docs/fence.ts`：`run`、`norun`、`stdin`、`expect`、`title`、`smoke`、`exit`。`stdin=""` 表示立刻 EOF。
 
-现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28、Java 28。中英各 363 章。`./build.sh build` 打出 `docs: 726 chapters, 2098 runnable blocks`（中英各 1049 个可运行块）。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。Java 的 `docs-smoke` 同样默认不跑（每块都要在浏览器里编 wasm）。`SIMPLECODE_JAVA_DOCS=1` 才执行。默认文档冒烟不含 Rust 和 Java，也不跑 Python 那个 `smoke=skip`。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件；Java 同样有 hello、标准输入、编译错误和 `Thread.sleep`。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
+现在的书（章数，中英各一套）：Python 28、JavaScript 30、Ruby 23、SQL 26、C 25、C++ 39、PHP 34、Lua 22、Go 29、Shell 21、Linux 30、Rust 28、Java 28、NumPy 11、深度学习 11。中英各 385 章。`./build.sh build` 打出 `docs: 770 chapters, 2186 runnable blocks`（中英各 1093 个可运行块）。其中一个 Python `while True` 是 `smoke=skip`。英文在 `docs/en/<book>/`。`SHIPPED_BOOKS` 在 `src/docs/runtime.ts`。NumPy 和深度学习的围栏语言是 `numpy`，`docs-smoke` 默认会跑，走 Pyodide 而不是 WASI CPython。Rust 的 `docs-smoke` 默认不跑（工具链约 152 MB）。`SIMPLECODE_RUST_DOCS=1` 才执行书里的块，中英都会跑。Java 的 `docs-smoke` 同样默认不跑（每块都要在浏览器里编 wasm）。`SIMPLECODE_JAVA_DOCS=1` 才执行。默认文档冒烟不含 Rust 和 Java，也不跑 Python 那个 `smoke=skip`。`tests/smoke.mjs` 仍会编一条 Rust hello、一条编译错误，并试标准输入和写文件；Java 同样有 hello、标准输入、编译错误和 `Thread.sleep`。Linux 的文档冒烟会启动客户机，英文块复用同一份快照。
 
 ### 运行时限制（可运行块里避开）
 
@@ -174,6 +174,7 @@ WASI 命令模块必须导出 `_start`，导入只有 `wasi_snapshot_preview1`�
 | `plan/LANGUAGES.md` | 语言评估、Lua/Go/Shell 的实现记录、Linux §10 的落地结果 |
 | `plan/LEARN.md` | 快速入门的结构和 §19 写作标准、Linux 书在 §20、Java 书在 §23 |
 | `plan/LEETCODE.md` | 题库模式：入口、题单合并、题解许可证、已下载语言、隐藏题解 |
+| `plan/DEEP_LEARNING.md` | Pyodide + NumPy 调研，以及侧栏、运行时、两本书和 vendor 的落地 |
 | `plan/learn-research.md` | 教程取材笔记 |
 
 当前书在短节改写之后（PR #1 侧栏，#2 Lua/Go，#3 可移植构建，#4 JS/TS，#5–#7 快速入门与清单，#8 Shell，#9 书改名，#10 Go 短节，#11 其余九本，#12 Linux 方案，#13 Rust 调研，#14 Linux 运行时）。Rust 的实现记录在 `plan/LANGUAGES.md` §11.10。Linux 的落地记录在 §10。Java 的调研在 §12，侧栏实现按 §12.12。

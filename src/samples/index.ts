@@ -191,6 +191,19 @@ for n in 1 2 3 4 5; do
 done
 `,
   ),
+  numpy: pair(
+    "# 用 NumPy 做点积，并读入一个乘数",
+    "# Dot product with NumPy, then read a multiplier",
+    `import numpy as np
+
+left = np.array([1.0, 2.0, 3.0])
+right = np.array([4.0, 5.0, 6.0])
+print("dot", float(np.dot(left, right)))
+
+scale = float(input())
+print("scaled", float(np.dot(left, right) * scale))
+`,
+  ),
   linux: pair(
     "# 列出根目录的前几项，再留下匹配的那一行",
     "# List the first entries under /, then keep the matching line",

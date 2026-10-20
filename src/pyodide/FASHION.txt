@@ -1,0 +1,17 @@
+Fashion-MNIST subset for SimpleCode.
+
+Source: Zalando Research, Fashion-MNIST.
+https://github.com/zalandoresearch/fashion-mnist
+License: MIT (Copyright (c) 2017 Zalando SE).
+
+This file stores the first 5000 training rows and the first 1000 test rows.
+Each image is 28 by 28 grayscale pixels. Labels are the original class ids 0-9.
+
+Layout, little-endian:
+  uint32 magic 0x314E4D46
+  uint32 train count
+  uint32 test count
+  train images, count * 784 bytes
+  train labels, count bytes
+  test images, count * 784 bytes
+  test labels, count bytes

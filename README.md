@@ -14,11 +14,11 @@
 
 它是一个 playground，不是云端 IDE，也不是官方判题站。
 
-- **执行留在浏览器里。** WASI 语言跑在 Web Worker 的 `@runno/wasi` 里。C / C++ 先用 wasm 里的 clang 8 编译。Rust 用随仓库提交的 `rustc.wasm`（weblings 的 Cranelift rustc）在浏览器里编译，产物再交给同一个 WASI 宿主。Java 的 javac 和运行都在 TeaVM 的 Worker 里。Linux 是主线程上的 v86 客户机。没有把源码送到后端。
+- **执行留在浏览器里。** WASI 语言跑在 Web Worker 的 `@runno/wasi` 里。C / C++ 先用 wasm 里的 clang 8 编译。Rust 用随仓库提交的 `rustc.wasm`（weblings 的 Cranelift rustc）在浏览器里编译，产物再交给同一个 WASI 宿主。Java 的 javac 和运行都在 TeaVM 的 Worker 里。DeepLearning 是另一路：Pyodide 314 加 NumPy 跑在自己的 Worker 里，不走 WASI 那份 CPython。Linux 是主线程上的 v86 客户机。没有把源码送到后端。
 - **没有账号。** 草稿、语言和界面语言记在 `localStorage`。
 - **运行时按需下载。** 侧栏按钮上能看到体积、下载百分比和缓存完成。WASI 与 Linux 进 Cache API `simplecode-wasm-v1`，Rust 是 `simplecode-rustc-v1`，Java 是 `simplecode-teavm-v1`。
 - **标准输入是真的。** 终端按键经 `SharedArrayBuffer` 送进程序，所以页面要跨源隔离。
-- **练习是内置的。** 十三本中英「快速入门」，以及 200 道 LeetCode 风格的题。题解默认收起。
+- **练习是内置的。** 十五本中英「快速入门」（含 NumPy 和 DeepLearning），以及 200 道 LeetCode 风格的题。题解默认收起。
 
 已经打开的页面，在运行时进缓存之后，断网也可以再跑这门语言。整站不是离线安装包：`coi-serviceworker.js` 只补隔离响应头，不缓存 HTML。刷新页面仍然要能取到静态文件。
 
@@ -45,10 +45,10 @@
 
 ## 功能
 
-- 十三门语言，运行时懒加载。侧栏进度条是 `inset-x-0 bottom-0 h-0.5`，和按钮同宽。
+- 十四门语言，运行时懒加载。侧栏进度条是 `inset-x-0 bottom-0 h-0.5`，和按钮同宽。DeepLearning 这一行标明 Python (NumPy)，和 WASI 版 Python 分开。
 - Monaco 编辑。正文字号 14px，注释 13px。未改过的示例在「中 / EN」切换时只换注释。
 - xterm 终端。Run 在工具栏和文档代码块里是同一个按钮。
-- 快速入门：中文 `docs/<book>/`，英文 `docs/en/<book>/`，同一文件名。这次构建是 726 章（中英各 363）、2098 个可运行块（中英各 1049）。
+- 快速入门：中文 `docs/<book>/`，英文 `docs/en/<book>/`，同一文件名。这次构建是 770 章（中英各 385）、2186 个可运行块（中英各 1093）。NumPy 和 DeepLearning 各 11 章，围栏语言是 `numpy`，走 Pyodide。
 - LeetCode 模式和快速入门共用一扇抽屉，不盖住 Run。200 题：简单 41、中等 135、困难 24。中英题名和摘要都有。题面不入库，抽屉里是自写短摘要、自写样例和官网链接。
 - 「查看题解」才展开代码。现在入库的题解是 Python。其他已下载、可刷题的语言会显示「这门语言还没有题解」。可以「运行样例」，也可以把题解放进编辑器再跑。
 - JS/TS 共用一份 wasmedge-quickjs。跑 TypeScript 时才加载 Sucrase，去掉类型后再执行，不做类型检查。
@@ -72,6 +72,7 @@
 | Shell | wasi-sh | 0.1 MB（55,023） | 内建命令和管道。要 `ls`、`cd` 用 Linux |
 | Rust | weblings rustc（Cranelift） | 151.8 MB（159,184,722） | `wasm/rust/` 同源文件，页面不向远端要编译器 |
 | Java | TeaVM 0.16.0 的 javac | 6.6 MB（6,896,057） | 要 Wasm GC。不是 OpenJDK，`Main` 必须是唯一的 public 类 |
+| DeepLearning | Pyodide 314.0.7 + NumPy 2.4.6 | 20.2 MB（21,201,739） | 侧栏文案中英都是 DeepLearning，版本行是 Python (NumPy)。和 WASI CPython 分开。含 Fashion-MNIST 子集 4,710,012 字节 |
 | Linux | v86 0.5.471，内核 6.8.12，BusyBox 1.36.1 | 29.4 MB（30,804,135） | 64 MiB 内存。29.4 MB 含预构建包里那份 `linux-state.zst`（18,201,083 字节）；重新生成快照后这个数会变 |
 
 Rust 两份文件是 `rustc.wasm` 87,871,387 字节和 `sysroot-wasip1.bundle` 71,313,335 字节。Java 四份文件合计 6,896,057 字节。

@@ -196,3 +196,14 @@ v86-buildroot:
   url: https://github.com/copy/v86
   license: BSD-2-Clause / GPL-2.0
   adapt: false
+
+numpy-manual:
+  title: NumPy user guide
+  url: https://numpy.org/doc/stable/user/index.html
+  license: BSD-3-Clause
+  adapt: false
+fashion-mnist:
+  title: Fashion-MNIST
+  url: https://github.com/zalandoresearch/fashion-mnist
+  license: MIT
+  adapt: true

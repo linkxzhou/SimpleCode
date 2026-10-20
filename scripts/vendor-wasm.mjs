@@ -28,9 +28,18 @@ function buildAsset(builder, dest) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
+if (Object.values(assets).some((spec) => spec.download === "pyodide")) {
+  const pyodide = spawnSync(process.execPath, [join(root, "scripts/vendor-pyodide.mjs")], { stdio: "inherit" });
+  if (pyodide.status !== 0) process.exit(pyodide.status ?? 1);
+}
+
 const built = new Set();
 for (const spec of Object.values(assets)) {
   const to = join(out, spec.file);
+  if (spec.download === "pyodide") {
+    if (!existsSync(to)) fail(`missing ${to}`);
+    continue;
+  }
   if (spec.build) {
     // One builder may emit several files (Linux). Later assets only check the path.
     if (!built.has(spec.build)) {

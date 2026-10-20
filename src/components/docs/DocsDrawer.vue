@@ -9,7 +9,8 @@ import LeetCodeProblem from "@/components/study/LeetCodeProblem.vue";
 import { useDocsStore } from "@/stores/docs";
 import { useLeetCodeStore } from "@/stores/leetcode";
 import { useStudyStore } from "@/stores/study";
-import { locale, t } from "@/i18n";
+import { bookName, locale, t } from "@/i18n";
+import { BOOK_LABEL } from "@/docs/runtime";
 
 const docs = useDocsStore();
 const study = useStudyStore();
@@ -99,6 +100,26 @@ onBeforeUnmount(() => {
           @close="docs.close()"
           @search="docs.openSearch()"
         />
+        <div
+          v-if="!leetMode && docs.bookChoices.length > 1"
+          class="flex shrink-0 gap-1 border-b border-border px-2 py-1"
+          data-testid="docs-books"
+          role="group"
+          :aria-label="t('quickStart')"
+        >
+          <button
+            v-for="id in docs.bookChoices"
+            :key="id"
+            type="button"
+            class="h-6 rounded px-2 text-xs"
+            :class="docs.bookId === id ? 'bg-accent font-medium text-foreground' : 'text-muted-foreground hover:text-foreground'"
+            :data-testid="`docs-book-${id}`"
+            :aria-pressed="docs.bookId === id"
+            @click="docs.chooseBook(id)"
+          >
+            {{ bookName(id, BOOK_LABEL[id]) }}
+          </button>
+        </div>
         <div class="flex min-h-0 flex-1 flex-col">
           <LeetCodeProblem v-if="leetMode && leet.problem" />
           <LeetCodeList v-else-if="leetMode" />

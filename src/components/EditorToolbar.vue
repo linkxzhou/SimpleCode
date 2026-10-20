@@ -8,7 +8,7 @@ import RunButton from "./RunButton.vue";
 import { useLanguageStore } from "@/stores/language";
 import { useRunStore } from "@/stores/run";
 import { fileNameFor, useEditorStore } from "@/stores/editor";
-import { t } from "@/i18n";
+import { runtimeName, t } from "@/i18n";
 
 const langs = useLanguageStore();
 const run = useRunStore();
@@ -28,7 +28,7 @@ const jsTs = computed(() => langs.selected?.id === "quickjs");
 function reset() {
   const l = langs.selected;
   if (!l) return;
-  const name = l.id === "quickjs" ? (editor.dialect === "ts" ? "TypeScript" : "JavaScript") : l.label;
+  const name = l.id === "quickjs" ? (editor.dialect === "ts" ? "TypeScript" : "JavaScript") : runtimeName(l.id, l.label);
   if (confirm(t("resetConfirm", { name }))) editor.reset(editor.activeBuffer(l.id));
 }
 </script>

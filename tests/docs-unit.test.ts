@@ -75,6 +75,8 @@ describe("resolveRuntime", () => {
       ["rs", "rust"],
       ["java", "java"],
       ["linux", "linux"],
+      ["numpy", "numpy"],
+      ["np", "numpy"],
     ];
     for (const [alias, runtime] of cases) assert.equal(resolveRuntime(alias), runtime);
     assert.equal(resolveRuntime("Py"), "python");
